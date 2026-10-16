@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FFFFFF">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500&family=Noto+Sans+Thai:wght@400;500&family=Noto+Serif+Thai:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <title>Design your keychain — resincraftcode</title>
+  <meta name="description" content="Design your own handmade resin keychain, then send it to resincraftcode by DM.">
+</head>
+<body data-page="design" class="designer">
+  <header class="site-header" id="site-header"></header>
+
+  <main class="layout">
+    <section class="stage" id="stage" aria-label="Keychain preview">
+      <div class="stage-top">
+        <span class="wordmark">resincraftcode</span>
+        <button type="button" class="btn btn-ink small" id="done" data-i18n="big.done"></button>
+      </div>
+      <div class="stage-art" id="preview"></div>
+      <p class="stage-hint" id="stage-hint" aria-live="polite"></p>
+      <div class="stage-tools">
+        <button type="button" class="tool" id="flip" data-i18n="ui.flip"></button>
+        <button type="button" class="tool" id="surprise" data-i18n="ui.surprise"></button>
+        <button type="button" class="tool" id="bigview" data-i18n="ui.bigView"></button>
+        <button type="button" class="tool" id="startover" data-i18n="ui.startOver"></button>
+      </div>
+      <div class="studio-tools" id="studio-tools"></div>
+    </section>
+
+    <section class="studio">
+      <nav class="steps" id="steps" aria-label="Steps"></nav>
+      <div class="panel" id="panel"></div>
+    </section>
+  </main>
+
+  <footer class="bar">
+    <div class="price">
+      <span class="price-label" data-i18n="ui.yourKeychain"></span>
+      <strong id="total">฿0</strong>
+    </div>
+    <div class="bar-actions">
+      <button type="button" class="btn btn-line" id="back"></button>
+      <button type="button" class="btn btn-ink" id="next"></button>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <span id="toast-text"></span>
+    <button type="button" id="toast-action" hidden></button>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="i18n.js"></script>
+  <script src="i18n-site.js"></script>
+  <script src="core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

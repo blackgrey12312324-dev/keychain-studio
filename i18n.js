@@ -1,0 +1,358 @@
+"use strict";
+
+/* =========================================================
+    All the words in the app, in 3 languages.
+   en = English, th = Thai, ru = Russian.
+   If a word is missing in Thai or Russian, English is used.
+   {price}, {name}, {l}... are filled in by the app — keep them.
+   ========================================================= */
+const I18N = {
+  /* ---------------- ENGLISH ---------------- */
+  en: {
+    steps: ["Ready-made", "Letter", "Style", "Details", "Colours", "Inside", "Edge", "Chain", "Tassel", "Review"],
+    ui: {
+      tagline: "Design your own resin keychain, handmade in Phuket",
+      flip: "Flip", surprise: "Surprise me", bigView: "Big view", startOver: "Start over",
+      startedOver: "Started over", surprised: "Here's a surprise design", undo: "Undo", removed: "Removed",
+      handmade: "Handmade, so your real piece will look a little different",
+      dragHint: "Drag the little things inside to move them. Drag one off the keychain to remove it.",
+      yourKeychain: "Your keychain", back: "Back", next: "Next", startDesigning: "Start designing", toReview: "Review",
+      yes: "Yes", no: "No", free: "Free", included: "Included", add: "Add", added: "Added",
+      shuffle: "Shuffle", oneMore: "Add one more", letter: "Letter", number: "Number",
+
+      s0h: "Pick a ready-made design", s0p: "Too lazy to customise? Choose one and send it. You can still change everything.",
+      orderThis: "Order this one", changeIt: "Change it", fromScratch: "Start from scratch",
+
+      s1h: "Choose your letter", s1p: "Or pick a shape.", shapes: "Shapes", second: "Matching second keychain",
+      secondNote: "For couples or best friends. Same design, another letter (+{price}). Leave empty if you only want one.",
+
+      s2h: "Choose a style", s2p: "Tap one to see it on your keychain.",
+
+      s3clearH: "Clear style", s3clearP: "Clear has no extra settings. The things inside make it shine, so tap Next.",
+      s3gradH: "Gradient details", s3gradP: "How should the colours fade?", direction: "Direction", glitter: "Glitter",
+      clearWindow: "Add a clear window", clearWindowNote: "A see-through stripe across the middle.",
+      s3inkH: "Ink details", s3inkP: "Every ink piece is one of a kind.", inkAmount: "How much ink",
+      inkWhere: "Where the ink goes", background: "Background", cells: "Little white cells", shimmer: "Shimmer",
+      s3oceanH: "Ocean details", s3oceanP: "Build your own little beach.", sand: "How high is the sand",
+      wave: "Where is the wave", foam: "Foam", sandColor: "Sand colour",
+      oceanNote: "Want shells, starfish or pearls? Add them in the Inside step.",
+
+      s4h: "Pick your colours", s4p: "Tap a colour spot, then tap a colour below.",
+      s4clearP: "Clear style has no colour, so the things inside bring the colour. Want colour? Pick another style.",
+      changeStyle: "Change style", palettes: "Ready palettes", yourColours: "Your colours", coloursFor: "Colours for: {name}",
+      anyColour: "Or any colour", anyColourNote: "Anna will match it as close as she can.",
+      slotOcean: ["Deep sea", "Middle water", "Shallow water"], slotInk: ["Ink 1", "Ink 2", "Ink 3"],
+      slotGrad: ["Colour 1", "Colour 2", "Colour 3"], paintTip: "Tip: open Big view to paint on your keychain with your finger",
+
+      s5h: "Add things inside", s5p: "Choose as many as you like, then drag them on the keychain to place them.",
+      howMuch: "How much", where: "Where", colour: "Colour",
+
+      s6h: "Edge and back", s6p: "A painted edge makes it look finished and fancy.", edge: "Edge", edgeColour: "Edge colour",
+      backSide: "Back side", backNoteDiff: "Tell Anna your back idea in the note on the last step.",
+      backNoteSame: "Tap Flip under the picture to see the back.",
+
+      s7h: "Chain and clip", s7p: "How will you carry it?", metal: "Metal colour", type: "Type",
+
+      s8h: "Tassel and extras", s8p: "The finishing touch.", tassel: "Tassel", tasselNote: "Silk is shiny. Cotton is soft and matte.",
+      ombre: "Two colours fading (ombre)", topColour: "Top colour", tasselColour: "Tassel colour", bottomColour: "Bottom colour",
+      cord: "Cord", extra: "Extra",
+
+      s9h: "Your keychain", s9p: "Check everything, then send it to Anna. She'll reply to confirm the price and date.",
+      designCode: "Design code", price: "Price", total: "Estimated total", readyIn: "Handmade to order, ready in {time}.",
+      note: "Anything else?", notePh: "A gift message, a special date, your back-side idea…",
+      photo: "Reference photo (optional)",
+      photoNote: "Instagram can't receive photos from this page, so send the photo in the DM chat yourself.",
+      sendDM: "Send my design by DM", copyLink: "Copy link to share my design", message: "Your message",
+      messageNote: "The DM button copies this for you. Just paste it in the chat. If it doesn't copy, select this text and copy it.",
+      customOrders: "Want something not listed here? DM for custom orders",
+      copied: "Design copied! Paste it in the DM", copyFail: "Copy the message below and paste it in the DM",
+      linkCopied: "Link copied", linkFail: "Couldn't copy the link.",
+    },
+    big: {
+      move: "Move", paint: "Paint", ink: "Ink", glitterBrush: "Glitter", goldBrush: "Gold leaf",
+      size: "Size", undoPaint: "Undo", clearPaint: "Clear paint", done: "Done", zoom: "Zoom",
+      moveHint: "Drag the things inside to move them", paintHint: "Draw on your keychain with your finger",
+      backHint: "Flip to the front to move or paint", brushColour: "Brush colour",
+    },
+    sum: {
+      shape: "Shape", style: "Style", colours: "Colours", addins: "Inside", none: "None", edge: "Edge", back: "Back side",
+      chain: "Chain", tassel: "Tassel", extra: "Extra", matching: "Matching", matchingText: "A second keychain with letter {l}",
+      painted: "Painted", paint: "Hand-painted", strokes: "{n} brush strokes", placed: "placed by hand",
+      ombreTo: "{a} to {b} ombre", cordIs: "cord: {c}",
+      sand: "Sand", wave: "Wave", foam: "Foam", sandColor: "Sand colour", glitter: "Glitter", bg: "Background", shimmer: "Shimmer",
+    },
+    price: {
+      keychain: "{shape} keychain", style: "{style} style", edge: "{edge} edge", back: "Different back design",
+      tassel: "{t} tassel", ombre: "Ombre tassel colours", paint: "Hand-painted details", matching: "Matching keychain ({l})",
+    },
+    labels: {
+      style: { clear: "Clear", gradient: "Colour & glitter", ink: "Ink swirls", ocean: "Ocean wave" },
+      styleText: {
+        clear: "See-through resin. The things inside are the star.",
+        gradient: "Colours fading into each other, with glitter.",
+        ink: "Alcohol ink swirls and little cells.",
+        ocean: "Sea, a white foamy wave and sand.",
+      },
+      direction: { down: "Top to bottom", right: "Left to right", diagonal: "Diagonal", center: "Middle out" },
+      glitter: { none: "No glitter", fine: "Fine", chunky: "Chunky", holo: "Holographic" },
+      amountInk: { light: "Soft wisps", medium: "Medium", bold: "Bold and full" },
+      spread: { all: "All over", top: "Top", bottom: "Bottom", left: "Left side", right: "Right side" },
+      background: { clear: "Clear", white: "White", cloudy: "Cloudy" },
+      shimmer: { none: "None", pearl: "Pearl", gold: "Gold" },
+      sand: { none: "No sand", low: "Low", middle: "Middle", high: "High" },
+      wave: { top: "Top", middle: "Middle", bottom: "At the sand", diagonal: "Diagonal" },
+      foam: { soft: "Soft", frothy: "Big and frothy" },
+      sandColor: { natural: "Natural", white: "White", golden: "Golden", pink: "Pink" },
+      amount: { few: "A little", some: "Some", lots: "A lot" },
+      place: { anna: "Anna decides", top: "Top", middle: "Middle", bottom: "Bottom", scattered: "Scattered" },
+      edge: { none: "No edge", gold: "Gold", silver: "Silver", rose: "Rose gold", painted: "Painted colour" },
+      back: { same: "Same as front", plain: "Plain clear back", different: "Different design" },
+      metal: { gold: "Gold", silver: "Silver", rose: "Rose gold", black: "Black" },
+      hardware: {
+        ring: "Split ring", ringchain: "Ring + chain", lobster: "Lobster clasp",
+        swivel: "Swivel clasp", carabiner: "Carabiner", wristlet: "Wristlet strap",
+      },
+      hardwareTip: {
+        ring: "Best for keys. Very secure.", ringchain: "Keys and bags. The classic look.",
+        lobster: "Clip it on a bag or zip.", swivel: "Turns around, so it never twists.",
+        carabiner: "Big clip for backpacks.", wristlet: "Wear it on your wrist.",
+      },
+      tassel: { none: "No tassel", cotton: "Cotton", silk: "Silk" },
+      cord: { gold: "Gold", silver: "Silver", match: "Same as tassel", twist: "Twisted with gold" },
+      extra: { none: "Nothing", ribbon: "Ribbon bow", pompom: "Pom-pom", beads: "Bead strand", charm: "Metal star charm" },
+      size: { s: "S", m: "M", l: "L" },
+    },
+  },
+
+  /* ---------------- THAI ---------------- */
+  th: {
+    steps: ["แบบสำเร็จรูป", "ตัวอักษร", "สไตล์", "รายละเอียด", "สี", "ของข้างใน", "ขอบ", "โซ่", "พู่", "ตรวจสอบ"],
+    ui: {
+      tagline: "ออกแบบพวงกุญแจเรซินของคุณเอง งานทำมือจากภูเก็ต",
+      flip: "พลิก", surprise: "สุ่มให้หน่อย", bigView: "ดูภาพใหญ่", startOver: "เริ่มใหม่",
+      startedOver: "เริ่มใหม่แล้ว", surprised: "นี่คือดีไซน์เซอร์ไพรส์", undo: "เลิกทำ", removed: "ลบแล้ว",
+      handmade: "งานทำมือ ชิ้นจริงอาจต่างไปเล็กน้อย",
+      dragHint: "ลากของชิ้นเล็กข้างในเพื่อย้าย ลากออกนอกพวงกุญแจเพื่อลบ",
+      yourKeychain: "พวงกุญแจของคุณ", back: "กลับ", next: "ถัดไป", startDesigning: "เริ่มออกแบบ", toReview: "ตรวจสอบ",
+      yes: "ใช่", no: "ไม่", free: "ฟรี", included: "รวมแล้ว", add: "เพิ่ม", added: "เพิ่มแล้ว",
+      shuffle: "สุ่มตำแหน่ง", oneMore: "เพิ่มอีกชิ้น", letter: "ตัวอักษร", number: "ตัวเลข",
+
+      s0h: "เลือกแบบสำเร็จรูป", s0p: "ไม่อยากออกแบบเอง? เลือกแบบที่ชอบแล้วส่งได้เลย ยังแก้ไขได้ทุกอย่าง",
+      orderThis: "สั่งแบบนี้", changeIt: "แก้ไขแบบนี้", fromScratch: "เริ่มจากศูนย์",
+
+      s1h: "เลือกตัวอักษร", s1p: "หรือเลือกรูปทรง", shapes: "รูปทรง", second: "พวงกุญแจคู่",
+      secondNote: "สำหรับคู่รักหรือเพื่อนสนิท แบบเดียวกันแต่อีกตัวอักษร (+{price}) เว้นว่างไว้ถ้าต้องการแค่ชิ้นเดียว",
+
+      s2h: "เลือกสไตล์", s2p: "แตะเพื่อดูบนพวงกุญแจของคุณ",
+
+      s3clearH: "สไตล์ใส", s3clearP: "สไตล์ใสไม่มีตัวเลือกเพิ่ม ของข้างในจะทำให้สวย แตะถัดไปได้เลย",
+      s3gradH: "รายละเอียดไล่สี", s3gradP: "อยากให้สีไล่กันแบบไหน?", direction: "ทิศทาง", glitter: "กากเพชร",
+      clearWindow: "เพิ่มช่องใส", clearWindowNote: "แถบใสพาดตรงกลาง",
+      s3inkH: "รายละเอียดหมึก", s3inkP: "งานหมึกแต่ละชิ้นไม่ซ้ำกัน", inkAmount: "ปริมาณหมึก",
+      inkWhere: "ตำแหน่งหมึก", background: "พื้นหลัง", cells: "ฟองเซลล์สีขาว", shimmer: "ประกาย",
+      s3oceanH: "รายละเอียดทะเล", s3oceanP: "สร้างชายหาดเล็กๆ ของคุณเอง", sand: "ทรายสูงแค่ไหน",
+      wave: "คลื่นอยู่ตรงไหน", foam: "ฟองคลื่น", sandColor: "สีทราย",
+      oceanNote: "อยากได้เปลือกหอย ปลาดาว หรือไข่มุก? เพิ่มได้ในขั้นตอน ของข้างใน",
+
+      s4h: "เลือกสี", s4p: "แตะจุดสีก่อน แล้วแตะสีด้านล่าง",
+      s4clearP: "สไตล์ใสไม่มีสี ของข้างในจะเติมสีให้ อยากได้สี? เลือกสไตล์อื่น",
+      changeStyle: "เปลี่ยนสไตล์", palettes: "ชุดสีสำเร็จรูป", yourColours: "สีของคุณ", coloursFor: "สีสำหรับ: {name}",
+      anyColour: "หรือเลือกสีใดก็ได้", anyColourNote: "แอนนาจะทำสีให้ใกล้เคียงที่สุด",
+      slotOcean: ["ทะเลลึก", "น้ำกลาง", "น้ำตื้น"], slotInk: ["หมึก 1", "หมึก 2", "หมึก 3"],
+      slotGrad: ["สี 1", "สี 2", "สี 3"], paintTip: "ทิป: เปิด ดูภาพใหญ่ เพื่อระบายสีบนพวงกุญแจด้วยนิ้ว",
+
+      s5h: "ใส่ของข้างใน", s5p: "เลือกได้หลายอย่าง แล้วลากบนพวงกุญแจเพื่อจัดตำแหน่ง",
+      howMuch: "ปริมาณ", where: "ตำแหน่ง", colour: "สี",
+
+      s6h: "ขอบและด้านหลัง", s6p: "ขอบสีทำให้ดูเรียบร้อยและหรูขึ้น", edge: "ขอบ", edgeColour: "สีขอบ",
+      backSide: "ด้านหลัง", backNoteDiff: "บอกไอเดียด้านหลังกับแอนนาในช่องข้อความขั้นตอนสุดท้าย",
+      backNoteSame: "แตะ พลิก ใต้รูปเพื่อดูด้านหลัง",
+
+      s7h: "โซ่และตัวคล้อง", s7p: "จะพกแบบไหน?", metal: "สีโลหะ", type: "แบบ",
+
+      s8h: "พู่และของเพิ่มเติม", s8p: "รายละเอียดสุดท้าย", tassel: "พู่", tasselNote: "ไหมจะเงางาม ฝ้ายจะนุ่มและด้าน",
+      ombre: "ไล่สองสี (ombre)", topColour: "สีด้านบน", tasselColour: "สีพู่", bottomColour: "สีด้านล่าง",
+      cord: "เชือก", extra: "ของเพิ่มเติม",
+
+      s9h: "พวงกุญแจของคุณ", s9p: "ตรวจสอบทุกอย่าง แล้วส่งให้แอนนา เธอจะตอบกลับเพื่อยืนยันราคาและวันที่",
+      designCode: "รหัสดีไซน์", price: "ราคา", total: "ราคาประมาณ", readyIn: "ทำมือตามสั่ง เสร็จภายใน {time}",
+      note: "มีอะไรเพิ่มเติมไหม?", notePh: "ข้อความของขวัญ วันพิเศษ ไอเดียด้านหลัง…",
+      photo: "รูปตัวอย่าง (ไม่บังคับ)",
+      photoNote: "อินสตาแกรมรับรูปจากหน้านี้ไม่ได้ กรุณาส่งรูปในแชท DM เอง",
+      sendDM: "ส่งดีไซน์ทาง DM", copyLink: "คัดลอกลิงก์เพื่อแชร์ดีไซน์", message: "ข้อความของคุณ",
+      messageNote: "ปุ่ม DM จะคัดลอกข้อความนี้ให้ แค่วางในแชท ถ้าคัดลอกไม่ได้ ให้เลือกข้อความนี้แล้วคัดลอกเอง",
+      customOrders: "อยากได้แบบที่ไม่มีในนี้? ทัก DM สั่งทำได้เลย",
+      copied: "คัดลอกดีไซน์แล้ว! วางในแชท DM ได้เลย", copyFail: "คัดลอกข้อความด้านล่างแล้ววางใน DM",
+      linkCopied: "คัดลอกลิงก์แล้ว", linkFail: "คัดลอกลิงก์ไม่ได้",
+    },
+    big: {
+      move: "ย้าย", paint: "ระบาย", ink: "หมึก", glitterBrush: "กากเพชร", goldBrush: "ทองคำเปลว",
+      size: "ขนาด", undoPaint: "เลิกทำ", clearPaint: "ลบที่ระบาย", done: "เสร็จ", zoom: "ซูม",
+      moveHint: "ลากของข้างในเพื่อย้าย", paintHint: "วาดบนพวงกุญแจด้วยนิ้วของคุณ",
+      backHint: "พลิกไปด้านหน้าเพื่อย้ายหรือระบาย", brushColour: "สีพู่กัน",
+    },
+    sum: {
+      shape: "รูปทรง", style: "สไตล์", colours: "สี", addins: "ของข้างใน", none: "ไม่มี", edge: "ขอบ", back: "ด้านหลัง",
+      chain: "โซ่", tassel: "พู่", extra: "เพิ่มเติม", matching: "ชิ้นคู่", matchingText: "พวงกุญแจชิ้นที่สอง ตัวอักษร {l}",
+      painted: "ทาสี", paint: "ระบายเอง", strokes: "{n} เส้น", placed: "จัดตำแหน่งเอง",
+      ombreTo: "ไล่สี {a} ไป {b}", cordIs: "เชือก: {c}",
+      sand: "ทราย", wave: "คลื่น", foam: "ฟอง", sandColor: "สีทราย", glitter: "กากเพชร", bg: "พื้นหลัง", shimmer: "ประกาย",
+    },
+    price: {
+      keychain: "พวงกุญแจ ({shape})", style: "สไตล์ {style}", edge: "ขอบ: {edge}", back: "ด้านหลังลายต่างกัน",
+      tassel: "พู่ ({t})", ombre: "พู่ไล่สี", paint: "ลวดลายระบายเอง", matching: "พวงกุญแจคู่ ({l})",
+    },
+    labels: {
+      style: { clear: "ใส", gradient: "สีและกากเพชร", ink: "หมึกพลิ้ว", ocean: "คลื่นทะเล" },
+      styleText: {
+        clear: "เรซินใส ให้ของข้างในเป็นจุดเด่น",
+        gradient: "สีไล่กันพร้อมกากเพชร",
+        ink: "ลายหมึกแอลกอฮอล์พลิ้วๆ และฟองเซลล์",
+        ocean: "ทะเล คลื่นฟองสีขาว และทราย",
+      },
+      direction: { down: "บนลงล่าง", right: "ซ้ายไปขวา", diagonal: "แนวทแยง", center: "จากตรงกลาง" },
+      glitter: { none: "ไม่มี", fine: "ละเอียด", chunky: "เม็ดใหญ่", holo: "โฮโลแกรม" },
+      amountInk: { light: "บางเบา", medium: "ปานกลาง", bold: "เข้มเต็ม" },
+      spread: { all: "ทั่วทั้งชิ้น", top: "ด้านบน", bottom: "ด้านล่าง", left: "ด้านซ้าย", right: "ด้านขวา" },
+      background: { clear: "ใส", white: "ขาว", cloudy: "ขาวขุ่น" },
+      shimmer: { none: "ไม่มี", pearl: "มุก", gold: "ทอง" },
+      sand: { none: "ไม่มีทราย", low: "ต่ำ", middle: "กลาง", high: "สูง" },
+      wave: { top: "ด้านบน", middle: "ตรงกลาง", bottom: "ติดทราย", diagonal: "แนวทแยง" },
+      foam: { soft: "นุ่มเบา", frothy: "ฟองเยอะ" },
+      sandColor: { natural: "ธรรมชาติ", white: "ขาว", golden: "ทอง", pink: "ชมพู" },
+      amount: { few: "นิดหน่อย", some: "ปานกลาง", lots: "เยอะ" },
+      place: { anna: "ให้แอนนาเลือก", top: "ด้านบน", middle: "ตรงกลาง", bottom: "ด้านล่าง", scattered: "กระจาย" },
+      edge: { none: "ไม่มีขอบ", gold: "ทอง", silver: "เงิน", rose: "โรสโกลด์", painted: "ทาสี" },
+      back: { same: "เหมือนด้านหน้า", plain: "ใสเรียบ", different: "ลายต่างกัน" },
+      metal: { gold: "ทอง", silver: "เงิน", rose: "โรสโกลด์", black: "ดำ" },
+      hardware: {
+        ring: "ห่วงกุญแจ", ringchain: "ห่วง + โซ่", lobster: "ตะขอก้ามปู",
+        swivel: "ตะขอหมุนได้", carabiner: "คาราบิเนอร์", wristlet: "สายคล้องข้อมือ",
+      },
+      hardwareTip: {
+        ring: "เหมาะกับกุญแจ แน่นหนามาก", ringchain: "กุญแจและกระเป๋า ลุคคลาสสิก",
+        lobster: "เกี่ยวกับกระเป๋าหรือซิปได้", swivel: "หมุนได้ เลยไม่บิด",
+        carabiner: "ตะขอใหญ่สำหรับเป้", wristlet: "คล้องข้อมือได้",
+      },
+      tassel: { none: "ไม่มีพู่", cotton: "ฝ้าย", silk: "ไหม" },
+      cord: { gold: "ทอง", silver: "เงิน", match: "สีเดียวกับพู่", twist: "บิดเกลียวกับทอง" },
+      extra: { none: "ไม่มี", ribbon: "โบว์ริบบิ้น", pompom: "ปอมปอม", beads: "สายลูกปัด", charm: "จี้ดาวโลหะ" },
+    },
+  },
+
+  /* ---------------- RUSSIAN ---------------- */
+  ru: {
+    steps: ["Готовые", "Буква", "Стиль", "Настройки", "Цвета", "Внутри", "Край", "Цепочка", "Кисточка", "Итог"],
+    ui: {
+      tagline: "Создай свой брелок из смолы, ручная работа с Пхукета",
+      flip: "Перевернуть", surprise: "Удиви меня", bigView: "Крупно", startOver: "Сначала",
+      startedOver: "Начали заново", surprised: "Вот дизайн-сюрприз", undo: "Отменить", removed: "Удалено",
+      handmade: "Ручная работа, поэтому настоящий брелок будет немного отличаться",
+      dragHint: "Перетаскивай детали внутри, чтобы передвинуть. Вытащи деталь за край брелока, чтобы удалить.",
+      yourKeychain: "Твой брелок", back: "Назад", next: "Далее", startDesigning: "Начать", toReview: "К итогу",
+      yes: "Да", no: "Нет", free: "Бесплатно", included: "Включено", add: "Добавить", added: "Добавлено",
+      shuffle: "Перемешать", oneMore: "Ещё одну", letter: "Буква", number: "Цифра",
+
+      s0h: "Выбери готовый дизайн", s0p: "Лень придумывать? Выбери готовый и отправь. Всё можно изменить.",
+      orderThis: "Заказать этот", changeIt: "Изменить", fromScratch: "Начать с нуля",
+
+      s1h: "Выбери букву", s1p: "Или выбери форму.", shapes: "Формы", second: "Парный брелок",
+      secondNote: "Для пар и лучших друзей. Тот же дизайн, другая буква (+{price}). Оставь пустым, если нужен один.",
+
+      s2h: "Выбери стиль", s2p: "Нажми, чтобы увидеть на брелоке.",
+
+      s3clearH: "Прозрачный стиль", s3clearP: "У прозрачного стиля нет настроек. Его украшают детали внутри — нажми «Далее».",
+      s3gradH: "Настройки градиента", s3gradP: "Как должны переходить цвета?", direction: "Направление", glitter: "Глиттер",
+      clearWindow: "Прозрачное окошко", clearWindowNote: "Прозрачная полоса посередине.",
+      s3inkH: "Настройки чернил", s3inkP: "Каждый брелок с чернилами уникален.", inkAmount: "Сколько чернил",
+      inkWhere: "Где чернила", background: "Фон", cells: "Белые ячейки", shimmer: "Мерцание",
+      s3oceanH: "Настройки океана", s3oceanP: "Создай свой маленький пляж.", sand: "Высота песка",
+      wave: "Где волна", foam: "Пена", sandColor: "Цвет песка",
+      oceanNote: "Хочешь ракушки, морские звёзды или жемчуг? Добавь их на шаге «Внутри».",
+
+      s4h: "Выбери цвета", s4p: "Нажми на кружок цвета, потом выбери цвет ниже.",
+      s4clearP: "У прозрачного стиля нет цвета — цвет дают детали внутри. Хочешь цвет? Выбери другой стиль.",
+      changeStyle: "Сменить стиль", palettes: "Готовые палитры", yourColours: "Твои цвета", coloursFor: "Цвета для: {name}",
+      anyColour: "Или любой цвет", anyColourNote: "Анна подберёт максимально похожий.",
+      slotOcean: ["Глубокое море", "Средняя вода", "Мелководье"], slotInk: ["Чернила 1", "Чернила 2", "Чернила 3"],
+      slotGrad: ["Цвет 1", "Цвет 2", "Цвет 3"], paintTip: "Совет: открой «Крупно», чтобы рисовать на брелоке пальцем",
+
+      s5h: "Добавь детали внутрь", s5p: "Выбирай сколько хочешь, а потом перетаскивай их на брелоке.",
+      howMuch: "Сколько", where: "Где", colour: "Цвет",
+
+      s6h: "Край и обратная сторона", s6p: "Окрашенный край выглядит аккуратно и нарядно.", edge: "Край", edgeColour: "Цвет края",
+      backSide: "Обратная сторона", backNoteDiff: "Опиши идею для обратной стороны в комментарии на последнем шаге.",
+      backNoteSame: "Нажми «Перевернуть» под картинкой, чтобы увидеть обратную сторону.",
+
+      s7h: "Цепочка и застёжка", s7p: "Как будешь носить?", metal: "Цвет металла", type: "Тип",
+
+      s8h: "Кисточка и дополнения", s8p: "Последний штрих.", tassel: "Кисточка", tasselNote: "Шёлк блестит. Хлопок мягкий и матовый.",
+      ombre: "Два цвета с переходом (омбре)", topColour: "Цвет сверху", tasselColour: "Цвет кисточки", bottomColour: "Цвет снизу",
+      cord: "Шнурок", extra: "Дополнение",
+
+      s9h: "Твой брелок", s9p: "Проверь всё и отправь Анне. Она ответит и подтвердит цену и срок.",
+      designCode: "Код дизайна", price: "Цена", total: "Примерная сумма", readyIn: "Делается вручную на заказ, готово через {time}.",
+      note: "Что-нибудь ещё?", notePh: "Подпись к подарку, особая дата, идея для обратной стороны…",
+      photo: "Фото-пример (по желанию)",
+      photoNote: "Instagram не может получить фото с этой страницы, поэтому отправь фото в чат вручную.",
+      sendDM: "Отправить дизайн в Direct", copyLink: "Скопировать ссылку на дизайн", message: "Твоё сообщение",
+      messageNote: "Кнопка Direct скопирует его за тебя — просто вставь в чат. Если не скопировалось, выдели текст и скопируй.",
+      customOrders: "Хочешь что-то другое? Пиши в Direct для индивидуального заказа",
+      copied: "Дизайн скопирован! Вставь его в Direct", copyFail: "Скопируй сообщение ниже и вставь в Direct",
+      linkCopied: "Ссылка скопирована", linkFail: "Не удалось скопировать ссылку.",
+    },
+    big: {
+      move: "Двигать", paint: "Рисовать", ink: "Чернила", glitterBrush: "Глиттер", goldBrush: "Поталь",
+      size: "Размер", undoPaint: "Отменить", clearPaint: "Стереть рисунок", done: "Готово", zoom: "Масштаб",
+      moveHint: "Перетаскивай детали внутри, чтобы передвинуть", paintHint: "Рисуй на брелоке пальцем",
+      backHint: "Переверни на лицевую сторону, чтобы двигать или рисовать", brushColour: "Цвет кисти",
+    },
+    sum: {
+      shape: "Форма", style: "Стиль", colours: "Цвета", addins: "Внутри", none: "Нет", edge: "Край", back: "Обратная сторона",
+      chain: "Цепочка", tassel: "Кисточка", extra: "Дополнение", matching: "Парный", matchingText: "Второй брелок с буквой {l}",
+      painted: "Цветной", paint: "Рисунок вручную", strokes: "мазков: {n}", placed: "расставлено вручную",
+      ombreTo: "омбре: {a} → {b}", cordIs: "шнурок: {c}",
+      sand: "Песок", wave: "Волна", foam: "Пена", sandColor: "Цвет песка", glitter: "Глиттер", bg: "Фон", shimmer: "Мерцание",
+    },
+    price: {
+      keychain: "Брелок: {shape}", style: "Стиль «{style}»", edge: "Край: {edge}", back: "Другой дизайн сзади",
+      tassel: "Кисточка: {t}", ombre: "Омбре-кисточка", paint: "Рисунок вручную", matching: "Парный брелок ({l})",
+    },
+    labels: {
+      style: { clear: "Прозрачный", gradient: "Цвет и глиттер", ink: "Чернила", ocean: "Океан" },
+      styleText: {
+        clear: "Прозрачная смола — главное детали внутри.",
+        gradient: "Цвета плавно переходят друг в друга, с глиттером.",
+        ink: "Разводы спиртовых чернил и ячейки.",
+        ocean: "Море, белая пенная волна и песок.",
+      },
+      direction: { down: "Сверху вниз", right: "Слева направо", diagonal: "По диагонали", center: "Из центра" },
+      glitter: { none: "Без глиттера", fine: "Мелкий", chunky: "Крупный", holo: "Голографический" },
+      amountInk: { light: "Лёгкие разводы", medium: "Средне", bold: "Ярко и много" },
+      spread: { all: "Везде", top: "Сверху", bottom: "Снизу", left: "Слева", right: "Справа" },
+      background: { clear: "Прозрачный", white: "Белый", cloudy: "Облачный" },
+      shimmer: { none: "Нет", pearl: "Жемчужное", gold: "Золотое" },
+      sand: { none: "Без песка", low: "Низко", middle: "Посередине", high: "Высоко" },
+      wave: { top: "Сверху", middle: "Посередине", bottom: "У песка", diagonal: "По диагонали" },
+      foam: { soft: "Лёгкая", frothy: "Пышная" },
+      sandColor: { natural: "Натуральный", white: "Белый", golden: "Золотистый", pink: "Розовый" },
+      amount: { few: "Немного", some: "Средне", lots: "Много" },
+      place: { anna: "На выбор Анны", top: "Сверху", middle: "Посередине", bottom: "Снизу", scattered: "Вразброс" },
+      edge: { none: "Без края", gold: "Золото", silver: "Серебро", rose: "Розовое золото", painted: "Цветной" },
+      back: { same: "Как спереди", plain: "Просто прозрачная", different: "Другой дизайн" },
+      metal: { gold: "Золото", silver: "Серебро", rose: "Розовое золото", black: "Чёрный" },
+      hardware: {
+        ring: "Кольцо", ringchain: "Кольцо + цепочка", lobster: "Карабин-лобстер",
+        swivel: "Вращающийся карабин", carabiner: "Большой карабин", wristlet: "Ремешок на запястье",
+      },
+      hardwareTip: {
+        ring: "Для ключей. Очень надёжно.", ringchain: "Для ключей и сумок. Классика.",
+        lobster: "Цепляется на сумку или молнию.", swivel: "Вращается и не перекручивается.",
+        carabiner: "Большая застёжка для рюкзака.", wristlet: "Можно носить на запястье.",
+      },
+      tassel: { none: "Без кисточки", cotton: "Хлопок", silk: "Шёлк" },
+      cord: { gold: "Золотой", silver: "Серебряный", match: "В цвет кисточки", twist: "Скрученный с золотом" },
+      extra: { none: "Ничего", ribbon: "Бантик", pompom: "Помпон", beads: "Нитка бусин", charm: "Металлическая звёздочка" },
+    },
+  },
+};
