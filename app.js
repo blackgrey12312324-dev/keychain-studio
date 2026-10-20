@@ -528,6 +528,7 @@ function styleLayer(d, id, R, T, B) {
     return `<defs>${grad}${mask}</defs>
       <g ${d.clearParts ? `mask="url(#${id}-m)"` : ""}>
         <rect x="0" y="${T - 20}" width="300" height="${h + 40}" fill="url(#${id}-g)"/>
+        <image href="images/real/swirl-gray.jpg" x="0" y="${T - 20}" width="300" height="${h + 40}" preserveAspectRatio="xMidYMid slice" style="mix-blend-mode:soft-light" opacity="0.8"/>
         ${glitterDots(R, g.glitter, c, T, B)}
       </g>`;
   }
@@ -554,6 +555,7 @@ function styleLayer(d, id, R, T, B) {
       blobs += `<ellipse cx="${(x0 + R() * (x1 - x0)).toFixed(0)}" cy="${(y0 + R() * (y1 - y0)).toFixed(0)}" rx="${(r * (0.9 + R() * 0.6)).toFixed(0)}" ry="${(r * (0.6 + R() * 0.5)).toFixed(0)}" fill="${c[i % 3]}" opacity="${op}"/>`;
     }
     s += `<g filter="url(#${id}-ink)">${blobs}</g>`;
+    s += `<image href="images/real/swirl-gray.jpg" x="0" y="${T - 20}" width="300" height="${h + 40}" preserveAspectRatio="xMidYMid slice" style="mix-blend-mode:soft-light" opacity="0.7"/>`;
     if (k.cells) {
       for (let i = 0; i < 45; i++) {
         s += `<circle cx="${(x0 + R() * (x1 - x0)).toFixed(1)}" cy="${(y0 + R() * (y1 - y0)).toFixed(1)}" r="${(1.5 + R() * 3.5).toFixed(1)}" fill="rgba(255,255,255,0.45)" stroke="#fff" stroke-width="0.8"/>`;
@@ -566,38 +568,15 @@ function styleLayer(d, id, R, T, B) {
     return s;
   }
 
-  // ocean
+  // ocean: real photos of Anna's sea pour and sand
   const o = d.ocean;
   const sandY = o.sand === "none" ? null : T + h * { low: 0.8, middle: 0.64, high: 0.46 }[o.sand];
-  const seaBottom = sandY ?? B;
-  let waveY = { top: T + h * 0.22, middle: T + h * 0.45, diagonal: T + h * 0.45 }[o.wave];
-  if (o.wave === "bottom") waveY = sandY ? sandY - 4 : B - h * 0.18;
-  const rot = o.wave === "diagonal" ? `transform="rotate(-24 150 ${waveY})"` : "";
-
-  let s = `<defs><linearGradient id="${id}-sea" gradientUnits="userSpaceOnUse" x1="0" y1="${T}" x2="0" y2="${seaBottom}">
-      <stop offset="0" stop-color="${c[0]}"/><stop offset="0.6" stop-color="${c[1]}"/><stop offset="1" stop-color="${c[2]}"/>
-    </linearGradient></defs>
-    <rect x="0" y="${T - 30}" width="300" height="${seaBottom - T + 50}" fill="url(#${id}-sea)"/>`;
-
+  let s = `<image href="images/real/sea.jpg" x="0" y="${T - 20}" width="300" height="${(sandY ?? B) - T + 60}" preserveAspectRatio="xMidYMid slice"/>`;
   if (sandY) {
-    let grains = "";
-    for (let i = 0; i < 140; i++) {
-      grains += `<circle cx="${(R() * 300).toFixed(1)}" cy="${(sandY + 4 + R() * (430 - sandY)).toFixed(1)}" r="${(0.5 + R()).toFixed(1)}" fill="${R() > 0.5 ? "#8C7650" : "#FFF6E0"}" opacity="0.6"/>`;
-    }
-    s += `<path d="M0 ${sandY} q 40 -8 80 0 t 80 0 t 80 0 t 80 0 V 430 H 0 Z" fill="${SAND[o.sandColor]}"/>${grains}`;
+    s += `<defs><mask id="${id}-sm"><rect width="300" height="440" fill="#000"/><path d="M-20 ${sandY} q 40 -14 80 0 t 80 0 t 80 0 t 80 0 V 450 H -20 Z" fill="#fff" filter="url(#${id}-foam)"/></mask></defs>
+      <rect x="-10" y="${sandY - 18}" width="320" height="30" fill="#DCEBEE" opacity="0.55" filter="url(#${id}-soft)"/>
+      <image href="images/real/sand.jpg" x="0" y="${sandY - 14}" width="300" height="${440 - sandY + 14}" preserveAspectRatio="xMidYMid slice" mask="url(#${id}-sm)"/>`;
   }
-
-  const foamW = o.foam === "frothy" ? 10 : 5;
-  const lace = o.foam === "frothy" ? 70 : 30;
-  let circles = "";
-  for (let i = 0; i < lace; i++) {
-    circles += `<circle cx="${(R() * 300).toFixed(1)}" cy="${(waveY - 4 + R() * 26).toFixed(1)}" r="${(1.5 + R() * 4.5).toFixed(1)}" fill="none" stroke="#fff" stroke-width="${(0.8 + R() * 0.9).toFixed(1)}" opacity="0.9"/>`;
-  }
-  s += `<g ${rot}>
-      <rect x="-40" y="${waveY}" width="380" height="${Math.max(0, seaBottom - waveY)}" fill="#fff" opacity="0.18"/>
-      <path d="M-20 ${waveY} q 25 -9 50 0 t 50 0 t 50 0 t 50 0 t 50 0 t 50 0 t 50 0" fill="none" stroke="#fff" stroke-width="${foamW}" stroke-linecap="round" filter="url(#${id}-foam)"/>
-      ${circles}
-    </g>`;
   return s;
 }
 
@@ -847,8 +826,6 @@ function renderPiece(d, side = "front", opts = {}) {
       <g clip-path="url(#${id}-clip)" class="resin">
         ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(226,244,242,0.6)"/>`}
         ${fill}
-        ${(customShape(d.shape) || {}).wood ? "" : `<path d="M40 100 L 118 100 L 18 430 L -60 430 Z" fill="#fff" opacity="0.22" pointer-events="none"/>
-        <path d="M170 100 L 190 100 L 90 430 L 70 430 Z" fill="#fff" opacity="0.12" pointer-events="none"/>`}
         ${shapeMarkup(d.shape, rim + ' pointer-events="none"')}
         ${gridLines(d.shape)}
       </g>

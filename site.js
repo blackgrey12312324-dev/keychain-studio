@@ -79,6 +79,13 @@ function renderHome() {
       </div>
     </section>
 
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head"><h2>${H("galleryTitle")}</h2><p>${H("gallerySub")}</p></div>
+        <div class="gallery">${["g-saeed", "g-canvas", "g-tail", "g-plum", "g-paddle", "g-copper", "g-tree", "g-collage"].map((n) => `<img src="images/real/${n}.jpg" alt="" loading="lazy">`).join("")}</div>
+      </div>
+    </section>
+
     <section class="section ways">
       <div class="wrap">
         <h2>${H("waysTitle")}</h2>
