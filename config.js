@@ -258,6 +258,9 @@ const CONFIG = {
     { id: "love", name: "LOVE word", size: "medium", d: "M32 250 H268 V350 H32 Z", t: 250, b: 350, pin: 250 },
     { id: "heart-stand", name: "Heart (medium)", size: "medium", d: "M150 380 C 70 325 40 270 50 225 C 60 175 125 165 150 215 C 175 165 240 175 250 225 C 260 270 230 325 150 380 Z", t: 170, b: 380, pin: 190 },
     { id: "cup", name: "Round cup base", size: "medium", d: "M60 262 A90 90 0 1 0 240 262 A90 90 0 1 0 60 262Z", t: 172, b: 352, pin: 172 },
+    { id: "wood-slice", name: "Wood slice", size: "medium", wood: "slice", d: "M62 250 C 60 190 110 160 170 165 C 235 170 258 215 252 275 C 248 330 220 372 160 372 C 100 372 64 322 62 250 Z", t: 160, b: 372, pin: 165 },
+    { id: "wood-round", name: "Round wooden board", size: "medium", wood: "teak", d: "M135 128 H175 V175 C 235 190 262 235 262 290 C 262 355 215 395 150 395 C 85 395 38 355 38 290 C 38 235 65 190 125 175 V138 Z", t: 128, b: 395, pin: 140 },
+    { id: "wood-tray", name: "Bamboo tray", size: "big", wood: "bamboo", d: "M55 150 H245 V400 H55 Z", t: 150, b: 400, pin: 150 },
     { id: "star", name: "Star", name_th: "ดาว", name_ru: "Звезда" },
   ],
 

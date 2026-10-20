@@ -812,6 +812,7 @@ function renderPiece(d, side = "front", opts = {}) {
     <linearGradient id="${id}-metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${m1}"/><stop offset="1" stop-color="${m2}"/></linearGradient>
     <linearGradient id="${id}-tas" x1="0" y1="0" x2="0" y2="1"><stop offset="0.1" stop-color="${tt.color1}"/><stop offset="0.9" stop-color="${tt.ombre ? tt.color2 : tt.color1}"/></linearGradient>
     <radialGradient id="${id}-pearl" cx="0.35" cy="0.35" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#D9D2C6"/></radialGradient>
+    <pattern id="${id}-wood" patternUnits="userSpaceOnUse" width="300" height="440"><image href="images/wood/${(customShape(d.shape) || {}).wood}.jpg" width="300" height="440" preserveAspectRatio="xMidYMid slice"/></pattern>
     <pattern id="${id}-ltr" patternUnits="userSpaceOnUse" width="70" height="70"><image href="images/letters/${d.letters.metal}.jpg" width="70" height="70" preserveAspectRatio="xMidYMid slice" style="filter:brightness(1.7) contrast(1.15) saturate(1.2)"/></pattern>
     <clipPath id="${id}-clip">${shapeMarkup(d.shape, "")}</clipPath>
     <filter id="${id}-ink" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="38" xChannelSelector="R" yChannelSelector="G"/></filter>
@@ -840,7 +841,7 @@ function renderPiece(d, side = "front", opts = {}) {
     <g filter="url(#${id}-shadow)" ${flip}>
       ${glow ? `<g filter="url(#${id}-glow)" opacity="0.65">${shapeMarkup(d.shape, `fill="${d.addins.glow.color}"`)}</g>` : ""}
       <g clip-path="url(#${id}-clip)" class="resin">
-        <rect x="0" y="100" width="300" height="330" fill="rgba(226,244,242,0.6)"/>
+        ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(226,244,242,0.6)"/>`}
         ${fill}
         <path d="M40 100 L 118 100 L 18 430 L -60 430 Z" fill="#fff" opacity="0.22" pointer-events="none"/>
         <path d="M170 100 L 190 100 L 90 430 L 70 430 Z" fill="#fff" opacity="0.12" pointer-events="none"/>
@@ -1346,6 +1347,7 @@ els.panel.addEventListener("click", (e) => {
     changed();
   } else if (action === "mold") {
     design.shape = el.dataset.shape;
+    if (customShape(design.shape) && customShape(design.shape).wood) design.style = "clear";
     design.letters.moved = false;
     [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
     resetItems(design);

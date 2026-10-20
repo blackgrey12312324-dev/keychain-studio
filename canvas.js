@@ -8,7 +8,7 @@ Object.assign(I18N.en, {
   canvas: {
     title: "Design a canvas",
     sub: "Any size. Add your photo, drag it into place and choose the shape it is cut into.",
-    kind: "What kind of canvas?", beach: "Beach style", photo: "My photo",
+    kind: "What kind of canvas?", beach: "Beach style", photo: "My photo", board: "Wooden board",
     size: "Size (cm)", width: "Width", height: "Height", presets: "Quick sizes",
     shape: "Cut-out shape", shapes: { rect: "Rectangle", rounded: "Rounded", oval: "Oval", heart: "Heart", arch: "Arch", star: "Star" },
     photoLabel: "Your photo", choose: "Choose a photo", change: "Change photo",
@@ -18,6 +18,7 @@ Object.assign(I18N.en, {
     name: "Your name", send: "Send by DM", copied: "Copied! Paste it in the DM and attach your photo.",
     copyFail: "Copy the message below and paste it in the DM.", message: "Your message",
     decor: "Paper flowers and trees", decorHint: "Tap one to add it, then drag it on the picture. Real 3D paper flowers and miniature trees.", flSize: "Flower size", flRemove: "Remove flower",
+    boardNote: "Resin on a wooden board, any size you like. Tell us the colours and mood you want.",
     beachNote: "Beach style canvases are poured by hand. Tell us the colours and mood you want and we will match it.",
   },
 });
@@ -87,7 +88,7 @@ function renderStage() {
   document.getElementById("cv-stage").innerHTML = `
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(C("title"))}">
       <defs><clipPath id="cv-clip"><path d="${path}"/></clipPath></defs>
-      <rect width="${W}" height="${H}" fill="#fff"/>
+      <rect width="${W}" height="${H}" fill="${cv.kind === "board" ? "#C8975C" : "#fff"}"/>
       <g clip-path="url(#cv-clip)">${inner}</g>
       <path d="${path}" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
       ${dec}
@@ -105,7 +106,8 @@ function moveImage() {
 }
 
 function cvText() {
-  const lines = ["Hi Anna! I'd like a canvas.", "", `Kind: ${cv.kind === "beach" ? "Beach style" : "My photo"}`, `Size: ${cv.w} x ${cv.h} cm`];
+  const lines = ["Hi Anna! I'd like a canvas.", "", `Kind: ${{ beach: "Beach style", photo: "My photo", board: "Wooden board" }[cv.kind]}`, `Size: ${cv.w} x ${cv.h} cm`];
+  if (cv.kind === "board") lines.push("Wooden board, any size");
   if (cv.kind === "photo") lines.push(`Cut-out shape: ${t("canvas.shapes." + cv.shape, null, "en")}`, cv.photo ? "(I'll attach my photo in this chat)" : "(photo to follow)");
   if (cv.decor.length) lines.push("Paper flowers: " + cv.decor.map((f) => CONFIG.paperFlowers.find((x) => x.id === f.id).name).join(", "));
   if (cv.note.trim()) lines.push("Note: " + cv.note.trim());
@@ -124,7 +126,8 @@ function renderCanvas() {
       <div class="cv-panel">
         <div><h1>${C("title")}</h1><p class="lead">${C("sub")}</p></div>
         <div class="field"><span class="field-label">${C("kind")}</span><div class="chips">
-          ${chip(cv.kind === "beach", 'data-kind="beach"', C("beach"))}${chip(cv.kind === "photo", 'data-kind="photo"', C("photo"))}</div>
+          ${chip(cv.kind === "beach", 'data-kind="beach"', C("beach"))}${chip(cv.kind === "photo", 'data-kind="photo"', C("photo"))}${chip(cv.kind === "board", 'data-kind="board"', C("board"))}</div>
+          ${cv.kind === "board" ? `<p class="small-note">${C("boardNote")}</p>` : ""}
           ${cv.kind === "beach" ? `<p class="small-note">${C("beachNote")}</p>` : ""}</div>
         <div class="field"><span class="field-label">${C("size")}</span>
           <div class="cv-size">
