@@ -244,7 +244,7 @@ const CONFIG = {
     { id: "comb", name: "Hair comb (handle)", size: "thin", d: "M100 125 H200 V268 H168 V398 Q168 412 150 412 Q132 412 132 398 V268 H100Z", t: 125, b: 412, pin: 145 },
     { id: "comb-moon", name: "Half-moon comb", size: "thin", d: "M72 345 C 72 205 122 158 150 158 C 178 158 228 205 228 345 Z", t: 158, b: 345, pin: 185 },
     { id: "tray-oval", name: "Oval tray", size: "big", d: "M50 215 A100 100 0 0 1 250 215 V300 A100 100 0 0 1 50 300 Z", t: 115, b: 400, pin: 120 },
-    { id: "board", name: "Serving board", size: "big", d: "M118 112 H182 V150 L205 165 H250 V405 H50 V165 H95 L118 150 Z", t: 112, b: 405, pin: 125 },
+    { id: "board", name: "Serving board", size: "medium", d: "M118 112 H182 V150 L205 165 H250 V405 H50 V165 H95 L118 150 Z", t: 112, b: 405, pin: 125 },
     { id: "tray-rect", name: "Rectangle tray (cut corners)", size: "big", d: "M60 205 H240 L262 227 V353 L240 375 H60 L38 353 V227 Z", t: 205, b: 375, pin: 200 },
     { id: "square-big", name: "Square", size: "big", d: "M52 190 H248 V386 H52 Z", t: 190, b: 386, pin: 170 },
     { id: "round-big", name: "Big round tray", size: "big", custom: true, d: "M22 262 A128 128 0 1 0 278 262 A128 128 0 1 0 22 262Z", t: 134, b: 390, pin: 134 },
@@ -255,6 +255,9 @@ const CONFIG = {
     { id: "game-ttt", name: "Tic-tac-toe board", size: "thin", d: "M62 150 H238 V400 H62 Z", t: 150, b: 400, pin: 150, grid: { x0: 72, y0: 160, x1: 228, y1: 318, n: 3 } },
     { id: "game-chess", name: "Chess board", size: "thin", d: "M48 180 H252 V384 H48 Z", t: 180, b: 384, pin: 180, grid: { x0: 54, y0: 186, x1: 246, y1: 378, n: 8 } },
     { id: "coaster", name: "Round coaster / cup stand", size: "medium", d: "M45 262 A105 105 0 1 0 255 262 A105 105 0 1 0 45 262Z", t: 157, b: 367, pin: 157 },
+    { id: "love", name: "LOVE word", size: "medium", d: "M32 250 H268 V350 H32 Z", t: 250, b: 350, pin: 250 },
+    { id: "heart-stand", name: "Heart (medium)", size: "medium", d: "M150 380 C 70 325 40 270 50 225 C 60 175 125 165 150 215 C 175 165 240 175 250 225 C 260 270 230 325 150 380 Z", t: 170, b: 380, pin: 190 },
+    { id: "cup", name: "Round cup base", size: "medium", d: "M60 262 A90 90 0 1 0 240 262 A90 90 0 1 0 60 262Z", t: 172, b: 352, pin: 172 },
     { id: "star", name: "Star", name_th: "ดาว", name_ru: "Звезда" },
   ],
 
