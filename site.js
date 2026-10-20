@@ -20,8 +20,6 @@ function renderHome() {
   const root = document.getElementById("home");
   if (!root) return;
   const presets = CONFIG.presets;
-  const hero = presets.find((p) => p.id === "phuket-shoreline") || presets[0];
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
   const reviews = REVIEWS.length
     ? `<section class="section" id="reviews">
@@ -40,7 +38,6 @@ function renderHome() {
 
   root.innerHTML = `
     <section class="hero">
-      <div class="hero-photo"><img src="${hero.photo}" alt="${esc(hero.name)}"></div>
       <div class="hero-text">
         <h1>${H("heroTitle")}</h1>
         <p class="lead">${H("heroText")}</p>
@@ -48,7 +45,6 @@ function renderHome() {
           <a class="btn btn-ink" href="design.html?start=1">${H("heroCta")}</a>
           <a class="btn btn-line" href="#shop">${H("heroCta2")}</a>
         </div>
-        <p class="price-note">${H("fromLine", { price: money(CONFIG.prices.base) })}</p>
       </div>
     </section>
 
@@ -58,7 +54,11 @@ function renderHome() {
           <h2 id="letters-h">${H("lettersTitle")}</h2>
           <p>${H("lettersSub")}</p>
         </div>
-        <div class="alphabet">${letters.map((l) => `<a href="design.html?letter=${l}" aria-label="${l}">${l}</a>`).join("")}</div>
+        <div class="make-grid">
+          <a class="make" href="design.html?start=1"><h3>${H("makeKeychainT")}</h3><p>${H("makeKeychainP")}</p><span class="text-link">${H("makeKeychainC")}</span></a>
+          <a class="make" href="canvas.html?kind=beach"><h3>${H("makeCanvasT")}</h3><p>${H("makeCanvasP")}</p><span class="text-link">${H("makeCanvasC")}</span></a>
+          <a class="make" href="canvas.html?kind=photo"><h3>${H("makePhotoT")}</h3><p>${H("makePhotoP")}</p><span class="text-link">${H("makePhotoC")}</span></a>
+        </div>
       </div>
     </section>
 

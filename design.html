@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Jost:wght@400;500&family=Noto+Sans+Thai:wght@400;500&family=Noto+Serif+Thai:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <title>Design your keychain — resincraftcode</title>
-  <meta name="description" content="Design your own handmade resin keychain, then send it to resincraftcode by DM.">
+  <title>Design your keychain — Resincraftcode</title>
+  <meta name="description" content="Design your own handmade resin keychain, then send it to Resincraftcode by DM.">
 </head>
 <body data-page="design" class="designer">
   <header class="site-header" id="site-header"></header>
@@ -17,12 +17,14 @@
   <main class="layout">
     <section class="stage" id="stage" aria-label="Keychain preview">
       <div class="stage-top">
-        <span class="wordmark">resincraftcode</span>
+        <span class="wordmark">Resincraftcode</span>
         <button type="button" class="btn btn-ink small" id="done" data-i18n="big.done"></button>
       </div>
       <div class="stage-art" id="preview"></div>
       <p class="stage-hint" id="stage-hint" aria-live="polite"></p>
       <div class="stage-tools">
+        <button type="button" class="tool icon" id="zoomout" data-i18n-aria="ui.zoomOut" aria-label="Zoom out">−</button>
+        <button type="button" class="tool icon" id="zoomin" data-i18n-aria="ui.zoomIn" aria-label="Zoom in">+</button>
         <button type="button" class="tool" id="flip" data-i18n="ui.flip"></button>
         <button type="button" class="tool" id="surprise" data-i18n="ui.surprise"></button>
         <button type="button" class="tool" id="bigview" data-i18n="ui.bigView"></button>

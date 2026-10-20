@@ -6,7 +6,7 @@
    ========================================================= */
 Object.assign(ui, {
   step: 0, visited: new Set([0]), side: "front", slot: 0, photo: "",
-  full: false, mode: "move", zoom: 1, brush: { tool: "ink", color: "", size: "m" },
+  full: false, mode: "move", zoom: 1, pan: [0, 0], brush: { tool: "ink", color: "", size: "m" },
 });
 const STEP_COUNT = I18N.en.steps.length;
 const LAST = STEP_COUNT - 1;
@@ -26,7 +26,7 @@ function defaultDesign() {
     ocean: { sand: "middle", wave: "middle", foam: "frothy", sandColor: "natural" },
     addins: {},
     paint: [],
-    edge: "gold",
+    edge: "none",
     edgeColor: "#2BA59A",
     back: "same",
     metal: "gold",
@@ -48,6 +48,7 @@ function merge(base, extra) {
   return base;
 }
 
+const SHOW_PRICES = !!CONFIG.showPrices;
 let design = defaultDesign();
 
 function parseVal(v) {
@@ -68,6 +69,9 @@ function blockedReason(id, d, lang = ui.lang) {
 function activeAddins(d) {
   return CONFIG.addins.filter((a) => d.addins[a.id] && !blockedReason(a.id, d));
 }
+const isLetter = (sh) => /^[A-Z]$/.test(sh);
+const isNumber = (sh) => /^[0-9]$/.test(sh);
+const moldFamily = (sh) => (isLetter(sh) ? "letter" : isNumber(sh) ? "number" : sh);
 function shapeName(shape, lang = ui.lang) {
   const s = CONFIG.shapes.find((x) => x.id === shape);
   if (s) return tr(s, "name", lang);
@@ -103,7 +107,7 @@ function hashText(s) {
 function designCode(d) {
   const shape = d.shape.length === 1 ? d.shape : d.shape.toUpperCase();
   const tail = hashText(JSON.stringify(d)).toString(36).slice(0, 4).toUpperCase();
-  return ["RC", shape, d.style.toUpperCase(), d.edge.toUpperCase(), d.metal.toUpperCase(), tail].join("-");
+  return ["RC", shape, d.style.toUpperCase(), d.metal.toUpperCase(), tail].join("-");
 }
 
 function styleDetails(d, lang) {
@@ -155,7 +159,6 @@ function summaryLines(d, lang = ui.lang) {
   });
   L.push([S("addins"), ad.length ? ad.join("; ") : S("none")]);
   if (d.paint.length) L.push([S("paint"), S("strokes", { n: d.paint.length })]);
-  L.push([S("edge"), d.edge === "painted" ? S("painted") + ", " + colorName(d.edgeColor, lang) : lab("edge", d.edge, lang)]);
   L.push([S("back"), lab("back", d.back, lang)]);
   L.push([S("chain"), `${lab("metal", d.metal, lang)}, ${lab("hardware", d.hardware, lang)}`]);
   L.push([S("tassel"), tasselText(d, lang)]);
@@ -185,7 +188,7 @@ function shareLink() {
 function orderText() {
   const lines = ["Hi Anna! I designed a keychain on Keychain Studio 💛", "Design code: " + designCode(design), ""];
   for (const [k, v] of summaryLines(design, "en")) lines.push(`${k}: ${v}`);
-  lines.push("", "Estimated price: " + money(priceOf(design, "en").total));
+  if (SHOW_PRICES) lines.push("", "Estimated price: " + money(priceOf(design, "en").total));
   if (design.note.trim()) lines.push("Note: " + design.note.trim());
   if (ui.photo) lines.push("(I'll send my reference photo in this chat 📷)");
   if (ui.lang !== "en") lines.push("Language: " + { th: "Thai", ru: "Russian" }[ui.lang]);
@@ -634,11 +637,11 @@ function extraSvg(d, id) {
   }
 }
 
-function zoomBox(z) {
+function zoomBox(z, pan = [0, 0]) {
   if (!z || z <= 1) return "0 0 300 440";
   const w = 300 / z, h = 440 / z;
-  const x = Math.max(0, Math.min(300 - w, 150 - w / 2));
-  const y = Math.max(0, Math.min(440 - h, 262 - h / 2));
+  const x = Math.max(0, Math.min(300 - w, 150 + pan[0] - w / 2));
+  const y = Math.max(0, Math.min(440 - h, 262 + pan[1] - h / 2));
   return `${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`;
 }
 
@@ -668,15 +671,13 @@ function renderPiece(d, side = "front", opts = {}) {
   const plainBack = side === "back" && d.back === "plain";
   const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
-  const EDGE_COLORS = { gold: "#D1A73A", silver: "#B4BCC6", rose: "#D99A88", painted: d.edgeColor };
-  const edge = d.edge === "none"
-    ? `fill="none" stroke="rgba(255,255,255,0.85)" stroke-width="2"`
-    : `fill="none" stroke="${EDGE_COLORS[d.edge]}" stroke-width="5" stroke-linejoin="round"`;
+  // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
+  const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.6" stroke-linejoin="round"`;
 
   const flip = side === "back" ? `transform="matrix(-1 0 0 1 300 0)"` : "";
   const label = `${shapeName(d.shape)}, ${lab("style", d.style)}`;
 
-  return `<svg viewBox="${zoomBox(opts.zoom)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(label)}">
+  return `<svg viewBox="${zoomBox(opts.zoom, opts.pan)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(label)}">
     ${defs}
     ${tasselSvg(d, id)}
     ${extraSvg(d, id)}
@@ -689,8 +690,8 @@ function renderPiece(d, side = "front", opts = {}) {
         ${fill}
         <path d="M40 100 L 118 100 L 18 430 L -60 430 Z" fill="#fff" opacity="0.22" pointer-events="none"/>
         <path d="M170 100 L 190 100 L 90 430 L 70 430 Z" fill="#fff" opacity="0.12" pointer-events="none"/>
+        ${shapeMarkup(d.shape, rim + ' pointer-events="none"')}
       </g>
-      ${shapeMarkup(d.shape, edge + ' pointer-events="none"')}
     </g>
     <g class="live"></g>
   </svg>`;
@@ -733,7 +734,7 @@ const STEP_VIEWS = [
         <div class="card-art ${p.photo ? "has-photo" : ""}">${presetArt(p, d)}</div>
         <span class="card-name">${p.name}</span>
         <span class="card-text">${tr(p, "blurb")}</span>
-        <span class="card-price">${money(priceOf(d).total)}</span>
+        ${SHOW_PRICES ? `<span class="card-price">${money(priceOf(d).total)}</span>` : ""}
         <div class="card-actions">
           <button type="button" class="btn btn-ink small" data-action="preset" data-id="${p.id}" data-go="review">${U("orderThis")}</button>
           <button type="button" class="btn btn-line small" data-action="preset" data-id="${p.id}" data-go="edit">${U("changeIt")}</button>
@@ -743,37 +744,53 @@ const STEP_VIEWS = [
     <div class="field"><button type="button" class="btn btn-line" data-action="scratch">${U("fromScratch")}</button></div>
     <p class="small-note">${U("handmade")}</p>`,
 
-  // 1 Letter
+  // 1 Mold
   () => {
-    const keys = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".split("");
+    const fam = moldFamily(design.shape);
+    const molds = [
+      { id: "letter", label: U("moldLetters"), shape: isLetter(design.shape) ? design.shape : "A" },
+      { id: "number", label: U("moldNumbers"), shape: isNumber(design.shape) ? design.shape : "1" },
+      ...CONFIG.shapes.map((sh) => ({ id: sh.id, label: tr(sh, "name"), shape: sh.id })),
+    ];
+    return `
+    <h2>${U("sMoldH")}</h2>
+    <p class="hint">${U("sMoldP")}</p>
+    <div class="cards molds">${molds.map((m) => {
+      const d = merge(copy(design), { shape: m.shape });
+      return `<button type="button" class="card ${fam === m.id ? "on" : ""}" aria-pressed="${fam === m.id}" data-action="mold" data-shape="${m.shape}">
+        <span class="card-art">${renderPiece(d)}</span>
+        <span class="card-name">${m.label}</span>
+      </button>`;
+    }).join("")}</div>`;
+  },
+
+  // 2 Letter
+  () => {
+    const keys = (isNumber(design.shape) ? "0123456789" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ").split("");
     return `
     <h2>${U("s1h")}</h2>
     <p class="hint">${U("s1p")}</p>
     <div class="letters">${keys.map((k) =>
       `<button type="button" class="letter ${design.shape === k ? "on" : ""}" aria-pressed="${design.shape === k}" data-set="shape" data-value="${k}">${k}</button>`).join("")}</div>
-    ${field(U("shapes"), `<div class="chips">${CONFIG.shapes.map((s) =>
-      `<button type="button" class="chip ${design.shape === s.id ? "on" : ""}" aria-pressed="${design.shape === s.id}" data-set="shape" data-value="${s.id}">${tr(s, "name")}</button>`).join("")}</div>`)}
     ${field(U("second"),
       `<input class="text-input" type="text" maxlength="1" autocomplete="off" aria-label="${U("second")}" data-set="second" data-upper="1" value="${esc(design.second)}" placeholder="—">`,
-      U("secondNote", { price: money(CONFIG.prices.secondKeychain) }))}`;
+      U("secondNote"))}`;
   },
 
-  // 2 Style
+  // 3 Style
   () => `
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
     <div class="cards">${Object.keys(I18N.en.labels.style).map((st) => {
       const d = merge(copy(design), { style: st });
-      const extra = CONFIG.prices.style[st];
       return `<button type="button" class="card ${design.style === st ? "on" : ""}" aria-pressed="${design.style === st}" data-set="style" data-value="${st}">
         <span class="card-art">${renderPiece(d)}</span>
         <span class="card-name">${lab("style", st)}</span>
         <span class="card-text">${lab("styleText", st)}</span>
-        <span class="card-price">${extra ? "+" + money(extra) : U("included")}</span>
       </button>`;
     }).join("")}</div>`,
 
-  // 3 Details
+  // 4 Details
   () => {
     if (design.style === "clear") return `<h2>${U("s3clearH")}</h2><p class="hint">${U("s3clearP")}</p>`;
     if (design.style === "gradient") {
@@ -800,11 +817,11 @@ const STEP_VIEWS = [
       <p class="small-note">${U("oceanNote")}</p>`;
   },
 
-  // 4 Colours
+  // 5 Colours
   () => {
     if (design.style === "clear") {
       return `<h2>${U("s4h")}</h2><p class="hint">${U("s4clearP")}</p>
-        <button type="button" class="btn btn-line" data-action="goto" data-step="2">${U("changeStyle")}</button>
+        <button type="button" class="btn btn-line" data-action="goto" data-step="3">${U("changeStyle")}</button>
         <p class="small-note">${U("paintTip")}</p>`;
     }
     const names = design.style === "ocean" ? U("slotOcean") : design.style === "ink" ? U("slotInk") : U("slotGrad");
@@ -821,7 +838,7 @@ const STEP_VIEWS = [
       <p class="small-note">${U("paintTip")}</p>`;
   },
 
-  // 5 Add-ins
+  // 6 Add-ins
   () => `
     <h2>${U("s5h")}</h2>
     <p class="hint">${U("s5p")}</p>
@@ -840,9 +857,8 @@ const STEP_VIEWS = [
         </div>` : "";
       return `<div class="addin ${on ? "on" : ""} ${reason ? "off" : ""}">
         <button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on}" ${reason ? "disabled" : ""}>
-          <span class="em" aria-hidden="true" style="background:${a.color}"></span>
+          <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:${a.color}"></span>
           <span class="nm">${tr(a, "name")}</span>
-          <span class="pr">${a.price ? "+" + money(a.price) : U("free")}</span>
           <span class="tick">${on ? U("added") : U("add")}</span>
         </button>
         ${reason ? `<p class="why">${reason}</p>` : ""}
@@ -850,28 +866,24 @@ const STEP_VIEWS = [
       </div>`;
     }).join("")}`,
 
-  // 6 Edge and back
+  // 7 Back
   () => `
     <h2>${U("s6h")}</h2>
     <p class="hint">${U("s6p")}</p>
-    ${field(U("edge"), chips("edge", "edge", design.edge))}
-    ${design.edge === "painted" ? field(U("edgeColour"), `<input type="color" aria-label="${U("edgeColour")}" data-set="edgeColor" value="${design.edgeColor}">`) : ""}
     ${field(U("backSide"), chips("back", "back", design.back), design.back === "different" ? U("backNoteDiff") : U("backNoteSame"))}`,
 
-  // 7 Chain
+  // 8 Chain
   () => `
     <h2>${U("s7h")}</h2>
     <p class="hint">${U("s7p")}</p>
     ${field(U("metal"), `<div class="chips">${Object.keys(METALS).map((v) =>
       `<button type="button" class="chip ${design.metal === v ? "on" : ""}" aria-pressed="${design.metal === v}" data-set="metal" data-value="${v}"><span class="dot" style="background:linear-gradient(135deg, ${METALS[v][0]}, ${METALS[v][1]})"></span>${lab("metal", v)}</button>`).join("")}</div>`)}
     ${field(U("type"), `<div class="cards">${Object.keys(I18N.en.labels.hardware).map((v) => {
-      const p = CONFIG.prices.hardware[v];
       return `<button type="button" class="card ${design.hardware === v ? "on" : ""}" aria-pressed="${design.hardware === v}" data-set="hardware" data-value="${v}">
-        <span class="card-name">${lab("hardware", v)}</span><span class="card-text">${lab("hardwareTip", v)}</span>
-        <span class="card-price">${p ? "+" + money(p) : U("included")}</span></button>`;
+        <span class="card-name">${lab("hardware", v)}</span><span class="card-text">${lab("hardwareTip", v)}</span></button>`;
     }).join("")}</div>`)}`,
 
-  // 8 Tassel
+  // 9 Tassel
   () => {
     const tt = design.tassel;
     return `
@@ -886,7 +898,7 @@ const STEP_VIEWS = [
     ${field(U("extra"), chips("extra", "extra", design.extra))}`;
   },
 
-  // 9 Review
+  // 10 Review
   () => {
     const pr = priceOf(design);
     return `
@@ -894,9 +906,9 @@ const STEP_VIEWS = [
     <p class="hint">${U("s9p")}</p>
     <p>${U("designCode")}: <span class="code">${designCode(design)}</span></p>
     <ul class="summary">${summaryLines(design).map(([k, v]) => `<li><b>${esc(k)}</b><span>${esc(v)}</span></li>`).join("")}</ul>
-    ${field(U("price"), `<ul class="prices">${pr.lines.map(([k, v]) => `<li><span>${esc(k)}</span><span>${money(v)}</span></li>`).join("")}
+    ${SHOW_PRICES ? field(U("price"), `<ul class="prices">${pr.lines.map(([k, v]) => `<li><span>${esc(k)}</span><span>${money(v)}</span></li>`).join("")}
       <li class="sum"><span>${U("total")}</span><span>${money(pr.total)}</span></li></ul>`,
-      U("readyIn", { time: tr(CONFIG, "readyTime") }) + " " + U("handmade"))}
+      U("readyIn", { time: tr(CONFIG, "readyTime") }) + " " + U("handmade")) : `<p class="small-note">${U("readyIn", { time: tr(CONFIG, "readyTime") })} ${U("handmade")}</p>`}
     ${field(U("note"), `<textarea data-set="note" placeholder="${esc(U("notePh"))}">${esc(design.note)}</textarea>`)}
     ${field(U("photo"), `<input type="file" accept="image/*" id="photo-input">${ui.photo ? `<img class="ref-photo" src="${ui.photo}" alt="">` : ""}`, U("photoNote"))}
     <div class="send-row">
@@ -924,7 +936,7 @@ function renderStudioTools() {
   const bc = brushColor().toUpperCase();
   box.innerHTML = `
     <div class="tool-row">${seg("mode", "move", ui.mode, B("move"))}${seg("mode", "paint", ui.mode, B("paint"))}
-      <label class="zoom"><span>${B("zoom")}</span><input type="range" min="1" max="3" step="0.25" value="${ui.zoom}" data-tool="zoom" aria-label="${B("zoom")}"></label>
+      <label class="zoom"><span>${B("zoom")}</span><input type="range" min="1" max="4" step="0.25" value="${ui.zoom}" data-tool="zoom" aria-label="${B("zoom")}"></label>
     </div>
     ${ui.mode === "paint" ? `
       <div class="tool-row">${seg("brush", "ink", ui.brush.tool, B("ink"))}${seg("brush", "glitter", ui.brush.tool, B("glitterBrush"))}${seg("brush", "gold", ui.brush.tool, B("goldBrush"))}
@@ -958,12 +970,14 @@ function renderHint() {
   els.hint.textContent = h;
 }
 function renderPreview() {
-  els.preview.innerHTML = renderPiece(design, ui.side, { interactive: true, zoom: ui.full ? ui.zoom : 1 });
+  els.preview.innerHTML = renderPiece(design, ui.side, { interactive: true, zoom: ui.zoom, pan: ui.pan });
   els.preview.classList.toggle("painting", ui.full && ui.mode === "paint" && ui.side === "front");
   renderHint();
 }
 function renderTotal() {
-  els.total.textContent = money(priceOf(design).total);
+  const box = els.total.parentNode;
+  box.hidden = !SHOW_PRICES;
+  if (SHOW_PRICES) els.total.textContent = money(priceOf(design).total);
 }
 function renderSteps() {
   const names = t("steps");
@@ -1000,7 +1014,11 @@ function changed() {
   render();
   swing();
 }
+const LETTER_STEP = 2;
 function go(step) {
+  const dir = step >= ui.step ? 1 : -1;
+  step = Math.max(0, Math.min(LAST, step));
+  if (step === LETTER_STEP && !isLetter(design.shape) && !isNumber(design.shape)) step += dir;
   ui.step = Math.max(0, Math.min(LAST, step));
   ui.visited.add(ui.step);
   render();
@@ -1040,15 +1058,13 @@ function surprise() {
   pool.slice(0, 1 + Math.floor(Math.random() * 3)).forEach((a) => {
     d.addins[a.id] = { amount: pick(["few", "some", "lots"]), place: "anna", color: natural.includes(a.id) ? a.color : pick(cols) };
   });
-  d.edge = pick(["none", "gold", "gold", "silver", "rose", "painted"]);
-  d.edgeColor = pick(cols);
   d.metal = pick(["gold", "silver", "rose", "black"]);
   d.hardware = pick(["ring", "ringchain", "ringchain", "lobster", "swivel", "carabiner"]);
   d.tassel = { type: pick(["silk", "silk", "cotton", "none"]), ombre: Math.random() < 0.6, color1: pick(cols), color2: pick(cols), cord: pick(["gold", "silver", "match", "twist"]) };
   d.extra = Math.random() < 0.25 ? pick(["ribbon", "pompom", "beads", "charm"]) : "none";
   design = d;
   ui.side = "front";
-  if (ui.step === 0) { ui.step = 1; ui.visited.add(1); }
+  if (ui.step < 3) { ui.step = 3; ui.visited.add(3); }
   changed();
   toast(U("surprised"), U("undo"), () => { design = before; changed(); });
 }
@@ -1085,6 +1101,11 @@ els.panel.addEventListener("click", (e) => {
     ui.side = "front";
     go(el.dataset.go === "review" ? LAST : 1);
     swing();
+  } else if (action === "mold") {
+    design.shape = el.dataset.shape;
+    resetItems(design);
+    ui.zoom = 1; ui.pan = [0, 0];
+    changed();
   } else if (action === "scratch") {
     design = defaultDesign();
     go(1);
@@ -1184,7 +1205,14 @@ els.preview.addEventListener("pointerdown", (e) => {
     return;
   }
   const item = e.target.closest(".item");
-  if (!item) return;
+  if (!item) {
+    if (ui.zoom > 1) {
+      e.preventDefault();
+      gesture = { type: "pan", sx: e.clientX, sy: e.clientY, ox: ui.pan[0], oy: ui.pan[1] };
+      els.preview.setPointerCapture(e.pointerId);
+    }
+    return;
+  }
   e.preventDefault();
   const id = item.dataset.id, i = Number(item.dataset.i);
   const it = design.addins[id].items[i];
@@ -1196,6 +1224,13 @@ els.preview.addEventListener("pointerdown", (e) => {
 els.preview.addEventListener("pointermove", (e) => {
   if (!gesture) return;
   const p = svgPoint(e);
+  if (gesture.type === "pan") {
+    const svg = els.preview.querySelector("svg");
+    const k = (300 / ui.zoom) / svg.getBoundingClientRect().width;
+    ui.pan = [gesture.ox - (e.clientX - gesture.sx) * k, gesture.oy - (e.clientY - gesture.sy) * k];
+    svg.setAttribute("viewBox", zoomBox(ui.zoom, ui.pan));
+    return;
+  }
   if (gesture.type === "drag") {
     const it = design.addins[gesture.id].items[gesture.i];
     it[0] = Math.round(Math.max(0, Math.min(300, gesture.ox + p.x - gesture.sx)));
@@ -1215,6 +1250,7 @@ function endGesture() {
   if (!gesture) return;
   const g = gesture;
   gesture = null;
+  if (g.type === "pan") return;
   if (g.type === "drag") {
     const sel = design.addins[g.id];
     const it = sel.items[g.i];
@@ -1241,12 +1277,87 @@ function endGesture() {
 els.preview.addEventListener("pointerup", endGesture);
 els.preview.addEventListener("pointercancel", endGesture);
 
+/* ---------- Zoom (buttons, slider, ctrl+wheel) ---------- */
+function setZoom(z) {
+  ui.zoom = Math.max(1, Math.min(4, Math.round(z * 4) / 4));
+  if (ui.zoom === 1) ui.pan = [0, 0];
+  renderPreview();
+  renderStudioTools();
+}
+$("zoomin").addEventListener("click", () => setZoom(ui.zoom + 0.5));
+$("zoomout").addEventListener("click", () => setZoom(ui.zoom - 0.5));
+els.preview.addEventListener("wheel", (e) => {
+  if (!e.ctrlKey && !e.metaKey && !ui.full) return;
+  e.preventDefault();
+  setZoom(ui.zoom + (e.deltaY < 0 ? 0.25 : -0.25));
+}, { passive: false });
+
+/* ---------- Drag an item from the list onto the keychain (like Canva) ---------- */
+let tray = null, suppressClick = false;
+els.panel.addEventListener("pointerdown", (e) => {
+  const h = e.target.closest("[data-drag]");
+  if (!h || e.button > 0) return;
+  tray = { id: h.dataset.drag, x: e.clientX, y: e.clientY, ghost: null, pid: e.pointerId };
+  h.setPointerCapture(e.pointerId);
+});
+els.panel.addEventListener("pointermove", (e) => {
+  if (!tray) return;
+  if (!tray.ghost) {
+    if (Math.hypot(e.clientX - tray.x, e.clientY - tray.y) < 6) return;
+    const a = CONFIG.addins.find((x) => x.id === tray.id);
+    tray.ghost = document.createElement("div");
+    tray.ghost.className = "drag-ghost";
+    tray.ghost.style.background = a.color;
+    document.body.appendChild(tray.ghost);
+    els.preview.classList.add("drop-target");
+  }
+  tray.ghost.style.left = e.clientX + "px";
+  tray.ghost.style.top = e.clientY + "px";
+});
+function endTray(e, cancel) {
+  if (!tray) return;
+  const t0 = tray;
+  tray = null;
+  if (!t0.ghost) return;
+  t0.ghost.remove();
+  els.preview.classList.remove("drop-target");
+  suppressClick = true;
+  setTimeout(() => (suppressClick = false), 0);
+  if (cancel) return;
+  const svg = els.preview.querySelector("svg");
+  const r = svg.getBoundingClientRect();
+  if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
+  const p = svgPoint(e);
+  if (!insideShape(design.shape, p.x, p.y)) { toast(U("dropInside")); return; }
+  dropAddin(t0.id, Math.round(p.x), Math.round(p.y));
+}
+els.panel.addEventListener("pointerup", (e) => endTray(e, false));
+els.panel.addEventListener("pointercancel", (e) => endTray(e, true));
+els.panel.addEventListener("click", (e) => { if (suppressClick) { e.stopPropagation(); e.preventDefault(); } }, true);
+
+function dropAddin(id, x, y) {
+  const a = CONFIG.addins.find((v) => v.id === id);
+  if (blockedReason(id, design)) { toast(blockedReason(id, design)); return; }
+  const [T, B] = bounds(design.shape);
+  const place = y < T + (B - T) * 0.38 ? "top" : y > T + (B - T) * 0.62 ? "bottom" : "middle";
+  if (!design.addins[id]) design.addins[id] = { amount: "few", place, color: a.color };
+  const sel = design.addins[id];
+  if (a.drag) {
+    if (!Array.isArray(sel.items)) sel.items = [];
+    if (a.single) sel.items = [];
+    sel.items.push([x, y, a.id === "frog" ? 0 : Math.round(Math.random() * 40 - 20)]);
+    sel.moved = true;
+  } else {
+    sel.place = place;
+  }
+  changed();
+}
+
 /* ---------- Big view ---------- */
 function setFull(on) {
   ui.full = on;
   els.stage.classList.toggle("full", on);
   document.body.classList.toggle("locked", on);
-  if (!on) ui.zoom = 1;
   renderPreview();
   renderStudioTools();
   if (on) $("done").focus();
@@ -1267,6 +1378,7 @@ els.studioTools.addEventListener("click", (e) => {
 els.studioTools.addEventListener("input", (e) => {
   if (e.target.dataset.tool === "zoom") {
     ui.zoom = Number(e.target.value);
+    if (ui.zoom === 1) ui.pan = [0, 0];
     renderPreview();
   }
 });

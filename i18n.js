@@ -9,10 +9,10 @@
 const I18N = {
   /* ---------------- ENGLISH ---------------- */
   en: {
-    steps: ["Ready-made", "Letter", "Style", "Details", "Colours", "Inside", "Edge", "Chain", "Tassel", "Review"],
+    steps: ["Ready-made", "Mold", "Letter", "Style", "Details", "Colours", "Inside", "Back", "Chain", "Tassel", "Review"],
     ui: {
       tagline: "Design your own resin keychain, handmade in Phuket",
-      flip: "Flip", surprise: "Surprise me", bigView: "Big view", startOver: "Start over",
+      flip: "Flip", dropInside: "Drop it inside the shape", zoomIn: "Zoom in", zoomOut: "Zoom out", dropHint: "Drag a glitter or decoration from the list onto your piece.", surprise: "Surprise me", bigView: "Big view", startOver: "Start over",
       startedOver: "Started over", surprised: "Here's a surprise design", undo: "Undo", removed: "Removed",
       handmade: "Handmade, so your real piece will look a little different",
       dragHint: "Drag the little things inside to move them. Drag one off the keychain to remove it.",
@@ -23,8 +23,9 @@ const I18N = {
       s0h: "Pick a ready-made design", s0p: "Too lazy to customise? Choose one and send it. You can still change everything.",
       orderThis: "Order this one", changeIt: "Change it", fromScratch: "Start from scratch",
 
-      s1h: "Choose your letter", s1p: "Or pick a shape.", shapes: "Shapes", second: "Matching second keychain",
-      secondNote: "For couples or best friends. Same design, another letter (+{price}). Leave empty if you only want one.",
+      sMoldH: "Choose your mold", sMoldP: "Pick the shape first. Next you will choose the letter.", moldLetters: "Letters", moldNumbers: "Numbers", moldNoLetter: "This mold has no letter, so go ahead to Style.",
+      s1h: "Choose your letter", s1p: "Tap a letter. Your keychain changes right away.", shapes: "Shapes", second: "Matching second keychain",
+      secondNote: "For couples or best friends. Same design, another letter. Leave empty if you only want one.",
 
       s2h: "Choose a style", s2p: "Tap one to see it on your keychain.",
 
@@ -47,7 +48,7 @@ const I18N = {
       s5h: "Add things inside", s5p: "Choose as many as you like, then drag them on the keychain to place them.",
       howMuch: "How much", where: "Where", colour: "Colour",
 
-      s6h: "Edge and back", s6p: "A painted edge makes it look finished and fancy.", edge: "Edge", edgeColour: "Edge colour",
+      s6h: "Back side", s6p: "What should the back look like?", edge: "Edge", edgeColour: "Edge colour",
       backSide: "Back side", backNoteDiff: "Tell Anna your back idea in the note on the last step.",
       backNoteSame: "Tap Flip under the picture to see the back.",
 
@@ -126,10 +127,10 @@ const I18N = {
 
   /* ---------------- THAI ---------------- */
   th: {
-    steps: ["แบบสำเร็จรูป", "ตัวอักษร", "สไตล์", "รายละเอียด", "สี", "ของข้างใน", "ขอบ", "โซ่", "พู่", "ตรวจสอบ"],
+    steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "รายละเอียด", "สี", "ของข้างใน", "ด้านหลัง", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
       tagline: "ออกแบบพวงกุญแจเรซินของคุณเอง งานทำมือจากภูเก็ต",
-      flip: "พลิก", surprise: "สุ่มให้หน่อย", bigView: "ดูภาพใหญ่", startOver: "เริ่มใหม่",
+      flip: "พลิก", dropInside: "วางภายในรูปทรง", zoomIn: "ซูมเข้า", zoomOut: "ซูมออก", dropHint: "ลากกากเพชรหรือของตกแต่งจากรายการมาวางบนชิ้นงาน", surprise: "สุ่มให้หน่อย", bigView: "ดูภาพใหญ่", startOver: "เริ่มใหม่",
       startedOver: "เริ่มใหม่แล้ว", surprised: "นี่คือดีไซน์เซอร์ไพรส์", undo: "เลิกทำ", removed: "ลบแล้ว",
       handmade: "งานทำมือ ชิ้นจริงอาจต่างไปเล็กน้อย",
       dragHint: "ลากของชิ้นเล็กข้างในเพื่อย้าย ลากออกนอกพวงกุญแจเพื่อลบ",
@@ -140,8 +141,9 @@ const I18N = {
       s0h: "เลือกแบบสำเร็จรูป", s0p: "ไม่อยากออกแบบเอง? เลือกแบบที่ชอบแล้วส่งได้เลย ยังแก้ไขได้ทุกอย่าง",
       orderThis: "สั่งแบบนี้", changeIt: "แก้ไขแบบนี้", fromScratch: "เริ่มจากศูนย์",
 
-      s1h: "เลือกตัวอักษร", s1p: "หรือเลือกรูปทรง", shapes: "รูปทรง", second: "พวงกุญแจคู่",
-      secondNote: "สำหรับคู่รักหรือเพื่อนสนิท แบบเดียวกันแต่อีกตัวอักษร (+{price}) เว้นว่างไว้ถ้าต้องการแค่ชิ้นเดียว",
+      sMoldH: "เลือกแม่พิมพ์", sMoldP: "เลือกรูปทรงก่อน แล้วค่อยเลือกตัวอักษร", moldLetters: "ตัวอักษร", moldNumbers: "ตัวเลข", moldNoLetter: "แม่พิมพ์นี้ไม่มีตัวอักษร ไปขั้นตอนสไตล์ได้เลย",
+      s1h: "เลือกตัวอักษร", s1p: "แตะตัวอักษร พวงกุญแจจะเปลี่ยนทันที", shapes: "รูปทรง", second: "พวงกุญแจคู่",
+      secondNote: "สำหรับคู่รักหรือเพื่อนสนิท แบบเดียวกันแต่อีกตัวอักษร เว้นว่างไว้ถ้าต้องการแค่ชิ้นเดียว",
 
       s2h: "เลือกสไตล์", s2p: "แตะเพื่อดูบนพวงกุญแจของคุณ",
 
@@ -164,7 +166,7 @@ const I18N = {
       s5h: "ใส่ของข้างใน", s5p: "เลือกได้หลายอย่าง แล้วลากบนพวงกุญแจเพื่อจัดตำแหน่ง",
       howMuch: "ปริมาณ", where: "ตำแหน่ง", colour: "สี",
 
-      s6h: "ขอบและด้านหลัง", s6p: "ขอบสีทำให้ดูเรียบร้อยและหรูขึ้น", edge: "ขอบ", edgeColour: "สีขอบ",
+      s6h: "ด้านหลัง", s6p: "ด้านหลังควรเป็นอย่างไร?", edge: "ขอบ", edgeColour: "สีขอบ",
       backSide: "ด้านหลัง", backNoteDiff: "บอกไอเดียด้านหลังกับแอนนาในช่องข้อความขั้นตอนสุดท้าย",
       backNoteSame: "แตะ พลิก ใต้รูปเพื่อดูด้านหลัง",
 
@@ -242,10 +244,10 @@ const I18N = {
 
   /* ---------------- RUSSIAN ---------------- */
   ru: {
-    steps: ["Готовые", "Буква", "Стиль", "Настройки", "Цвета", "Внутри", "Край", "Цепочка", "Кисточка", "Итог"],
+    steps: ["Готовые", "Форма", "Буква", "Стиль", "Настройки", "Цвета", "Внутри", "Обратная сторона", "Цепочка", "Кисточка", "Итог"],
     ui: {
       tagline: "Создай свой брелок из смолы, ручная работа с Пхукета",
-      flip: "Перевернуть", surprise: "Удиви меня", bigView: "Крупно", startOver: "Сначала",
+      flip: "Перевернуть", dropInside: "Отпусти внутри формы", zoomIn: "Приблизить", zoomOut: "Отдалить", dropHint: "Перетащи блёстки или украшение из списка на изделие.", surprise: "Удиви меня", bigView: "Крупно", startOver: "Сначала",
       startedOver: "Начали заново", surprised: "Вот дизайн-сюрприз", undo: "Отменить", removed: "Удалено",
       handmade: "Ручная работа, поэтому настоящий брелок будет немного отличаться",
       dragHint: "Перетаскивай детали внутри, чтобы передвинуть. Вытащи деталь за край брелока, чтобы удалить.",
@@ -256,8 +258,9 @@ const I18N = {
       s0h: "Выбери готовый дизайн", s0p: "Лень придумывать? Выбери готовый и отправь. Всё можно изменить.",
       orderThis: "Заказать этот", changeIt: "Изменить", fromScratch: "Начать с нуля",
 
-      s1h: "Выбери букву", s1p: "Или выбери форму.", shapes: "Формы", second: "Парный брелок",
-      secondNote: "Для пар и лучших друзей. Тот же дизайн, другая буква (+{price}). Оставь пустым, если нужен один.",
+      sMoldH: "Выбери форму", sMoldP: "Сначала выбери форму, потом букву.", moldLetters: "Буквы", moldNumbers: "Цифры", moldNoLetter: "В этой форме нет буквы — переходи к стилю.",
+      s1h: "Выбери букву", s1p: "Нажми на букву — брелок изменится сразу.", shapes: "Формы", second: "Парный брелок",
+      secondNote: "Для пар и лучших друзей. Тот же дизайн, другая буква. Оставь пустым, если нужен один.",
 
       s2h: "Выбери стиль", s2p: "Нажми, чтобы увидеть на брелоке.",
 
@@ -280,7 +283,7 @@ const I18N = {
       s5h: "Добавь детали внутрь", s5p: "Выбирай сколько хочешь, а потом перетаскивай их на брелоке.",
       howMuch: "Сколько", where: "Где", colour: "Цвет",
 
-      s6h: "Край и обратная сторона", s6p: "Окрашенный край выглядит аккуратно и нарядно.", edge: "Край", edgeColour: "Цвет края",
+      s6h: "Обратная сторона", s6p: "Как должна выглядеть обратная сторона?", edge: "Край", edgeColour: "Цвет края",
       backSide: "Обратная сторона", backNoteDiff: "Опиши идею для обратной стороны в комментарии на последнем шаге.",
       backNoteSame: "Нажми «Перевернуть» под картинкой, чтобы увидеть обратную сторону.",
 

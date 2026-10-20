@@ -57,6 +57,7 @@ function copyText(text) {
 function applyStaticText() {
   document.documentElement.lang = ui.lang;
   document.querySelectorAll("[data-i18n]").forEach((el) => (el.textContent = t(el.dataset.i18n)));
+  document.querySelectorAll("[data-i18n-aria]").forEach((el) => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
   document.querySelectorAll("[data-i18n-ph]").forEach((el) => (el.placeholder = t(el.dataset.i18nPh)));
   document.querySelectorAll("[data-lang]").forEach((b) => {
     const on = b.dataset.lang === ui.lang;
@@ -101,6 +102,7 @@ function renderChrome() {
         <nav class="nav-links" id="nav-links" aria-label="Main">
           ${link("index.html#shop", "shop", "")}
           ${link("design.html?start=1", "design", "design")}
+          ${link("canvas.html", "canvas", "canvas")}
           ${link("idea.html", "idea", "idea")}
           ${link("index.html#faq", "faq", "")}
         </nav>
@@ -123,6 +125,7 @@ function renderChrome() {
         <nav class="foot-col" aria-label="Shop">
           <a href="index.html#shop">${N("shop")}</a>
           <a href="design.html?start=1">${N("design")}</a>
+          <a href="canvas.html">${N("canvas")}</a>
           <a href="idea.html">${N("idea")}</a>
           <a href="index.html#faq">${N("faq")}</a>
         </nav>

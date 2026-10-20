@@ -7,7 +7,7 @@
    ========================================================= */
 const CONFIG = {
   /* ---- Shop details ---- */
-  shopName: "resincraftcode",
+  shopName: "Resincraftcode",
   instagram: "resincraftcode",
   facebook: "https://www.facebook.com/search/top?q=Resincraftcode%20Anna",   // ✏️ paste your real Facebook page link
 
@@ -15,6 +15,7 @@ const CONFIG = {
   readyTime_th: "ประมาณ 5–7 วัน",
   readyTime_ru: "примерно 5–7 дней",
   currency: "฿",
+  showPrices: false,   // prices are hidden for now; set to true when Anna is ready
 
   prices: {
     base: 150,

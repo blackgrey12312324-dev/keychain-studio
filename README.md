@@ -1,4 +1,4 @@
-# resincraftcode — website
+# Resincraftcode — website
 
 A small shop website for handmade resin keychains from Phuket, in English, Thai and Russian.
 
@@ -9,7 +9,8 @@ Built with plain HTML, CSS and JavaScript. Nothing to install.
 | Page | What it is |
 |---|---|
 | `index.html` | Home page: hero, alphabet, ready-made designs, three ways to order, styles, how it works, story, reviews, Instagram, FAQ |
-| `design.html` | The keychain designer (drag items, paint, Big view, Surprise me, Start over) |
+| `design.html` | The designer: choose the mold, then the letter, then style, colours and what goes inside (drag items from the list onto the piece, zoom, paint, Big view, Surprise me) |
+| `canvas.html` | Canvases: any size, beach style, or a customer photo dragged and zoomed into a cut-out shape |
 | `idea.html` | "Send us your idea": customers upload a photo or sketch and send it by DM |
 
 Handy links into the designer:
@@ -20,7 +21,7 @@ Handy links into the designer:
 
 | File | Edit it to change… |
 |---|---|
-| `config.js` | Prices, colours, add-ins, ready-made designs, **reviews**, Instagram and Facebook links, idea-page sizes |
+| `config.js` | Prices (hidden for now: `showPrices: false`), colours, add-ins, ready-made designs, **reviews**, Instagram and Facebook links, idea-page sizes |
 | `i18n-site.js` | Words on the home page, menu and idea page (EN / TH / RU) |
 | `i18n.js` | Words inside the designer (EN / TH / RU) |
 | `style.css` | Colours and fonts (top of the file) |
