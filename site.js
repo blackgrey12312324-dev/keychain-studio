@@ -82,7 +82,7 @@ function renderHome() {
     <section class="section">
       <div class="wrap">
         <div class="section-head"><h2>${H("galleryTitle")}</h2><p>${H("gallerySub")}</p></div>
-        <div class="gallery">${["g-saeed", "g-canvas", "g-tail", "g-plum", "g-paddle", "g-copper", "g-tree", "g-collage"].map((n) => `<img src="images/real/${n}.jpg" alt="" loading="lazy">`).join("")}</div>
+        <div class="gallery">${["g-saeed", "g-canvas", "g-woodtray", "g-tail", "g-bookmark", "g-plum", "g-paddle", "g-domino", "g-copper", "g-pen", "g-tree", "g-collage"].map((n) => `<img src="images/real/${n}.jpg" alt="" loading="lazy">`).join("")}<video src="images/real/lamp.mp4" poster="images/real/lamp.jpg" autoplay muted loop playsinline></video></div>
       </div>
     </section>
 

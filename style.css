@@ -697,3 +697,4 @@ input.text-input.wide-input { width: 100%; font-family: var(--sans, inherit); fo
 .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 .gallery img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: var(--panel); }
 @media (min-width: 900px) { .gallery { grid-template-columns: repeat(4, 1fr); gap: 14px; } }
+.gallery video { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: #111; }
