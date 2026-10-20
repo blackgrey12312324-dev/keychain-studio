@@ -97,6 +97,9 @@ const CONFIG = {
     { id: "pf-whiterose", name: "White paper rose", price: 0, color: "#D4AF37", drag: true, group: "paperflowers", img: "images/paperflowers/whiterose.png", size: 58, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "pf-whiterose2", name: "Ivory paper rose", price: 0, color: "#D4AF37", drag: true, group: "paperflowers", img: "images/paperflowers/whiterose2.png", size: 58, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "pf-whiterose3", name: "Cream paper rose", price: 0, color: "#D4AF37", drag: true, group: "paperflowers", img: "images/paperflowers/whiterose3.png", size: 58, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
+    { id: "tree-small", name: "Small green tree", price: 0, color: "#D4AF37", drag: true, group: "trees", img: "images/trees/small.png", size: 62, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
+    { id: "silk-yellow", name: "Yellow silk flower", price: 0, color: "#D4AF37", drag: true, group: "paperflowers", img: "images/paperflowers/silk-yellow.png", size: 60, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
+    { id: "silk-lime", name: "Lime silk flower", price: 0, color: "#D4AF37", drag: true, group: "paperflowers", img: "images/paperflowers/silk-lime.png", size: 60, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "tree-pink", name: "Pink blossom tree", price: 0, color: "#D4AF37", drag: true, single: true, group: "trees", img: "images/trees/pink.png", size: 120, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "tree-orange", name: "Autumn orange tree", price: 0, color: "#D4AF37", drag: true, single: true, group: "trees", img: "images/trees/orange.png", size: 120, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "tree-green", name: "Green tree", price: 0, color: "#D4AF37", drag: true, single: true, group: "trees", img: "images/trees/green.png", size: 120, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
@@ -154,6 +157,9 @@ const CONFIG = {
 
   // Big 3D paper flowers and roses (for canvases and bigger molds)
   paperFlowers: [
+    { id: "tree-small", name: "Small green tree", img: "images/trees/small.png" },
+    { id: "silk-yellow", name: "Yellow silk flower", img: "images/paperflowers/silk-yellow.png" },
+    { id: "silk-lime", name: "Lime silk flower", img: "images/paperflowers/silk-lime.png" },
     { id: "tree-pink", name: "Pink blossom tree", img: "images/trees/pink.png" },
     { id: "tree-orange", name: "Autumn orange tree", img: "images/trees/orange.png" },
     { id: "tree-green", name: "Green tree", img: "images/trees/green.png" },
@@ -189,6 +195,7 @@ const CONFIG = {
     { id: "tag", name: "Tag", name_th: "แท็ก", name_ru: "Бирка" },
     { id: "heart", name: "Heart", name_th: "หัวใจ", name_ru: "Сердце" },
     { id: "circle", name: "Circle", name_th: "วงกลม", name_ru: "Круг" },
+    { id: "pick", name: "Teardrop", name_th: "หยดน้ำ", name_ru: "Капля" },
     { id: "star", name: "Star", name_th: "ดาว", name_ru: "Звезда" },
   ],
 

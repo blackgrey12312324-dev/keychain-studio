@@ -213,6 +213,7 @@ function orderText() {
    ========================================================= */
 let uid = 0;
 const LETTER_FONT = "'Nunito', 'Arial Rounded MT Bold', 'Arial Black', sans-serif";
+const PICK_D = "M150 392 C 108 344, 40 272, 44 206 C 48 150, 100 130, 150 130 C 200 130, 252 150, 256 206 C 260 272, 192 344, 150 392 Z";
 const HEART_D = "M150 392 C 60 330, 26 270, 38 212 C 50 154, 122 140, 150 196 C 178 140, 250 154, 262 212 C 274 270, 240 330, 150 392 Z";
 
 function rng(seed) {
@@ -234,11 +235,11 @@ const METALS = {
 const SAND = { natural: "#CBB28A", white: "#EEE7D8", golden: "#DDB35C", pink: "#EAC1B5" };
 
 function bounds(shape) {
-  const b = { tag: [122, 394], heart: [150, 392], circle: [134, 390], star: [133, 400] };
+  const b = { tag: [122, 394], heart: [150, 392], circle: [134, 390], star: [133, 400], pick: [130, 392] };
   return b[shape] || [176, 392];
 }
 function pinTop(shape) {
-  const p = { tag: 134, heart: 182, circle: 140, star: 140 };
+  const p = { tag: 134, heart: 182, circle: 140, star: 140, pick: 150 };
   return p[shape] || 190;
 }
 
@@ -259,6 +260,7 @@ function shapeMarkup(shape, attrs) {
   switch (shape) {
     case "tag": return `<rect x="82" y="122" width="136" height="272" rx="18" ${attrs}/>`;
     case "heart": return `<path d="${HEART_D}" ${attrs}/>`;
+    case "pick": return `<path d="${PICK_D}" ${attrs}/>`;
     case "circle": return `<circle cx="150" cy="262" r="128" ${attrs}/>`;
     case "star": return `<path d="${starPath(150, 270, 136, 60, 5)}" ${attrs}/>`;
     default:
@@ -278,6 +280,7 @@ function shapeMask(shape) {
     if (ctx.roundRect) ctx.roundRect(82, 122, 136, 272, 18); else ctx.rect(82, 122, 136, 272);
     ctx.fill();
   } else if (shape === "heart") ctx.fill(new Path2D(HEART_D));
+  else if (shape === "pick") ctx.fill(new Path2D(PICK_D));
   else if (shape === "circle") { ctx.beginPath(); ctx.arc(150, 262, 128, 0, Math.PI * 2); ctx.fill(); }
   else if (shape === "star") ctx.fill(new Path2D(starPath(150, 270, 136, 60, 5)));
   else {
