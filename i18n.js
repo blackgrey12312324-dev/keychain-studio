@@ -47,6 +47,7 @@ const I18N = {
 
       sLtH: "Tiny metal letters", sLtP: "Type a name or any word. The tiny letters sit inside the resin. Drag the word on your piece to place it.",
       ltText: "Your word", ltPh: "For example: ANNA", ltNote: "Letters A to Z and numbers, up to 14.", ltMetal: "Metal", ltLayout: "Layout", ltSize: "Letter size", ltTurn: "Turn", ltDrag: "Drag the word on the piece to move it.",
+      paperflowersH: "Big paper flowers", paperflowersP: "Real 3D paper flowers and roses. They are bigger, so they suit big molds and canvases.",
       realTassels: "Our real tassels",
       flowersH: "Pressed flowers", flowersP: "Real pressed flowers in twelve colours. They are flat, so they fit almost anywhere.",
       charmsH: "Metal charms", charmsP: "Tiny gold charms that sit inside the resin. They are small, so they fit almost anywhere.",

@@ -17,6 +17,7 @@ Object.assign(I18N.en, {
     note: "Anything else?", notePh: "Colours, a name, a date, the beach you want…",
     name: "Your name", send: "Send by DM", copied: "Copied! Paste it in the DM and attach your photo.",
     copyFail: "Copy the message below and paste it in the DM.", message: "Your message",
+    decor: "Paper flowers", decorHint: "Tap a flower to add it, then drag it on the picture. They are real 3D paper flowers.", flSize: "Flower size", flRemove: "Remove flower",
     beachNote: "Beach style canvases are poured by hand. Tell us the colours and mood you want and we will match it.",
   },
 });
@@ -24,7 +25,7 @@ const C = (k, v) => t("canvas." + k, v);
 
 const SIZES = [[20, 20], [20, 30], [30, 30], [30, 40], [40, 50], [50, 70]];
 const SHAPE_IDS = ["rect", "rounded", "oval", "heart", "arch", "star"];
-const cv = { kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "" };
+const cv = { kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "", decor: [], sel: -1 };
 const q = new URLSearchParams(location.search);
 if (q.get("kind") === "beach") cv.kind = "beach";
 
@@ -82,12 +83,14 @@ function renderStage() {
   } else {
     inner = `<rect width="${W}" height="${H}" fill="#E7EEF0"/><text x="${W / 2}" y="${H / 2}" text-anchor="middle" font-size="14" fill="#6B7780" font-family="Jost, sans-serif">${esc(C("empty"))}</text>`;
   }
+  const dec = cv.decor.map((f, i) => `<image class="decor ${i === cv.sel ? "sel" : ""}" data-i="${i}" href="images/paperflowers/${f.id}.png" x="${f.x - f.s / 2}" y="${f.y - f.s / 2}" width="${f.s}" height="${f.s}" style="filter:drop-shadow(0 2px 2px rgba(0,0,0,0.35));cursor:move"/>`).join("");
   document.getElementById("cv-stage").innerHTML = `
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(C("title"))}">
       <defs><clipPath id="cv-clip"><path d="${path}"/></clipPath></defs>
       <rect width="${W}" height="${H}" fill="#fff"/>
       <g clip-path="url(#cv-clip)">${inner}</g>
       <path d="${path}" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
+      ${dec}
     </svg>`;
 }
 
@@ -104,6 +107,7 @@ function moveImage() {
 function cvText() {
   const lines = ["Hi Anna! I'd like a canvas.", "", `Kind: ${cv.kind === "beach" ? "Beach style" : "My photo"}`, `Size: ${cv.w} x ${cv.h} cm`];
   if (cv.kind === "photo") lines.push(`Cut-out shape: ${t("canvas.shapes." + cv.shape, null, "en")}`, cv.photo ? "(I'll attach my photo in this chat)" : "(photo to follow)");
+  if (cv.decor.length) lines.push("Paper flowers: " + cv.decor.map((f) => CONFIG.paperFlowers.find((x) => x.id === f.id).name).join(", "));
   if (cv.note.trim()) lines.push("Note: " + cv.note.trim());
   if (cv.name.trim()) lines.push("Name: " + cv.name.trim());
   if (ui.lang !== "en") lines.push("Language: " + { th: "Thai", ru: "Russian" }[ui.lang]);
@@ -134,6 +138,10 @@ function renderCanvas() {
         <div class="field"><span class="field-label">${C("photoLabel")}</span>
           <input type="file" accept="image/*" id="cv-file">
           ${cv.img ? `<div class="cv-zoom" style="margin-top:12px"><span>${C("zoom")}</span><input type="range" min="1" max="4" step="0.05" value="${cv.zoom}" id="cv-zoom" aria-label="${C("zoom")}"></div><p class="small-note">${C("dragHint")}</p>` : ""}</div>` : ""}
+        <div class="field"><span class="field-label">${C("decor")}</span>
+          <div class="gl-grid">${CONFIG.paperFlowers.map((f) => `<button type="button" class="gl" data-addflower="${f.id}" title="${esc(f.name)}"><span class="gl-img"><img src="images/paperflowers/${f.id}.png" alt=""></span><span class="gl-name">${f.name.replace(" paper", "")}</span></button>`).join("")}</div>
+          <p class="small-note">${C("decorHint")}</p>
+          ${cv.sel >= 0 && cv.decor[cv.sel] ? `<div class="cv-zoom"><span>${C("flSize")}</span><input type="range" min="30" max="260" step="2" value="${cv.decor[cv.sel].s}" id="cv-fsize" aria-label="${C("flSize")}"><button type="button" class="btn btn-line small" data-delflower="1">${C("flRemove")}</button></div>` : ""}</div>
         <div class="field"><span class="field-label">${C("name")}</span><input type="text" class="text-input" style="width:100%;font-size:1rem;text-transform:none" id="cv-name" value="${esc(cv.name)}"></div>
         <div class="field"><span class="field-label">${C("note")}</span><textarea id="cv-note" placeholder="${esc(C("notePh"))}">${esc(cv.note)}</textarea></div>
         <div class="field"><a class="btn btn-ink wide" id="cv-send" href="${igLink()}" target="_blank" rel="noopener">${C("send")}</a></div>
@@ -150,6 +158,9 @@ const cvToast = (msg) => {
 };
 
 document.addEventListener("click", (e) => {
+  const af = e.target.closest("[data-addflower]");
+  if (af) { const [W, H] = dims(); cv.decor.push({ id: af.dataset.addflower, x: Math.round(W / 2), y: Math.round(H / 2), s: Math.round(Math.min(W, H) * 0.3) }); cv.sel = cv.decor.length - 1; renderCanvas(); return; }
+  if (e.target.closest("[data-delflower]")) { cv.decor.splice(cv.sel, 1); cv.sel = -1; renderCanvas(); return; }
   const b = e.target.closest("[data-kind],[data-size],[data-shape],#cv-send");
   if (!b) return;
   if (b.id === "cv-send") {
@@ -166,7 +177,8 @@ document.addEventListener("input", (e) => {
   if (id === "cv-w" || id === "cv-h") {
     const v = Math.max(5, Math.min(200, Number(e.target.value) || 0));
     if (v >= 5) { cv[id === "cv-w" ? "w" : "h"] = v; renderStage(); }
-  } else if (id === "cv-zoom") { cv.zoom = Number(e.target.value); moveImage(); }
+  } else if (id === "cv-fsize") { cv.decor[cv.sel].s = Number(e.target.value); renderStage(); }
+  else if (id === "cv-zoom") { cv.zoom = Number(e.target.value); moveImage(); }
   else if (id === "cv-note") cv.note = e.target.value;
   else if (id === "cv-name") cv.name = e.target.value;
 });
@@ -184,18 +196,35 @@ document.addEventListener("change", (e) => {
 let pan = null;
 document.addEventListener("pointerdown", (e) => {
   const svg = e.target.closest("#cv-stage svg");
-  if (!svg || !cv.img) return;
+  if (!svg) return;
+  const dc = e.target.closest(".decor");
+  if (dc) {
+    const i = Number(dc.dataset.i), f = cv.decor[i], k = dims()[0] / svg.getBoundingClientRect().width;
+    cv.sel = i;
+    pan = { flower: f, sx: e.clientX, sy: e.clientY, ox: f.x, oy: f.y, k };
+    document.querySelectorAll("#cv-stage .decor").forEach((el) => el.classList.toggle("sel", el === dc));
+    svg.setPointerCapture(e.pointerId);
+    return;
+  }
+  if (!cv.img) return;
   pan = { sx: e.clientX, sy: e.clientY, ox: cv.x, oy: cv.y, k: dims()[0] / svg.getBoundingClientRect().width };
   svg.classList.add("drag");
   svg.setPointerCapture(e.pointerId);
 });
 document.addEventListener("pointermove", (e) => {
   if (!pan) return;
+  if (pan.flower) {
+    pan.flower.x = Math.round(pan.ox + (e.clientX - pan.sx) * pan.k);
+    pan.flower.y = Math.round(pan.oy + (e.clientY - pan.sy) * pan.k);
+    const el = document.querySelector(`#cv-stage .decor[data-i="${cv.sel}"]`);
+    if (el) { el.setAttribute("x", pan.flower.x - pan.flower.s / 2); el.setAttribute("y", pan.flower.y - pan.flower.s / 2); }
+    return;
+  }
   cv.x = pan.ox + (e.clientX - pan.sx) * pan.k;
   cv.y = pan.oy + (e.clientY - pan.sy) * pan.k;
   moveImage();
 });
-const endPan = () => { pan = null; const s = document.querySelector("#cv-stage svg"); if (s) s.classList.remove("drag"); };
+const endPan = () => { const hadFlower = pan && pan.flower; pan = null; if (hadFlower) renderCanvas(); const s = document.querySelector("#cv-stage svg"); if (s) s.classList.remove("drag"); };
 document.addEventListener("pointerup", endPan);
 document.addEventListener("pointercancel", endPan);
 document.addEventListener("wheel", (e) => {
