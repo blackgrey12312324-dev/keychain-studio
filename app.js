@@ -22,6 +22,7 @@ function defaultDesign() {
     style: "gradient",
     colors: ["#1C6FC9", "#29B7A3", "#EFEAE6"],
     clearParts: false,
+    font: "block",
     gradient: { direction: "down", glitter: "none" },
     crush: [],
     letters: { text: "", metal: "gold", size: "m", layout: "word", x: 150, y: 290, rot: 0, seed: 7 },
@@ -147,7 +148,7 @@ function tasselText(d, lang) {
 function summaryLines(d, lang = ui.lang) {
   const S = (k, v) => t("sum." + k, v, lang);
   const L = [];
-  L.push([S("shape"), shapeName(d.shape, lang)]);
+  L.push([S("shape"), shapeName(d.shape, lang) + (isLetter(d.shape) || isNumber(d.shape) ? ` (${lab("font", d.font || "block", lang)})` : "")]);
   const det = styleDetails(d, lang);
   L.push([S("style"), lab("style", d.style, lang) + (det ? " (" + det + ")" : "")]);
   if (d.style !== "clear") L.push([S("colours"), d.colors.map((c) => colorName(c, lang)).join(", ")]);
@@ -212,8 +213,12 @@ function orderText() {
    Shapes: drawing + "is this point inside?" mask
    ========================================================= */
 let uid = 0;
-const LETTER_FONT = "'Jost', 'Century Gothic', 'Futura', Arial, sans-serif";
-const LETTER_WEIGHT = 700;
+const LETTER_FONTS = {
+  block: { family: "'Archivo Black', 'Arial Black', Impact, sans-serif", weight: 400 },
+  groovy: { family: "'Bagel Fat One', 'Chewy', 'Comic Sans MS', cursive", weight: 400 },
+};
+let curFont = "block";
+const fontSpec = () => LETTER_FONTS[curFont] || LETTER_FONTS.block;
 const PICK_D = "M150 392 C 108 344, 40 272, 44 206 C 48 150, 100 130, 150 130 C 200 130, 252 150, 256 206 C 260 272, 192 344, 150 392 Z";
 const HEART_D = "M150 392 C 60 330, 26 270, 38 212 C 50 154, 122 140, 150 196 C 178 140, 250 154, 262 212 C 274 270, 240 330, 150 392 Z";
 
@@ -271,13 +276,14 @@ function shapeMarkup(shape, attrs) {
     case "star": return `<path d="${starPath(150, 270, 136, 60, 5)}" ${attrs}/>`;
     default:
       if (customShape(shape)) return `<path d="${customShape(shape).d}" ${attrs}/>`;
-      return `<text x="150" y="392" text-anchor="middle" font-family="${LETTER_FONT.replace(/"/g, "'")}" font-weight="${LETTER_WEIGHT}" font-size="300" ${attrs}>${esc(shape)}</text>`;
+      return `<text x="150" y="392" text-anchor="middle" font-family="${fontSpec().family.replace(/"/g, "'")}" font-weight="${fontSpec().weight}" font-size="300" ${attrs}>${esc(shape)}</text>`;
   }
 }
 
 let maskCache = {};
 function shapeMask(shape) {
-  if (maskCache[shape]) return maskCache[shape];
+  const key = shape + "|" + curFont;
+  if (maskCache[key]) return maskCache[key];
   const c = document.createElement("canvas");
   c.width = 300; c.height = 440;
   const ctx = c.getContext("2d");
@@ -292,7 +298,7 @@ function shapeMask(shape) {
   else if (shape === "circle") { ctx.beginPath(); ctx.arc(150, 262, 128, 0, Math.PI * 2); ctx.fill(); }
   else if (shape === "star") ctx.fill(new Path2D(starPath(150, 270, 136, 60, 5)));
   else {
-    ctx.font = `${LETTER_WEIGHT} 300px ${LETTER_FONT}`;
+    ctx.font = `${fontSpec().weight} 300px ${fontSpec().family}`;
     ctx.textAlign = "center";
     ctx.fillText(shape, 150, 392);
   }
@@ -302,7 +308,7 @@ function shapeMask(shape) {
     if (x < 0 || y < 0 || x >= 300 || y >= 440) return false;
     return data[(y * 300 + x) * 4 + 3] > 128;
   };
-  return (maskCache[shape] = fn);
+  return (maskCache[key] = fn);
 }
 function insideShape(shape, x, y, pad = 0) {
   const m = shapeMask(shape);
@@ -896,6 +902,7 @@ const STEP_VIEWS = [
     return `
     <h2>${U("s1h")}</h2>
     <p class="hint">${U("s1p")}</p>
+    ${isLetter(design.shape) || isNumber(design.shape) ? field(U("fontStyle"), chips("font", "font", design.font)) : ""}
     <div class="letters">${keys.map((k) =>
       `<button type="button" class="letter ${design.shape === k ? "on" : ""}" aria-pressed="${design.shape === k}" data-set="shape" data-value="${k}">${k}</button>`).join("")}</div>
     ${field(U("second"),
@@ -1168,6 +1175,7 @@ function renderStatic() {
   applyStaticText();
 }
 function render() {
+  curFont = design.font || "block";
   renderStatic();
   renderPreview();
   renderTotal();
@@ -1269,6 +1277,7 @@ els.panel.addEventListener("click", (e) => {
     const path = el.dataset.set;
     setPath(design, path, parseVal(el.dataset.value));
     if (path === "tassel.type") design.tassel.photo = "";
+    if (path === "font") { resetItems(design); changed(); return; }
     if (path === "shape") {
       resetItems(design);
       if (!design.letters.moved) [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
@@ -1699,6 +1708,9 @@ function loadFromLink() {
 loadFromLink();
 renderChrome();
 render();
+if (document.fonts && document.fonts.load) {
+  Promise.all([document.fonts.load("20px 'Archivo Black'"), document.fonts.load("20px 'Bagel Fat One'")]).catch(() => {}).then(() => { maskCache = {}; render(); });
+}
 if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(() => { maskCache = {}; render(); });
 }

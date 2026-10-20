@@ -23,7 +23,7 @@ const I18N = {
       s0h: "Pick a ready-made design", s0p: "Too lazy to customise? Choose one and send it. You can still change everything.",
       orderThis: "Order this one", changeIt: "Change it", fromScratch: "Start from scratch",
 
-      sMoldH: "Choose your mold", sMoldP: "Pick the shape first. Next you will choose the letter.", moldSmall: "Small mold", moldLetters: "Letters", moldNumbers: "Numbers", moldNoLetter: "This mold has no letter, so go ahead to Style.",
+      sMoldH: "Choose your mold", sMoldP: "Pick the shape first. Next you will choose the letter.", fontStyle: "Letter style", moldSmall: "Small mold", moldLetters: "Letters", moldNumbers: "Numbers", moldNoLetter: "This mold has no letter, so go ahead to Style.",
       s1h: "Choose your letter", s1p: "Tap a letter. Your keychain changes right away.", shapes: "Shapes", second: "Matching second keychain",
       secondNote: "For couples or best friends. Same design, another letter. Leave empty if you only want one.",
 
@@ -103,6 +103,7 @@ const I18N = {
       tassel: "{t} tassel", ombre: "Ombre tassel colours", paint: "Hand-painted details", matching: "Matching keychain ({l})",
     },
     labels: {
+      font: { block: "Block (bold)", groovy: "Groovy (wavy)" },
       style: { clear: "Clear", gradient: "Colour & glitter", ink: "Ink swirls", ocean: "Ocean wave" },
       styleText: {
         clear: "See-through resin. The things inside are the star.",
