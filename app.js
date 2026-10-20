@@ -20,7 +20,7 @@ function defaultDesign() {
     shape: "A",
     second: "",
     style: "gradient",
-    colors: ["#1F4FD1", "#22C1C3", "#F5F3EE"],
+    colors: ["#1C6FC9", "#29B7A3", "#EFEAE6"],
     clearParts: false,
     gradient: { direction: "down", glitter: "none" },
     crush: [],
@@ -743,7 +743,7 @@ function extraSvg(d, id) {
       let s = `<path d="M148 70 L 98 190" stroke="#BBB" stroke-width="1.5"/>`;
       for (let i = 0; i < 6; i++) {
         const k = (i + 1) / 6;
-        s += `<circle cx="${(148 - 50 * k).toFixed(1)}" cy="${(70 + 120 * k).toFixed(1)}" r="${i % 2 ? 5 : 7}" fill="${i % 2 ? "#F5F3EE" : c}" stroke="rgba(0,0,0,0.12)"/>`;
+        s += `<circle cx="${(148 - 50 * k).toFixed(1)}" cy="${(70 + 120 * k).toFixed(1)}" r="${i % 2 ? 5 : 7}" fill="${i % 2 ? "#EFEAE6" : c}" stroke="rgba(0,0,0,0.12)"/>`;
       }
       return s;
     }
@@ -1084,7 +1084,7 @@ const STEP_VIEWS = [
    ========================================================= */
 function brushColor() {
   if (ui.brush.color) return ui.brush.color;
-  return ui.brush.tool === "gold" ? "#D4AF37" : design.style === "clear" ? "#22C1C3" : design.colors[0];
+  return ui.brush.tool === "gold" ? "#D4AF37" : design.style === "clear" ? "#29B7A3" : design.colors[0];
 }
 function renderStudioTools() {
   const box = els.studioTools;
