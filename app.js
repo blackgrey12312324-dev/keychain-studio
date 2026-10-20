@@ -212,7 +212,8 @@ function orderText() {
    Shapes: drawing + "is this point inside?" mask
    ========================================================= */
 let uid = 0;
-const LETTER_FONT = "'Nunito', 'Arial Rounded MT Bold', 'Arial Black', sans-serif";
+const LETTER_FONT = "'Jost', 'Century Gothic', 'Futura', Arial, sans-serif";
+const LETTER_WEIGHT = 700;
 const PICK_D = "M150 392 C 108 344, 40 272, 44 206 C 48 150, 100 130, 150 130 C 200 130, 252 150, 256 206 C 260 272, 192 344, 150 392 Z";
 const HEART_D = "M150 392 C 60 330, 26 270, 38 212 C 50 154, 122 140, 150 196 C 178 140, 250 154, 262 212 C 274 270, 240 330, 150 392 Z";
 
@@ -234,11 +235,16 @@ const METALS = {
 };
 const SAND = { natural: "#CBB28A", white: "#EEE7D8", golden: "#DDB35C", pink: "#EAC1B5" };
 
+function customShape(shape) { return CONFIG.shapes.find((x) => x.id === shape && x.d); }
 function bounds(shape) {
+  const cs = customShape(shape);
+  if (cs) return [cs.t, cs.b];
   const b = { tag: [122, 394], heart: [150, 392], circle: [134, 390], star: [133, 400], pick: [130, 392] };
   return b[shape] || [176, 392];
 }
 function pinTop(shape) {
+  const cs = customShape(shape);
+  if (cs) return cs.pin;
   const p = { tag: 134, heart: 182, circle: 140, star: 140, pick: 150 };
   return p[shape] || 190;
 }
@@ -264,7 +270,8 @@ function shapeMarkup(shape, attrs) {
     case "circle": return `<circle cx="150" cy="262" r="128" ${attrs}/>`;
     case "star": return `<path d="${starPath(150, 270, 136, 60, 5)}" ${attrs}/>`;
     default:
-      return `<text x="150" y="392" text-anchor="middle" font-family="${LETTER_FONT.replace(/"/g, "'")}" font-weight="900" font-size="300" ${attrs}>${esc(shape)}</text>`;
+      if (customShape(shape)) return `<path d="${customShape(shape).d}" ${attrs}/>`;
+      return `<text x="150" y="392" text-anchor="middle" font-family="${LETTER_FONT.replace(/"/g, "'")}" font-weight="${LETTER_WEIGHT}" font-size="300" ${attrs}>${esc(shape)}</text>`;
   }
 }
 
@@ -281,10 +288,11 @@ function shapeMask(shape) {
     ctx.fill();
   } else if (shape === "heart") ctx.fill(new Path2D(HEART_D));
   else if (shape === "pick") ctx.fill(new Path2D(PICK_D));
+  else if (customShape(shape)) ctx.fill(new Path2D(customShape(shape).d));
   else if (shape === "circle") { ctx.beginPath(); ctx.arc(150, 262, 128, 0, Math.PI * 2); ctx.fill(); }
   else if (shape === "star") ctx.fill(new Path2D(starPath(150, 270, 136, 60, 5)));
   else {
-    ctx.font = `900 300px ${LETTER_FONT}`;
+    ctx.font = `${LETTER_WEIGHT} 300px ${LETTER_FONT}`;
     ctx.textAlign = "center";
     ctx.fillText(shape, 150, 392);
   }
@@ -868,7 +876,7 @@ const STEP_VIEWS = [
     const molds = [
       { id: "letter", label: U("moldLetters"), shape: isLetter(design.shape) ? design.shape : "A" },
       { id: "number", label: U("moldNumbers"), shape: isNumber(design.shape) ? design.shape : "1" },
-      ...CONFIG.shapes.map((sh) => ({ id: sh.id, label: tr(sh, "name"), shape: sh.id })),
+      ...CONFIG.shapes.map((sh) => ({ id: sh.id, label: tr(sh, "name"), shape: sh.id, small: sh.size === "small" })),
     ];
     return `
     <h2>${U("sMoldH")}</h2>
@@ -877,7 +885,7 @@ const STEP_VIEWS = [
       const d = merge(copy(design), { shape: m.shape });
       return `<button type="button" class="card ${fam === m.id ? "on" : ""}" aria-pressed="${fam === m.id}" data-action="mold" data-shape="${m.shape}">
         <span class="card-art">${renderPiece(d)}</span>
-        <span class="card-name">${m.label}</span>
+        <span class="card-name">${m.label}</span>${m.small ? `<span class="card-text">${U("moldSmall")}</span>` : ""}
       </button>`;
     }).join("")}</div>`;
   },

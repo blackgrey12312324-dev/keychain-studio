@@ -23,7 +23,7 @@ const I18N = {
       s0h: "Pick a ready-made design", s0p: "Too lazy to customise? Choose one and send it. You can still change everything.",
       orderThis: "Order this one", changeIt: "Change it", fromScratch: "Start from scratch",
 
-      sMoldH: "Choose your mold", sMoldP: "Pick the shape first. Next you will choose the letter.", moldLetters: "Letters", moldNumbers: "Numbers", moldNoLetter: "This mold has no letter, so go ahead to Style.",
+      sMoldH: "Choose your mold", sMoldP: "Pick the shape first. Next you will choose the letter.", moldSmall: "Small mold", moldLetters: "Letters", moldNumbers: "Numbers", moldNoLetter: "This mold has no letter, so go ahead to Style.",
       s1h: "Choose your letter", s1p: "Tap a letter. Your keychain changes right away.", shapes: "Shapes", second: "Matching second keychain",
       secondNote: "For couples or best friends. Same design, another letter. Leave empty if you only want one.",
 
@@ -160,7 +160,7 @@ const I18N = {
       s0h: "เลือกแบบสำเร็จรูป", s0p: "ไม่อยากออกแบบเอง? เลือกแบบที่ชอบแล้วส่งได้เลย ยังแก้ไขได้ทุกอย่าง",
       orderThis: "สั่งแบบนี้", changeIt: "แก้ไขแบบนี้", fromScratch: "เริ่มจากศูนย์",
 
-      sMoldH: "เลือกแม่พิมพ์", sMoldP: "เลือกรูปทรงก่อน แล้วค่อยเลือกตัวอักษร", moldLetters: "ตัวอักษร", moldNumbers: "ตัวเลข", moldNoLetter: "แม่พิมพ์นี้ไม่มีตัวอักษร ไปขั้นตอนสไตล์ได้เลย",
+      sMoldH: "เลือกแม่พิมพ์", sMoldP: "เลือกรูปทรงก่อน แล้วค่อยเลือกตัวอักษร", moldSmall: "แม่พิมพ์เล็ก", moldLetters: "ตัวอักษร", moldNumbers: "ตัวเลข", moldNoLetter: "แม่พิมพ์นี้ไม่มีตัวอักษร ไปขั้นตอนสไตล์ได้เลย",
       s1h: "เลือกตัวอักษร", s1p: "แตะตัวอักษร พวงกุญแจจะเปลี่ยนทันที", shapes: "รูปทรง", second: "พวงกุญแจคู่",
       secondNote: "สำหรับคู่รักหรือเพื่อนสนิท แบบเดียวกันแต่อีกตัวอักษร เว้นว่างไว้ถ้าต้องการแค่ชิ้นเดียว",
 
@@ -281,7 +281,7 @@ const I18N = {
       s0h: "Выбери готовый дизайн", s0p: "Лень придумывать? Выбери готовый и отправь. Всё можно изменить.",
       orderThis: "Заказать этот", changeIt: "Изменить", fromScratch: "Начать с нуля",
 
-      sMoldH: "Выбери форму", sMoldP: "Сначала выбери форму, потом букву.", moldLetters: "Буквы", moldNumbers: "Цифры", moldNoLetter: "В этой форме нет буквы — переходи к стилю.",
+      sMoldH: "Выбери форму", sMoldP: "Сначала выбери форму, потом букву.", moldSmall: "Маленькая форма", moldLetters: "Буквы", moldNumbers: "Цифры", moldNoLetter: "В этой форме нет буквы — переходи к стилю.",
       s1h: "Выбери букву", s1p: "Нажми на букву — брелок изменится сразу.", shapes: "Формы", second: "Парный брелок",
       secondNote: "Для пар и лучших друзей. Тот же дизайн, другая буква. Оставь пустым, если нужен один.",
 
