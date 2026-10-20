@@ -232,8 +232,8 @@ const CONFIG = {
     { id: "halfheart-l", name: "Half heart (left)", size: "small", d: "M150 392 C 60 330 26 270 38 212 C 50 154 122 140 150 196 Z", t: 150, b: 392, pin: 195 },
     { id: "halfheart-r", name: "Half heart (right)", size: "small", d: "M150 196 C 178 140 250 154 262 212 C 274 270 240 330 150 392 Z", t: 150, b: 392, pin: 195 },
     { id: "wing", name: "Wing", size: "small", d: "M150 125 C 218 190 222 330 150 400 C 78 330 82 190 150 125 Z", t: 125, b: 400, pin: 140 },
-    { id: "pen", name: "Pen", size: "small", d: "M130 130 Q150 112 170 130 V385 Q170 400 150 400 Q130 400 130 385 Z", t: 112, b: 400, pin: 125 },
-    { id: "blade", name: "Blade bookmark", size: "small", d: "M150 105 C 195 200 195 340 150 410 C 105 340 105 200 150 105 Z", t: 105, b: 410, pin: 120 },
+    { id: "pen", name: "Custom pen (straight)", size: "small", d: "M130 130 Q150 112 170 130 V385 Q170 400 150 400 Q130 400 130 385 Z", t: 112, b: 400, pin: 125 },
+    { id: "blade", name: "Custom pen (pointed)", size: "small", d: "M150 105 C 195 200 195 340 150 410 C 105 340 105 200 150 105 Z", t: 105, b: 410, pin: 120 },
     { id: "player", name: "Music player", size: "small", d: "M85 175 H215 Q228 175 228 188 V372 Q228 385 215 385 H85 Q72 385 72 372 V188 Q72 175 85 175 Z", t: 175, b: 385, pin: 160 },
     { id: "bookmark", name: "Bookmark", size: "thin", d: "M130 125 V400 Q130 410 140 410 H160 Q170 410 170 400 V125 Q170 115 160 115 H140 Q130 115 130 125Z", t: 115, b: 410, pin: 125 },
     { id: "bm-paw", name: "Paw bookmark", size: "thin", d: "M110 168 A40 40 0 0 0 122 196 V400 Q122 410 132 410 H168 Q178 410 178 400 V196 A40 40 0 0 0 190 168 A40 40 0 1 0 110 168Z", t: 128, b: 410, pin: 135 },
@@ -254,6 +254,7 @@ const CONFIG = {
     { id: "heart-tray", name: "Big heart tray", size: "big", custom: true, d: "M150 392 C 60 330, 26 270, 38 212 C 50 154, 122 140, 150 196 C 178 140, 250 154, 262 212 C 274 270, 240 330, 150 392 Z", t: 140, b: 392, pin: 182 },
     { id: "game-ttt", name: "Tic-tac-toe board", size: "thin", d: "M62 150 H238 V400 H62 Z", t: 150, b: 400, pin: 150, grid: { x0: 72, y0: 160, x1: 228, y1: 318, n: 3 } },
     { id: "game-chess", name: "Chess board", size: "thin", d: "M48 180 H252 V384 H48 Z", t: 180, b: 384, pin: 180, grid: { x0: 54, y0: 186, x1: 246, y1: 378, n: 8 } },
+    { id: "coaster", name: "Round coaster / cup stand", size: "medium", d: "M45 262 A105 105 0 1 0 255 262 A105 105 0 1 0 45 262Z", t: 157, b: 367, pin: 157 },
     { id: "star", name: "Star", name_th: "ดาว", name_ru: "Звезда" },
   ],
 

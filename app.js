@@ -914,7 +914,7 @@ const STEP_VIEWS = [
       const d = merge(copy(design), { shape: m.shape });
       return `<button type="button" class="card ${fam === m.id ? "on" : ""}" aria-pressed="${fam === m.id}" data-action="mold" data-shape="${m.shape}">
         <span class="card-art">${renderPiece(d)}</span>
-        <span class="card-name">${m.label}</span>${m.sizeLabel ? `<span class="card-text">${U({ thin: "moldThin", big: "moldBig" }[m.sizeLabel] || "moldSmall")}</span>` : ""}
+        <span class="card-name">${m.label}</span>${m.sizeLabel ? `<span class="card-text">${U({ thin: "moldThin", big: "moldBig", medium: "moldMedium" }[m.sizeLabel] || "moldSmall")}</span>` : ""}
       </button>`;
     }).join("")}</div>`;
   },
