@@ -47,6 +47,7 @@ const I18N = {
 
       sLtH: "Tiny metal letters", sLtP: "Type a name or any word. The tiny letters sit inside the resin. Drag the word on your piece to place it.",
       ltText: "Your word", ltPh: "For example: ANNA", ltNote: "Letters A to Z and numbers, up to 14.", ltMetal: "Metal", ltLayout: "Layout", ltSize: "Letter size", ltTurn: "Turn", ltDrag: "Drag the word on the piece to move it.",
+      lightsH: "Light", lightsP: "A tiny LED string with its battery pack. It needs room, so it goes in medium and big molds. Only one fits.",
       treesH: "Big trees", treesP: "Miniature trees. The small one fits medium molds too; the bigger ones suit big molds and canvases.",
       paperflowersH: "Big paper flowers", paperflowersP: "Real 3D paper flowers and roses. They are bigger, so they suit big molds and canvases.",
       realTassels: "Our real tassels",
