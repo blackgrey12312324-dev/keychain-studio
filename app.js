@@ -464,6 +464,17 @@ function photoLayer(d) {
   return `<image href="${ui.photo}" x="${(cx - pw / 2).toFixed(1)}" y="${(cy - ph / 2).toFixed(1)}" width="${pw.toFixed(1)}" height="${ph.toFixed(1)}" preserveAspectRatio="none" pointer-events="none"/>`;
 }
 
+function gridLines(shape) {
+  const g = customShape(shape) && customShape(shape).grid;
+  if (!g) return "";
+  let s = "";
+  for (let i = 0; i <= g.n; i++) {
+    const x = g.x0 + ((g.x1 - g.x0) * i) / g.n, y = g.y0 + ((g.y1 - g.y0) * i) / g.n;
+    s += `<line x1="${x.toFixed(1)}" y1="${g.y0}" x2="${x.toFixed(1)}" y2="${g.y1}"/><line x1="${g.x0}" y1="${y.toFixed(1)}" x2="${g.x1}" y2="${y.toFixed(1)}"/>`;
+  }
+  return `<g stroke="rgba(255,255,255,0.55)" stroke-width="1.2" pointer-events="none">${s}</g>`;
+}
+
 function ensureItems(d) {
   for (const a of CONFIG.addins) {
     const sel = d.addins[a.id];
@@ -834,6 +845,7 @@ function renderPiece(d, side = "front", opts = {}) {
         <path d="M40 100 L 118 100 L 18 430 L -60 430 Z" fill="#fff" opacity="0.22" pointer-events="none"/>
         <path d="M170 100 L 190 100 L 90 430 L 70 430 Z" fill="#fff" opacity="0.12" pointer-events="none"/>
         ${shapeMarkup(d.shape, rim + ' pointer-events="none"')}
+        ${gridLines(d.shape)}
       </g>
     </g>
     <g class="live"></g>

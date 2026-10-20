@@ -252,6 +252,8 @@ const CONFIG = {
     { id: "tray-tall", name: "Large rectangle tray", size: "big", custom: true, d: "M65 140 H235 V395 H65 Z", t: 140, b: 395, pin: 140 },
     { id: "hexagon", name: "Hexagon tray", size: "big", custom: true, d: "M150 130 L258 192 V332 L150 394 L42 332 V192 Z", t: 130, b: 394, pin: 130 },
     { id: "heart-tray", name: "Big heart tray", size: "big", custom: true, d: "M150 392 C 60 330, 26 270, 38 212 C 50 154, 122 140, 150 196 C 178 140, 250 154, 262 212 C 274 270, 240 330, 150 392 Z", t: 140, b: 392, pin: 182 },
+    { id: "game-ttt", name: "Tic-tac-toe board", size: "thin", d: "M62 150 H238 V400 H62 Z", t: 150, b: 400, pin: 150, grid: { x0: 72, y0: 160, x1: 228, y1: 318, n: 3 } },
+    { id: "game-chess", name: "Chess board", size: "thin", d: "M48 180 H252 V384 H48 Z", t: 180, b: 384, pin: 180, grid: { x0: 54, y0: 186, x1: 246, y1: 378, n: 8 } },
     { id: "star", name: "Star", name_th: "ดาว", name_ru: "Звезда" },
   ],
 
