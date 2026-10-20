@@ -243,6 +243,10 @@ const CONFIG = {
     { id: "tulip", name: "Tulip bookmark", size: "thin", d: "M118 135 C 150 112 195 140 180 205 L 158 218 C 158 300 164 360 160 410 H148 C 146 360 150 300 148 218 C 112 205 104 160 118 135Z", t: 112, b: 410, pin: 130 },
     { id: "comb", name: "Hair comb (handle)", size: "thin", d: "M100 125 H200 V268 H168 V398 Q168 412 150 412 Q132 412 132 398 V268 H100Z", t: 125, b: 412, pin: 145 },
     { id: "comb-moon", name: "Half-moon comb", size: "thin", d: "M72 345 C 72 205 122 158 150 158 C 178 158 228 205 228 345 Z", t: 158, b: 345, pin: 185 },
+    { id: "tray-oval", name: "Oval tray", size: "big", d: "M50 215 A100 100 0 0 1 250 215 V300 A100 100 0 0 1 50 300 Z", t: 115, b: 400, pin: 120 },
+    { id: "board", name: "Serving board", size: "big", d: "M118 112 H182 V150 L205 165 H250 V405 H50 V165 H95 L118 150 Z", t: 112, b: 405, pin: 125 },
+    { id: "tray-rect", name: "Rectangle tray (cut corners)", size: "big", d: "M60 205 H240 L262 227 V353 L240 375 H60 L38 353 V227 Z", t: 205, b: 375, pin: 200 },
+    { id: "square-big", name: "Square", size: "big", d: "M52 190 H248 V386 H52 Z", t: 190, b: 386, pin: 170 },
     { id: "star", name: "Star", name_th: "ดาว", name_ru: "Звезда" },
   ],
 
