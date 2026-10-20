@@ -590,7 +590,7 @@ function drawItem(id, col, R, pid) {
   const ch = CONFIG.addins.find((x) => x.id === id);
   if (ch && ch.img) {
     const s = ch.size;
-    return `<image href="${ch.img}" x="${-s / 2}" y="${-s / 2}" width="${s}" height="${s}" preserveAspectRatio="xMidYMid meet" style="filter:brightness(1.35) saturate(1.25) contrast(1.05) drop-shadow(0 1px 1.2px rgba(0,0,0,0.35))"/>`;
+    return `<image href="${ch.img}" x="${-s / 2}" y="${-s / 2}" width="${s}" height="${s}" preserveAspectRatio="xMidYMid meet" style="filter:${ch.fx || "brightness(1.35) saturate(1.25) contrast(1.05) drop-shadow(0 1px 1.2px rgba(0,0,0,0.35))"}"/>`;
   }
   switch (id) {
     case "hearts": return `<path d="${heartPath(0, 0, 5 + R() * 4)}" fill="${col}" opacity="0.92"/>`;
@@ -624,7 +624,7 @@ function drawItem(id, col, R, pid) {
   }
 }
 
-const HIT = { frog: 26, starfish: 18, flowers: 20, shells: 13, hearts: 11, stars: 11, pearl: 10 };
+const HIT = { frog: 26, starfish: 18, shells: 13, hearts: 11, stars: 11, pearl: 10 };
 function itemsLayer(d, pid, interactive) {
   let s = "";
   for (const a of activeAddins(d)) {
@@ -1001,7 +1001,7 @@ const STEP_VIEWS = [
             ${a.single ? "" : `<button type="button" class="chip" data-action="onemore" data-id="${a.id}">${U("oneMore")}</button>`}
           </div>` : ""}
         </div>` : "";
-      const head = a.group === "charms" && !(CONFIG.addins[ai - 1] && CONFIG.addins[ai - 1].group === "charms") ? `<h3 class="addin-group">${U("charmsH")}</h3><p class="small-note">${U("charmsP")}</p>` : "";
+      const head = a.group && !(CONFIG.addins[ai - 1] && CONFIG.addins[ai - 1].group === a.group) ? `<h3 class="addin-group">${U(a.group + "H")}</h3><p class="small-note">${U(a.group + "P")}</p>` : "";
       return `${head}<div class="addin ${on ? "on" : ""} ${reason ? "off" : ""}">
         <button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on}" ${reason ? "disabled" : ""}>
           <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:${a.img ? `#E9F1F0 url(${a.img}) center/78% no-repeat` : a.color}"></span>
@@ -1203,7 +1203,7 @@ function surprise() {
   d.ocean = { sand: pick(["low", "middle", "middle", "high"]), wave: pick(["top", "middle", "bottom", "diagonal"]),
     foam: pick(["soft", "frothy"]), sandColor: pick(["natural", "natural", "white", "golden", "pink"]) };
   const natural = ["frog", "starfish", "shells", "pearl", "goldleaf"];
-  let pool = CONFIG.addins.filter((a) => !a.img && !blockedReason(a.id, d)).sort(() => Math.random() - 0.5);
+  let pool = CONFIG.addins.filter((a) => a.group !== "charms" && !blockedReason(a.id, d)).sort(() => Math.random() - 0.5);
   if (d.style === "ocean") pool = [CONFIG.addins.find((a) => a.id === "starfish"), ...pool.filter((a) => a.id !== "starfish")];
   pool.slice(0, 1 + Math.floor(Math.random() * 3)).forEach((a) => {
     d.addins[a.id] = { amount: pick(["few", "some", "lots"]), place: "anna", color: natural.includes(a.id) ? a.color : pick(cols) };
