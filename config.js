@@ -304,6 +304,56 @@ const CONFIG = {
   ],
 };
 
+// Small resin charms and decorations (cut from Anna's photos). Small, so they fit anywhere.
+CONFIG.smallItems = [
+  { id: "crab-green", name: "Green crab" },
+  { id: "crab-yellow", name: "Yellow crab" },
+  { id: "crab-red", name: "Red crab" },
+  { id: "turtle-brown", name: "Brown turtle" },
+  { id: "turtle-pink", name: "Pink turtle" },
+  { id: "turtle-yellow", name: "Yellow turtle" },
+  { id: "butterfly-black", name: "Black butterfly" },
+  { id: "butterfly-amber", name: "Amber butterfly" },
+  { id: "butterfly-teal", name: "Teal butterfly" },
+  { id: "butterfly-sunset", name: "Sunset butterfly" },
+  { id: "butterfly-pink", name: "Pink butterfly" },
+  { id: "butterfly-brown", name: "Brown butterfly" },
+  { id: "heart-ruby", name: "Ruby heart" },
+  { id: "heart-blue", name: "Blue heart" },
+  { id: "heart-yellow", name: "Yellow heart" },
+  { id: "heart-black", name: "Black gold heart" },
+  { id: "crown-rose", name: "Rose gold crown" },
+  { id: "crown-bronze", name: "Bronze crown" },
+  { id: "crown-gold", name: "Gold crown" },
+  { id: "bread-loaf", name: "Bread loaf" },
+  { id: "donut", name: "Bear donut" },
+  { id: "bear-cake", name: "Bear cake" },
+  { id: "croissant", name: "Croissant" },
+  { id: "ladybug", name: "Ladybug" },
+  { id: "frog-green", name: "Green frog" },
+  { id: "rose-champagne", name: "Champagne rose" },
+  { id: "rose-pink", name: "Pink rose" },
+  { id: "rose-red", name: "Red rose" },
+  { id: "rose-blue", name: "Blue rose" },
+  { id: "rose-purple", name: "Purple rose" },
+  { id: "sunflower", name: "Sunflower" },
+  { id: "gummy-bear", name: "Gummy bear" },
+  { id: "shell-blue", name: "Blue shell" },
+  { id: "shell-gold", name: "Gold shell" },
+  { id: "cookie", name: "Cookie" },
+  { id: "bow-pink", name: "Pink bow" },
+  { id: "starfish-gold", name: "Gold starfish" },
+  { id: "metal-wing", name: "Silver wing" },
+  { id: "metal-horn", name: "Silver horn" },
+  { id: "metal-moth", name: "Silver moth" },
+  { id: "metal-bird", name: "Silver bird" },
+];
+CONFIG.smallItems.forEach((s) => {
+  s.img = `images/small/${s.id}.png`;
+  CONFIG.addins.push({ id: `sm-${s.id}`, name: s.name, price: 0, color: "#D4AF37", drag: true, group: "small", img: s.img, size: 32, fx: "drop-shadow(0 1px 1.2px rgba(0,0,0,0.35))" });
+  CONFIG.paperFlowers.push({ id: `sm-${s.id}`, name: s.name, img: s.img });
+});
+
 /* =========================================================
    ✏️ REVIEWS — paste your real customer reviews here.
    While this list is empty, the home page shows your Instagram instead.

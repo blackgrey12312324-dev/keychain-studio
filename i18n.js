@@ -47,6 +47,7 @@ const I18N = {
 
       sLtH: "Tiny metal letters", sLtP: "Type a name or any word. The tiny letters sit inside the resin. Drag the word on your piece to place it.",
       ltText: "Your word", ltPh: "For example: ANNA", ltNote: "Letters A to Z and numbers, up to 14.", ltMetal: "Metal", ltLayout: "Layout", ltSize: "Letter size", ltTurn: "Turn", ltDrag: "Drag the word on the piece to move it.",
+      smallH: "Small charms", smallP: "Tiny resin butterflies, turtles, crabs, roses, hearts, crowns, bakery treats and more. Small, so they fit anywhere.",
       driedH: "Dried plants", driedP: "Real dried lavender, baby's breath and wheat. Thin and flat, so they fit anywhere.",
       natureH: "Pine cones and nuts", natureP: "Real dried cones, seed pods and a walnut shell. They are chunky, so they only fit medium and big molds.",
       lightsH: "Light", lightsP: "A tiny LED string with its battery pack. It needs room, so it goes in medium and big molds. Only one fits.",
