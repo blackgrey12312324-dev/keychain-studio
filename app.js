@@ -24,6 +24,7 @@ function defaultDesign() {
     clearParts: false,
     gradient: { direction: "down", glitter: "none" },
     crush: [],
+    letters: { text: "", metal: "gold", size: "m", layout: "word", x: 150, y: 290, rot: 0, seed: 7 },
     ink: { amount: "medium", background: "clear", spread: "all", cells: true, shimmer: "pearl" },
     ocean: { sand: "middle", wave: "middle", foam: "frothy", sandColor: "natural" },
     addins: {},
@@ -165,6 +166,7 @@ function summaryLines(d, lang = ui.lang) {
     d.crush.forEach((c) => (n[c[0]] = (n[c[0]] || 0) + 1));
     L.push([S("glass"), Object.keys(n).sort((a, b) => n[b] - n[a]).map((id) => glitterName(id, lang)).join(", ")]);
   }
+  if (d.letters.text) L.push([S("letters"), `"${d.letters.text}", ${lab("lmetal", d.letters.metal, lang)}, ${lab("llayout", d.letters.layout, lang)}`]);
   if (d.paint.length) L.push([S("paint"), S("strokes", { n: d.paint.length })]);
   L.push([S("back"), lab("back", d.back, lang)]);
   L.push([S("chain"), `${lab("metal", d.metal, lang)}, ${lab("hardware", d.hardware, lang)}`]);
@@ -384,6 +386,53 @@ function fillGlass(d, id, share = 0.75) {
   const added = [];
   for (const [px, py] of pts) added.push(...stamp(d, id, px, py, "s", "m"));
   return added.length;
+}
+
+/* ---------- Tiny metal letters (a name or word, filled with the real metal) ---------- */
+const LTR_SIZE = { s: 13, m: 19, l: 27 };
+function lettersLayer(d, pid) {
+  const L = d.letters;
+  if (!L || !L.text) return "";
+  const fs = LTR_SIZE[L.size];
+  const common = `font-family="Jost, 'Noto Sans Thai', Arial, sans-serif" font-weight="500" font-size="${fs}" fill="url(#${pid}-ltr)" stroke="rgba(0,0,0,0.35)" stroke-width="0.5" paint-order="stroke" style="filter:drop-shadow(0 0.8px 0.8px rgba(0,0,0,0.3))"`;
+  let body;
+  if (L.layout === "scatter") {
+    const R = rng(L.seed * 977 + hashText(L.text));
+    const spread = fs * 2.6 + L.text.length * 3;
+    body = L.text.split("").filter((c) => c !== " ").map((c) => {
+      let ox = 0, oy = 0;
+      for (let t = 0; t < 40; t++) {            // keep every letter on the resin, not in a hole
+        const a = R() * Math.PI * 2, r = Math.sqrt(R()) * spread;
+        ox = Math.cos(a) * r; oy = Math.sin(a) * r * 1.2;
+        if (insideShape(d.shape, L.x + ox, L.y + oy, 4)) break;
+      }
+      return `<text x="${ox.toFixed(1)}" y="${oy.toFixed(1)}" text-anchor="middle" dominant-baseline="central" transform="rotate(${Math.floor(R() * 360)} ${ox.toFixed(1)} ${oy.toFixed(1)})" ${common}>${esc(c)}</text>`;
+    }).join("");
+  } else {
+    body = `<text x="0" y="0" text-anchor="middle" dominant-baseline="central" letter-spacing="${(fs * 0.14).toFixed(1)}" ${common}>${esc(L.text)}</text>`;
+  }
+  const w = Math.max(40, L.text.length * fs * 0.75), h = fs * 1.6;
+  const hit = `<rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" fill="transparent"/>`;
+  return `<g class="ltr" transform="translate(${L.x} ${L.y}) rotate(${L.layout === "scatter" ? 0 : L.rot})">${hit}${body}</g>`;
+}
+
+// a spot on solid resin where a word fits: the widest unbroken stretch of the piece
+function bestTextSpot(shape) {
+  const m = shapeMask(shape), [T, B] = bounds(shape);
+  let best = [150, (T + B) / 2], bestRun = 0;
+  for (let y = T + 20; y <= B - 20; y += 6) {
+    let start = -1;
+    for (let x = 0; x <= 300; x++) {
+      if (m(x, y)) { if (start < 0) start = x; }
+      if ((!m(x, y) || x === 300) && start >= 0) {
+        const run = x - start - (m(x, y) ? 0 : 0);
+        const bias = run - Math.abs(y - (T + B) / 2) * 0.05;
+        if (bias > bestRun) { bestRun = bias; best = [Math.round((start + x) / 2), y]; }
+        start = -1;
+      }
+    }
+  }
+  return best;
 }
 
 function ensureItems(d) {
@@ -717,6 +766,7 @@ function renderPiece(d, side = "front", opts = {}) {
     <linearGradient id="${id}-metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${m1}"/><stop offset="1" stop-color="${m2}"/></linearGradient>
     <linearGradient id="${id}-tas" x1="0" y1="0" x2="0" y2="1"><stop offset="0.1" stop-color="${tt.color1}"/><stop offset="0.9" stop-color="${tt.ombre ? tt.color2 : tt.color1}"/></linearGradient>
     <radialGradient id="${id}-pearl" cx="0.35" cy="0.35" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#D9D2C6"/></radialGradient>
+    <pattern id="${id}-ltr" patternUnits="userSpaceOnUse" width="70" height="70"><image href="images/letters/${d.letters.metal}.jpg" width="70" height="70" preserveAspectRatio="xMidYMid slice" style="filter:brightness(1.7) contrast(1.15) saturate(1.2)"/></pattern>
     <clipPath id="${id}-clip">${shapeMarkup(d.shape, "")}</clipPath>
     <filter id="${id}-ink" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="38" xChannelSelector="R" yChannelSelector="G"/></filter>
     <filter id="${id}-line" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>
@@ -727,7 +777,7 @@ function renderPiece(d, side = "front", opts = {}) {
   </defs>`;
 
   const plainBack = side === "back" && d.back === "plain";
-  const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + glassLayer(d) + paintLayer(d, id) + itemsLayer(d, id, interactive);
+  const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + glassLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.6" stroke-linejoin="round"`;
@@ -915,6 +965,23 @@ const STEP_VIEWS = [
       <button type="button" class="btn btn-line small" data-action="glundo" ${ui.pourHistory.length ? "" : "disabled"}>${U("glUndo")}</button>
       <button type="button" class="btn btn-line small" data-action="glclear" ${design.crush.length ? "" : "disabled"}>${U("glClear")}</button>
     </div>`;
+  },
+
+  // Tiny letters
+  () => {
+    const L = design.letters;
+    const seg = (key, vals, cur, grp) => `<div class="chips">${vals.map((v) =>
+      `<button type="button" class="chip ${cur === v ? "on" : ""}" aria-pressed="${cur === v}" data-set="letters.${key}" data-value="${v}">${lab(grp, v)}</button>`).join("")}</div>`;
+    return `
+    <h2>${U("sLtH")}</h2>
+    <p class="hint">${U("sLtP")}</p>
+    ${field(U("ltText"), `<input class="text-input wide-input" type="text" maxlength="14" autocomplete="off" aria-label="${U("ltText")}" data-set="letters.text" data-ltr="1" value="${esc(L.text)}" placeholder="${esc(U("ltPh"))}">`, U("ltNote"))}
+    ${field(U("ltMetal"), `<div class="chips">${["gold", "yellow", "copper", "silver", "chrome", "black"].map((m) =>
+      `<button type="button" class="chip ${L.metal === m ? "on" : ""}" aria-pressed="${L.metal === m}" data-set="letters.metal" data-value="${m}"><span class="dot lt-dot" style="background:url(images/letters/${m}.jpg) center/cover"></span>${lab("lmetal", m)}</button>`).join("")}</div>`)}
+    ${field(U("ltLayout"), seg("layout", ["word", "scatter"], L.layout, "llayout"))}
+    ${field(U("ltSize"), seg("size", ["s", "m", "l"], L.size, "lsize"))}
+    ${field(U("ltTurn"), `<input type="range" min="-90" max="90" step="5" value="${L.rot}" data-set="letters.rot" data-num="1" aria-label="${U("ltTurn")}">`, L.text ? U("ltDrag") : "")}
+    ${L.layout === "scatter" ? `<button type="button" class="btn btn-line small" data-action="ltshuffle">${U("shuffle")}</button>` : ""}`;
   },
 
   // 7 Add-ins
@@ -1181,7 +1248,10 @@ els.panel.addEventListener("click", (e) => {
   if (el.dataset.set && el.tagName === "BUTTON") {
     const path = el.dataset.set;
     setPath(design, path, parseVal(el.dataset.value));
-    if (path === "shape") resetItems(design);
+    if (path === "shape") {
+      resetItems(design);
+      if (!design.letters.moved) [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
+    }
     const m = path.match(/^addins\.(\w+)\.(amount|place)$/);
     if (m) { delete design.addins[m[1]].items; delete design.addins[m[1]].moved; }
     changed();
@@ -1195,6 +1265,9 @@ els.panel.addEventListener("click", (e) => {
     ui.side = "front";
     go(el.dataset.go === "review" ? LAST : 1);
     swing();
+  } else if (action === "ltshuffle") {
+    design.letters.seed = Math.floor(Math.random() * 9999);
+    changed();
   } else if (action === "glfill") {
     const n = fillGlass(design, ui.pour.id);
     ui.pourHistory.push(n);
@@ -1209,6 +1282,8 @@ els.panel.addEventListener("click", (e) => {
     changed();
   } else if (action === "mold") {
     design.shape = el.dataset.shape;
+    design.letters.moved = false;
+    [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
     resetItems(design);
     ui.zoom = 1; ui.pan = [0, 0];
     changed();
@@ -1264,6 +1339,12 @@ els.panel.addEventListener("input", (e) => {
     v = v.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 1);
     el.value = v;
   }
+  if (el.dataset.ltr) {
+    v = v.toUpperCase().replace(/[^A-Z0-9 &]/g, "").slice(0, 14);
+    if (v !== el.value) el.value = v;
+    if (!design.letters.moved) [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
+  }
+  if (el.dataset.num) v = Number(v);
   setPath(design, el.dataset.set, v);
   renderPreview();
   renderTotal();
@@ -1318,6 +1399,13 @@ els.preview.addEventListener("pointerdown", (e) => {
     els.preview.setPointerCapture(e.pointerId);
     return;
   }
+  const ltr = e.target.closest(".ltr");
+  if (ltr && design.letters.text) {
+    e.preventDefault();
+    gesture = { type: "ltr", el: ltr, sx: p.x, sy: p.y, ox: design.letters.x, oy: design.letters.y };
+    els.preview.setPointerCapture(e.pointerId);
+    return;
+  }
   const item = e.target.closest(".item");
   if (!item) {
     if (ui.zoom > 1) {
@@ -1338,6 +1426,14 @@ els.preview.addEventListener("pointerdown", (e) => {
 els.preview.addEventListener("pointermove", (e) => {
   if (!gesture) return;
   const p = svgPoint(e);
+  if (gesture.type === "ltr") {
+    const p = svgPoint(e), L = design.letters;
+    L.x = Math.round(Math.max(20, Math.min(280, gesture.ox + p.x - gesture.sx)));
+    L.y = Math.round(Math.max(120, Math.min(420, gesture.oy + p.y - gesture.sy)));
+    gesture.el.setAttribute("transform", `translate(${L.x} ${L.y}) rotate(${L.layout === "scatter" ? 0 : L.rot})`);
+    if (L.layout === "scatter") renderPreview();
+    return;
+  }
   if (gesture.type === "pour") {
     const p = svgPoint(e);
     if (Math.hypot(p.x - gesture.lx, p.y - gesture.ly) < 9) return;
@@ -1372,6 +1468,7 @@ function endGesture() {
   const g = gesture;
   gesture = null;
   if (g.type === "pan") return;
+  if (g.type === "ltr") { design.letters.moved = true; const box = $("order-text"); if (box) box.value = orderText(); return; }
   if (g.type === "pour") {
     ui.pourHistory.push(g.n);
     renderPanel();

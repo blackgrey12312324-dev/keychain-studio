@@ -686,3 +686,6 @@ body:not(.designer) .toast { bottom: 24px; }
 .gl-hint { margin: 0 0 18px; font-size: 0.92rem; color: var(--ocean); }
 
 .addin-group { font-family: var(--serif); font-weight: 500; font-size: 1.4rem; margin: 28px 0 4px; }
+
+input.text-input.wide-input { width: 100%; font-family: var(--sans, inherit); font-size: 1.1rem; letter-spacing: 0.08em; }
+.lt-dot { width: 16px; height: 16px; border-radius: 50%; display: inline-block; margin-right: 6px; vertical-align: -3px; border: 1px solid rgba(0,0,0,0.2); }

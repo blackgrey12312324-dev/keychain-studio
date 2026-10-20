@@ -9,7 +9,7 @@
 const I18N = {
   /* ---------------- ENGLISH ---------------- */
   en: {
-    steps: ["Ready-made", "Mold", "Letter", "Style", "Details", "Colours", "Glitter", "Inside", "Back", "Chain", "Tassel", "Review"],
+    steps: ["Ready-made", "Mold", "Letter", "Style", "Details", "Colours", "Glitter", "Tiny letters", "Inside", "Back", "Chain", "Tassel", "Review"],
     ui: {
       tagline: "Design your own resin keychain, handmade in Phuket",
       flip: "Flip", dropInside: "Drop it inside the shape", zoomIn: "Zoom in", zoomOut: "Zoom out", dropHint: "Drag a glitter or decoration from the list onto your piece.", surprise: "Surprise me", bigView: "Big view", startOver: "Start over",
@@ -45,6 +45,8 @@ const I18N = {
       slotOcean: ["Deep sea", "Middle water", "Shallow water"], slotInk: ["Ink 1", "Ink 2", "Ink 3"],
       slotGrad: ["Colour 1", "Colour 2", "Colour 3"], paintTip: "Tip: open Big view to paint on your keychain with your finger",
 
+      sLtH: "Tiny metal letters", sLtP: "Type a name or any word. The tiny letters sit inside the resin. Drag the word on your piece to place it.",
+      ltText: "Your word", ltPh: "For example: ANNA", ltNote: "Letters A to Z and numbers, up to 14.", ltMetal: "Metal", ltLayout: "Layout", ltSize: "Letter size", ltTurn: "Turn", ltDrag: "Drag the word on the piece to move it.",
       charmsH: "Metal charms", charmsP: "Tiny gold charms that sit inside the resin. They are small, so they fit almost anywhere.",
       sGlH: "Crushed glass glitter", sGlP: "Tap a colour, then drag over your piece to sprinkle it. You can also drag a colour straight onto the piece.",
       glPick: "Colour", glAmount: "How much each time", glSize: "Chip size", glFill: "Fill the whole piece", glUndo: "Undo", glClear: "Clear glitter",
@@ -81,7 +83,7 @@ const I18N = {
       backHint: "Flip to the front to move or paint", brushColour: "Brush colour",
     },
     sum: {
-      glass: "Crushed glass", shape: "Shape", style: "Style", colours: "Colours", addins: "Inside", none: "None", edge: "Edge", back: "Back side",
+      glass: "Crushed glass", letters: "Tiny letters", shape: "Shape", style: "Style", colours: "Colours", addins: "Inside", none: "None", edge: "Edge", back: "Back side",
       chain: "Chain", tassel: "Tassel", extra: "Extra", matching: "Matching", matchingText: "A second keychain with letter {l}",
       painted: "Painted", paint: "Hand-painted", strokes: "{n} brush strokes", placed: "placed by hand",
       ombreTo: "{a} to {b} ombre", cordIs: "cord: {c}",
@@ -127,12 +129,15 @@ const I18N = {
       cord: { gold: "Gold", silver: "Silver", match: "Same as tassel", twist: "Twisted with gold" },
       extra: { none: "Nothing", ribbon: "Ribbon bow", pompom: "Pom-pom", beads: "Bead strand", charm: "Metal star charm" },
       size: { s: "S", m: "M", l: "L" },
+      lmetal: { gold: "Orange gold", yellow: "Yellow gold", copper: "Copper", silver: "Silver", chrome: "Chrome", black: "Black" },
+      llayout: { word: "In a line", scatter: "Scattered" },
+      lsize: { s: "Tiny", m: "Small", l: "Bigger" },
     },
   },
 
   /* ---------------- THAI ---------------- */
   th: {
-    steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "รายละเอียด", "สี", "กากเพชร", "ของข้างใน", "ด้านหลัง", "โซ่", "พู่", "ตรวจสอบ"],
+    steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "รายละเอียด", "สี", "กากเพชร", "ตัวอักษรจิ๋ว", "ของข้างใน", "ด้านหลัง", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
       tagline: "ออกแบบพวงกุญแจเรซินของคุณเอง งานทำมือจากภูเก็ต",
       flip: "พลิก", dropInside: "วางภายในรูปทรง", zoomIn: "ซูมเข้า", zoomOut: "ซูมออก", dropHint: "ลากกากเพชรหรือของตกแต่งจากรายการมาวางบนชิ้นงาน", surprise: "สุ่มให้หน่อย", bigView: "ดูภาพใหญ่", startOver: "เริ่มใหม่",
@@ -253,7 +258,7 @@ const I18N = {
 
   /* ---------------- RUSSIAN ---------------- */
   ru: {
-    steps: ["Готовые", "Форма", "Буква", "Стиль", "Настройки", "Цвета", "Блёстки", "Внутри", "Обратная сторона", "Цепочка", "Кисточка", "Итог"],
+    steps: ["Готовые", "Форма", "Буква", "Стиль", "Настройки", "Цвета", "Блёстки", "Мини-буквы", "Внутри", "Обратная сторона", "Цепочка", "Кисточка", "Итог"],
     ui: {
       tagline: "Создай свой брелок из смолы, ручная работа с Пхукета",
       flip: "Перевернуть", dropInside: "Отпусти внутри формы", zoomIn: "Приблизить", zoomOut: "Отдалить", dropHint: "Перетащи блёстки или украшение из списка на изделие.", surprise: "Удиви меня", bigView: "Крупно", startOver: "Сначала",
