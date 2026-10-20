@@ -16,7 +16,7 @@ Object.assign(I18N.en, {
     lettersTitle: "What would you like to make?",
     lettersSub: "Pick one to get started.",
     makeKeychainT: "Keychains & molds", makeKeychainP: "Choose a mold, then your letter, then fill it with colour, glitter and ink.", makeKeychainC: "Design a keychain",
-    makeCanvasT: "Canvases", makeCanvasP: "Any size. Mostly beach and ocean style, poured by hand.", makeCanvasC: "Design a canvas",
+    makeCanvasT: "Canvases", makeCanvasP: "Any size. Sea style or abstract, poured by hand.", makeCanvasC: "Design a canvas",
     makePhotoT: "Your photo on a canvas", makePhotoP: "Send us a photo and choose the shape to crop it into.", makePhotoC: "Add my photo",
     readyTitle: "Ready-made designs",
     readySub: "Our favourite pieces. Order as they are, or change the letter, colours and tassel.",

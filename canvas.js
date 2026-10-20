@@ -8,7 +8,7 @@ Object.assign(I18N.en, {
   canvas: {
     title: "Design a canvas",
     sub: "Any size. Add your photo, drag it into place and choose the shape it is cut into.",
-    kind: "What kind of canvas?", beach: "Beach style", photo: "My photo", board: "Wooden board",
+    kind: "What kind of canvas?", beach: "Sea style", abstract: "Abstract", photo: "My photo", board: "Wooden board", colours: "Colours", shuffle: "New pattern", pickSlot: "Colour {n}",
     size: "Size (cm)", width: "Width", height: "Height", presets: "Quick sizes",
     shape: "Cut-out shape", shapes: { rect: "Rectangle", rounded: "Rounded", oval: "Oval", heart: "Heart", arch: "Arch", star: "Star" },
     photoLabel: "Your photo", choose: "Choose a photo", change: "Change photo",
@@ -19,16 +19,35 @@ Object.assign(I18N.en, {
     copyFail: "Copy the message below and paste it in the DM.", message: "Your message",
     decor: "Paper flowers and trees", decorHint: "Tap one to add it, then drag it on the picture. Real 3D paper flowers and miniature trees.", flSize: "Flower size", flRemove: "Remove flower",
     boardNote: "Resin on a wooden board, any size you like. Tell us the colours and mood you want.",
-    beachNote: "Beach style canvases are poured by hand. Tell us the colours and mood you want and we will match it.",
+    beachNote: "Sea style canvases are poured by hand. Pick your colours and shuffle the pattern. It is a preview; the real piece flows a little differently.", abstractNote: "Abstract canvases are poured by hand, so every one is unique. Pick your colours and shuffle the pattern.",
   },
 });
 const C = (k, v) => t("canvas." + k, v);
 
 const SIZES = [[20, 20], [20, 30], [30, 30], [30, 40], [40, 50], [50, 70]];
 const SHAPE_IDS = ["rect", "rounded", "oval", "heart", "arch", "star"];
-const cv = { kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "", decor: [], sel: -1 };
+const cv = { kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "", decor: [], sel: -1, cols: ["#1C6FC9", "#29B7A3", "#EFEAE6"], seed: 3, slot: 0 };
 const q = new URLSearchParams(location.search);
-if (q.get("kind") === "beach") cv.kind = "beach";
+if (["beach", "abstract", "photo", "board"].includes(q.get("kind"))) cv.kind = q.get("kind");
+
+function rnd(seed) { let s = seed * 9301 + 49297; return () => ((s = (s * 9301 + 49297) % 233280) / 233280); }
+// generated pour: sea (bands, foam wave, sand) or abstract (swirls)
+function artSvg(W, H) {
+  const [a, b, c] = cv.cols, R = rnd(cv.seed);
+  if (cv.kind === "beach") {
+    const wy = H * (0.45 + R() * 0.15), sy = H * (0.72 + R() * 0.08);
+    let foam = "";
+    for (let i = 0; i < 26; i++) foam += `<circle cx="${(R() * W).toFixed(0)}" cy="${(wy + (R() - 0.5) * H * 0.07).toFixed(0)}" r="${(3 + R() * 9).toFixed(1)}" fill="#fff" opacity="${(0.5 + R() * 0.4).toFixed(2)}"/>`;
+    return `<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><filter id="wob"><feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="${cv.seed}"/><feDisplacementMap in="SourceGraphic" scale="${(H * 0.06).toFixed(0)}"/></filter></defs>
+      <rect width="${W}" height="${H}" fill="url(#sg)"/>
+      <g filter="url(#wob)"><rect x="-20" y="${wy.toFixed(0)}" width="${W + 40}" height="${(H * 0.05).toFixed(0)}" fill="${c}" opacity="0.9"/>${foam}<rect x="-20" y="${sy.toFixed(0)}" width="${W + 40}" height="${H}" fill="#D9C39A"/></g>`;
+  }
+  let s = `<rect width="${W}" height="${H}" fill="${c}"/><defs><filter id="blur"><feGaussianBlur stdDeviation="${(W * 0.025).toFixed(0)}"/></filter></defs><g filter="url(#blur)">`;
+  for (let i = 0; i < 9; i++) s += `<ellipse cx="${(R() * W).toFixed(0)}" cy="${(R() * H).toFixed(0)}" rx="${(W * (0.12 + R() * 0.25)).toFixed(0)}" ry="${(H * (0.1 + R() * 0.2)).toFixed(0)}" fill="${i % 2 ? a : b}" opacity="0.8" transform="rotate(${(R() * 180).toFixed(0)} ${(W / 2).toFixed(0)} ${(H / 2).toFixed(0)})"/>`;
+  s += "</g>";
+  for (let i = 0; i < 3; i++) s += `<path d="M${(R() * W).toFixed(0)} ${(R() * H).toFixed(0)} C ${(R() * W).toFixed(0)} ${(R() * H).toFixed(0)}, ${(R() * W).toFixed(0)} ${(R() * H).toFixed(0)}, ${(R() * W).toFixed(0)} ${(R() * H).toFixed(0)}" stroke="#D4A93C" stroke-width="${(1 + R() * 2).toFixed(1)}" fill="none" opacity="0.8"/>`;
+  return s;
+}
 
 /* path of the cut-out inside a W x H canvas (with a margin) */
 function framePath(shape, W, H) {
@@ -78,7 +97,8 @@ function renderStage() {
   const [W, H] = dims();
   const path = framePath(cv.shape, W, H);
   let inner;
-  if (cv.img) {
+  if (cv.kind === "beach" || cv.kind === "abstract") inner = artSvg(W, H);
+  else if (cv.img) {
     const b = photoBox(W, H);
     inner = `<image href="${esc(cv.photo)}" x="${b.x.toFixed(1)}" y="${b.y.toFixed(1)}" width="${b.pw.toFixed(1)}" height="${b.ph.toFixed(1)}" preserveAspectRatio="none"/>`;
   } else {
@@ -106,8 +126,9 @@ function moveImage() {
 }
 
 function cvText() {
-  const lines = ["Hi Anna! I'd like a canvas.", "", `Kind: ${{ beach: "Beach style", photo: "My photo", board: "Wooden board" }[cv.kind]}`, `Size: ${cv.w} x ${cv.h} cm`];
+  const lines = ["Hi Anna! I'd like a canvas.", "", `Kind: ${{ abstract: "Abstract", beach: "Sea style", photo: "My photo", board: "Wooden board" }[cv.kind]}`, `Size: ${cv.w} x ${cv.h} cm`];
   if (cv.kind === "board") lines.push("Wooden board, any size");
+  if (cv.kind === "beach" || cv.kind === "abstract") lines.push("Colours: " + cv.cols.map((c) => { const f = CONFIG.colors.find((x) => x.hex === c); return f ? f.name : c; }).join(", "));
   if (cv.kind === "photo") lines.push(`Cut-out shape: ${t("canvas.shapes." + cv.shape, null, "en")}`, cv.photo ? "(I'll attach my photo in this chat)" : "(photo to follow)");
   if (cv.decor.length) lines.push("Paper flowers: " + cv.decor.map((f) => CONFIG.paperFlowers.find((x) => x.id === f.id).name).join(", "));
   if (cv.note.trim()) lines.push("Note: " + cv.note.trim());
@@ -126,15 +147,19 @@ function renderCanvas() {
       <div class="cv-panel">
         <div><h1>${C("title")}</h1><p class="lead">${C("sub")}</p></div>
         <div class="field"><span class="field-label">${C("kind")}</span><div class="chips">
-          ${chip(cv.kind === "beach", 'data-kind="beach"', C("beach"))}${chip(cv.kind === "photo", 'data-kind="photo"', C("photo"))}${chip(cv.kind === "board", 'data-kind="board"', C("board"))}</div>
+          ${chip(cv.kind === "beach", 'data-kind="beach"', C("beach"))}${chip(cv.kind === "abstract", 'data-kind="abstract"', C("abstract"))}${chip(cv.kind === "photo", 'data-kind="photo"', C("photo"))}${chip(cv.kind === "board", 'data-kind="board"', C("board"))}</div>
           ${cv.kind === "board" ? `<p class="small-note">${C("boardNote")}</p>` : ""}
-          ${cv.kind === "beach" ? `<p class="small-note">${C("beachNote")}</p>` : ""}</div>
+          ${cv.kind === "beach" ? `<p class="small-note">${C("beachNote")}</p>` : ""}${cv.kind === "abstract" ? `<p class="small-note">${C("abstractNote")}</p>` : ""}</div>
         <div class="field"><span class="field-label">${C("size")}</span>
           <div class="cv-size">
             <label>${C("width")} <input type="number" min="5" max="200" id="cv-w" value="${cv.w}"></label> ×
             <label>${C("height")} <input type="number" min="5" max="200" id="cv-h" value="${cv.h}"></label>
           </div>
           <div class="chips" style="margin-top:10px">${SIZES.map(([w, h]) => chip(cv.w === w && cv.h === h, `data-size="${w}x${h}"`, `${w}×${h}`)).join("")}</div></div>
+        ${cv.kind === "beach" || cv.kind === "abstract" ? `<div class="field"><span class="field-label">${C("colours")}</span>
+          <div class="slots">${cv.cols.map((c, i) => `<button type="button" class="slot ${cv.slot === i ? "on" : ""}" data-slot="${i}"><span class="blob" style="background:${c}"></span>${C("pickSlot", { n: i + 1 })}</button>`).join("")}</div>
+          <div class="swatches" style="margin-top:10px">${CONFIG.colors.map((c) => `<button type="button" class="swatch" style="background:${c.hex}" title="${esc(tr(c, "name"))}" aria-label="${esc(tr(c, "name"))}" data-col="${c.hex}"></button>`).join("")}</div>
+          <button type="button" class="btn btn-line small" style="margin-top:10px" data-shuffle="1">${C("shuffle")}</button></div>` : ""}
         ${cv.kind === "photo" ? `
         <div class="field"><span class="field-label">${C("shape")}</span><div class="chips">
           ${SHAPE_IDS.map((s) => chip(cv.shape === s, `data-shape="${s}"`, C("shapes." + s))).join("")}</div></div>
@@ -161,6 +186,11 @@ const cvToast = (msg) => {
 };
 
 document.addEventListener("click", (e) => {
+  const sl = e.target.closest("[data-slot]");
+  if (sl) { cv.slot = Number(sl.dataset.slot); renderCanvas(); return; }
+  const co = e.target.closest("[data-col]");
+  if (co) { cv.cols[cv.slot] = co.dataset.col; cv.slot = Math.min(2, cv.slot + 1); renderCanvas(); return; }
+  if (e.target.closest("[data-shuffle]")) { cv.seed = Math.floor(Math.random() * 9999) + 1; renderCanvas(); return; }
   const af = e.target.closest("[data-addflower]");
   if (af) { const [W, H] = dims(); cv.decor.push({ id: af.dataset.addflower, x: Math.round(W / 2), y: Math.round(H / 2), s: Math.round(Math.min(W, H) * 0.3) }); cv.sel = cv.decor.length - 1; renderCanvas(); return; }
   if (e.target.closest("[data-delflower]")) { cv.decor.splice(cv.sel, 1); cv.sel = -1; renderCanvas(); return; }
