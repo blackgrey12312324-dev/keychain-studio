@@ -173,9 +173,11 @@ function summaryLines(d, lang = ui.lang) {
   if (d.letters.text) L.push([S("letters"), `"${d.letters.text}", ${lab("lmetal", d.letters.metal, lang)}, ${lab("llayout", d.letters.layout, lang)}`]);
   if (d.paint.length) L.push([S("paint"), S("strokes", { n: d.paint.length })]);
   L.push([S("back"), lab("back", d.back, lang)]);
-  L.push([S("chain"), `${lab("metal", d.metal, lang)}, ${lab("hardware", d.hardware, lang)}`]);
-  L.push([S("tassel"), tasselText(d, lang)]);
-  if (d.extra !== "none") L.push([S("extra"), lab("extra", d.extra, lang)]);
+  if (hasHardware(d.shape)) {
+    L.push([S("chain"), `${lab("metal", d.metal, lang)}, ${lab("hardware", d.hardware, lang)}`]);
+    L.push([S("tassel"), tasselText(d, lang)]);
+    if (d.extra !== "none") L.push([S("extra"), lab("extra", d.extra, lang)]);
+  }
   if (d.second) L.push([S("matching"), S("matchingText", { l: d.second })]);
   return L;
 }
@@ -242,6 +244,8 @@ const METALS = {
 };
 const SAND = { natural: "#CBB28A", white: "#EEE7D8", golden: "#DDB35C", pink: "#EAC1B5" };
 
+// wooden pieces and big trays/boards are not keychains: no ring, chain or tassel
+function hasHardware(shape) { const c = CONFIG.shapes.find((x) => x.id === shape); return !(c && (c.wood || c.size === "big")); }
 function customShape(shape) { return CONFIG.shapes.find((x) => x.id === shape && x.d); }
 function bounds(shape) {
   const cs = customShape(shape);
@@ -834,17 +838,17 @@ function renderPiece(d, side = "front", opts = {}) {
 
   return `<svg viewBox="${zoomBox(opts.zoom, opts.pan)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(label)}">
     ${defs}
-    ${tasselSvg(d, id)}
+    ${hasHardware(d.shape) ? `${tasselSvg(d, id)}
     ${extraSvg(d, id)}
     <line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="url(#${id}-metal)" stroke-width="3"/>
-    ${hardwareSvg(d, id)}
+    ${hardwareSvg(d, id)}` : ""}
     <g filter="url(#${id}-shadow)" ${flip}>
       ${glow ? `<g filter="url(#${id}-glow)" opacity="0.65">${shapeMarkup(d.shape, `fill="${d.addins.glow.color}"`)}</g>` : ""}
       <g clip-path="url(#${id}-clip)" class="resin">
         ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(226,244,242,0.6)"/>`}
         ${fill}
-        <path d="M40 100 L 118 100 L 18 430 L -60 430 Z" fill="#fff" opacity="0.22" pointer-events="none"/>
-        <path d="M170 100 L 190 100 L 90 430 L 70 430 Z" fill="#fff" opacity="0.12" pointer-events="none"/>
+        ${(customShape(d.shape) || {}).wood ? "" : `<path d="M40 100 L 118 100 L 18 430 L -60 430 Z" fill="#fff" opacity="0.22" pointer-events="none"/>
+        <path d="M170 100 L 190 100 L 90 430 L 70 430 Z" fill="#fff" opacity="0.12" pointer-events="none"/>`}
         ${shapeMarkup(d.shape, rim + ' pointer-events="none"')}
         ${gridLines(d.shape)}
       </g>
@@ -1187,7 +1191,7 @@ function renderTotal() {
 }
 function renderSteps() {
   const names = t("steps");
-  els.steps.innerHTML = names.map((name, i) =>
+  els.steps.innerHTML = names.map((name, i) => (!hasHardware(design.shape) && (i === LAST - 2 || i === LAST - 1)) ? "" :
     `<button type="button" class="step ${i === ui.step ? "current" : ""} ${ui.visited.has(i) && i !== ui.step ? "done" : ""}" data-step="${i}" ${i === ui.step ? 'aria-current="step"' : ""}>${name}</button>`
   ).join("");
   const cur = els.steps.querySelector(".current");
@@ -1226,6 +1230,7 @@ function go(step) {
   const dir = step >= ui.step ? 1 : -1;
   step = Math.max(0, Math.min(LAST, step));
   if (step === LETTER_STEP && !isLetter(design.shape) && !isNumber(design.shape)) step += dir;
+  if (!hasHardware(design.shape) && (step === LAST - 2 || step === LAST - 1)) step = dir > 0 ? LAST : LAST - 3;
   ui.step = Math.max(0, Math.min(LAST, step));
   ui.visited.add(ui.step);
   render();
