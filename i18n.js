@@ -9,7 +9,7 @@
 const I18N = {
   /* ---------------- ENGLISH ---------------- */
   en: {
-    steps: ["Ready-made", "Mold", "Letter", "Style", "Details", "Colours", "Inside", "Back", "Chain", "Tassel", "Review"],
+    steps: ["Ready-made", "Mold", "Letter", "Style", "Details", "Colours", "Glitter", "Inside", "Back", "Chain", "Tassel", "Review"],
     ui: {
       tagline: "Design your own resin keychain, handmade in Phuket",
       flip: "Flip", dropInside: "Drop it inside the shape", zoomIn: "Zoom in", zoomOut: "Zoom out", dropHint: "Drag a glitter or decoration from the list onto your piece.", surprise: "Surprise me", bigView: "Big view", startOver: "Start over",
@@ -45,6 +45,10 @@ const I18N = {
       slotOcean: ["Deep sea", "Middle water", "Shallow water"], slotInk: ["Ink 1", "Ink 2", "Ink 3"],
       slotGrad: ["Colour 1", "Colour 2", "Colour 3"], paintTip: "Tip: open Big view to paint on your keychain with your finger",
 
+      sGlH: "Crushed glass glitter", sGlP: "Tap a colour, then drag over your piece to sprinkle it. You can also drag a colour straight onto the piece.",
+      glPick: "Colour", glAmount: "How much each time", glSize: "Chip size", glFill: "Fill the whole piece", glUndo: "Undo", glClear: "Clear glitter",
+      glStop: "Stop sprinkling", glHint: "Sprinkling {name}. Drag on the piece. Tap the colour again to stop.",
+      glAmt: { s: "Sprinkle", m: "Handful", l: "Pour" }, glSz: { s: "Fine", m: "Medium", l: "Chunky" },
       s5h: "Add things inside", s5p: "Choose as many as you like, then drag them on the keychain to place them.",
       howMuch: "How much", where: "Where", colour: "Colour",
 
@@ -76,7 +80,7 @@ const I18N = {
       backHint: "Flip to the front to move or paint", brushColour: "Brush colour",
     },
     sum: {
-      shape: "Shape", style: "Style", colours: "Colours", addins: "Inside", none: "None", edge: "Edge", back: "Back side",
+      glass: "Crushed glass", shape: "Shape", style: "Style", colours: "Colours", addins: "Inside", none: "None", edge: "Edge", back: "Back side",
       chain: "Chain", tassel: "Tassel", extra: "Extra", matching: "Matching", matchingText: "A second keychain with letter {l}",
       painted: "Painted", paint: "Hand-painted", strokes: "{n} brush strokes", placed: "placed by hand",
       ombreTo: "{a} to {b} ombre", cordIs: "cord: {c}",
@@ -127,7 +131,7 @@ const I18N = {
 
   /* ---------------- THAI ---------------- */
   th: {
-    steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "รายละเอียด", "สี", "ของข้างใน", "ด้านหลัง", "โซ่", "พู่", "ตรวจสอบ"],
+    steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "รายละเอียด", "สี", "กากเพชร", "ของข้างใน", "ด้านหลัง", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
       tagline: "ออกแบบพวงกุญแจเรซินของคุณเอง งานทำมือจากภูเก็ต",
       flip: "พลิก", dropInside: "วางภายในรูปทรง", zoomIn: "ซูมเข้า", zoomOut: "ซูมออก", dropHint: "ลากกากเพชรหรือของตกแต่งจากรายการมาวางบนชิ้นงาน", surprise: "สุ่มให้หน่อย", bigView: "ดูภาพใหญ่", startOver: "เริ่มใหม่",
@@ -163,6 +167,10 @@ const I18N = {
       slotOcean: ["ทะเลลึก", "น้ำกลาง", "น้ำตื้น"], slotInk: ["หมึก 1", "หมึก 2", "หมึก 3"],
       slotGrad: ["สี 1", "สี 2", "สี 3"], paintTip: "ทิป: เปิด ดูภาพใหญ่ เพื่อระบายสีบนพวงกุญแจด้วยนิ้ว",
 
+      sGlH: "กากเพชรแก้วบด", sGlP: "แตะสี แล้วลากบนชิ้นงานเพื่อโรย หรือลากสีไปวางบนชิ้นงานได้เลย",
+      glPick: "สี", glAmount: "ปริมาณแต่ละครั้ง", glSize: "ขนาดเม็ด", glFill: "เติมเต็มทั้งชิ้น", glUndo: "เลิกทำ", glClear: "ล้างกากเพชร",
+      glStop: "หยุดโรย", glHint: "กำลังโรย {name} ลากบนชิ้นงาน แตะสีอีกครั้งเพื่อหยุด",
+      glAmt: { s: "โรยเล็กน้อย", m: "หนึ่งกำมือ", l: "เทเยอะ" }, glSz: { s: "ละเอียด", m: "กลาง", l: "ใหญ่" },
       s5h: "ใส่ของข้างใน", s5p: "เลือกได้หลายอย่าง แล้วลากบนพวงกุญแจเพื่อจัดตำแหน่ง",
       howMuch: "ปริมาณ", where: "ตำแหน่ง", colour: "สี",
 
@@ -244,7 +252,7 @@ const I18N = {
 
   /* ---------------- RUSSIAN ---------------- */
   ru: {
-    steps: ["Готовые", "Форма", "Буква", "Стиль", "Настройки", "Цвета", "Внутри", "Обратная сторона", "Цепочка", "Кисточка", "Итог"],
+    steps: ["Готовые", "Форма", "Буква", "Стиль", "Настройки", "Цвета", "Блёстки", "Внутри", "Обратная сторона", "Цепочка", "Кисточка", "Итог"],
     ui: {
       tagline: "Создай свой брелок из смолы, ручная работа с Пхукета",
       flip: "Перевернуть", dropInside: "Отпусти внутри формы", zoomIn: "Приблизить", zoomOut: "Отдалить", dropHint: "Перетащи блёстки или украшение из списка на изделие.", surprise: "Удиви меня", bigView: "Крупно", startOver: "Сначала",
@@ -280,6 +288,10 @@ const I18N = {
       slotOcean: ["Глубокое море", "Средняя вода", "Мелководье"], slotInk: ["Чернила 1", "Чернила 2", "Чернила 3"],
       slotGrad: ["Цвет 1", "Цвет 2", "Цвет 3"], paintTip: "Совет: открой «Крупно», чтобы рисовать на брелоке пальцем",
 
+      sGlH: "Дроблёное стекло", sGlP: "Выбери цвет и проведи по изделию, чтобы посыпать. Или перетащи цвет прямо на изделие.",
+      glPick: "Цвет", glAmount: "Сколько за раз", glSize: "Размер кусочков", glFill: "Засыпать всё изделие", glUndo: "Отменить", glClear: "Убрать блёстки",
+      glStop: "Закончить", glHint: "Сыплем: {name}. Води по изделию. Нажми на цвет ещё раз, чтобы остановиться.",
+      glAmt: { s: "Щепотка", m: "Горсть", l: "Много" }, glSz: { s: "Мелкие", m: "Средние", l: "Крупные" },
       s5h: "Добавь детали внутрь", s5p: "Выбирай сколько хочешь, а потом перетаскивай их на брелоке.",
       howMuch: "Сколько", where: "Где", colour: "Цвет",
 

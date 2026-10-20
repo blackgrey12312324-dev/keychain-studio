@@ -66,7 +66,6 @@ const CONFIG = {
   // single: true = only one amount (no "a little / a lot").
   addins: [
     { id: "goldleaf", name: "Gold leaf flakes", name_th: "ทองคำเปลว", name_ru: "Хлопья потали", price: 15, color: "#D4AF37" },
-    { id: "glitter", name: "Fine glitter", name_th: "กากเพชรละเอียด", name_ru: "Мелкий глиттер", price: 0, color: "#F6A8C4" },
     { id: "hearts", name: "Heart glitter", name_th: "กากเพชรหัวใจ", name_ru: "Глиттер-сердечки", price: 10, color: "#D7263D", drag: true },
     { id: "stars", name: "Star confetti", name_th: "คอนเฟตติดาว", name_ru: "Звёздочки", price: 10, color: "#F5C842", drag: true },
     { id: "flowers", name: "Dried flowers", name_th: "ดอกไม้แห้ง", name_ru: "Сухоцветы", price: 20, color: "#4FA3C7", drag: true },
@@ -75,6 +74,32 @@ const CONFIG = {
     { id: "shells", name: "Mini shells", name_th: "เปลือกหอยจิ๋ว", name_ru: "Мини-ракушки", price: 15, color: "#F7D6C8", drag: true },
     { id: "pearl", name: "Pearls", name_th: "ไข่มุก", name_ru: "Жемчужины", price: 10, color: "#F5F3EE", drag: true },
     { id: "glow", name: "Glow in the dark", name_th: "เรืองแสงในที่มืด", name_ru: "Светится в темноте", price: 20, color: "#7CF5E0", single: true },
+  ],
+
+
+  // Crushed glass glitter: real photos of Anna's chips live in images/glitter/<id>.png
+  glitters: [
+    { id: "clear", name: "Clear" },
+    { id: "rainbow", name: "Rainbow mix" },
+    { id: "iridescent", name: "Iridescent dark" },
+    { id: "black", name: "Black" },
+    { id: "gunmetal", name: "Gunmetal" },
+    { id: "navy", name: "Navy" },
+    { id: "cobalt", name: "Cobalt blue" },
+    { id: "aqua", name: "Aqua" },
+    { id: "green", name: "Green" },
+    { id: "olive", name: "Olive gold" },
+    { id: "gold", name: "Gold" },
+    { id: "champagne", name: "Champagne" },
+    { id: "lightgold", name: "Light gold" },
+    { id: "copper", name: "Copper" },
+    { id: "rosecopper", name: "Rose copper" },
+    { id: "palerose", name: "Pale rose" },
+    { id: "pink", name: "Pink" },
+    { id: "fuchsia", name: "Fuchsia" },
+    { id: "red", name: "Red" },
+    { id: "purple", name: "Purple" },
+    { id: "plum", name: "Plum" },
   ],
 
   // Add-ins that don't work with some styles (greyed out, not hidden)
@@ -104,7 +129,7 @@ const CONFIG = {
       blurb_ru: "Розово-красное мерцание, сердечки и золотой край.",
       design: {
         shape: "S", style: "gradient", colors: ["#F5F3EE", "#F6A8C4", "#D7263D"],
-        gradient: { direction: "down", glitter: "fine" },
+        gradient: { direction: "down", glitter: "none" },
         addins: { hearts: { amount: "some", place: "middle", color: "#D7263D" } },
         edge: "gold", back: "same", metal: "gold", hardware: "ringchain",
         tassel: { type: "silk", ombre: true, color1: "#F3C6DD", color2: "#F7B89A", cord: "twist" },
@@ -145,7 +170,6 @@ const CONFIG = {
         addins: {
           frog: { amount: "few", place: "bottom", color: "#9BD93C" },
           flowers: { amount: "few", place: "top", color: "#2E7D4F" },
-          glitter: { amount: "some", place: "anna", color: "#A8E6CF" },
         },
         edge: "painted", edgeColor: "#2BA59A", metal: "silver", hardware: "ringchain",
         tassel: { type: "silk", ombre: true, color1: "#FFF4C2", color2: "#A8E6CF", cord: "match" },

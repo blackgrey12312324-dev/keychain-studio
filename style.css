@@ -675,3 +675,12 @@ body:not(.designer) .toast { bottom: 24px; }
 .cv-zoom { display: flex; align-items: center; gap: 10px; }
 .cv-zoom input { flex: 1; }
 @media (min-width: 900px) { .canvas-page { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 56px; padding-top: 56px; } }
+
+/* Crushed glass glitter picker */
+.gl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 10px; margin: 0 0 18px; }
+.gl { display: grid; gap: 6px; padding: 6px; border: 1px solid var(--line); background: var(--white); text-align: center; cursor: grab; touch-action: none; }
+.gl.on { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.gl-img { display: block; aspect-ratio: 1; background: linear-gradient(135deg, #BFE3E6, #E6F4F3); }
+.gl-img img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.gl-name { font-size: 0.8rem; line-height: 1.2; }
+.gl-hint { margin: 0 0 18px; font-size: 0.92rem; color: var(--ocean); }

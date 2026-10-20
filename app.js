@@ -6,7 +6,8 @@
    ========================================================= */
 Object.assign(ui, {
   step: 0, visited: new Set([0]), side: "front", slot: 0, photo: "",
-  full: false, mode: "move", zoom: 1, pan: [0, 0], brush: { tool: "ink", color: "", size: "m" },
+  full: false, mode: "move", zoom: 1, pan: [0, 0],
+  pour: { id: "", amount: "m", size: "m" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
 });
 const STEP_COUNT = I18N.en.steps.length;
 const LAST = STEP_COUNT - 1;
@@ -21,7 +22,8 @@ function defaultDesign() {
     style: "gradient",
     colors: ["#1F4FD1", "#22C1C3", "#F5F3EE"],
     clearParts: false,
-    gradient: { direction: "down", glitter: "fine" },
+    gradient: { direction: "down", glitter: "none" },
+    crush: [],
     ink: { amount: "medium", background: "clear", spread: "all", cells: true, shimmer: "pearl" },
     ocean: { sand: "middle", wave: "middle", foam: "frothy", sandColor: "natural" },
     addins: {},
@@ -158,6 +160,11 @@ function summaryLines(d, lang = ui.lang) {
     return parts.join(", ");
   });
   L.push([S("addins"), ad.length ? ad.join("; ") : S("none")]);
+  if (d.crush.length) {
+    const n = {};
+    d.crush.forEach((c) => (n[c[0]] = (n[c[0]] || 0) + 1));
+    L.push([S("glass"), Object.keys(n).sort((a, b) => n[b] - n[a]).map((id) => glitterName(id, lang)).join(", ")]);
+  }
   if (d.paint.length) L.push([S("paint"), S("strokes", { n: d.paint.length })]);
   L.push([S("back"), lab("back", d.back, lang)]);
   L.push([S("chain"), `${lab("metal", d.metal, lang)}, ${lab("hardware", d.hardware, lang)}`]);
@@ -181,6 +188,7 @@ function decodeDesign(s) {
 function shareLink() {
   const d = copy(design);
   delete d.note;
+  if (d.crush.length > 150) d.crush = [];   // too long for a link; Anna gets the colours in the message instead
   return location.href.split("#")[0] + "#d=" + encodeURIComponent(encodeDesign(d));
 }
 
@@ -191,6 +199,7 @@ function orderText() {
   if (SHOW_PRICES) lines.push("", "Estimated price: " + money(priceOf(design, "en").total));
   if (design.note.trim()) lines.push("Note: " + design.note.trim());
   if (ui.photo) lines.push("(I'll send my reference photo in this chat 📷)");
+  if (design.crush.length > 150) lines.push("(I'll send a screenshot of where my glitter goes 📷)");
   if (ui.lang !== "en") lines.push("Language: " + { th: "Thai", ru: "Russian" }[ui.lang]);
   lines.push("", "Open my exact design: " + shareLink());
   return lines.join("\n");
@@ -333,6 +342,49 @@ function genItems(a, sel, d, rand) {
   }
   return items;
 }
+/* ---------- Crushed glass glitter (real photos of the chips) ---------- */
+const GLASS = 52;                 // sprite size in drawing units
+const GLASS_MAX = 450;            // keeps the drawing fast
+const GLASS_SIZE = { s: 0.65, m: 1, l: 1.5 };
+const GLASS_COUNT = { s: 1, m: 3, l: 6 };
+const glitterName = (id, lang = ui.lang) => { const g = CONFIG.glitters.find((x) => x.id === id); return g ? tr(g, "name", lang) : id; };
+function glassSprite(c) {
+  const sz = GLASS * (c[4] / 100);
+  return `<image href="images/glitter/${c[0]}.png" x="${(c[1] - sz / 2).toFixed(1)}" y="${(c[2] - sz / 2).toFixed(1)}" width="${sz.toFixed(1)}" height="${sz.toFixed(1)}" transform="rotate(${c[3]} ${c[1]} ${c[2]})" pointer-events="none"/>`;
+}
+function glassLayer(d) {
+  return d.crush && d.crush.length ? `<g class="crush">${d.crush.map(glassSprite).join("")}</g>` : '<g class="crush"></g>';
+}
+// add a little pile of chips around a point; returns the new sprites
+function stamp(d, id, x, y, amount = ui.pour.amount, size = ui.pour.size) {
+  const out = [];
+  const n = GLASS_COUNT[amount], k = GLASS_SIZE[size];
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, r = (n === 1 ? 0 : Math.random()) * 14 * k;
+    out.push([id, Math.round(x + Math.cos(a) * r), Math.round(y + Math.sin(a) * r), Math.floor(Math.random() * 360), Math.round(k * (88 + Math.random() * 24))]);
+  }
+  d.crush.push(...out);
+  if (d.crush.length > GLASS_MAX) d.crush.splice(0, d.crush.length - GLASS_MAX);
+  return out;
+}
+function nearShape(shape, x, y) {
+  const m = shapeMask(shape);
+  return m(x, y) || m(x + 14, y) || m(x - 14, y) || m(x, y + 14) || m(x, y - 14);
+}
+// cover (part of) the piece: share = 0..1
+function fillGlass(d, id, share = 0.75) {
+  const [T, B] = bounds(d.shape);
+  const step = 26;
+  const pts = [];
+  for (let y = T; y <= B; y += step) for (let x = 30; x <= 270; x += step) {
+    const px = x + (Math.random() - 0.5) * step, py = y + (Math.random() - 0.5) * step;
+    if (nearShape(d.shape, px, py) && Math.random() < share) pts.push([px, py]);
+  }
+  const added = [];
+  for (const [px, py] of pts) added.push(...stamp(d, id, px, py, "s", "m"));
+  return added.length;
+}
+
 function ensureItems(d) {
   for (const a of CONFIG.addins) {
     const sel = d.addins[a.id];
@@ -669,7 +721,7 @@ function renderPiece(d, side = "front", opts = {}) {
   </defs>`;
 
   const plainBack = side === "back" && d.back === "plain";
-  const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + paintLayer(d, id) + itemsLayer(d, id, interactive);
+  const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + glassLayer(d) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.6" stroke-linejoin="round"`;
@@ -796,7 +848,6 @@ const STEP_VIEWS = [
     if (design.style === "gradient") {
       return `<h2>${U("s3gradH")}</h2><p class="hint">${U("s3gradP")}</p>
         ${field(U("direction"), chips("gradient.direction", "direction", design.gradient.direction))}
-        ${field(U("glitter"), chips("gradient.glitter", "glitter", design.gradient.glitter))}
         ${field(U("clearWindow"), yesNo("clearParts", design.clearParts), U("clearWindowNote"))}`;
     }
     if (design.style === "ink") {
@@ -838,7 +889,29 @@ const STEP_VIEWS = [
       <p class="small-note">${U("paintTip")}</p>`;
   },
 
-  // 6 Add-ins
+  // 6 Glitter
+  () => {
+    const cur = ui.pour.id;
+    const grid = CONFIG.glitters.map((g) =>
+      `<button type="button" class="gl ${cur === g.id ? "on" : ""}" aria-pressed="${cur === g.id}" data-glitter="${g.id}" data-gdrag="${g.id}" title="${esc(tr(g, "name"))}">
+        <span class="gl-img"><img src="images/glitter/${g.id}.png" alt="" draggable="false"></span><span class="gl-name">${tr(g, "name")}</span></button>`).join("");
+    const seg = (key, vals, current, group) => `<div class="chips">${vals.map((v) =>
+      `<button type="button" class="chip ${current === v ? "on" : ""}" aria-pressed="${current === v}" data-pour="${key}" data-value="${v}">${U(group)[v]}</button>`).join("")}</div>`;
+    return `
+    <h2>${U("sGlH")}</h2>
+    <p class="hint">${U("sGlP")}</p>
+    <div class="gl-grid">${grid}</div>
+    ${cur ? `<p class="gl-hint">${U("glHint", { name: glitterName(cur) })}</p>` : ""}
+    ${field(U("glAmount"), seg("amount", ["s", "m", "l"], ui.pour.amount, "glAmt"))}
+    ${field(U("glSize"), seg("size", ["s", "m", "l"], ui.pour.size, "glSz"))}
+    <div class="chips">
+      <button type="button" class="btn btn-line small" data-action="glfill" ${cur ? "" : "disabled"}>${U("glFill")}</button>
+      <button type="button" class="btn btn-line small" data-action="glundo" ${ui.pourHistory.length ? "" : "disabled"}>${U("glUndo")}</button>
+      <button type="button" class="btn btn-line small" data-action="glclear" ${design.crush.length ? "" : "disabled"}>${U("glClear")}</button>
+    </div>`;
+  },
+
+  // 7 Add-ins
   () => `
     <h2>${U("s5h")}</h2>
     <p class="hint">${U("s5p")}</p>
@@ -866,13 +939,13 @@ const STEP_VIEWS = [
       </div>`;
     }).join("")}`,
 
-  // 7 Back
+  // 8 Back
   () => `
     <h2>${U("s6h")}</h2>
     <p class="hint">${U("s6p")}</p>
     ${field(U("backSide"), chips("back", "back", design.back), design.back === "different" ? U("backNoteDiff") : U("backNoteSame"))}`,
 
-  // 8 Chain
+  // 9 Chain
   () => `
     <h2>${U("s7h")}</h2>
     <p class="hint">${U("s7p")}</p>
@@ -883,7 +956,7 @@ const STEP_VIEWS = [
         <span class="card-name">${lab("hardware", v)}</span><span class="card-text">${lab("hardwareTip", v)}</span></button>`;
     }).join("")}</div>`)}`,
 
-  // 9 Tassel
+  // 10 Tassel
   () => {
     const tt = design.tassel;
     return `
@@ -898,7 +971,7 @@ const STEP_VIEWS = [
     ${field(U("extra"), chips("extra", "extra", design.extra))}`;
   },
 
-  // 10 Review
+  // 11 Review
   () => {
     const pr = priceOf(design);
     return `
@@ -959,12 +1032,15 @@ const els = {
   toastText: $("toast-text"), toastAction: $("toast-action"), studioTools: $("studio-tools"),
 };
 
+const GLITTER_STEP = 6;
+const pouring = () => !!ui.pour.id && ui.step === GLITTER_STEP && !(ui.full && ui.mode === "paint");
 function hasDraggables() {
   return activeAddins(design).some((a) => a.drag);
 }
 function renderHint() {
   let h = "";
   if (ui.side === "back") h = ui.full ? t("big.backHint") : "";
+  else if (pouring()) h = U("glHint", { name: glitterName(ui.pour.id) });
   else if (ui.full) h = ui.mode === "paint" ? t("big.paintHint") : hasDraggables() ? t("big.moveHint") : "";
   else if (hasDraggables()) h = U("dragHint");
   els.hint.textContent = h;
@@ -1046,7 +1122,7 @@ function surprise() {
   d.shape = design.shape; d.second = design.second; d.note = design.note;
   d.style = pick(["clear", "gradient", "gradient", "ink", "ink", "ocean"]);
   d.colors = Math.random() < 0.6 ? copy(pick(CONFIG.palettes).colors) : [pick(cols), pick(cols), pick(cols)];
-  d.gradient = { direction: pick(["down", "right", "diagonal", "center"]), glitter: pick(["fine", "chunky", "holo", "none"]) };
+  d.gradient = { direction: pick(["down", "right", "diagonal", "center"]), glitter: "none" };
   d.clearParts = Math.random() < 0.25;
   d.ink = { amount: pick(["light", "medium", "bold"]), background: pick(["clear", "white", "cloudy"]),
     spread: pick(["all", "all", "top", "bottom", "left", "right"]), cells: Math.random() < 0.6, shimmer: pick(["none", "pearl", "gold"]) };
@@ -1062,7 +1138,10 @@ function surprise() {
   d.hardware = pick(["ring", "ringchain", "ringchain", "lobster", "swivel", "carabiner"]);
   d.tassel = { type: pick(["silk", "silk", "cotton", "none"]), ombre: Math.random() < 0.6, color1: pick(cols), color2: pick(cols), cord: pick(["gold", "silver", "match", "twist"]) };
   d.extra = Math.random() < 0.25 ? pick(["ribbon", "pompom", "beads", "charm"]) : "none";
+  d.crush = [];
+  for (let k = 0; k < 1 + Math.floor(Math.random() * 2); k++) fillGlass(d, pick(CONFIG.glitters).id, 0.35 + Math.random() * 0.4);
   design = d;
+  ui.pourHistory = [];
   ui.side = "front";
   if (ui.step < 3) { ui.step = 3; ui.visited.add(3); }
   changed();
@@ -1081,6 +1160,14 @@ function startOver() {
 
 /* ---------- Panel events ---------- */
 els.panel.addEventListener("click", (e) => {
+  const gl = e.target.closest("[data-glitter]");
+  if (gl) {
+    ui.pour.id = ui.pour.id === gl.dataset.glitter ? "" : gl.dataset.glitter;
+    renderPanel(); renderHint();
+    return;
+  }
+  const pr = e.target.closest("[data-pour]");
+  if (pr) { ui.pour[pr.dataset.pour] = pr.dataset.value; renderPanel(); return; }
   const el = e.target.closest("[data-set], [data-action]");
   if (!el || el.disabled) return;
 
@@ -1101,6 +1188,18 @@ els.panel.addEventListener("click", (e) => {
     ui.side = "front";
     go(el.dataset.go === "review" ? LAST : 1);
     swing();
+  } else if (action === "glfill") {
+    const n = fillGlass(design, ui.pour.id);
+    ui.pourHistory.push(n);
+    changed();
+  } else if (action === "glundo") {
+    const n = ui.pourHistory.pop() || 0;
+    design.crush.splice(Math.max(0, design.crush.length - n), n);
+    changed();
+  } else if (action === "glclear") {
+    design.crush = [];
+    ui.pourHistory = [];
+    changed();
   } else if (action === "mold") {
     design.shape = el.dataset.shape;
     resetItems(design);
@@ -1186,6 +1285,14 @@ function svgPoint(e) {
 els.preview.addEventListener("pointerdown", (e) => {
   if (ui.side !== "front") return;
   const p = svgPoint(e);
+  if (pouring()) {
+    if (!nearShape(design.shape, p.x, p.y)) return;
+    e.preventDefault();
+    gesture = { type: "pour", lx: p.x, ly: p.y, n: 0, g: els.preview.querySelector("g.crush") };
+    gesture.n += addStamp(gesture, p.x, p.y);
+    els.preview.setPointerCapture(e.pointerId);
+    return;
+  }
   if (ui.full && ui.mode === "paint") {
     if (!insideShape(design.shape, p.x, p.y)) return;
     e.preventDefault();
@@ -1224,6 +1331,13 @@ els.preview.addEventListener("pointerdown", (e) => {
 els.preview.addEventListener("pointermove", (e) => {
   if (!gesture) return;
   const p = svgPoint(e);
+  if (gesture.type === "pour") {
+    const p = svgPoint(e);
+    if (Math.hypot(p.x - gesture.lx, p.y - gesture.ly) < 9) return;
+    gesture.lx = p.x; gesture.ly = p.y;
+    if (nearShape(design.shape, p.x, p.y)) gesture.n += addStamp(gesture, p.x, p.y);
+    return;
+  }
   if (gesture.type === "pan") {
     const svg = els.preview.querySelector("svg");
     const k = (300 / ui.zoom) / svg.getBoundingClientRect().width;
@@ -1251,6 +1365,13 @@ function endGesture() {
   const g = gesture;
   gesture = null;
   if (g.type === "pan") return;
+  if (g.type === "pour") {
+    ui.pourHistory.push(g.n);
+    renderPanel();
+    const box = $("order-text");
+    if (box) box.value = orderText();
+    return;
+  }
   if (g.type === "drag") {
     const sel = design.addins[g.id];
     const it = sel.items[g.i];
@@ -1277,6 +1398,16 @@ function endGesture() {
 els.preview.addEventListener("pointerup", endGesture);
 els.preview.addEventListener("pointercancel", endGesture);
 
+// draw new chips straight into the picture while the finger moves
+function addStamp(g, x, y) {
+  const before = design.crush.length;
+  const add = stamp(design, ui.pour.id, Math.round(x), Math.round(y));
+  if (g.g) g.g.insertAdjacentHTML("beforeend", add.map(glassSprite).join(""));
+  const over = before + add.length - design.crush.length;   // oldest chips that were dropped
+  for (let i = 0; i < over && g.g && g.g.firstChild; i++) g.g.removeChild(g.g.firstChild);
+  return add.length;
+}
+
 /* ---------- Zoom (buttons, slider, ctrl+wheel) ---------- */
 function setZoom(z) {
   ui.zoom = Math.max(1, Math.min(4, Math.round(z * 4) / 4));
@@ -1295,19 +1426,20 @@ els.preview.addEventListener("wheel", (e) => {
 /* ---------- Drag an item from the list onto the keychain (like Canva) ---------- */
 let tray = null, suppressClick = false;
 els.panel.addEventListener("pointerdown", (e) => {
-  const h = e.target.closest("[data-drag]");
+  const h = e.target.closest("[data-drag], [data-gdrag]");
   if (!h || e.button > 0) return;
-  tray = { id: h.dataset.drag, x: e.clientX, y: e.clientY, ghost: null, pid: e.pointerId };
+  tray = { id: h.dataset.drag || h.dataset.gdrag, glass: !!h.dataset.gdrag, x: e.clientX, y: e.clientY, ghost: null, pid: e.pointerId };
   h.setPointerCapture(e.pointerId);
 });
 els.panel.addEventListener("pointermove", (e) => {
   if (!tray) return;
   if (!tray.ghost) {
     if (Math.hypot(e.clientX - tray.x, e.clientY - tray.y) < 6) return;
-    const a = CONFIG.addins.find((x) => x.id === tray.id);
+    const a = tray.glass ? null : CONFIG.addins.find((x) => x.id === tray.id);
     tray.ghost = document.createElement("div");
     tray.ghost.className = "drag-ghost";
-    tray.ghost.style.background = a.color;
+    if (tray.glass) tray.ghost.style.background = `url(images/glitter/${tray.id}.png) center/cover, #3E8E99`;
+    else tray.ghost.style.background = a.color;
     document.body.appendChild(tray.ghost);
     els.preview.classList.add("drop-target");
   }
@@ -1328,6 +1460,13 @@ function endTray(e, cancel) {
   const r = svg.getBoundingClientRect();
   if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) return;
   const p = svgPoint(e);
+  if (!nearShape(design.shape, p.x, p.y)) { toast(U("dropInside")); return; }
+  if (t0.glass) {
+    const n = stamp(design, t0.id, Math.round(p.x), Math.round(p.y), "l", ui.pour.size).length;
+    ui.pourHistory.push(n);
+    changed();
+    return;
+  }
   if (!insideShape(design.shape, p.x, p.y)) { toast(U("dropInside")); return; }
   dropAddin(t0.id, Math.round(p.x), Math.round(p.y));
 }
