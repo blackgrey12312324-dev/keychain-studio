@@ -156,7 +156,7 @@ function summaryLines(d, lang = ui.lang) {
     if (!a.single) parts.push(low(lab("amount", s.amount, lang)));
     if (a.drag && s.moved) parts.push(S("placed"));
     else if (a.id !== "glow") parts.push(s.place === "anna" ? lab("place", "anna", lang).replace(" 💛", "") : low(lab("place", s.place, lang)));
-    parts.push(colorName(s.color, lang));
+    if (!a.img) parts.push(colorName(s.color, lang));
     return parts.join(", ");
   });
   L.push([S("addins"), ad.length ? ad.join("; ") : S("none")]);
@@ -306,6 +306,7 @@ function zoneRange(place, T, B) {
 
 const AMT = { few: 0, some: 1, lots: 2 };
 const ADDIN_COUNTS = {
+  // metal charms (small photo cut-outs) use the default [1, 2, 3]
   goldleaf: [6, 14, 28], glitter: [40, 90, 160], hearts: [3, 7, 14], stars: [4, 9, 18],
   flowers: [1, 2, 4], frog: [1, 1, 1], starfish: [1, 2, 3], shells: [1, 3, 5], pearl: [1, 3, 6], glow: [0, 0, 0],
 };
@@ -333,7 +334,7 @@ function randomSpot(d, place, rand, pad = 6, avoid = takenSpots(d)) {
 }
 
 function genItems(a, sel, d, rand) {
-  const n = ADDIN_COUNTS[a.id][AMT[sel.amount] ?? 1];
+  const n = (ADDIN_COUNTS[a.id] || [1, 2, 3])[AMT[sel.amount] ?? 1];
   const items = [];
   const avoid = takenSpots(d).filter((it) => !(sel.items || []).includes(it));
   for (let i = 0; i < n; i++) {
@@ -537,6 +538,11 @@ function scatterLayer(d, T, B) {
 
 // one draggable piece, drawn around (0,0)
 function drawItem(id, col, R, pid) {
+  const ch = CONFIG.addins.find((x) => x.id === id);
+  if (ch && ch.img) {
+    const s = ch.size;
+    return `<image href="${ch.img}" x="${-s / 2}" y="${-s / 2}" width="${s}" height="${s}" preserveAspectRatio="xMidYMid meet" style="filter:brightness(1.35) saturate(1.25) contrast(1.05) drop-shadow(0 1px 1.2px rgba(0,0,0,0.35))"/>`;
+  }
   switch (id) {
     case "hearts": return `<path d="${heartPath(0, 0, 5 + R() * 4)}" fill="${col}" opacity="0.92"/>`;
     case "stars": return `<path d="${starPath(0, 0, 5 + R() * 3, 2.3, 5)}" fill="${col}"/>`;
@@ -577,7 +583,7 @@ function itemsLayer(d, pid, interactive) {
     const sel = d.addins[a.id];
     sel.items.forEach(([x, y, r], i) => {
       const R = rng(hashText(a.id) + i * 97);
-      const hit = interactive ? `<circle r="${HIT[a.id] || 14}" fill="transparent"/>` : "";
+      const hit = interactive ? `<circle r="${a.img ? a.size / 2 + 4 : HIT[a.id] || 14}" fill="transparent"/>` : "";
       s += `<g class="${interactive ? "item" : ""}" data-id="${a.id}" data-i="${i}" transform="translate(${x} ${y}) rotate(${r})">${hit}${drawItem(a.id, sel.color, R, pid)}</g>`;
     });
   }
@@ -915,22 +921,23 @@ const STEP_VIEWS = [
   () => `
     <h2>${U("s5h")}</h2>
     <p class="hint">${U("s5p")}</p>
-    ${CONFIG.addins.map((a) => {
+    ${CONFIG.addins.map((a, ai) => {
       const sel = design.addins[a.id];
       const reason = blockedReason(a.id, design);
       const on = !!sel && !reason;
       const body = on ? `<div class="addin-body">
           ${a.single ? "" : `<div><span class="field-label">${U("howMuch")}</span>${chips(`addins.${a.id}.amount`, "amount", sel.amount)}</div>`}
           ${a.id === "glow" ? "" : `<div><span class="field-label">${U("where")}</span>${chips(`addins.${a.id}.place`, "place", sel.place)}</div>`}
-          <div class="color-row"><span class="field-label">${U("colour")}</span><input type="color" aria-label="${esc(tr(a, "name"))}" data-set="addins.${a.id}.color" value="${sel.color}"></div>
+          ${a.img ? "" : `<div class="color-row"><span class="field-label">${U("colour")}</span><input type="color" aria-label="${esc(tr(a, "name"))}" data-set="addins.${a.id}.color" value="${sel.color}"></div>`}
           ${a.drag ? `<div class="chips">
             <button type="button" class="chip" data-action="shuffle" data-id="${a.id}">${U("shuffle")}</button>
             ${a.single ? "" : `<button type="button" class="chip" data-action="onemore" data-id="${a.id}">${U("oneMore")}</button>`}
           </div>` : ""}
         </div>` : "";
-      return `<div class="addin ${on ? "on" : ""} ${reason ? "off" : ""}">
+      const head = a.group === "charms" && !(CONFIG.addins[ai - 1] && CONFIG.addins[ai - 1].group === "charms") ? `<h3 class="addin-group">${U("charmsH")}</h3><p class="small-note">${U("charmsP")}</p>` : "";
+      return `${head}<div class="addin ${on ? "on" : ""} ${reason ? "off" : ""}">
         <button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on}" ${reason ? "disabled" : ""}>
-          <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:${a.color}"></span>
+          <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:${a.img ? `#E9F1F0 url(${a.img}) center/78% no-repeat` : a.color}"></span>
           <span class="nm">${tr(a, "name")}</span>
           <span class="tick">${on ? U("added") : U("add")}</span>
         </button>
@@ -1129,7 +1136,7 @@ function surprise() {
   d.ocean = { sand: pick(["low", "middle", "middle", "high"]), wave: pick(["top", "middle", "bottom", "diagonal"]),
     foam: pick(["soft", "frothy"]), sandColor: pick(["natural", "natural", "white", "golden", "pink"]) };
   const natural = ["frog", "starfish", "shells", "pearl", "goldleaf"];
-  let pool = CONFIG.addins.filter((a) => !blockedReason(a.id, d)).sort(() => Math.random() - 0.5);
+  let pool = CONFIG.addins.filter((a) => !a.img && !blockedReason(a.id, d)).sort(() => Math.random() - 0.5);
   if (d.style === "ocean") pool = [CONFIG.addins.find((a) => a.id === "starfish"), ...pool.filter((a) => a.id !== "starfish")];
   pool.slice(0, 1 + Math.floor(Math.random() * 3)).forEach((a) => {
     d.addins[a.id] = { amount: pick(["few", "some", "lots"]), place: "anna", color: natural.includes(a.id) ? a.color : pick(cols) };
@@ -1223,7 +1230,7 @@ els.panel.addEventListener("click", (e) => {
   } else if (action === "addin") {
     const a = CONFIG.addins.find((x) => x.id === el.dataset.id);
     if (design.addins[a.id]) delete design.addins[a.id];
-    else design.addins[a.id] = { amount: "some", place: "anna", color: a.color };
+    else design.addins[a.id] = { amount: a.img ? "few" : "some", place: "anna", color: a.color };
     changed();
   } else if (action === "shuffle") {
     const a = CONFIG.addins.find((x) => x.id === el.dataset.id);

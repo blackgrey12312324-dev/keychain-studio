@@ -45,6 +45,7 @@ const I18N = {
       slotOcean: ["Deep sea", "Middle water", "Shallow water"], slotInk: ["Ink 1", "Ink 2", "Ink 3"],
       slotGrad: ["Colour 1", "Colour 2", "Colour 3"], paintTip: "Tip: open Big view to paint on your keychain with your finger",
 
+      charmsH: "Metal charms", charmsP: "Tiny gold charms that sit inside the resin. They are small, so they fit almost anywhere.",
       sGlH: "Crushed glass glitter", sGlP: "Tap a colour, then drag over your piece to sprinkle it. You can also drag a colour straight onto the piece.",
       glPick: "Colour", glAmount: "How much each time", glSize: "Chip size", glFill: "Fill the whole piece", glUndo: "Undo", glClear: "Clear glitter",
       glStop: "Stop sprinkling", glHint: "Sprinkling {name}. Drag on the piece. Tap the colour again to stop.",

@@ -684,3 +684,5 @@ body:not(.designer) .toast { bottom: 24px; }
 .gl-img img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
 .gl-name { font-size: 0.8rem; line-height: 1.2; }
 .gl-hint { margin: 0 0 18px; font-size: 0.92rem; color: var(--ocean); }
+
+.addin-group { font-family: var(--serif); font-weight: 500; font-size: 1.4rem; margin: 28px 0 4px; }
