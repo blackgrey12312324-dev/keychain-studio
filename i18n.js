@@ -45,6 +45,7 @@ const I18N = {
       slotOcean: ["Deep sea", "Middle water", "Shallow water"], slotInk: ["Ink 1", "Ink 2", "Ink 3"],
       slotGrad: ["Colour 1", "Colour 2", "Colour 3"], paintTip: "Tip: open Big view to paint on your keychain with your finger",
 
+      photoH: "Your own photo inside the resin (big molds)", photoZoom: "Photo zoom", photoX: "Photo left / right", photoY: "Photo up / down", photoRemove: "Remove photo", photoNote2: "Best in big molds. Send the same photo in the DM chat too.",
       sLtH: "Tiny metal letters", sLtP: "Type a name or any word. The tiny letters sit inside the resin. Drag the word on your piece to place it.",
       ltText: "Your word", ltPh: "For example: ANNA", ltNote: "Letters A to Z and numbers, up to 14.", ltMetal: "Metal", ltLayout: "Layout", ltSize: "Letter size", ltTurn: "Turn", ltDrag: "Drag the word on the piece to move it.",
       seaH: "Shells and starfish", seaP: "Real starfish and shells. Recommended for beach and sea pieces, and they fit anywhere.",
@@ -92,7 +93,7 @@ const I18N = {
       backHint: "Flip to the front to move or paint", brushColour: "Brush colour",
     },
     sum: {
-      glass: "Crushed glass", letters: "Tiny letters", shape: "Shape", style: "Style", colours: "Colours", addins: "Inside", none: "None", edge: "Edge", back: "Back side",
+      photo: "Photo", photoText: "Custom photo (customer sends it in the chat)", glass: "Crushed glass", letters: "Tiny letters", shape: "Shape", style: "Style", colours: "Colours", addins: "Inside", none: "None", edge: "Edge", back: "Back side",
       chain: "Chain", tassel: "Tassel", extra: "Extra", matching: "Matching", matchingText: "A second keychain with letter {l}",
       painted: "Painted", paint: "Hand-painted", strokes: "{n} brush strokes", placed: "placed by hand",
       ombreTo: "{a} to {b} ombre", cordIs: "cord: {c}",

@@ -247,6 +247,11 @@ const CONFIG = {
     { id: "board", name: "Serving board", size: "big", d: "M118 112 H182 V150 L205 165 H250 V405 H50 V165 H95 L118 150 Z", t: 112, b: 405, pin: 125 },
     { id: "tray-rect", name: "Rectangle tray (cut corners)", size: "big", d: "M60 205 H240 L262 227 V353 L240 375 H60 L38 353 V227 Z", t: 205, b: 375, pin: 200 },
     { id: "square-big", name: "Square", size: "big", d: "M52 190 H248 V386 H52 Z", t: 190, b: 386, pin: 170 },
+    { id: "round-big", name: "Big round tray", size: "big", custom: true, d: "M22 262 A128 128 0 1 0 278 262 A128 128 0 1 0 22 262Z", t: 134, b: 390, pin: 134 },
+    { id: "frame-oval", name: "Oval frame", size: "big", custom: true, d: "M30 262 A120 95 0 1 0 270 262 A120 95 0 1 0 30 262Z", t: 167, b: 357, pin: 167 },
+    { id: "tray-tall", name: "Large rectangle tray", size: "big", custom: true, d: "M65 140 H235 V395 H65 Z", t: 140, b: 395, pin: 140 },
+    { id: "hexagon", name: "Hexagon tray", size: "big", custom: true, d: "M150 130 L258 192 V332 L150 394 L42 332 V192 Z", t: 130, b: 394, pin: 130 },
+    { id: "heart-tray", name: "Big heart tray", size: "big", custom: true, d: "M150 392 C 60 330, 26 270, 38 212 C 50 154, 122 140, 150 196 C 178 140, 250 154, 262 212 C 274 270, 240 330, 150 392 Z", t: 140, b: 392, pin: 182 },
     { id: "star", name: "Star", name_th: "ดาว", name_ru: "Звезда" },
   ],
 

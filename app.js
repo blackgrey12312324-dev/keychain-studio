@@ -25,6 +25,7 @@ function defaultDesign() {
     font: "block",
     gradient: { direction: "down", glitter: "none" },
     crush: [],
+    photo: { on: false, x: 0, y: 0, zoom: 1 },
     letters: { text: "", metal: "gold", size: "m", layout: "word", x: 150, y: 290, rot: 0, seed: 7 },
     ink: { amount: "medium", background: "clear", spread: "all", cells: true, shimmer: "pearl" },
     ocean: { sand: "middle", wave: "middle", foam: "frothy", sandColor: "natural" },
@@ -168,6 +169,7 @@ function summaryLines(d, lang = ui.lang) {
     d.crush.forEach((c) => (n[c[0]] = (n[c[0]] || 0) + 1));
     L.push([S("glass"), Object.keys(n).sort((a, b) => n[b] - n[a]).map((id) => glitterName(id, lang)).join(", ")]);
   }
+  if (d.photo && d.photo.on) L.push([S("photo"), S("photoText")]);
   if (d.letters.text) L.push([S("letters"), `"${d.letters.text}", ${lab("lmetal", d.letters.metal, lang)}, ${lab("llayout", d.letters.layout, lang)}`]);
   if (d.paint.length) L.push([S("paint"), S("strokes", { n: d.paint.length })]);
   L.push([S("back"), lab("back", d.back, lang)]);
@@ -451,6 +453,15 @@ function bestTextSpot(shape) {
     }
   }
   return best;
+}
+
+/* ---------- Customer photo inside the piece (big molds) ---------- */
+function photoLayer(d) {
+  if (!d.photo || !d.photo.on || !ui.photo || !ui.photoDims) return "";
+  const [T, B] = bounds(d.shape), [w, h] = ui.photoDims;
+  const k = Math.max(240 / w, (B - T) / h) * d.photo.zoom;
+  const pw = w * k, ph = h * k, cx = 150 + d.photo.x, cy = (T + B) / 2 + d.photo.y;
+  return `<image href="${ui.photo}" x="${(cx - pw / 2).toFixed(1)}" y="${(cy - ph / 2).toFixed(1)}" width="${pw.toFixed(1)}" height="${ph.toFixed(1)}" preserveAspectRatio="none" pointer-events="none"/>`;
 }
 
 function ensureItems(d) {
@@ -801,7 +812,7 @@ function renderPiece(d, side = "front", opts = {}) {
   </defs>`;
 
   const plainBack = side === "back" && d.back === "plain";
-  const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + glassLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
+  const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.6" stroke-linejoin="round"`;
@@ -1005,6 +1016,11 @@ const STEP_VIEWS = [
       `<button type="button" class="chip ${L.metal === m ? "on" : ""}" aria-pressed="${L.metal === m}" data-set="letters.metal" data-value="${m}"><span class="dot lt-dot" style="background:url(images/letters/${m}.jpg) center/cover"></span>${lab("lmetal", m)}</button>`).join("")}</div>`)}
     ${field(U("ltLayout"), seg("layout", ["word", "scatter"], L.layout, "llayout"))}
     ${field(U("ltSize"), seg("size", ["s", "m", "l"], L.size, "lsize"))}
+    ${field(U("photoH"), `<input type="file" accept="image/*" id="piece-photo">${design.photo.on && ui.photo ? `
+      <div class="field"><span class="field-label">${U("photoZoom")}</span><input type="range" min="1" max="3" step="0.05" value="${design.photo.zoom}" data-set="photo.zoom" data-num="1"></div>
+      <div class="field"><span class="field-label">${U("photoX")}</span><input type="range" min="-100" max="100" step="2" value="${design.photo.x}" data-set="photo.x" data-num="1"></div>
+      <div class="field"><span class="field-label">${U("photoY")}</span><input type="range" min="-150" max="150" step="2" value="${design.photo.y}" data-set="photo.y" data-num="1"></div>
+      <button type="button" class="btn btn-line small" data-action="photooff">${U("photoRemove")}</button>` : ""}`, U("photoNote2"))}
     ${field(U("ltTurn"), `<input type="range" min="-90" max="90" step="5" value="${L.rot}" data-set="letters.rot" data-num="1" aria-label="${U("ltTurn")}">`, L.text ? U("ltDrag") : "")}
     ${L.layout === "scatter" ? `<button type="button" class="btn btn-line small" data-action="ltshuffle">${U("shuffle")}</button>` : ""}`;
   },
@@ -1299,6 +1315,8 @@ els.panel.addEventListener("click", (e) => {
     design.tassel.photo = design.tassel.photo === el.dataset.id ? "" : el.dataset.id;
     if (design.tassel.photo && design.tassel.type === "none") design.tassel.type = "silk";
     changed();
+  } else if (action === "photooff") {
+    design.photo.on = false; ui.photo = ""; changed();
   } else if (action === "ltshuffle") {
     design.letters.seed = Math.floor(Math.random() * 9999);
     changed();
@@ -1387,6 +1405,13 @@ els.panel.addEventListener("input", (e) => {
 });
 els.panel.addEventListener("change", (e) => {
   if (e.target.type === "color") renderPanel();
+  if (e.target.id === "piece-photo" && e.target.files[0]) {
+    const url = URL.createObjectURL(e.target.files[0]);
+    const im = new Image();
+    im.onload = () => { if (ui.photo) URL.revokeObjectURL(ui.photo); ui.photo = url; ui.photoDims = [im.naturalWidth, im.naturalHeight]; design.photo = { on: true, x: 0, y: 0, zoom: 1 }; changed(); };
+    im.src = url;
+    return;
+  }
   if (e.target.id === "photo-input" && e.target.files[0]) {
     if (ui.photo) URL.revokeObjectURL(ui.photo);
     ui.photo = URL.createObjectURL(e.target.files[0]);
