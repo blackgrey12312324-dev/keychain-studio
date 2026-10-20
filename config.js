@@ -354,6 +354,22 @@ CONFIG.smallItems.forEach((s) => {
   CONFIG.paperFlowers.push({ id: `sm-${s.id}`, name: s.name, img: s.img });
 });
 
+// Real sea items (starfish and shells from Anna's photos). Recommended for beach and sea pieces.
+CONFIG.seaItems = [
+  { id: "starfish", name: "Real starfish", size: 42 },
+  { id: "shell-mix1", name: "Shell mix 1", size: 44 },
+  { id: "shell-mix2", name: "Shell mix 2", size: 44 },
+  { id: "shell-mix3", name: "Shell mix 3", size: 44 },
+  { id: "shell-mix4", name: "Shell mix 4", size: 44 },
+  { id: "shell-scallop", name: "Scallop shell", size: 36 },
+  { id: "shell-spiral", name: "Spiral shell", size: 30 },
+];
+CONFIG.seaItems.forEach((s) => {
+  s.img = `images/sea/${s.id}.png`;
+  CONFIG.addins.push({ id: `sea-${s.id}`, name: s.name, price: 0, color: "#D4AF37", drag: true, group: "sea", img: s.img, size: s.size, fx: "drop-shadow(0 1px 1.5px rgba(0,0,0,0.35))" });
+  CONFIG.paperFlowers.push({ id: `sea-${s.id}`, name: s.name, img: s.img });
+});
+
 /* =========================================================
    ✏️ REVIEWS — paste your real customer reviews here.
    While this list is empty, the home page shows your Instagram instead.
