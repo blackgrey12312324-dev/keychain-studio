@@ -882,7 +882,7 @@ const STEP_VIEWS = [
     const molds = [
       { id: "letter", label: U("moldLetters"), shape: isLetter(design.shape) ? design.shape : "A" },
       { id: "number", label: U("moldNumbers"), shape: isNumber(design.shape) ? design.shape : "1" },
-      ...CONFIG.shapes.map((sh) => ({ id: sh.id, label: tr(sh, "name"), shape: sh.id, small: sh.size === "small" })),
+      ...CONFIG.shapes.map((sh) => ({ id: sh.id, label: tr(sh, "name"), shape: sh.id, sizeLabel: sh.size })),
     ];
     return `
     <h2>${U("sMoldH")}</h2>
@@ -891,7 +891,7 @@ const STEP_VIEWS = [
       const d = merge(copy(design), { shape: m.shape });
       return `<button type="button" class="card ${fam === m.id ? "on" : ""}" aria-pressed="${fam === m.id}" data-action="mold" data-shape="${m.shape}">
         <span class="card-art">${renderPiece(d)}</span>
-        <span class="card-name">${m.label}</span>${m.small ? `<span class="card-text">${U("moldSmall")}</span>` : ""}
+        <span class="card-name">${m.label}</span>${m.sizeLabel ? `<span class="card-text">${U(m.sizeLabel === "thin" ? "moldThin" : "moldSmall")}</span>` : ""}
       </button>`;
     }).join("")}</div>`;
   },
