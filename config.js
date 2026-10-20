@@ -135,6 +135,19 @@ const CONFIG = {
     },
   },
 
+
+  // Real tassels (photos in images/tassels). kx = where the knot sits across the picture.
+  tassels: [
+    { id: "black", name: "Black", hex: "#1A1A1C", kx: 0.594, ratio: 0.733 },
+    { id: "navy", name: "Navy", hex: "#1B2A6B", kx: 0.422, ratio: 0.86 },
+    { id: "cream", name: "Cream to grey", hex: "#C9C2B0", kx: 0.611, ratio: 0.463 },
+    { id: "gold", name: "Gold", hex: "#A98524", kx: 0.662, ratio: 0.557 },
+    { id: "teal", name: "Yellow to teal", hex: "#9CC9C0", kx: 0.73, ratio: 0.476 },
+    { id: "greyblue", name: "Grey blue", hex: "#8E9BB0", kx: 0.685, ratio: 0.662 },
+    { id: "green", name: "Lime green", hex: "#8BE04B", kx: 0.544, ratio: 0.49 },
+    { id: "orange", name: "Orange", hex: "#F2561D", kx: 0.397, ratio: 0.7 },
+  ],
+
   shapes: [
     { id: "tag", name: "Tag", name_th: "แท็ก", name_ru: "Бирка" },
     { id: "heart", name: "Heart", name_th: "หัวใจ", name_ru: "Сердце" },

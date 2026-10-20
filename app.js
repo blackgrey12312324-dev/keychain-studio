@@ -34,7 +34,7 @@ function defaultDesign() {
     back: "same",
     metal: "gold",
     hardware: "ringchain",
-    tassel: { type: "silk", ombre: true, color1: "#F3C6DD", color2: "#F7B89A", cord: "gold" },
+    tassel: { type: "silk", ombre: true, color1: "#F3C6DD", color2: "#F7B89A", cord: "gold", photo: "" },
     extra: "none",
     note: "",
   };
@@ -140,6 +140,7 @@ function tasselText(d, lang) {
   const tt = d.tassel;
   if (tt.type === "none") return lab("tassel", "none", lang);
   const cols = tt.ombre ? t("sum.ombreTo", { a: colorName(tt.color1, lang), b: colorName(tt.color2, lang) }, lang) : colorName(tt.color1, lang);
+  if (tt.photo) return `${lab("tassel", "silk", lang)}, ${CONFIG.tassels.find((x) => x.id === tt.photo).name}`;
   return `${lab("tassel", tt.type, lang)}, ${cols}, ${t("sum.cordIs", { c: lab("cord", tt.cord, lang) }, lang)}`;
 }
 
@@ -693,10 +694,16 @@ function tasselSvg(d, id) {
   const tt = d.tassel;
   if (tt.type === "none") return "";
   const R = rng(99);
-  const cordColor = { gold: "#C8A13A", silver: "#AEB5BE", match: tt.color1, twist: tt.color1 }[tt.cord];
+  const cordColor = tt.photo ? "#C8A13A" : { gold: "#C8A13A", silver: "#AEB5BE", match: tt.color1, twist: tt.color1 }[tt.cord];
   const cordPath = "M152 70 C 190 70, 225 80, 232 112";
   let s = `<path d="${cordPath}" fill="none" stroke="${cordColor}" stroke-width="3.5" stroke-linecap="round"/>`;
   if (tt.cord === "twist") s += `<path d="${cordPath}" fill="none" stroke="#C8A13A" stroke-width="3.5" stroke-dasharray="4 4"/>`;
+  const ph = tt.photo && CONFIG.tassels.find((x) => x.id === tt.photo);
+  if (ph) {
+    const h = 215, w = h * ph.ratio;
+    return `<path d="${cordPath}" fill="none" stroke="${ph.hex}" stroke-width="3.5" stroke-linecap="round"/>
+      <image href="images/tassels/${ph.id}.png" x="${(232 - w * ph.kx).toFixed(1)}" y="108" width="${w.toFixed(1)}" height="${h}" preserveAspectRatio="none" style="filter:drop-shadow(0 2px 2px rgba(0,0,0,0.25))"/>`;
+  }
   const silk = tt.type === "silk";
   const n = silk ? 34 : 26;
   for (let i = 0; i < n; i++) {
@@ -1036,8 +1043,10 @@ const STEP_VIEWS = [
     return `
     <h2>${U("s8h")}</h2>
     <p class="hint">${U("s8p")}</p>
+    ${field(U("realTassels"), `<div class="gl-grid">${CONFIG.tassels.map((x) =>
+      `<button type="button" class="gl ${tt.photo === x.id && tt.type !== "none" ? "on" : ""}" aria-pressed="${tt.photo === x.id}" data-action="tassel" data-id="${x.id}"><span class="gl-img tas-img"><img src="images/tassels/${x.id}.png" alt=""></span><span class="gl-name">${x.name}</span></button>`).join("")}</div>`)}
     ${field(U("tassel"), chips("tassel.type", "tassel", tt.type), U("tasselNote"))}
-    ${tt.type !== "none" ? `
+    ${tt.type !== "none" && !tt.photo ? `
       ${field(U("ombre"), yesNo("tassel.ombre", tt.ombre))}
       ${field(tt.ombre ? U("topColour") : U("tasselColour"), `<input type="color" aria-label="${U("tasselColour")}" data-set="tassel.color1" value="${tt.color1}">`)}
       ${tt.ombre ? field(U("bottomColour"), `<input type="color" aria-label="${U("bottomColour")}" data-set="tassel.color2" value="${tt.color2}">`) : ""}
@@ -1248,6 +1257,7 @@ els.panel.addEventListener("click", (e) => {
   if (el.dataset.set && el.tagName === "BUTTON") {
     const path = el.dataset.set;
     setPath(design, path, parseVal(el.dataset.value));
+    if (path === "tassel.type") design.tassel.photo = "";
     if (path === "shape") {
       resetItems(design);
       if (!design.letters.moved) [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
@@ -1265,6 +1275,10 @@ els.panel.addEventListener("click", (e) => {
     ui.side = "front";
     go(el.dataset.go === "review" ? LAST : 1);
     swing();
+  } else if (action === "tassel") {
+    design.tassel.photo = design.tassel.photo === el.dataset.id ? "" : el.dataset.id;
+    if (design.tassel.photo && design.tassel.type === "none") design.tassel.type = "silk";
+    changed();
   } else if (action === "ltshuffle") {
     design.letters.seed = Math.floor(Math.random() * 9999);
     changed();
