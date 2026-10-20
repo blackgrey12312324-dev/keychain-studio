@@ -17,7 +17,7 @@ Object.assign(I18N.en, {
     note: "Anything else?", notePh: "Colours, a name, a date, the beach you want…",
     name: "Your name", send: "Send by DM", copied: "Copied! Paste it in the DM and attach your photo.",
     copyFail: "Copy the message below and paste it in the DM.", message: "Your message",
-    decor: "Paper flowers", decorHint: "Tap a flower to add it, then drag it on the picture. They are real 3D paper flowers.", flSize: "Flower size", flRemove: "Remove flower",
+    decor: "Paper flowers and trees", decorHint: "Tap one to add it, then drag it on the picture. Real 3D paper flowers and miniature trees.", flSize: "Flower size", flRemove: "Remove flower",
     beachNote: "Beach style canvases are poured by hand. Tell us the colours and mood you want and we will match it.",
   },
 });
@@ -83,7 +83,7 @@ function renderStage() {
   } else {
     inner = `<rect width="${W}" height="${H}" fill="#E7EEF0"/><text x="${W / 2}" y="${H / 2}" text-anchor="middle" font-size="14" fill="#6B7780" font-family="Jost, sans-serif">${esc(C("empty"))}</text>`;
   }
-  const dec = cv.decor.map((f, i) => `<image class="decor ${i === cv.sel ? "sel" : ""}" data-i="${i}" href="images/paperflowers/${f.id}.png" x="${f.x - f.s / 2}" y="${f.y - f.s / 2}" width="${f.s}" height="${f.s}" style="filter:drop-shadow(0 2px 2px rgba(0,0,0,0.35));cursor:move"/>`).join("");
+  const dec = cv.decor.map((f, i) => `<image class="decor ${i === cv.sel ? "sel" : ""}" data-i="${i}" href="${CONFIG.paperFlowers.find((x) => x.id === f.id).img || "images/paperflowers/" + f.id + ".png"}" x="${f.x - f.s / 2}" y="${f.y - f.s / 2}" width="${f.s}" height="${f.s}" style="filter:drop-shadow(0 2px 2px rgba(0,0,0,0.35));cursor:move"/>`).join("");
   document.getElementById("cv-stage").innerHTML = `
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(C("title"))}">
       <defs><clipPath id="cv-clip"><path d="${path}"/></clipPath></defs>
@@ -139,7 +139,7 @@ function renderCanvas() {
           <input type="file" accept="image/*" id="cv-file">
           ${cv.img ? `<div class="cv-zoom" style="margin-top:12px"><span>${C("zoom")}</span><input type="range" min="1" max="4" step="0.05" value="${cv.zoom}" id="cv-zoom" aria-label="${C("zoom")}"></div><p class="small-note">${C("dragHint")}</p>` : ""}</div>` : ""}
         <div class="field"><span class="field-label">${C("decor")}</span>
-          <div class="gl-grid">${CONFIG.paperFlowers.map((f) => `<button type="button" class="gl" data-addflower="${f.id}" title="${esc(f.name)}"><span class="gl-img"><img src="images/paperflowers/${f.id}.png" alt=""></span><span class="gl-name">${f.name.replace(" paper", "")}</span></button>`).join("")}</div>
+          <div class="gl-grid">${CONFIG.paperFlowers.map((f) => `<button type="button" class="gl" data-addflower="${f.id}" title="${esc(f.name)}"><span class="gl-img"><img src="${f.img || "images/paperflowers/" + f.id + ".png"}" alt=""></span><span class="gl-name">${f.name.replace(" paper", "")}</span></button>`).join("")}</div>
           <p class="small-note">${C("decorHint")}</p>
           ${cv.sel >= 0 && cv.decor[cv.sel] ? `<div class="cv-zoom"><span>${C("flSize")}</span><input type="range" min="30" max="260" step="2" value="${cv.decor[cv.sel].s}" id="cv-fsize" aria-label="${C("flSize")}"><button type="button" class="btn btn-line small" data-delflower="1">${C("flRemove")}</button></div>` : ""}</div>
         <div class="field"><span class="field-label">${C("name")}</span><input type="text" class="text-input" style="width:100%;font-size:1rem;text-transform:none" id="cv-name" value="${esc(cv.name)}"></div>

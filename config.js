@@ -97,6 +97,10 @@ const CONFIG = {
     { id: "pf-whiterose", name: "White paper rose", price: 0, color: "#D4AF37", drag: true, group: "paperflowers", img: "images/paperflowers/whiterose.png", size: 58, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "pf-whiterose2", name: "Ivory paper rose", price: 0, color: "#D4AF37", drag: true, group: "paperflowers", img: "images/paperflowers/whiterose2.png", size: 58, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "pf-whiterose3", name: "Cream paper rose", price: 0, color: "#D4AF37", drag: true, group: "paperflowers", img: "images/paperflowers/whiterose3.png", size: 58, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
+    { id: "tree-pink", name: "Pink blossom tree", price: 0, color: "#D4AF37", drag: true, single: true, group: "trees", img: "images/trees/pink.png", size: 120, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
+    { id: "tree-orange", name: "Autumn orange tree", price: 0, color: "#D4AF37", drag: true, single: true, group: "trees", img: "images/trees/orange.png", size: 120, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
+    { id: "tree-green", name: "Green tree", price: 0, color: "#D4AF37", drag: true, single: true, group: "trees", img: "images/trees/green.png", size: 120, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
+    { id: "tree-yellow", name: "Yellow tree", price: 0, color: "#D4AF37", drag: true, single: true, group: "trees", img: "images/trees/yellow.png", size: 120, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "charm-pistol", name: "Gold pistol", price: 0, color: "#D4AF37", drag: true, group: "charms", img: "images/charms/pistol.png", size: 52 },
     { id: "charm-pistol2", name: "Silver pistol", price: 0, color: "#D4AF37", drag: true, group: "charms", img: "images/charms/pistol2.png", size: 52 },
     { id: "charm-ak-long", name: "Long rifle with crystals", price: 0, color: "#D4AF37", drag: true, group: "charms", img: "images/charms/ak-long.png", size: 60 },
@@ -150,6 +154,10 @@ const CONFIG = {
 
   // Big 3D paper flowers and roses (for canvases and bigger molds)
   paperFlowers: [
+    { id: "tree-pink", name: "Pink blossom tree", img: "images/trees/pink.png" },
+    { id: "tree-orange", name: "Autumn orange tree", img: "images/trees/orange.png" },
+    { id: "tree-green", name: "Green tree", img: "images/trees/green.png" },
+    { id: "tree-yellow", name: "Yellow tree", img: "images/trees/yellow.png" },
     { id: "blue", name: "Blue paper flower" },
     { id: "pink", name: "Pink paper flower" },
     { id: "pink2", name: "Rose pink paper flower" },
