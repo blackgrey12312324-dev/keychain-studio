@@ -54,10 +54,13 @@ function merge(base, extra) {
 }
 
 function catOf(shape) {
-  if (isLetter(shape) || isNumber(shape)) return "accessories";
+  if (isLetter(shape) || isNumber(shape)) return "keychains";
   const c = CONFIG.shapes.find((x) => x.id === shape);
-  if (!c) return "accessories";
-  return ["medium"].includes(c.size) ? "medium" : c.size === "big" ? "big" : "accessories";
+  if (!c) return "keychains";
+  if (PENDANTS.includes(shape) || c.mold === "groovy") return "keychains";
+  if (["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "comb", "comb-moon", "hairpin", "pen", "blade"].includes(shape) || c.tex === "glass" || /^bm-/.test(shape)) return "accessories";
+  if (["heart-tray", "hexagon", "round-big", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"].includes(shape)) return "statues";
+  return "kitchen";
 }
 const SHOW_PRICES = !!CONFIG.showPrices;
 let design = defaultDesign();
@@ -932,16 +935,20 @@ const STEP_VIEWS = [
   // 1 Mold (category first)
   () => {
     const CATS = [
-      { id: "accessories", name: U("catAcc"), text: U("catAccP"), shape: "A" },
-      { id: "medium", name: U("catMed"), text: U("catMedP"), shape: "board" },
-      { id: "big", name: U("catBig"), text: U("catBigP"), shape: "tray-oval" },
+      { id: "keychains", name: U("catKey"), text: U("catKeyP"), shape: "A" },
+      { id: "accessories", name: U("catAcc"), text: U("catAccP"), shape: "bookmark" },
+      { id: "statues", name: U("catStat"), text: U("catStatP"), shape: "hexagon" },
+      { id: "kitchen", name: U("catKit"), text: U("catKitP"), shape: "coaster-set" },
+      { id: "paint", name: U("catPaint"), text: U("catPaintP"), href: "canvas.html?kind=beach", shape: "tray-tall" },
+      { id: "gift", name: U("catGift"), text: U("catGiftP"), href: "canvas.html?kind=photo", shape: "round-big" },
     ];
     if (!ui.cat) {
       return `<h2>${U("catH")}</h2><p class="hint">${U("catP")}</p>
       <div class="cards cats">${CATS.map((c) => {
-        const d = merge(copy(design), { shape: c.shape });
+        const d = merge(copy(design), { shape: c.shape, hardware: "none" });
         if (c.shape === "A") d.font = "block";
-        return `<button type="button" class="card cat" data-action="cat" data-id="${c.id}"><span class="card-art">${renderPiece(d)}</span><span class="card-name">${c.name}</span><span class="card-text">${c.text}</span></button>`;
+        const inner = `<span class="card-art">${renderPiece(d)}</span><span class="card-name">${c.name}</span><span class="card-text">${c.text}</span>`;
+        return c.href ? `<a class="card cat" href="${c.href}">${inner}</a>` : `<button type="button" class="card cat" data-action="cat" data-id="${c.id}">${inner}</button>`;
       }).join("")}</div>`;
     }
     const card = (label, shape, on, extra = "") => {
@@ -952,20 +959,22 @@ const STEP_VIEWS = [
     const byIds = (ids) => ids.map((id) => CONFIG.shapes.find((x) => x.id === id)).filter(Boolean)
       .map((sh) => card(tr(sh, "name"), sh.id, design.shape === sh.id)).join("");
     const group = (title, html) => `<h3 class="mold-group">${title}</h3><div class="cards molds">${html}</div>`;
-    const fam = moldFamily(design.shape);
+    const isL = isLetter(design.shape) || isNumber(design.shape);
     let body = "";
-    if (ui.cat === "accessories") {
-      body = group(U("grpLetters"), card(U("fontBlock"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font === "groovy", '{"font":"groovy"}'))
+    if (ui.cat === "keychains") {
+      body = group(U("grpLetters"), card(U("fontBlock"), isL ? design.shape : "A", isL && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isL ? design.shape : "A", isL && design.font === "groovy", '{"font":"groovy"}'))
         + group(U("grpPendants"), byIds(PENDANTS))
-        + group(U("grpGroovy"), byIds(["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"]))
-        + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]))
+        + group(U("grpGroovy"), byIds(["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"]));
+    } else if (ui.cat === "accessories") {
+      body = group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]))
         + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]))
         + group(U("grpCombs"), byIds(["comb", "comb-moon", "hairpin"]))
         + group(U("grpPens"), byIds(["pen", "blade"]));
-    } else if (ui.cat === "medium") {
-      body = group(U("grpCups"), byIds(["coaster", "coaster-set", "coaster-stone"])) + `<p class="small-note">${U("cupsNote")}</p>` + group(U("catMed"), byIds(["board", "love", "heart-stand", "game-ttt", "game-chess", "wood-slice", "wood-round"])) + `<p class="small-note">${U("moreSoon")}</p>`;
+    } else if (ui.cat === "statues") {
+      body = group(U("catStat"), byIds(["heart-tray", "hexagon", "round-big", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"])) + `<p class="small-note">${U("moreSoon")}</p>`;
     } else {
-      body = group(U("catBig"), byIds(["tray-oval", "round-big", "frame-oval", "hexagon", "heart-tray", "tray-tall", "square-big", "tray-rect", "wood-tray"])) + `<p class="small-note">${U("moreSoon")}</p>`;
+      body = group(U("grpCups"), byIds(["coaster", "coaster-set", "coaster-stone"])) + `<p class="small-note">${U("cupsNote")}</p>`
+        + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall", "square-big"])) + `<p class="small-note">${U("moreSoon")}</p>`;
     }
     return `<button type="button" class="btn btn-line small" data-action="cat" data-id="">${U("catBack")}</button>
       <h2>${U("sMoldH")}</h2><p class="hint">${U("sMoldP")}</p>${body}`;
@@ -1792,7 +1801,7 @@ function loadFromLink() {
   const params = new URLSearchParams(location.search);
   if (params.has("start")) { ui.step = 1; ui.visited = new Set([0, 1]); ui.cat = ""; }
   const letter = (params.get("letter") || "").toUpperCase();
-  if (letter) ui.cat = "accessories";
+  if (letter) ui.cat = "keychains";
   if (/^[A-Z0-9]$/.test(letter)) { design.shape = letter; resetItems(design); ui.step = 2; ui.visited = new Set([0, 1, 2]); }
   const m = location.hash.match(/d=([^&]+)/);
   if (!m) return;

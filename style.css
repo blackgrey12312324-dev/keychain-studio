@@ -730,3 +730,4 @@ body[data-page="design"], body.designer { background: linear-gradient(180deg, #E
 .card.cat:nth-child(2) { border-top-color: var(--coral); }
 .card.cat:nth-child(3) { border-top-color: #8C6BB1; }
 .mold-group { font-family: var(--serif); font-weight: 500; font-size: 1.5rem; margin: 26px 0 10px; color: var(--deep); }
+a.card { text-decoration: none; color: inherit; display: block; }

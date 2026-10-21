@@ -8,9 +8,9 @@ Object.assign(I18N.en, {
   canvas: {
     title: "Design a canvas",
     sub: "Any size. Choose a look from our real pours, or add your own photo and choose the shape it is cut into.",
-    kind: "What kind of canvas?", beach: "Sea style", abstract: "Abstract", photo: "My photo", board: "Wooden board", colours: "Colours", shuffle: "Different crop", lookLabel: "Choose a look", lookNote: "These are photos of canvases Anna poured. Yours is poured by hand, so it will be similar but never identical. Tell us your colours in the note.", pickSlot: "Colour {n}",
+    kind: "What kind of canvas?", beach: "Sea style", abstract: "Abstract", photo: "Custom gift (my photo)", board: "Wooden board", colours: "Colours", shuffle: "Different crop", lookLabel: "Choose a look", lookNote: "These are photos of canvases Anna poured. Yours is poured by hand, so it will be similar but never identical. Tell us your colours in the note.", pickSlot: "Colour {n}",
     size: "Size (cm)", width: "Width", height: "Height", presets: "Quick sizes",
-    shape: "Cut-out shape", shapes: { rect: "Rectangle", rounded: "Rounded", oval: "Oval", heart: "Heart", arch: "Arch", star: "Star" },
+    shape: "Cut-out shape", shapes: { circle: "Circle", rect: "Rectangle", rounded: "Rounded", oval: "Oval", heart: "Heart", arch: "Arch", star: "Star" },
     photoLabel: "Your photo", choose: "Choose a photo", change: "Change photo",
     zoom: "Zoom", dragHint: "Drag the photo to move it. Use the slider or scroll to zoom.",
     empty: "Choose a photo to see it here",
@@ -25,7 +25,7 @@ Object.assign(I18N.en, {
 const C = (k, v) => t("canvas." + k, v);
 
 const SIZES = [[20, 20], [20, 30], [30, 30], [30, 40], [40, 50], [50, 70]];
-const SHAPE_IDS = ["rect", "rounded", "oval", "heart", "arch", "star"];
+const SHAPE_IDS = ["circle", "rect", "rounded", "oval", "heart", "arch", "star"];
 const cv = { kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "", decor: [], sel: -1, seed: 3, look: 0 };
 const q = new URLSearchParams(location.search);
 if (["beach", "abstract", "photo", "board"].includes(q.get("kind"))) cv.kind = q.get("kind");
@@ -54,6 +54,7 @@ function framePath(shape, W, H) {
   const x = m, y = m, w = W - 2 * m, h = H - 2 * m, cx = W / 2, cy = H / 2;
   switch (shape) {
     case "rect": return `M${x} ${y}H${x + w}V${y + h}H${x}Z`;
+    case "circle": { const r = Math.min(w, h) / 2; return `M${cx - r} ${cy}A${r} ${r} 0 1 1 ${cx + r} ${cy}A${r} ${r} 0 1 1 ${cx - r} ${cy}Z`; }
     case "oval": return `M${x} ${cy}A${w / 2} ${h / 2} 0 1 1 ${x + w} ${cy}A${w / 2} ${h / 2} 0 1 1 ${x} ${cy}Z`;
     case "arch": return `M${x} ${y + h}V${y + w / 2}A${w / 2} ${w / 2} 0 0 1 ${x + w} ${y + w / 2}V${y + h}Z`;
     case "heart": {
