@@ -129,11 +129,11 @@ const I18N = {
       back: { same: "Same as front", plain: "Plain clear back", different: "Different design" },
       metal: { gold: "Gold", silver: "Silver", rose: "Rose gold", black: "Black" },
       hardware: {
-        none: "No chain yet", ring: "Split ring", ringchain: "Ring + chain", lobster: "Lobster clasp",
+        none: "No chain yet", necklace: "Necklace chain", ring: "Split ring", ringchain: "Ring + chain", lobster: "Lobster clasp",
         swivel: "Swivel clasp", carabiner: "Carabiner", wristlet: "Wristlet strap",
       },
       hardwareTip: {
-        ring: "Best for keys. Very secure.", ringchain: "Keys and bags. The classic look.",
+        none: "Add a ring or chain later, or leave it plain.", necklace: "Wear it around your neck as a pendant.", ring: "Best for keys. Very secure.", ringchain: "Keys and bags. The classic look.",
         lobster: "Clip it on a bag or zip.", swivel: "Turns around, so it never twists.",
         carabiner: "Big clip for backpacks.", wristlet: "Wear it on your wrist.",
       },
@@ -254,7 +254,7 @@ const I18N = {
       back: { same: "เหมือนด้านหน้า", plain: "ใสเรียบ", different: "ลายต่างกัน" },
       metal: { gold: "ทอง", silver: "เงิน", rose: "โรสโกลด์", black: "ดำ" },
       hardware: {
-        none: "ยังไม่ใส่โซ่", ring: "ห่วงกุญแจ", ringchain: "ห่วง + โซ่", lobster: "ตะขอก้ามปู",
+        none: "ยังไม่ใส่โซ่", necklace: "สร้อยคอ", ring: "ห่วงกุญแจ", ringchain: "ห่วง + โซ่", lobster: "ตะขอก้ามปู",
         swivel: "ตะขอหมุนได้", carabiner: "คาราบิเนอร์", wristlet: "สายคล้องข้อมือ",
       },
       hardwareTip: {
@@ -375,7 +375,7 @@ const I18N = {
       back: { same: "Как спереди", plain: "Просто прозрачная", different: "Другой дизайн" },
       metal: { gold: "Золото", silver: "Серебро", rose: "Розовое золото", black: "Чёрный" },
       hardware: {
-        none: "Пока без цепочки", ring: "Кольцо", ringchain: "Кольцо + цепочка", lobster: "Карабин-лобстер",
+        none: "Пока без цепочки", necklace: "Цепочка на шею", ring: "Кольцо", ringchain: "Кольцо + цепочка", lobster: "Карабин-лобстер",
         swivel: "Вращающийся карабин", carabiner: "Большой карабин", wristlet: "Ремешок на запястье",
       },
       hardwareTip: {

@@ -180,9 +180,9 @@ function summaryLines(d, lang = ui.lang) {
   if (d.paint.length) L.push([S("paint"), S("strokes", { n: d.paint.length })]);
   L.push([S("back"), lab("back", d.back, lang)]);
   if (hasHardware(d.shape)) {
-    L.push([S("chain"), `${lab("metal", d.metal, lang)}, ${lab("hardware", d.hardware, lang)}`]);
-    L.push([S("tassel"), tasselText(d, lang)]);
-    if (d.extra !== "none") L.push([S("extra"), lab("extra", d.extra, lang)]);
+    if (d.hardware !== "none") L.push([S("chain"), `${lab("metal", d.metal, lang)}, ${lab("hardware", d.hardware, lang)}`]);
+    if (d.hardware !== "none" && d.hardware !== "necklace") L.push([S("tassel"), tasselText(d, lang)]);
+    if (d.hardware !== "none" && d.hardware !== "necklace" && d.extra !== "none") L.push([S("extra"), lab("extra", d.extra, lang)]);
   }
   if (d.second) L.push([S("matching"), S("matchingText", { l: d.second })]);
   return L;
@@ -229,7 +229,7 @@ const LETTER_FONTS = {
 };
 let curFont = "block";
 const fontSpec = () => LETTER_FONTS[curFont] || LETTER_FONTS.block;
-const PICK_D = "M150 392 C 108 344, 40 272, 44 206 C 48 150, 100 130, 150 130 C 200 130, 252 150, 256 206 C 260 272, 192 344, 150 392 Z";
+const PICK_D = "M150 392 C 120 385 62 270 55 212 C 50 168 85 150 150 150 C 215 150 250 168 245 212 C 238 270 180 385 150 392 Z";
 const HEART_D = "M150 392 C 60 330, 26 270, 38 212 C 50 154, 122 140, 150 196 C 178 140, 250 154, 262 212 C 274 270, 240 330, 150 392 Z";
 
 function rng(seed) {
@@ -256,13 +256,13 @@ function customShape(shape) { return CONFIG.shapes.find((x) => x.id === shape &&
 function bounds(shape) {
   const cs = customShape(shape);
   if (cs) return [cs.t, cs.b];
-  const b = { tag: [122, 394], heart: [150, 392], circle: [134, 390], star: [133, 400], pick: [130, 392] };
+  const b = { tag: [122, 394], heart: [150, 392], circle: [134, 390], star: [133, 400], pick: [150, 392] };
   return b[shape] || [176, 392];
 }
 function pinTop(shape) {
   const cs = customShape(shape);
   if (cs) return cs.pin;
-  const p = { tag: 134, heart: 182, circle: 140, star: 140, pick: 150 };
+  const p = { tag: 134, heart: 182, circle: 140, star: 140, pick: 158 };
   return p[shape] || 190;
 }
 
@@ -485,6 +485,14 @@ function gridLines(shape) {
   return `<g stroke="rgba(255,255,255,0.55)" stroke-width="1.2" pointer-events="none">${s}</g>`;
 }
 
+// the small hole where the ring or chain passes through (only where the piece is solid)
+function holeMark(d, id) {
+  if (d.hardware === "none" || !hasHardware(d.shape)) return "";
+  const y = pinTop(d.shape) + 16;
+  if (!insideShape(d.shape, 150, y, 6)) return "";
+  return `<circle cx="150" cy="${y}" r="5.5" fill="#EEF3F2" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>`;
+}
+
 function ensureItems(d) {
   for (const a of CONFIG.addins) {
     const sel = d.addins[a.id];
@@ -704,6 +712,7 @@ function hardwareSvg(d, id) {
     <rect x="160" y="${y + 18}" width="6" height="12" rx="2" fill="${m}"/>`;
   switch (d.hardware) {
     case "none": return "";
+    case "necklace": return `<path d="M30 14 C 52 112 248 112 270 14" fill="none" stroke="${m}" stroke-width="3" stroke-dasharray="7 3" stroke-linecap="round"/><line x1="150" y1="88" x2="150" y2="108" stroke="${METALS[d.metal][1]}" stroke-width="3"/><circle cx="150" cy="114" r="7" fill="none" stroke="${m}" stroke-width="3"/><line x1="150" y1="121" x2="150" y2="${pinTop(d.shape) + 12}" stroke="${METALS[d.metal][1]}" stroke-width="3"/>`;
     case "ring": return ring + jump(82) + jump(102);
     case "ringchain":
       return ring + [80, 93, 106, 119].map((y, i) => `<ellipse cx="150" cy="${y}" rx="${i % 2 ? 3.5 : 6}" ry="8" fill="none" stroke="${m}" stroke-width="3"/>`).join("");
@@ -824,9 +833,9 @@ function renderPiece(d, side = "front", opts = {}) {
 
   return `<svg viewBox="${zoomBox(opts.zoom, opts.pan)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(label)}">
     ${defs}
-    ${hasHardware(d.shape) ? `${tasselSvg(d, id)}
-    ${extraSvg(d, id)}
-    ${d.hardware === "none" ? "" : `<line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="url(#${id}-metal)" stroke-width="3"/>`}
+    ${hasHardware(d.shape) ? `${d.hardware === "necklace" ? "" : tasselSvg(d, id)}
+    ${d.hardware === "necklace" ? "" : extraSvg(d, id)}
+    ${d.hardware === "none" ? "" : `<line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="${METALS[d.metal][1]}" stroke-width="3"/>`}
     ${hardwareSvg(d, id)}` : ""}
     <g filter="url(#${id}-shadow)" ${flip}>
       ${glow ? `<g filter="url(#${id}-glow)" opacity="0.65">${shapeMarkup(d.shape, `fill="${d.addins.glow.color}"`)}</g>` : ""}
@@ -837,6 +846,7 @@ function renderPiece(d, side = "front", opts = {}) {
         ${gridLines(d.shape)}
       </g>
     </g>
+    ${holeMark(d, id)}
     <g class="live"></g>
   </svg>`;
 }
@@ -915,7 +925,7 @@ const STEP_VIEWS = [
     let body = "";
     if (ui.cat === "accessories") {
       body = group(U("grpLetters"), card(U("fontBlock"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font === "groovy", '{"font":"groovy"}'))
-        + group(U("grpKeychains"), byIds(["tag", "heart", "circle", "star", "pick", "oval", "square", "curved", "wing", "player", "heartset"]))
+        + group(U("grpKeychains"), byIds(["tag", "rect-tag", "oval", "square", "curved", "pick", "heart", "circle", "star", "player", "wing-large", "wing-small", "heartset"]))
         + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "tulip"]))
         + group(U("grpCombs"), byIds(["comb", "comb-moon"]))
         + group(U("grpPens"), byIds(["pen", "blade"]));
