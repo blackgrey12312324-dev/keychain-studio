@@ -181,7 +181,7 @@ function summaryLines(d, lang = ui.lang) {
   L.push([S("back"), lab("back", d.back, lang)]);
   if (hasHardware(d.shape)) {
     if (d.hardware !== "none") L.push([S("chain"), `${lab("metal", d.metal, lang)}, ${lab("hardware", d.hardware, lang)}`]);
-    if (d.hardware !== "none" && d.hardware !== "necklace") L.push([S("tassel"), tasselText(d, lang)]);
+    if (d.hardware !== "none") L.push([S("tassel"), tasselText(d, lang)]);
     if (d.hardware !== "none" && d.hardware !== "necklace" && d.extra !== "none") L.push([S("extra"), lab("extra", d.extra, lang)]);
   }
   if (d.second) L.push([S("matching"), S("matchingText", { l: d.second })]);
@@ -252,6 +252,15 @@ const SAND = { natural: "#CBB28A", white: "#EEE7D8", golden: "#DDB35C", pink: "#
 
 // wooden pieces and big trays/boards are not keychains: no ring, chain or tassel
 function hasHardware(shape) { const c = CONFIG.shapes.find((x) => x.id === shape); return !(c && (c.wood || c.size === "big")); }
+// What a new piece starts with: letters and the sea shapes from the letter molds are keychains
+// with chain and tassel; the other small molds are mostly pendants (necklace), tassel optional.
+const PENDANTS = ["tag", "rect-tag", "oval", "square", "curved", "pick", "heart", "circle", "star", "player", "wing-large", "wing-small", "heartset"];
+function applyDefaults(d) {
+  const c = CONFIG.shapes.find((x) => x.id === d.shape);
+  if (isLetter(d.shape) || isNumber(d.shape) || (c && c.mold === "groovy")) { d.hardware = "ringchain"; if (d.tassel.type === "none") d.tassel.type = "silk"; }
+  else if (PENDANTS.includes(d.shape)) { d.hardware = "necklace"; d.tassel.type = "none"; }
+  else { d.hardware = "none"; d.tassel.type = "none"; }
+}
 function customShape(shape) { return CONFIG.shapes.find((x) => x.id === shape && x.d); }
 function bounds(shape) {
   const cs = customShape(shape);
@@ -733,7 +742,7 @@ function tasselSvg(d, id) {
   if (tt.type === "none") return "";
   const R = rng(99);
   const cordColor = tt.photo ? "#C8A13A" : { gold: "#C8A13A", silver: "#AEB5BE", match: tt.color1, twist: tt.color1 }[tt.cord];
-  const cordPath = "M152 70 C 190 70, 225 80, 232 112";
+  const cordPath = d.hardware === "necklace" ? "M156 114 C 190 110, 222 108, 232 114" : "M152 70 C 190 70, 225 80, 232 112";
   let s = `<path d="${cordPath}" fill="none" stroke="${cordColor}" stroke-width="3.5" stroke-linecap="round"/>`;
   if (tt.cord === "twist") s += `<path d="${cordPath}" fill="none" stroke="#C8A13A" stroke-width="3.5" stroke-dasharray="4 4"/>`;
   const ph = tt.photo && CONFIG.tassels.find((x) => x.id === tt.photo);
@@ -833,8 +842,8 @@ function renderPiece(d, side = "front", opts = {}) {
 
   return `<svg viewBox="${zoomBox(opts.zoom, opts.pan)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(label)}">
     ${defs}
-    ${hasHardware(d.shape) ? `${d.hardware === "necklace" ? "" : tasselSvg(d, id)}
-    ${d.hardware === "necklace" ? "" : extraSvg(d, id)}
+    ${hasHardware(d.shape) ? `${d.hardware === "none" ? "" : tasselSvg(d, id)}
+    ${d.hardware === "necklace" || d.hardware === "none" ? "" : extraSvg(d, id)}
     ${d.hardware === "none" ? "" : `<line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="${METALS[d.metal][1]}" stroke-width="3"/>`}
     ${hardwareSvg(d, id)}` : ""}
     <g filter="url(#${id}-shadow)" ${flip}>
@@ -925,7 +934,8 @@ const STEP_VIEWS = [
     let body = "";
     if (ui.cat === "accessories") {
       body = group(U("grpLetters"), card(U("fontBlock"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font === "groovy", '{"font":"groovy"}'))
-        + group(U("grpKeychains"), byIds(["tag", "rect-tag", "oval", "square", "curved", "pick", "heart", "circle", "star", "player", "wing-large", "wing-small", "heartset"]))
+        + group(U("grpPendants"), byIds(PENDANTS))
+        + group(U("grpGroovy"), byIds(["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"]))
         + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "tulip"]))
         + group(U("grpCombs"), byIds(["comb", "comb-moon"]))
         + group(U("grpPens"), byIds(["pen", "blade"]));
@@ -945,7 +955,7 @@ const STEP_VIEWS = [
     <h2>${U("s1h")}</h2>
     <p class="hint">${U("s1p")}</p>
     ${isLetter(design.shape) || isNumber(design.shape) ? field(U("fontStyle"), chips("font", "font", design.font)) : ""}
-    <div class="chips"><button type="button" class="chip ${isLetter(design.shape) ? "on" : ""}" data-action="mold" data-shape="A">${U("moldLetters")}</button><button type="button" class="chip ${isNumber(design.shape) ? "on" : ""}" data-action="mold" data-shape="1">${U("moldNumbers")}</button></div>
+    <div class="chips"><button type="button" class="chip ${isLetter(design.shape) ? "on" : ""}" data-action="mold" data-shape="A">${U("moldLetters")}</button>${design.font === "groovy" ? "" : `<button type="button" class="chip ${isNumber(design.shape) ? "on" : ""}" data-action="mold" data-shape="1">${U("moldNumbers")}</button>`}</div>
     <div class="letters">${keys.map((k) =>
       `<button type="button" class="letter ${design.shape === k ? "on" : ""}" aria-pressed="${design.shape === k}" data-set="shape" data-value="${k}">${k}</button>`).join("")}</div>
     ${field(U("second"),
@@ -1327,7 +1337,7 @@ els.panel.addEventListener("click", (e) => {
     const path = el.dataset.set;
     setPath(design, path, parseVal(el.dataset.value));
     if (path === "tassel.type") design.tassel.photo = "";
-    if (path === "font") { resetItems(design); changed(); return; }
+    if (path === "font") { if (design.font === "groovy" && isNumber(design.shape)) design.shape = "A"; resetItems(design); changed(); return; }
     if (path === "shape") {
       resetItems(design);
       if (!design.letters.moved) [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
@@ -1373,6 +1383,7 @@ els.panel.addEventListener("click", (e) => {
   } else if (action === "mold") {
     design.shape = el.dataset.shape;
     if (el.dataset.extra) Object.assign(design, JSON.parse(el.dataset.extra));
+    applyDefaults(design);
     if (customShape(design.shape) && customShape(design.shape).wood) design.style = "clear";
     design.letters.moved = false;
     [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
