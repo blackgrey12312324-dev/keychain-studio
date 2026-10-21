@@ -483,6 +483,25 @@ function photoLayer(d) {
   return `<image href="${ui.photo}" x="${(cx - pw / 2).toFixed(1)}" y="${(cy - ph / 2).toFixed(1)}" width="${pw.toFixed(1)}" height="${ph.toFixed(1)}" preserveAspectRatio="none" pointer-events="none"/>`;
 }
 
+function textureLayer(shape) {
+  const c = customShape(shape);
+  if (!c || !c.tex) return "";
+  const R = rng(c.seed * 131 + 7), x0 = 134, x1 = 166, y0 = c.t + 8, y1 = c.b - 8;
+  let s = "";
+  const P = () => [x0 + R() * (x1 - x0), y0 + R() * (y1 - y0)];
+  if (c.tex === "glass") {
+    const cx = 150, cy = y0 + (y1 - y0) * (0.25 + R() * 0.5);
+    for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2 + R() * 0.4; s += `<line x1="${cx}" y1="${cy.toFixed(0)}" x2="${(cx + Math.cos(a) * 140).toFixed(0)}" y2="${(cy + Math.sin(a) * 140).toFixed(0)}"/>`; }
+    for (let i = 0; i < 26; i++) { const [px, py] = P(), a = R() * Math.PI; const l = 20 + R() * 40; s += `<line x1="${px.toFixed(0)}" y1="${py.toFixed(0)}" x2="${(px + Math.cos(a) * l).toFixed(0)}" y2="${(py + Math.sin(a) * l).toFixed(0)}"/>`; }
+  } else if (c.tex === "pebbles") {
+    for (let i = 0; i < 70; i++) { const [px, py] = P(); s += `<ellipse cx="${px.toFixed(0)}" cy="${py.toFixed(0)}" rx="${(5 + R() * 7).toFixed(0)}" ry="${(4 + R() * 6).toFixed(0)}" transform="rotate(${(R() * 180).toFixed(0)} ${px.toFixed(0)} ${py.toFixed(0)})"/>`; }
+  } else if (c.tex === "hearts") {
+    for (let i = 0; i < 18; i++) { const [px, py] = P(); s += `<path d="${heartPath(px, py, 5 + R() * 4)}"/>`; }
+  } else {
+    for (let i = 0; i < 9; i++) { const [px, py] = P(); if (i % 3 === 2) s += `<line x1="${(px - 8).toFixed(0)}" y1="${py.toFixed(0)}" x2="${(px + 8).toFixed(0)}" y2="${py.toFixed(0)}" stroke-width="3"/>`; else s += `<circle cx="${px.toFixed(0)}" cy="${(py + 3).toFixed(0)}" r="5"/>` + [[-7, -5], [-2.5, -9], [2.5, -9], [7, -5]].map(([dx, dy]) => `<circle cx="${(px + dx).toFixed(1)}" cy="${(py + dy).toFixed(1)}" r="2"/>`).join(""); }
+  }
+  return `<g fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.1" pointer-events="none">${s}</g>`;
+}
 function gridLines(shape) {
   const g = customShape(shape) && customShape(shape).grid;
   if (!g) return "";
@@ -852,7 +871,7 @@ function renderPiece(d, side = "front", opts = {}) {
         ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(226,244,242,0.6)"/>`}
         ${fill}
         ${shapeMarkup(d.shape, rim + ' pointer-events="none"')}
-        ${gridLines(d.shape)}
+        ${gridLines(d.shape)}${textureLayer(d.shape)}
       </g>
     </g>
     ${holeMark(d, id)}
@@ -937,6 +956,7 @@ const STEP_VIEWS = [
         + group(U("grpPendants"), byIds(PENDANTS))
         + group(U("grpGroovy"), byIds(["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"]))
         + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "tulip"]))
+        + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]))
         + group(U("grpCombs"), byIds(["comb", "comb-moon"]))
         + group(U("grpPens"), byIds(["pen", "blade"]));
     } else if (ui.cat === "medium") {
