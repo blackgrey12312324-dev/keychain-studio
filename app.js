@@ -251,7 +251,7 @@ const METALS = {
 const SAND = { natural: "#CBB28A", white: "#EEE7D8", golden: "#DDB35C", pink: "#EAC1B5" };
 
 // wooden pieces and big trays/boards are not keychains: no ring, chain or tassel
-function hasHardware(shape) { const c = CONFIG.shapes.find((x) => x.id === shape); return !(c && (c.wood || c.size === "big")); }
+function hasHardware(shape) { const c = CONFIG.shapes.find((x) => x.id === shape); return !(c && (c.wood || c.size === "big" || c.nohw)); }
 // What a new piece starts with: letters and the sea shapes from the letter molds are keychains
 // with chain and tassel; the other small molds are mostly pendants (necklace), tassel optional.
 const PENDANTS = ["tag", "rect-tag", "oval", "square", "curved", "pick", "heart", "circle", "star", "player", "wing-large", "wing-small", "heartset"];
@@ -955,9 +955,9 @@ const STEP_VIEWS = [
       body = group(U("grpLetters"), card(U("fontBlock"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font === "groovy", '{"font":"groovy"}'))
         + group(U("grpPendants"), byIds(PENDANTS))
         + group(U("grpGroovy"), byIds(["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"]))
-        + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "tulip"]))
+        + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]))
         + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]))
-        + group(U("grpCombs"), byIds(["comb", "comb-moon"]))
+        + group(U("grpCombs"), byIds(["comb", "comb-moon", "hairpin"]))
         + group(U("grpPens"), byIds(["pen", "blade"]));
     } else if (ui.cat === "medium") {
       body = group(U("catMed"), byIds(["board", "coaster", "love", "heart-stand", "cup", "game-ttt", "game-chess", "wood-slice", "wood-round"])) + `<p class="small-note">${U("moreSoon")}</p>`;
