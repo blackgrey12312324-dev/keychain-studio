@@ -261,6 +261,7 @@ const CONFIG = {
     { id: "wood-slice", name: "Wood slice", size: "medium", wood: "slice", d: "M62 250 C 60 190 110 160 170 165 C 235 170 258 215 252 275 C 248 330 220 372 160 372 C 100 372 64 322 62 250 Z", t: 160, b: 372, pin: 165 },
     { id: "wood-round", name: "Round wooden board", size: "medium", wood: "teak", d: "M135 128 H175 V175 C 235 190 262 235 262 290 C 262 355 215 395 150 395 C 85 395 38 355 38 290 C 38 235 65 190 125 175 V138 Z", t: 128, b: 395, pin: 140 },
     { id: "wood-tray", name: "Bamboo tray", size: "big", wood: "bamboo", d: "M55 150 H245 V400 H55 Z", t: 150, b: 400, pin: 150 },
+    { id: "heartset", name: "Best-friend heart set (2 halves)", size: "small", d: "M142 392 C52 330 18 270 30 212 C42 154 114 140 142 196 Z M158 196 C186 140 258 154 270 212 C282 270 248 330 158 392 Z", t: 150, b: 392, pin: 190 },
     { id: "star", name: "Star", name_th: "ดาว", name_ru: "Звезда" },
   ],
 

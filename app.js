@@ -5,7 +5,7 @@
    Prices, colours, add-ins and presets live in config.js.
    ========================================================= */
 Object.assign(ui, {
-  step: 0, visited: new Set([0]), side: "front", slot: 0, photo: "",
+  cat: "", step: 0, visited: new Set([0]), side: "front", slot: 0, photo: "",
   full: false, mode: "move", zoom: 1, pan: [0, 0],
   pour: { id: "", amount: "m", size: "m" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
 });
@@ -35,8 +35,8 @@ function defaultDesign() {
     edgeColor: "#2BA59A",
     back: "same",
     metal: "gold",
-    hardware: "ringchain",
-    tassel: { type: "silk", ombre: true, color1: "#F3C6DD", color2: "#F7B89A", cord: "gold", photo: "" },
+    hardware: "none",
+    tassel: { type: "none", ombre: true, color1: "#F3C6DD", color2: "#F7B89A", cord: "gold", photo: "" },
     extra: "none",
     note: "",
   };
@@ -53,6 +53,12 @@ function merge(base, extra) {
   return base;
 }
 
+function catOf(shape) {
+  if (isLetter(shape) || isNumber(shape)) return "accessories";
+  const c = CONFIG.shapes.find((x) => x.id === shape);
+  if (!c) return "accessories";
+  return ["medium"].includes(c.size) ? "medium" : c.size === "big" ? "big" : "accessories";
+}
 const SHOW_PRICES = !!CONFIG.showPrices;
 let design = defaultDesign();
 
@@ -697,6 +703,7 @@ function hardwareSvg(d, id) {
     <path d="M150 ${y} c -14 0 -18 14 -18 26 c 0 16 10 26 18 30 c 8 -4 18 -14 18 -30 c 0 -12 -4 -26 -18 -26 z" fill="none" stroke="${m}" stroke-width="5"/>
     <rect x="160" y="${y + 18}" width="6" height="12" rx="2" fill="${m}"/>`;
   switch (d.hardware) {
+    case "none": return "";
     case "ring": return ring + jump(82) + jump(102);
     case "ringchain":
       return ring + [80, 93, 106, 119].map((y, i) => `<ellipse cx="150" cy="${y}" rx="${i % 2 ? 3.5 : 6}" ry="8" fill="none" stroke="${m}" stroke-width="3"/>`).join("");
@@ -819,7 +826,7 @@ function renderPiece(d, side = "front", opts = {}) {
     ${defs}
     ${hasHardware(d.shape) ? `${tasselSvg(d, id)}
     ${extraSvg(d, id)}
-    <line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="url(#${id}-metal)" stroke-width="3"/>
+    ${d.hardware === "none" ? "" : `<line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="url(#${id}-metal)" stroke-width="3"/>`}
     ${hardwareSvg(d, id)}` : ""}
     <g filter="url(#${id}-shadow)" ${flip}>
       ${glow ? `<g filter="url(#${id}-glow)" opacity="0.65">${shapeMarkup(d.shape, `fill="${d.addins.glow.color}"`)}</g>` : ""}
@@ -881,24 +888,44 @@ const STEP_VIEWS = [
     <div class="field"><button type="button" class="btn btn-line" data-action="scratch">${U("fromScratch")}</button></div>
     <p class="small-note">${U("handmade")}</p>`,
 
-  // 1 Mold
+  // 1 Mold (category first)
   () => {
-    const fam = moldFamily(design.shape);
-    const molds = [
-      { id: "letter", label: U("moldLetters"), shape: isLetter(design.shape) ? design.shape : "A" },
-      { id: "number", label: U("moldNumbers"), shape: isNumber(design.shape) ? design.shape : "1" },
-      ...CONFIG.shapes.map((sh) => ({ id: sh.id, label: tr(sh, "name"), shape: sh.id, sizeLabel: sh.size })),
+    const CATS = [
+      { id: "accessories", name: U("catAcc"), text: U("catAccP"), shape: "A" },
+      { id: "medium", name: U("catMed"), text: U("catMedP"), shape: "board" },
+      { id: "big", name: U("catBig"), text: U("catBigP"), shape: "tray-oval" },
     ];
-    return `
-    <h2>${U("sMoldH")}</h2>
-    <p class="hint">${U("sMoldP")}</p>
-    <div class="cards molds">${molds.map((m) => {
-      const d = merge(copy(design), { shape: m.shape });
-      return `<button type="button" class="card ${fam === m.id ? "on" : ""}" aria-pressed="${fam === m.id}" data-action="mold" data-shape="${m.shape}">
-        <span class="card-art">${renderPiece(d)}</span>
-        <span class="card-name">${m.label}</span>${m.sizeLabel ? `<span class="card-text">${U({ thin: "moldThin", big: "moldBig", medium: "moldMedium" }[m.sizeLabel] || "moldSmall")}</span>` : ""}
-      </button>`;
-    }).join("")}</div>`;
+    if (!ui.cat) {
+      return `<h2>${U("catH")}</h2><p class="hint">${U("catP")}</p>
+      <div class="cards cats">${CATS.map((c) => {
+        const d = merge(copy(design), { shape: c.shape });
+        if (c.shape === "A") d.font = "block";
+        return `<button type="button" class="card cat" data-action="cat" data-id="${c.id}"><span class="card-art">${renderPiece(d)}</span><span class="card-name">${c.name}</span><span class="card-text">${c.text}</span></button>`;
+      }).join("")}</div>`;
+    }
+    const card = (label, shape, on, extra = "") => {
+      const d = merge(copy(design), { shape });
+      if (extra) Object.assign(d, JSON.parse(extra));
+      return `<button type="button" class="card ${on ? "on" : ""}" aria-pressed="${on}" data-action="mold" data-shape="${shape}" ${extra ? `data-extra='${extra}'` : ""}><span class="card-art">${renderPiece(d)}</span><span class="card-name">${label}</span></button>`;
+    };
+    const byIds = (ids) => ids.map((id) => CONFIG.shapes.find((x) => x.id === id)).filter(Boolean)
+      .map((sh) => card(tr(sh, "name"), sh.id, design.shape === sh.id)).join("");
+    const group = (title, html) => `<h3 class="mold-group">${title}</h3><div class="cards molds">${html}</div>`;
+    const fam = moldFamily(design.shape);
+    let body = "";
+    if (ui.cat === "accessories") {
+      body = group(U("grpLetters"), card(U("fontBlock"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isLetter(design.shape) || isNumber(design.shape) ? design.shape : "A", (isLetter(design.shape) || isNumber(design.shape)) && design.font === "groovy", '{"font":"groovy"}'))
+        + group(U("grpKeychains"), byIds(["tag", "heart", "circle", "star", "pick", "oval", "square", "curved", "wing", "player", "heartset"]))
+        + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "tulip"]))
+        + group(U("grpCombs"), byIds(["comb", "comb-moon"]))
+        + group(U("grpPens"), byIds(["pen", "blade"]));
+    } else if (ui.cat === "medium") {
+      body = group(U("catMed"), byIds(["board", "coaster", "love", "heart-stand", "cup", "game-ttt", "game-chess", "wood-slice", "wood-round"])) + `<p class="small-note">${U("moreSoon")}</p>`;
+    } else {
+      body = group(U("catBig"), byIds(["tray-oval", "round-big", "frame-oval", "hexagon", "heart-tray", "tray-tall", "square-big", "tray-rect", "wood-tray"])) + `<p class="small-note">${U("moreSoon")}</p>`;
+    }
+    return `<button type="button" class="btn btn-line small" data-action="cat" data-id="">${U("catBack")}</button>
+      <h2>${U("sMoldH")}</h2><p class="hint">${U("sMoldP")}</p>${body}`;
   },
 
   // 2 Letter
@@ -908,6 +935,7 @@ const STEP_VIEWS = [
     <h2>${U("s1h")}</h2>
     <p class="hint">${U("s1p")}</p>
     ${isLetter(design.shape) || isNumber(design.shape) ? field(U("fontStyle"), chips("font", "font", design.font)) : ""}
+    <div class="chips"><button type="button" class="chip ${isLetter(design.shape) ? "on" : ""}" data-action="mold" data-shape="A">${U("moldLetters")}</button><button type="button" class="chip ${isNumber(design.shape) ? "on" : ""}" data-action="mold" data-shape="1">${U("moldNumbers")}</button></div>
     <div class="letters">${keys.map((k) =>
       `<button type="button" class="letter ${design.shape === k ? "on" : ""}" aria-pressed="${design.shape === k}" data-set="shape" data-value="${k}">${k}</button>`).join("")}</div>
     ${field(U("second"),
@@ -1204,6 +1232,7 @@ function changed() {
 }
 const LETTER_STEP = 2;
 function go(step) {
+  if (step === 1 && !ui.cat && !(new URLSearchParams(location.search)).has("start") && design.shape) ui.cat = ui.cat || catOf(design.shape);
   const dir = step >= ui.step ? 1 : -1;
   step = Math.max(0, Math.min(LAST, step));
   if (step === LETTER_STEP && !isLetter(design.shape) && !isNumber(design.shape)) step += dir;
@@ -1327,8 +1356,13 @@ els.panel.addEventListener("click", (e) => {
     design.crush = [];
     ui.pourHistory = [];
     changed();
+  } else if (action === "cat") {
+    ui.cat = el.dataset.id;
+    renderPanel();
+    return;
   } else if (action === "mold") {
     design.shape = el.dataset.shape;
+    if (el.dataset.extra) Object.assign(design, JSON.parse(el.dataset.extra));
     if (customShape(design.shape) && customShape(design.shape).wood) design.style = "clear";
     design.letters.moved = false;
     [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
@@ -1712,8 +1746,9 @@ function loadFromLink() {
     ui.visited = new Set([0, 1]);
   }
   const params = new URLSearchParams(location.search);
-  if (params.has("start")) { ui.step = 1; ui.visited = new Set([0, 1]); }
+  if (params.has("start")) { ui.step = 1; ui.visited = new Set([0, 1]); ui.cat = ""; }
   const letter = (params.get("letter") || "").toUpperCase();
+  if (letter) ui.cat = "accessories";
   if (/^[A-Z0-9]$/.test(letter)) { design.shape = letter; resetItems(design); ui.step = 2; ui.visited = new Set([0, 1, 2]); }
   const m = location.hash.match(/d=([^&]+)/);
   if (!m) return;
