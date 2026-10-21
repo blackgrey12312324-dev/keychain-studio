@@ -486,13 +486,16 @@ function photoLayer(d) {
 function textureLayer(shape) {
   const c = customShape(shape);
   if (!c || !c.tex) return "";
-  const R = rng(c.seed * 131 + 7), x0 = 134, x1 = 166, y0 = c.t + 8, y1 = c.b - 8;
+  const wide = c.tex === "stones";
+  const R = rng(c.seed * 131 + 7), x0 = wide ? 50 : 134, x1 = wide ? 250 : 166, y0 = c.t + 8, y1 = c.b - 8;
   let s = "";
   const P = () => [x0 + R() * (x1 - x0), y0 + R() * (y1 - y0)];
   if (c.tex === "glass") {
     const cx = 150, cy = y0 + (y1 - y0) * (0.25 + R() * 0.5);
     for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2 + R() * 0.4; s += `<line x1="${cx}" y1="${cy.toFixed(0)}" x2="${(cx + Math.cos(a) * 140).toFixed(0)}" y2="${(cy + Math.sin(a) * 140).toFixed(0)}"/>`; }
     for (let i = 0; i < 26; i++) { const [px, py] = P(), a = R() * Math.PI; const l = 20 + R() * 40; s += `<line x1="${px.toFixed(0)}" y1="${py.toFixed(0)}" x2="${(px + Math.cos(a) * l).toFixed(0)}" y2="${(py + Math.sin(a) * l).toFixed(0)}"/>`; }
+  } else if (c.tex === "stones") {
+    for (let i = 0; i < 14; i++) { const [px, py] = P(), n = 5 + Math.floor(R() * 2), r = 24 + R() * 10; let d = ""; for (let k = 0; k < n; k++) { const a = (k / n) * Math.PI * 2 + R() * 0.5, rr = r * (0.7 + R() * 0.5); d += (k ? "L" : "M") + (px + Math.cos(a) * rr).toFixed(0) + " " + (py + Math.sin(a) * rr).toFixed(0); } s += `<path d="${d}Z"/>`; }
   } else if (c.tex === "pebbles") {
     for (let i = 0; i < 70; i++) { const [px, py] = P(); s += `<ellipse cx="${px.toFixed(0)}" cy="${py.toFixed(0)}" rx="${(5 + R() * 7).toFixed(0)}" ry="${(4 + R() * 6).toFixed(0)}" transform="rotate(${(R() * 180).toFixed(0)} ${px.toFixed(0)} ${py.toFixed(0)})"/>`; }
   } else if (c.tex === "hearts") {
@@ -960,7 +963,7 @@ const STEP_VIEWS = [
         + group(U("grpCombs"), byIds(["comb", "comb-moon", "hairpin"]))
         + group(U("grpPens"), byIds(["pen", "blade"]));
     } else if (ui.cat === "medium") {
-      body = group(U("catMed"), byIds(["board", "coaster", "love", "heart-stand", "cup", "game-ttt", "game-chess", "wood-slice", "wood-round"])) + `<p class="small-note">${U("moreSoon")}</p>`;
+      body = group(U("grpCups"), byIds(["coaster", "coaster-set", "coaster-stone"])) + `<p class="small-note">${U("cupsNote")}</p>` + group(U("catMed"), byIds(["board", "love", "heart-stand", "game-ttt", "game-chess", "wood-slice", "wood-round"])) + `<p class="small-note">${U("moreSoon")}</p>`;
     } else {
       body = group(U("catBig"), byIds(["tray-oval", "round-big", "frame-oval", "hexagon", "heart-tray", "tray-tall", "square-big", "tray-rect", "wood-tray"])) + `<p class="small-note">${U("moreSoon")}</p>`;
     }
