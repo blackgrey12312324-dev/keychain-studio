@@ -773,3 +773,5 @@ a.card { text-decoration: none; color: inherit; display: block; }
 .dd-menu a { display: block; padding: 9px 18px; border-bottom: 0 !important; white-space: nowrap; }
 .dd-menu a:hover { background: var(--aqua); }
 @media (max-width: 899px) { body.menu-open .dd-menu { display: block; position: static; border: 0; box-shadow: none; padding: 0 0 0 14px; } body.menu-open .dd-btn { display: none; } body.menu-open .dd-menu a { font-size: 1.2rem; } }
+.gallery figure, .product-photo, .refs figure { background: #F4F0E9; }
+.gallery img, .gallery video { background: #F4F0E9; }
