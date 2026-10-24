@@ -77,7 +77,6 @@ function renderHome() {
             <a class="product-photo" href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a>
             <h3><a href="design.html?preset=${p.id}">${esc(p.name)}</a></h3>
             <p>${esc(tr(p, "blurb"))}</p>
-            <a class="text-link" href="design.html?preset=${p.id}">${H("customise")}</a>
           </article>`).join("")}
         </div>
         <div class="themes">${CONFIG.gallery.filter((t) => t.items.length).map((t) => `
