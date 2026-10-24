@@ -775,3 +775,10 @@ a.card { text-decoration: none; color: inherit; display: block; }
 @media (max-width: 899px) { body.menu-open .dd-menu { display: block; position: static; border: 0; box-shadow: none; padding: 0 0 0 14px; } body.menu-open .dd-btn { display: none; } body.menu-open .dd-menu a { font-size: 1.2rem; } }
 .gallery figure, .product-photo, .refs figure { background: #F4F0E9; }
 .gallery img, .gallery video { background: #F4F0E9; }
+
+/* nav call-to-action buttons */
+.nav-links a.nav-cta, .nav-links .dd-btn.nav-cta { border: 1.5px solid #0E3F57; border-radius: 999px; padding: 7px 16px; font-weight: 600; color: #0E3F57; background: #fff; }
+.nav-links a.nav-design { background: #0E3F57; color: #fff; }
+.nav-links a.nav-cta:hover, .nav-links .dd-btn.nav-cta:hover { background: #0E3F57; color: #fff; }
+.hero .btn-big, .btn-big { font-size: 1.15rem; padding: 18px 38px; font-weight: 700; }
+.pill.pill-hl { background: var(--c); color: #fff; font-weight: 700; }

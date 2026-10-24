@@ -6,14 +6,14 @@
    ========================================================= */
 Object.assign(I18N.en, {
   nav: {
-    shop: "In the shop (available now)", sections: "Sections", design: "Design yours", canvas: "Canvases", idea: "Send an idea", reviews: "Reviews", faq: "FAQ", menu: "Menu", home: "Home",
+    shop: "Shop", sections: "Sections", design: "Design your own", canvas: "Canvases", idea: "Request something not in the shop", reviews: "Reviews", faq: "FAQ", menu: "Menu", home: "Home",
     announce: "Handmade to order in Phuket. Ready in about 5–7 days.",
   },
   home: {
-    heroEyebrow: "Handmade with love in Phuket", heroTitle2: "Little pieces of the sea, poured by Anna.", heroText2: "Keychains, bookmarks, cup stands, boards and paintings. Every piece is made by hand, one at a time, with love.", heroSign: "— Anna, Resincraftcode",
+    heroEyebrow: "Handmade with love in Phuket", heroTitle2: "Handmade resin art, poured by Anna.", heroText2: "Keychains, bookmarks, cup stands, boards and canvases, in any colour, size or shape. Every piece is made by hand, one at a time, with love.", heroSign: "— Anna, Resincraftcode",
     heroTitle: "Handmade resin art, made your way.",
     heroText: "Keychains, molds in every shape and size, and canvases of any size. Poured by hand in Phuket.",
-    heroCta: "Start designing", heroCta2: "See ready-made",
+    heroCta: "Design your own", heroCta2: "Shop",
     lettersTitle: "What would you like to make?",
     lettersSub: "Pick one to get started.",
     makeKeychainT: "Keychains & molds", makeKeychainP: "Choose a mold, then your letter, then fill it with colour, glitter and ink.", makeKeychainC: "Design a keychain",
@@ -21,8 +21,8 @@ Object.assign(I18N.en, {
     makePhotoT: "Your photo on a canvas", makePhotoP: "Send us a photo and choose the shape to crop it into.", makePhotoC: "Add my photo",
     galleryTitle: "Made by hand", gallerySub: "Real pieces from our studio: sea pours, abstract art, wooden boards and photo canvases.",
     keychainsLabel: "Keychains",
-    readyTitle: "In the shop",
-    readySub: "Ready to order now. Tap a piece to order it or customise it. Below are photos and videos of pieces we have made, sorted by section.",
+    readyTitle: "Shop",
+    readySub: "Everything below is in the shop: ready keychains first, then every section with photos and videos of pieces we have made.",
     fromLine: "Keychains from {price}", customise: "Customise", order: "Order",
     waysTitle: "Three ways to order",
     way1T: "Choose a ready-made design", way1P: "Pick one of our pieces and change the mold or letter.", way1C: "See designs",

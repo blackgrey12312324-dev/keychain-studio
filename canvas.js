@@ -30,6 +30,7 @@ const SHAPE_IDS = ["circle", "rect", "rounded", "oval", "heart", "arch", "star"]
 const cv = { kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "", decor: [], sel: -1, shapePhoto: "", seed: 3, look: 0 };
 const q = new URLSearchParams(location.search);
 if (["beach", "abstract", "photo", "board"].includes(q.get("kind"))) cv.kind = q.get("kind");
+const OCCASION = (q.get("occasion") || "").slice(0, 40);
 
 function rnd(seed) { let s = seed * 9301 + 49297; return () => ((s = (s * 9301 + 49297) % 233280) / 233280); }
 // generated pour: sea (bands, foam wave, sand) or abstract (swirls)
@@ -128,6 +129,7 @@ function moveImage() {
 
 function cvText() {
   const lines = ["Hi Anna! I'd like a canvas.", "", `Kind: ${{ abstract: "Abstract", beach: "Sea style", photo: "Custom gift (my photo)", board: "Wooden cutting board" }[cv.kind]}`, `Size: ${cv.w} x ${cv.h} cm`];
+  if (OCCASION) lines.splice(3, 0, `Occasion: ${OCCASION}`);
   if (cv.shapePhoto) lines.push("(I'll attach a picture of the shape I want)");
   if (cv.kind === "beach" || cv.kind === "abstract") lines.push("Look: " + look()[1] + " (like the photo in the app)");
   if (cv.kind === "photo") lines.push(`Cut-out shape: ${t("canvas.shapes." + cv.shape, null, "en")}`, cv.photo ? "(I'll attach my photo in this chat)" : "(photo to follow)");
@@ -149,7 +151,7 @@ function renderCanvas() {
         <div><a class="btn btn-line small" href="design.html?start=1" style="margin-bottom:14px">${C("backSections")}</a><h1>${C("title")}</h1><p class="lead">${C("sub")}</p></div>
         <div class="field"><span class="field-label">${C("kind")}</span><div class="chips">
           ${chip(cv.kind === "beach", 'data-kind="beach"', C("beach"))}${chip(cv.kind === "abstract", 'data-kind="abstract"', C("abstract"))}${chip(cv.kind === "photo", 'data-kind="photo"', C("photo"))}${chip(cv.kind === "board", 'data-kind="board"', C("board"))}</div>
-          ${cv.kind === "board" ? `<p class="small-note">${C("boardNote")}</p>` : ""}
+          ${OCCASION ? `<p class="small-note"><strong>${OCCASION.replace(/[<>&"]/g, "")}</strong></p>` : ""}${cv.kind === "board" ? `<p class="small-note">${C("boardNote")}</p>` : ""}
           ${cv.kind === "beach" ? `<p class="small-note">${C("beachNote")}</p>` : ""}${cv.kind === "abstract" ? `<p class="small-note">${C("abstractNote")}</p>` : ""}</div>
         <div class="field"><span class="field-label">${C("size")}</span>
           <div class="cv-size">

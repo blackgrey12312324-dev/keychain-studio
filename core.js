@@ -100,10 +100,11 @@ function renderChrome() {
         <button type="button" class="menu-btn" data-menu aria-expanded="false" aria-controls="nav-links"><span class="bars" aria-hidden="true"></span><span class="sr">${N("menu")}</span></button>
         <a class="wordmark" href="index.html">${CONFIG.shopName}</a>
         <nav class="nav-links" id="nav-links" aria-label="Main">
-          ${link("index.html#shop", "shop", "")}
+          <a href="index.html#shop" class="nav-cta nav-shop">${N("shop")}</a>
+          <a href="design.html?start=1" class="nav-cta nav-design">${N("design")}</a>
           <div class="dd">
-            <button type="button" class="dd-btn" aria-haspopup="true">${N("sections")} <span aria-hidden="true">▾</span></button>
-            <div class="dd-menu">${[["sec-keychains", "Keychains & necklaces"], ["sec-accessories", "Accessories"], ["sec-statues", "Statues & decor"], ["sec-kitchen", "Kitchen & table"], ["sec-cutting", "Wooden cutting boards"], ["sec-paint", "Paintings"], ["sec-gift", "Custom gifts"]].map(([id, nm]) => `<a href="index.html#${id}">${nm}</a>`).join("")}</div>
+            <button type="button" class="dd-btn nav-cta nav-sec" aria-haspopup="true">${N("sections")} <span aria-hidden="true">▾</span></button>
+            <div class="dd-menu">${[["sec-keychains", "Keychains & necklaces"], ["sec-accessories", "Accessories"], ["sec-statues", "Statues & decor"], ["sec-kitchen", "Dining & restaurant"], ["sec-cutting", "Wooden cutting boards"], ["sec-paint", "Canvas"], ["sec-gift", "Custom gifts"]].map(([id, nm]) => `<a href="index.html#${id}">${nm}</a>`).join("")}</div>
           </div>
           ${link("idea.html", "idea", "idea")}
           ${link("index.html#faq", "faq", "")}
