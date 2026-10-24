@@ -783,3 +783,13 @@ a.card { text-decoration: none; color: inherit; display: block; }
 .nav-links a.nav-cta:hover, .nav-links .dd-btn.nav-cta:hover { background: #0E3F57; color: #fff; }
 @media (min-width: 900px) { .nav-links { gap: 12px; } .nav-links a { font-size: 0.9rem; } .nav-links a.here { border-bottom-color: transparent; } }
 .btn-big { font-size: 1.15rem; padding: 18px 38px; font-weight: 700; }
+
+.styles.styles-3 { grid-template-columns: 1fr; }
+@media (min-width: 700px) { .styles.styles-3 { grid-template-columns: repeat(3, 1fr); gap: 22px; } }
+.style-card { display: block; }
+.style-cap { display: grid; gap: 2px; padding-top: 12px; }
+.style-cap strong { font-family: var(--serif); font-weight: 600; font-size: 1.4rem; }
+.style-cap span { font-size: 0.92rem; color: var(--ink-soft); }
+.rec-h { color: #134B63; border-left: 5px solid #2E8B8B; padding-left: 12px; }
+.letters-band .section-head h2 { font-family: inherit; font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.01em; color: #0E3F57; }
+.letters-band .section-head h2::after { content: ""; display: block; width: 90px; height: 6px; border-radius: 3px; background: #E8806C; margin-top: 10px; }

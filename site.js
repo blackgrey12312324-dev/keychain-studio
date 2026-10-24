@@ -57,7 +57,9 @@ function renderHome() {
           <h2>${H("readyTitle")}</h2>
           <p>${H("readySub")}</p>
         </div>
-        <h3 class="theme-h" style="margin-top:0">${H("keychainsLabel")}</h3>
+        <h3 class="theme-h rec-h" style="margin-top:0">Recommended sea designs</h3>
+        <div class="gallery rec">${[["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-canvas", "Sea canvas"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("")}</div>
+        <h3 class="theme-h">${H("keychainsLabel")}</h3>
         <div class="products">${presets.map((p) => `
           <article class="product">
             <a class="product-photo" href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a>
@@ -110,11 +112,11 @@ function renderHome() {
           <h2>${H("stylesTitle")}</h2>
           <p>${H("stylesSub")}</p>
         </div>
-        <div class="styles">${Object.keys(STYLE_PHOTOS).map((s) => `
-          <figure class="style-card">
-            <img src="${STYLE_PHOTOS[s]}" alt="" loading="lazy">
-            <figcaption><strong>${lab("style", s)}</strong><span>${lab("styleText", s)}</span></figcaption>
-          </figure>`).join("")}
+        <div class="styles styles-3">${[["Colour", "Pick from 28 epoxy colours, glitter and ink swirls.", "images/pink-heartbeat.jpg"], ["Small pieces inside", "Flowers, shells, charms, gold leaf and tiny letters.", "images/golden-hour.jpg"], ["Your photos", "Custom photos set into resin, in any shape.", "images/real/g-collage.jpg"]].map(([n, d, im]) => `
+          <a class="style-card" href="design.html?start=1" style="text-decoration:none;color:inherit">
+            <img src="${im}" alt="" loading="lazy">
+            <span class="style-cap"><strong>${n}</strong><span>${d}</span></span>
+          </a>`).join("")}
         </div>
       </div>
     </section>
