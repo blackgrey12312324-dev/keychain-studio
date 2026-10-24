@@ -944,7 +944,7 @@ const STEP_VIEWS = [
       { id: "gift", name: U("catGift"), text: U("catGiftP"), href: "canvas.html?kind=photo", shape: "circle" },
     ];
     if (!ui.cat) {
-      return `<h2>${U("catH")}</h2><p class="hint">${U("catP")}</p>
+      return `<a class="btn btn-line small" href="index.html">${U("backHome")}</a><h2>${U("catH")}</h2><p class="hint">${U("catP")}</p>
       <div class="cards cats">${CATS.map((c) => {
         const d = merge(copy(design), { shape: c.shape, hardware: "none" });
         if (c.shape === "A") d.font = "block";
@@ -959,23 +959,23 @@ const STEP_VIEWS = [
     };
     const byIds = (ids) => ids.map((id) => CONFIG.shapes.find((x) => x.id === id)).filter(Boolean)
       .map((sh) => card(tr(sh, "name"), sh.id, design.shape === sh.id)).join("");
-    const group = (title, html) => `<h3 class="mold-group">${title}</h3><div class="cards molds">${html}</div>`;
+    const group = (title, html, key = "") => `<h3 class="mold-group" ${key ? `id="grp-${key}"` : ""}>${title}</h3><div class="cards molds">${html}</div>`;
     const isL = isLetter(design.shape) || isNumber(design.shape);
     let body = "";
     if (ui.cat === "keychains") {
-      body = group(U("grpLetters"), card(U("fontBlock"), isL ? design.shape : "A", isL && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isL ? design.shape : "A", isL && design.font === "groovy", '{"font":"groovy"}'))
-        + group(U("grpPendants"), byIds(PENDANTS))
-        + group(U("grpGroovy"), byIds(["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"]));
+      body = group(U("grpLetters"), card(U("fontBlock"), isL ? design.shape : "A", isL && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isL ? design.shape : "A", isL && design.font === "groovy", '{"font":"groovy"}'), "letters")
+        + group(U("grpPendants"), byIds(PENDANTS), "pendants")
+        + group(U("grpGroovy"), byIds(["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"]), "sea");
     } else if (ui.cat === "accessories") {
-      body = group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]))
-        + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]))
-        + group(U("grpCombs"), byIds(["comb", "comb-moon", "hairpin"]))
-        + group(U("grpPens"), byIds(["pen", "blade"]));
+      body = group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]), "bookmarks")
+        + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]), "textured")
+        + group(U("grpCombs"), byIds(["comb", "comb-moon", "hairpin"]), "combs")
+        + group(U("grpPens"), byIds(["pen", "blade"]), "pens");
     } else if (ui.cat === "statues") {
-      body = group(U("catStat"), byIds(["heart-tray", "hexagon", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"])) + `<p class="small-note">${U("moreSoon")}</p>`;
+      body = group(U("catStat"), byIds(["heart-tray", "hexagon", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"]), "statues") + `<p class="small-note">${U("moreSoon")}</p>`;
     } else {
-      body = group(U("grpCups"), byIds(["coaster", "coaster-set", "coaster-stone"])) + `<p class="small-note">${U("cupsNote")}</p>`
-        + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall"])) + `<p class="small-note">${U("moreSoon")}</p>`;
+      body = group(U("grpCups"), byIds(["coaster", "coaster-set", "coaster-stone"]), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
+        + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall"]), "boards") + `<p class="small-note">${U("moreSoon")}</p>`;
     }
     const refs = (CONFIG.references && CONFIG.references[ui.cat]) || [];
     const refHtml = refs.length ? `<h3 class="mold-group">${U("refTitle")}</h3><div class="refs">${refs.map((r) => `<figure><img src="${r.img}" alt="" loading="lazy"><figcaption>${esc(r.cap)}</figcaption></figure>`).join("")}</div>` : "";
@@ -1802,6 +1802,7 @@ function loadFromLink() {
     ui.visited = new Set([0, 1]);
   }
   const params = new URLSearchParams(location.search);
+  if (params.get("cat")) { ui.cat = params.get("cat"); ui.step = 1; ui.visited = new Set([0, 1]); ui.jump = params.get("group") || ""; }
   if (params.has("start")) { ui.step = 1; ui.visited = new Set([0, 1]); ui.cat = ""; }
   const letter = (params.get("letter") || "").toUpperCase();
   if (letter) ui.cat = "keychains";
@@ -1820,6 +1821,7 @@ function loadFromLink() {
 loadFromLink();
 renderChrome();
 render();
+if (ui.jump) setTimeout(() => { const el = document.getElementById("grp-" + ui.jump); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 250);
 if (document.fonts && document.fonts.load) {
   Promise.all([document.fonts.load("20px 'Archivo Black'"), document.fonts.load("20px 'Bagel Fat One'")]).catch(() => {}).then(() => { maskCache = {}; render(); });
 }

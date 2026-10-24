@@ -55,14 +55,14 @@ function renderHome() {
           <p>${H("lettersSub")}</p>
         </div>
         <div class="make-grid">${[
-          ["design.html?start=1", "secKey", "Keychains & necklaces", ["Letter keychains (block, groovy)", "Pendants to wear on a chain", "Heart sets for two", "Sea shapes"]],
-          ["design.html?start=1", "secAcc", "Accessories", ["Bookmarks", "Hair combs and bun pin", "Pens"]],
-          ["design.html?start=1", "secStat", "Statues & decor", ["Hearts and hexagons", "Word molds", "Games"]],
-          ["design.html?start=1", "secKit", "Kitchen & table", ["Cup stands (single or set of 4)", "Serving boards", "Trays and wooden bases"]],
-          ["canvas.html?kind=board", "secCut", "Wooden cutting boards", ["Any size, any shape", "Send the size or a picture of the shape"]],
-          ["canvas.html?kind=beach", "secPaint", "Paintings", ["Sea style", "Abstract", "Any size, any shape"]],
-          ["canvas.html?kind=photo", "secGift", "Custom gifts", ["Your photo on a canvas", "Photo in a circle or any shape"]],
-        ].map(([href, k, title, subs]) => `<a class="make" href="${href}"><h3>${title}</h3><ul class="subs">${subs.map((x) => `<li>${x}</li>`).join("")}</ul><span class="text-link">Open</span></a>`).join("")}
+          ["Keychains & necklaces", "design.html?cat=keychains", [["Letter keychains (block, groovy)", "design.html?cat=keychains&group=letters"], ["Pendants to wear on a chain", "design.html?cat=keychains&group=pendants"], ["Heart sets for two", "design.html?cat=keychains&group=pendants"], ["Sea shapes", "design.html?cat=keychains&group=sea"]]],
+          ["Accessories", "design.html?cat=accessories", [["Bookmarks", "design.html?cat=accessories&group=bookmarks"], ["Hair combs and bun pin", "design.html?cat=accessories&group=combs"], ["Pens", "design.html?cat=accessories&group=pens"]]],
+          ["Statues & decor", "design.html?cat=statues", [["Hearts and hexagons", "design.html?cat=statues&group=statues"], ["Word molds", "design.html?cat=statues&group=statues"], ["Games", "design.html?cat=statues&group=statues"]]],
+          ["Kitchen & table", "design.html?cat=kitchen", [["Cup stands (single or set of 4)", "design.html?cat=kitchen&group=cups"], ["Serving boards", "design.html?cat=kitchen&group=boards"], ["Trays and wooden bases", "design.html?cat=kitchen&group=boards"]]],
+          ["Wooden cutting boards", "canvas.html?kind=board", [["Any size, any shape", "canvas.html?kind=board"], ["Send the size or a picture of the shape", "canvas.html?kind=board"]]],
+          ["Paintings", "canvas.html?kind=beach", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"], ["Any size, any shape", "canvas.html?kind=beach"]]],
+          ["Custom gifts", "canvas.html?kind=photo", [["Your photo on a canvas", "canvas.html?kind=photo"], ["Photo in a circle or any shape", "canvas.html?kind=photo"]]],
+        ].map(([title, href, subs]) => `<div class="make"><h3><a href="${href}">${title}</a></h3><ul class="subs">${subs.map(([x, hr]) => `<li><a href="${hr}">${x}</a></li>`).join("")}</ul><a class="text-link" href="${href}">Open</a></div>`).join("")}
       </div>
     </section>
 

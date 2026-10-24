@@ -6,6 +6,7 @@
    ========================================================= */
 Object.assign(I18N.en, {
   canvas: {
+    backSections: "← Back to sections",
     title: "Design a canvas",
     sub: "Any size. Choose a look from our real pours, or add your own photo and choose the shape it is cut into.",
     kind: "What kind of canvas?", beach: "Sea style", abstract: "Abstract", photo: "Custom gift (my photo)", board: "Wooden cutting board", shapePhoto: "Shape or inspiration picture (optional)", shapeNote: "Type the size above, or upload a picture of the shape you want. Attach the same picture in the Instagram chat.",  colours: "Colours", shuffle: "Different crop", lookLabel: "Choose a look", lookNote: "These are photos of canvases Anna poured. Yours is poured by hand, so it will be similar but never identical. Tell us your colours in the note.", pickSlot: "Colour {n}",
@@ -145,7 +146,7 @@ function renderCanvas() {
     <div class="canvas-page">
       <div class="cv-stage" id="cv-stage"></div>
       <div class="cv-panel">
-        <div><h1>${C("title")}</h1><p class="lead">${C("sub")}</p></div>
+        <div><a class="btn btn-line small" href="design.html?start=1" style="margin-bottom:14px">${C("backSections")}</a><h1>${C("title")}</h1><p class="lead">${C("sub")}</p></div>
         <div class="field"><span class="field-label">${C("kind")}</span><div class="chips">
           ${chip(cv.kind === "beach", 'data-kind="beach"', C("beach"))}${chip(cv.kind === "abstract", 'data-kind="abstract"', C("abstract"))}${chip(cv.kind === "photo", 'data-kind="photo"', C("photo"))}${chip(cv.kind === "board", 'data-kind="board"', C("board"))}</div>
           ${cv.kind === "board" ? `<p class="small-note">${C("boardNote")}</p>` : ""}
