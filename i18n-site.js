@@ -10,6 +10,7 @@ Object.assign(I18N.en, {
     announce: "Handmade to order in Phuket. Ready in about 5–7 days.",
   },
   home: {
+    heroEyebrow: "Handmade with love in Phuket", heroTitle2: "Little pieces of the sea, poured by Anna.", heroText2: "Keychains, bookmarks, cup stands, boards and paintings. Every piece is made by hand, one at a time, with love.", heroSign: "— Anna, Resincraftcode",
     heroTitle: "Handmade resin art, made your way.",
     heroText: "Keychains, molds in every shape and size, and canvases of any size. Poured by hand in Phuket.",
     heroCta: "Start designing", heroCta2: "See ready-made",

@@ -39,13 +39,16 @@ function renderHome() {
   root.innerHTML = `
     <section class="hero">
       <div class="hero-text">
-        <h1>${H("heroTitle")}</h1>
-        <p class="lead">${H("heroText")}</p>
+        <p class="eyebrow">${H("heroEyebrow")}</p>
+        <h1>${H("heroTitle2")}</h1>
+        <p class="lead">${H("heroText2")}</p>
         <div class="btn-row">
           <a class="btn btn-ink" href="design.html?start=1">${H("heroCta")}</a>
           <a class="btn btn-line" href="#shop">${H("heroCta2")}</a>
         </div>
+        <p class="signature">${H("heroSign")}</p>
       </div>
+      <div class="hero-strip" aria-hidden="true">${["g-round", "g-bookmark", "g-coaster-sea", "g-canvas", "g-pen-red", "g-domino"].map((n) => `<img src="images/real/${n}.jpg" alt="" loading="lazy">`).join("")}</div>
     </section>
 
     <section class="section letters-band" aria-labelledby="letters-h">
