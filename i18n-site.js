@@ -6,7 +6,7 @@
    ========================================================= */
 Object.assign(I18N.en, {
   nav: {
-    shop: "Shop", sections: "Sections", design: "Design your own", canvas: "Canvases", idea: "Request something not in the shop", reviews: "Reviews", faq: "FAQ", menu: "Menu", home: "Home",
+    shop: "Shop", sections: "Sections", design: "Design your own", canvas: "Canvases", idea: "Request something not on the site", reviews: "Reviews", faq: "FAQ", menu: "Menu", home: "Home",
     announce: "Handmade to order in Phuket. Ready in about 5–7 days.",
   },
   home: {
@@ -14,8 +14,8 @@ Object.assign(I18N.en, {
     heroTitle: "Handmade resin art, made your way.",
     heroText: "Keychains, molds in every shape and size, and canvases of any size. Poured by hand in Phuket.",
     heroCta: "Design your own", heroCta2: "Shop",
-    lettersTitle: "What would you like to make?",
-    lettersSub: "Pick one to get started.",
+    lettersTitle: "Create custom",
+    lettersSub: "Pick a section, then tap a subsection.",
     makeKeychainT: "Keychains & molds", makeKeychainP: "Choose a mold, then your letter, then fill it with colour, glitter and ink.", makeKeychainC: "Design a keychain",
     makeCanvasT: "Canvases", makeCanvasP: "Any size. Sea style or abstract, poured by hand.", makeCanvasC: "Design a canvas",
     makePhotoT: "Your photo on a canvas", makePhotoP: "Send us a photo and choose the shape to crop it into.", makePhotoC: "Add my photo",

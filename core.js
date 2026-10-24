@@ -104,10 +104,10 @@ function renderChrome() {
           <a href="design.html?start=1" class="nav-cta nav-design">${N("design")}</a>
           <div class="dd">
             <button type="button" class="dd-btn nav-cta nav-sec" aria-haspopup="true">${N("sections")} <span aria-hidden="true">▾</span></button>
-            <div class="dd-menu">${[["sec-keychains", "Keychains & necklaces"], ["sec-accessories", "Accessories"], ["sec-statues", "Statues & decor"], ["sec-kitchen", "Dining & restaurant"], ["sec-cutting", "Wooden cutting boards"], ["sec-paint", "Canvas"], ["sec-gift", "Custom gifts"]].map(([id, nm]) => `<a href="index.html#${id}">${nm}</a>`).join("")}</div>
+            <div class="dd-menu">${[["sec-keychains", "Keychains & necklaces"], ["sec-accessories", "Accessories"], ["sec-statues", "Statues & decor"], ["sec-kitchen", "Dining & restaurant"], ["sec-cutting", "Wooden cutting boards"], ["sec-paint", "Any size canvas"], ["sec-gift", "Custom gifts"], ["sec-send", "Send us a photo"]].map(([id, nm]) => `<a href="index.html#${id}">${nm}</a>`).join("")}</div>
           </div>
-          ${link("idea.html", "idea", "idea")}
-          ${link("index.html#faq", "faq", "")}
+          <a href="idea.html" class="nav-cta${page === "idea" ? " here" : ""}">${N("idea")}</a>
+          <a href="index.html#faq" class="nav-cta">${N("faq")}</a>
         </nav>
         <div class="nav-end">
           <div class="langs" role="group" aria-label="Language">
