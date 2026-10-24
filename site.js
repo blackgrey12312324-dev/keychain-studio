@@ -60,7 +60,7 @@ function renderHome() {
           ["Statues & decor", "design.html?cat=statues", [["Hearts and hexagons", "design.html?cat=statues&group=statues"], ["Word molds", "design.html?cat=statues&group=statues"], ["Games", "design.html?cat=statues&group=statues"]]],
           ["Kitchen & table", "design.html?cat=kitchen", [["Cup stands (single or set of 4)", "design.html?cat=kitchen&group=cups"], ["Serving boards", "design.html?cat=kitchen&group=boards"], ["Trays and wooden bases", "design.html?cat=kitchen&group=boards"]]],
           ["Wooden cutting boards", "canvas.html?kind=board", [["Any size, any shape", "canvas.html?kind=board"], ["Send the size or a picture of the shape", "canvas.html?kind=board"]]],
-          ["Paintings", "canvas.html?kind=beach", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"], ["Any size, any shape", "canvas.html?kind=beach"]]],
+          ["Paintings", "design.html?cat=paint", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"], ["Resin on wood", "canvas.html?kind=board"], ["Photo canvas", "canvas.html?kind=photo"], ["Any size, any shape", "design.html?cat=paint"]]],
           ["Custom gifts", "canvas.html?kind=photo", [["Your photo on a canvas", "canvas.html?kind=photo"], ["Photo in a circle or any shape", "canvas.html?kind=photo"]]],
         ].map(([title, href, subs]) => `<div class="make"><h3><a href="${href}">${title}</a></h3><ul class="subs">${subs.map(([x, hr]) => `<li><a href="${hr}">${x}</a></li>`).join("")}</ul><a class="text-link" href="${href}">Open</a></div>`).join("")}
       </div>
