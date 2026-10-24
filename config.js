@@ -15,7 +15,8 @@ const CONFIG = {
   readyTime_th: "ประมาณ 5–7 วัน",
   readyTime_ru: "примерно 5–7 дней",
   currency: "฿",
-  showPrices: false,   // prices are hidden for now; set to true when Anna is ready
+  showPrices: false,
+  showTexture: false,   // inner pattern lines on textured molds (off = clean outline only)   // prices are hidden for now; set to true when Anna is ready
 
   prices: {
     base: 150,
@@ -245,8 +246,6 @@ const CONFIG = {
     { id: "tray-oval", name: "Oval tray", size: "big", d: "M50 215 A100 100 0 0 1 250 215 V300 A100 100 0 0 1 50 300 Z", t: 115, b: 400, pin: 120 },
     { id: "board", name: "Serving board", size: "medium", d: "M118 112 H182 V150 L205 165 H250 V405 H50 V165 H95 L118 150 Z", t: 112, b: 405, pin: 125 },
     { id: "tray-rect", name: "Rectangle tray (cut corners)", size: "big", d: "M60 205 H240 L262 227 V353 L240 375 H60 L38 353 V227 Z", t: 205, b: 375, pin: 200 },
-    { id: "square-big", name: "Square", size: "big", d: "M52 190 H248 V386 H52 Z", t: 190, b: 386, pin: 170 },
-    { id: "round-big", name: "Big round tray", size: "big", custom: true, d: "M22 262 A128 128 0 1 0 278 262 A128 128 0 1 0 22 262Z", t: 134, b: 390, pin: 134 },
     { id: "frame-oval", name: "Oval frame", size: "big", custom: true, d: "M30 262 A120 95 0 1 0 270 262 A120 95 0 1 0 30 262Z", t: 167, b: 357, pin: 167 },
     { id: "tray-tall", name: "Large rectangle tray", size: "big", custom: true, d: "M65 140 H235 V395 H65 Z", t: 140, b: 395, pin: 140 },
     { id: "hexagon", name: "Hexagon tray", size: "big", custom: true, d: "M150 130 L258 192 V332 L150 394 L42 332 V192 Z", t: 130, b: 394, pin: 130 },
@@ -420,6 +419,18 @@ CONFIG.seaItems.forEach((s) => {
   CONFIG.addins.push({ id: `sea-${s.id}`, name: s.name, price: 0, color: "#D4AF37", drag: true, group: "sea", img: s.img, size: s.size, fx: "drop-shadow(0 1px 1.5px rgba(0,0,0,0.35))" });
   CONFIG.paperFlowers.push({ id: `sea-${s.id}`, name: s.name, img: s.img });
 });
+
+// Photos of pieces Anna already made, shown inside each section as a reference.
+// To add one: put the photo in images/real/ and add a line here.
+CONFIG.references = {
+  keychains: [{ img: "images/real/g-round.jpg", cap: "Sea pour pendant" }, { img: "images/real/g-tail.jpg", cap: "Mermaid tail" }, { img: "images/real/g-saeed.jpg", cap: "Name in sand letters" }],
+  accessories: [{ img: "images/real/g-bookmark.jpg", cap: "Sea bookmark with tassel" }, { img: "images/real/g-pen.jpg", cap: "Pen with dried flowers and gold leaf" }],
+  statues: [{ img: "images/real/g-domino.jpg", cap: "Domino set" }, { img: "images/real/g-tree.jpg", cap: "Tree piece" }],
+  kitchen: [{ img: "images/real/g-woodtray.jpg", cap: "Wooden tray" }, { img: "images/real/g-paddle.jpg", cap: "Paddle board" }],
+  cutting: [{ img: "images/real/g-woodtray.jpg", cap: "Resin on wood" }, { img: "images/real/g-paddle.jpg", cap: "Sea paddle board" }],
+  paint: [{ img: "images/real/g-canvas.jpg", cap: "Sea canvas" }, { img: "images/real/g-plum.jpg", cap: "Plum abstract" }, { img: "images/real/g-copper.jpg", cap: "Copper abstract" }],
+  gift: [{ img: "images/real/g-collage.jpg", cap: "Photo collage" }],
+};
 
 /* =========================================================
    ✏️ REVIEWS — paste your real customer reviews here.

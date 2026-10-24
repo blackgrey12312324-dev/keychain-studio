@@ -701,18 +701,8 @@ input.text-input.wide-input { width: 100%; font-family: var(--sans, inherit); fo
 
 /* ---------- More colour: sea photo hero, tinted sections ---------- */
 :root { --coral: #E8806C; --aqua: #DDF1F0; --sand: #F7ECDA; --deep: #0E3F57; --lilac: #ECE4F4; }
-.hero {
-  background:
-    linear-gradient(115deg, rgba(8, 52, 80, 0.86) 0%, rgba(22, 120, 150, 0.62) 55%, rgba(232, 128, 108, 0.5) 100%),
-    url("images/real/sea.jpg") center / cover;
-  color: #fff;
-}
-.hero-text h1, .hero-text .lead { color: #fff; }
-.hero-text .lead { opacity: 0.92; }
-.hero .btn-ink { background: #fff; color: var(--deep); border-color: #fff; }
-.hero .btn-ink:hover { background: var(--sand); }
-.hero .btn-line { color: #fff; border-color: rgba(255, 255, 255, 0.85); background: transparent; }
-.hero .btn-line:hover { background: rgba(255, 255, 255, 0.16); }
+.hero { background: #F4F0E9; color: var(--ink); }
+.hero-text h1, .hero-text .lead { color: var(--ink); }
 .letters-band { background: var(--aqua); }
 #shop.section { background: var(--sand); }
 .make { background: #fff; border: 0; border-top: 6px solid var(--ocean); box-shadow: 0 6px 20px rgba(14, 63, 87, 0.08); }
@@ -731,3 +721,11 @@ body[data-page="design"], body.designer { background: linear-gradient(180deg, #E
 .card.cat:nth-child(3) { border-top-color: #8C6BB1; }
 .mold-group { font-family: var(--serif); font-weight: 500; font-size: 1.5rem; margin: 26px 0 10px; color: var(--deep); }
 a.card { text-decoration: none; color: inherit; display: block; }
+
+.make .subs { list-style: none; margin: 0 0 6px; padding: 0; color: var(--ink-soft); }
+.make .subs li { padding: 4px 0; border-bottom: 1px solid var(--line); font-size: 0.97rem; }
+.make-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.refs { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+.refs figure { margin: 0; }
+.refs img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; background: var(--panel); }
+.refs figcaption { font-size: 0.85rem; color: var(--ink-soft); padding-top: 4px; }

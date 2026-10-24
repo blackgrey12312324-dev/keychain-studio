@@ -54,11 +54,15 @@ function renderHome() {
           <h2 id="letters-h">${H("lettersTitle")}</h2>
           <p>${H("lettersSub")}</p>
         </div>
-        <div class="make-grid">
-          <a class="make" href="design.html?start=1"><h3>${H("makeKeychainT")}</h3><p>${H("makeKeychainP")}</p><span class="text-link">${H("makeKeychainC")}</span></a>
-          <a class="make" href="canvas.html?kind=beach"><h3>${H("makeCanvasT")}</h3><p>${H("makeCanvasP")}</p><span class="text-link">${H("makeCanvasC")}</span></a>
-          <a class="make" href="canvas.html?kind=photo"><h3>${H("makePhotoT")}</h3><p>${H("makePhotoP")}</p><span class="text-link">${H("makePhotoC")}</span></a>
-        </div>
+        <div class="make-grid">${[
+          ["design.html?start=1", "secKey", "Keychains & necklaces", ["Letter keychains (block, groovy)", "Pendants to wear on a chain", "Heart sets for two", "Sea shapes"]],
+          ["design.html?start=1", "secAcc", "Accessories", ["Bookmarks", "Hair combs and bun pin", "Pens"]],
+          ["design.html?start=1", "secStat", "Statues & decor", ["Hearts and hexagons", "Word molds", "Games"]],
+          ["design.html?start=1", "secKit", "Kitchen & table", ["Cup stands (single or set of 4)", "Serving boards", "Trays and wooden bases"]],
+          ["canvas.html?kind=board", "secCut", "Wooden cutting boards", ["Any size, any shape", "Send the size or a picture of the shape"]],
+          ["canvas.html?kind=beach", "secPaint", "Paintings", ["Sea style", "Abstract", "Any size, any shape"]],
+          ["canvas.html?kind=photo", "secGift", "Custom gifts", ["Your photo on a canvas", "Photo in a circle or any shape"]],
+        ].map(([href, k, title, subs]) => `<a class="make" href="${href}"><h3>${title}</h3><ul class="subs">${subs.map((x) => `<li>${x}</li>`).join("")}</ul><span class="text-link">Open</span></a>`).join("")}
       </div>
     </section>
 

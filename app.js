@@ -59,7 +59,7 @@ function catOf(shape) {
   if (!c) return "keychains";
   if (PENDANTS.includes(shape) || c.mold === "groovy") return "keychains";
   if (["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "comb", "comb-moon", "hairpin", "pen", "blade"].includes(shape) || c.tex === "glass" || /^bm-/.test(shape)) return "accessories";
-  if (["heart-tray", "hexagon", "round-big", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"].includes(shape)) return "statues";
+  if (["heart-tray", "hexagon", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"].includes(shape)) return "statues";
   return "kitchen";
 }
 const SHOW_PRICES = !!CONFIG.showPrices;
@@ -853,14 +853,14 @@ function renderPiece(d, side = "front", opts = {}) {
     <filter id="${id}-foam"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
     <filter id="${id}-soft"><feGaussianBlur stdDeviation="9"/></filter>
     <filter id="${id}-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
-    <filter id="${id}-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#08445C" flood-opacity="0.22"/></filter>
+    <filter id="${id}-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000000" flood-opacity="0.16"/></filter>
   </defs>`;
 
   const plainBack = side === "back" && d.back === "plain";
   const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
-  const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.6" stroke-linejoin="round"`;
+  const rim = `fill="none" stroke="#B8BDC2" stroke-width="2.6" stroke-linejoin="round"`;
 
   const flip = side === "back" ? `transform="matrix(-1 0 0 1 300 0)"` : "";
   const label = `${shapeName(d.shape)}, ${lab("style", d.style)}`;
@@ -876,9 +876,9 @@ function renderPiece(d, side = "front", opts = {}) {
       <g clip-path="url(#${id}-clip)" class="resin">
         ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(226,244,242,0.6)"/>`}
         ${fill}
-        ${shapeMarkup(d.shape, rim + ' pointer-events="none"')}
-        ${gridLines(d.shape)}${textureLayer(d.shape)}
+        ${CONFIG.showTexture ? gridLines(d.shape) + textureLayer(d.shape) : ""}
       </g>
+      ${shapeMarkup(d.shape, rim + ' pointer-events="none"')}
     </g>
     ${holeMark(d, id)}
     <g class="live"></g>
@@ -939,8 +939,9 @@ const STEP_VIEWS = [
       { id: "accessories", name: U("catAcc"), text: U("catAccP"), shape: "bookmark" },
       { id: "statues", name: U("catStat"), text: U("catStatP"), shape: "hexagon" },
       { id: "kitchen", name: U("catKit"), text: U("catKitP"), shape: "coaster-set" },
+      { id: "cutting", name: U("catCut"), text: U("catCutP"), href: "canvas.html?kind=board", shape: "board" },
       { id: "paint", name: U("catPaint"), text: U("catPaintP"), href: "canvas.html?kind=beach", shape: "tray-tall" },
-      { id: "gift", name: U("catGift"), text: U("catGiftP"), href: "canvas.html?kind=photo", shape: "round-big" },
+      { id: "gift", name: U("catGift"), text: U("catGiftP"), href: "canvas.html?kind=photo", shape: "circle" },
     ];
     if (!ui.cat) {
       return `<h2>${U("catH")}</h2><p class="hint">${U("catP")}</p>
@@ -971,13 +972,15 @@ const STEP_VIEWS = [
         + group(U("grpCombs"), byIds(["comb", "comb-moon", "hairpin"]))
         + group(U("grpPens"), byIds(["pen", "blade"]));
     } else if (ui.cat === "statues") {
-      body = group(U("catStat"), byIds(["heart-tray", "hexagon", "round-big", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"])) + `<p class="small-note">${U("moreSoon")}</p>`;
+      body = group(U("catStat"), byIds(["heart-tray", "hexagon", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"])) + `<p class="small-note">${U("moreSoon")}</p>`;
     } else {
       body = group(U("grpCups"), byIds(["coaster", "coaster-set", "coaster-stone"])) + `<p class="small-note">${U("cupsNote")}</p>`
-        + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall", "square-big"])) + `<p class="small-note">${U("moreSoon")}</p>`;
+        + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall"])) + `<p class="small-note">${U("moreSoon")}</p>`;
     }
+    const refs = (CONFIG.references && CONFIG.references[ui.cat]) || [];
+    const refHtml = refs.length ? `<h3 class="mold-group">${U("refTitle")}</h3><div class="refs">${refs.map((r) => `<figure><img src="${r.img}" alt="" loading="lazy"><figcaption>${esc(r.cap)}</figcaption></figure>`).join("")}</div>` : "";
     return `<button type="button" class="btn btn-line small" data-action="cat" data-id="">${U("catBack")}</button>
-      <h2>${U("sMoldH")}</h2><p class="hint">${U("sMoldP")}</p>${body}`;
+      <h2>${U("sMoldH")}</h2><p class="hint">${U("sMoldP")}</p>${body}${refHtml}`;
   },
 
   // 2 Letter

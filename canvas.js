@@ -8,7 +8,7 @@ Object.assign(I18N.en, {
   canvas: {
     title: "Design a canvas",
     sub: "Any size. Choose a look from our real pours, or add your own photo and choose the shape it is cut into.",
-    kind: "What kind of canvas?", beach: "Sea style", abstract: "Abstract", photo: "Custom gift (my photo)", board: "Wooden board", colours: "Colours", shuffle: "Different crop", lookLabel: "Choose a look", lookNote: "These are photos of canvases Anna poured. Yours is poured by hand, so it will be similar but never identical. Tell us your colours in the note.", pickSlot: "Colour {n}",
+    kind: "What kind of canvas?", beach: "Sea style", abstract: "Abstract", photo: "Custom gift (my photo)", board: "Wooden cutting board", shapePhoto: "Shape or inspiration picture (optional)", shapeNote: "Type the size above, or upload a picture of the shape you want. Attach the same picture in the Instagram chat.",  colours: "Colours", shuffle: "Different crop", lookLabel: "Choose a look", lookNote: "These are photos of canvases Anna poured. Yours is poured by hand, so it will be similar but never identical. Tell us your colours in the note.", pickSlot: "Colour {n}",
     size: "Size (cm)", width: "Width", height: "Height", presets: "Quick sizes",
     shape: "Cut-out shape", shapes: { circle: "Circle", rect: "Rectangle", rounded: "Rounded", oval: "Oval", heart: "Heart", arch: "Arch", star: "Star" },
     photoLabel: "Your photo", choose: "Choose a photo", change: "Change photo",
@@ -18,7 +18,7 @@ Object.assign(I18N.en, {
     name: "Your name", send: "Send by DM", copied: "Copied! Paste it in the DM and attach your photo.",
     copyFail: "Copy the message below and paste it in the DM.", message: "Your message",
     decor: "Paper flowers and trees", decorHint: "Tap one to add it, then drag it on the picture. Real 3D paper flowers and miniature trees.", flSize: "Flower size", flRemove: "Remove flower",
-    boardNote: "Resin on a wooden board, any size you like. Tell us the colours and mood you want.",
+    boardNote: "Resin on a wooden cutting board, any size, any shape. Tell us the colours and mood you want.",
     beachNote: "Sea style canvases are poured by hand. Pick the look closest to what you want.", abstractNote: "Abstract canvases are poured by hand, so every one is unique. Pick the look closest to what you want.",
   },
 });
@@ -26,7 +26,7 @@ const C = (k, v) => t("canvas." + k, v);
 
 const SIZES = [[20, 20], [20, 30], [30, 30], [30, 40], [40, 50], [50, 70]];
 const SHAPE_IDS = ["circle", "rect", "rounded", "oval", "heart", "arch", "star"];
-const cv = { kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "", decor: [], sel: -1, seed: 3, look: 0 };
+const cv = { kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "", decor: [], sel: -1, shapePhoto: "", seed: 3, look: 0 };
 const q = new URLSearchParams(location.search);
 if (["beach", "abstract", "photo", "board"].includes(q.get("kind"))) cv.kind = q.get("kind");
 
@@ -126,8 +126,8 @@ function moveImage() {
 }
 
 function cvText() {
-  const lines = ["Hi Anna! I'd like a canvas.", "", `Kind: ${{ abstract: "Abstract", beach: "Sea style", photo: "My photo", board: "Wooden board" }[cv.kind]}`, `Size: ${cv.w} x ${cv.h} cm`];
-  if (cv.kind === "board") lines.push("Wooden board, any size");
+  const lines = ["Hi Anna! I'd like a canvas.", "", `Kind: ${{ abstract: "Abstract", beach: "Sea style", photo: "Custom gift (my photo)", board: "Wooden cutting board" }[cv.kind]}`, `Size: ${cv.w} x ${cv.h} cm`];
+  if (cv.shapePhoto) lines.push("(I'll attach a picture of the shape I want)");
   if (cv.kind === "beach" || cv.kind === "abstract") lines.push("Look: " + look()[1] + " (like the photo in the app)");
   if (cv.kind === "photo") lines.push(`Cut-out shape: ${t("canvas.shapes." + cv.shape, null, "en")}`, cv.photo ? "(I'll attach my photo in this chat)" : "(photo to follow)");
   if (cv.decor.length) lines.push("Paper flowers: " + cv.decor.map((f) => CONFIG.paperFlowers.find((x) => x.id === f.id).name).join(", "));
@@ -160,6 +160,7 @@ function renderCanvas() {
           <div class="gl-grid">${LOOKS[cv.kind].map(([id, nm], i) => `<button type="button" class="gl ${cv.look === i ? "on" : ""}" data-look="${i}"><span class="gl-img"><img src="images/real/${id}.jpg" alt="" style="object-fit:cover"></span><span class="gl-name">${nm}</span></button>`).join("")}</div>
           <button type="button" class="btn btn-line small" style="margin-top:10px" data-shuffle="1">${C("shuffle")}</button>
           <p class="small-note">${C("lookNote")}</p></div>` : ""}
+        ${cv.kind !== "photo" ? `<div class="field"><span class="field-label">${C("shapePhoto")}</span><input type="file" accept="image/*" id="cv-shape">${cv.shapePhoto ? `<img src="${cv.shapePhoto}" alt="" style="max-height:120px;margin-top:8px">` : ""}<p class="small-note">${C("shapeNote")}</p></div>` : ""}
         ${cv.kind === "photo" ? `
         <div class="field"><span class="field-label">${C("shape")}</span><div class="chips">
           ${SHAPE_IDS.map((s) => chip(cv.shape === s, `data-shape="${s}"`, C("shapes." + s))).join("")}</div></div>
@@ -217,6 +218,7 @@ document.addEventListener("input", (e) => {
 });
 document.addEventListener("change", (e) => {
   if (e.target.id === "cv-w" || e.target.id === "cv-h") renderCanvas();
+  if (e.target.id === "cv-shape" && e.target.files[0]) { cv.shapePhoto = URL.createObjectURL(e.target.files[0]); renderCanvas(); return; }
   if (e.target.id !== "cv-file" || !e.target.files[0]) return;
   if (cv.photo) URL.revokeObjectURL(cv.photo);
   const url = URL.createObjectURL(e.target.files[0]);
