@@ -80,13 +80,12 @@ function renderHome() {
             <a class="text-link" href="design.html?preset=${p.id}">${H("customise")}</a>
           </article>`).join("")}
         </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="wrap">
-        <div class="section-head"><h2>${H("galleryTitle")}</h2><p>${H("gallerySub")}</p></div>
-        <div class="gallery">${["g-saeed", "g-canvas", "g-woodtray", "g-tail", "g-bookmark", "g-plum", "g-paddle", "g-domino", "g-copper", "g-pen", "g-tree", "g-collage"].map((n) => `<img src="images/real/${n}.jpg" alt="" loading="lazy">`).join("")}<video src="images/real/lamp.mp4" poster="images/real/lamp.jpg" autoplay muted loop playsinline></video></div>
+        <div class="themes">${CONFIG.gallery.map((t) => `
+          <h3 class="theme-h">${esc(t.theme)}</h3>
+          <div class="gallery">${t.items.map((it) => it.video
+            ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption>${esc(it.cap)}</figcaption></figure>`
+            : `<figure><img src="${it.img}" alt="${esc(it.cap)}" loading="lazy"><figcaption>${esc(it.cap)}</figcaption></figure>`).join("")}</div>`).join("")}
+        </div>
       </div>
     </section>
 

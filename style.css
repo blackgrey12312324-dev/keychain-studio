@@ -733,3 +733,8 @@ a.card { text-decoration: none; color: inherit; display: block; }
 .make h3 a, .make .subs a { text-decoration: none; color: inherit; }
 .make .subs a { display: block; }
 .make .subs a:hover { color: var(--ocean); text-decoration: underline; }
+
+.themes { margin-top: 56px; }
+.theme-h { font-family: var(--serif); font-weight: 500; font-size: 1.6rem; margin: 34px 0 12px; color: var(--deep); }
+.gallery figure { margin: 0; }
+.gallery figcaption { font-size: 0.85rem; color: var(--ink-soft); padding-top: 4px; }

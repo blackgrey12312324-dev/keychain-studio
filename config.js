@@ -432,6 +432,18 @@ CONFIG.references = {
   gift: [{ img: "images/real/g-collage.jpg", cap: "Photo collage" }],
 };
 
+// Photos and videos of finished pieces, shown in the shop sorted by theme.
+// To add one: put the file in images/real/ and add { img: "images/real/name.jpg", cap: "text" }
+// (or { video: "images/real/name.mp4", poster: "images/real/name.jpg", cap: "text" }) under a theme.
+CONFIG.gallery = [
+  { theme: "Sea and beach", items: [{ img: "images/real/g-saeed.jpg", cap: "Name in sand letters" }, { img: "images/real/g-round.jpg", cap: "Sea pour pendant" }, { img: "images/real/g-tail.jpg", cap: "Mermaid tail" }, { img: "images/real/g-canvas.jpg", cap: "Sea canvas" }, { img: "images/real/g-paddle.jpg", cap: "Paddle board" }] },
+  { theme: "Abstract and ink", items: [{ img: "images/real/g-plum.jpg", cap: "Plum abstract" }, { img: "images/real/g-copper.jpg", cap: "Copper abstract" }] },
+  { theme: "Flowers, gold and nature", items: [{ img: "images/real/g-pen.jpg", cap: "Pen with dried flowers and gold leaf" }, { img: "images/real/g-bookmark.jpg", cap: "Sea bookmark with tassel" }, { img: "images/real/g-tree.jpg", cap: "Tree piece" }] },
+  { theme: "Boards and trays", items: [{ img: "images/real/g-woodtray.jpg", cap: "Resin on wood" }] },
+  { theme: "Games and gifts", items: [{ img: "images/real/g-domino.jpg", cap: "Domino set" }, { img: "images/real/g-collage.jpg", cap: "Photo collage" }] },
+  { theme: "Videos", items: [{ video: "images/real/lamp.mp4", poster: "images/real/lamp.jpg", cap: "Resin lamp with LED lights" }] },
+];
+
 /* =========================================================
    ✏️ REVIEWS — paste your real customer reviews here.
    While this list is empty, the home page shows your Instagram instead.
