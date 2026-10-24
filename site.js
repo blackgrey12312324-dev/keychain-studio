@@ -80,7 +80,7 @@ function renderHome() {
             <a class="text-link" href="design.html?preset=${p.id}">${H("customise")}</a>
           </article>`).join("")}
         </div>
-        <div class="themes">${CONFIG.gallery.map((t) => `
+        <div class="themes">${CONFIG.gallery.filter((t) => t.items.length).map((t) => `
           <h3 class="theme-h">${esc(t.theme)}</h3>
           <div class="gallery">${t.items.map((it) => it.video
             ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption>${esc(it.cap)}</figcaption></figure>`
