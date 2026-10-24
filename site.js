@@ -65,7 +65,7 @@ function renderHome() {
           ["Wooden cutting boards", "canvas.html?kind=board", "images/real/g-woodtray.jpg", "#B5803E", [["Any size, any shape", "canvas.html?kind=board"]]],
           ["Paintings", "design.html?cat=paint", "images/real/g-canvas.jpg", "#2F5FA8", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"]]],
           ["Custom gifts", "canvas.html?kind=photo", "images/real/g-collage.jpg", "#C45160", [["Your photo, any shape", "canvas.html?kind=photo"]]],
-        ].map(([title, href, img, col, subs]) => `<div class="make" style="--c:${col}"><a class="make-img" href="${href}"><img src="${img}" alt="" loading="lazy"></a><div class="make-body"><h3><a href="${href}">${title}</a></h3><div class="chips-row">${subs.map(([x, hr]) => `<a class="pill" href="${hr}">${x}</a>`).join("")}</div></div></div>`).join("")}
+        ].map(([title, href, img, col, subs], n) => `<div class="make" id="sec-${["keychains","accessories","statues","kitchen","cutting","paint","gift"][n]}" style="--c:${col}"><a class="make-img" href="${href}"><img src="${img}" alt="" loading="lazy"></a><div class="make-body"><h3><a href="${href}">${title}</a></h3><div class="chips-row">${subs.map(([x, hr]) => `<a class="pill" href="${hr}">${x}</a>`).join("")}</div></div></div>`).join("")}
       </div>
     </section>
 

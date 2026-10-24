@@ -6,7 +6,7 @@
    ========================================================= */
 Object.assign(I18N.en, {
   nav: {
-    shop: "Shop", design: "Design yours", canvas: "Canvases", idea: "Send an idea", reviews: "Reviews", faq: "FAQ", menu: "Menu", home: "Home",
+    shop: "In the shop (available now)", sections: "Sections", design: "Design yours", canvas: "Canvases", idea: "Send an idea", reviews: "Reviews", faq: "FAQ", menu: "Menu", home: "Home",
     announce: "Handmade to order in Phuket. Ready in about 5–7 days.",
   },
   home: {
@@ -68,7 +68,7 @@ Object.assign(I18N.en, {
 
 Object.assign(I18N.th, {
   nav: {
-    shop: "ร้านค้า", design: "ออกแบบเอง", canvas: "ผ้าใบ", idea: "ส่งไอเดีย", reviews: "รีวิว", faq: "คำถาม", menu: "เมนู", home: "หน้าแรก",
+    shop: "ในร้าน (พร้อมขาย)", sections: "หมวดหมู่", design: "ออกแบบเอง", canvas: "ผ้าใบ", idea: "ส่งไอเดีย", reviews: "รีวิว", faq: "คำถาม", menu: "เมนู", home: "หน้าแรก",
     announce: "งานทำมือตามสั่งจากภูเก็ต เสร็จภายในประมาณ 5–7 วัน",
   },
   home: {
@@ -128,7 +128,7 @@ Object.assign(I18N.th, {
 
 Object.assign(I18N.ru, {
   nav: {
-    shop: "Магазин", design: "Создать свой", canvas: "Холсты", idea: "Отправить идею", reviews: "Отзывы", faq: "Вопросы", menu: "Меню", home: "Главная",
+    shop: "В магазине (в наличии)", sections: "Разделы", design: "Создать свой", canvas: "Холсты", idea: "Отправить идею", reviews: "Отзывы", faq: "Вопросы", menu: "Меню", home: "Главная",
     announce: "Ручная работа на заказ, Пхукет. Готово примерно за 5–7 дней.",
   },
   home: {

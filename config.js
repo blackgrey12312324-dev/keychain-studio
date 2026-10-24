@@ -425,9 +425,9 @@ CONFIG.seaItems.forEach((s) => {
 CONFIG.references = {
   keychains: [{ img: "images/real/g-round.jpg", cap: "Sea pour pendant" }, { img: "images/real/g-tail.jpg", cap: "Mermaid tail" }, { img: "images/real/g-saeed.jpg", cap: "Name in sand letters" }],
   accessories: [{ img: "images/real/g-bookmark.jpg", cap: "Sea bookmark with tassel" }, { img: "images/real/g-pen.jpg", cap: "Pen with dried flowers and gold leaf" }],
-  statues: [{ img: "images/real/g-domino.jpg", cap: "Domino set" }, { img: "images/real/g-tree.jpg", cap: "Tree piece" }],
+  statues: [{ img: "images/real/g-domino.jpg", cap: "Domino set" }],
   kitchen: [{ img: "images/real/g-woodtray.jpg", cap: "Wooden tray" }, { img: "images/real/g-paddle.jpg", cap: "Paddle board" }],
-  cutting: [{ img: "images/real/g-woodtray.jpg", cap: "Resin on wood" }, { img: "images/real/g-paddle.jpg", cap: "Sea paddle board" }],
+  cutting: [{ img: "images/real/g-woodtray.jpg", cap: "Resin on wood" }, { img: "images/real/g-paddle.jpg", cap: "Sea paddle board" }, { img: "images/real/g-tree.jpg", cap: "Wooden board with resin" }],
   paint: [{ img: "images/real/g-canvas.jpg", cap: "Sea canvas" }, { img: "images/real/g-plum.jpg", cap: "Plum abstract" }, { img: "images/real/g-copper.jpg", cap: "Copper abstract" }],
   gift: [{ img: "images/real/g-collage.jpg", cap: "Photo collage" }],
 };

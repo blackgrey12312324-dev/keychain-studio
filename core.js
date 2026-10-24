@@ -101,8 +101,10 @@ function renderChrome() {
         <a class="wordmark" href="index.html">${CONFIG.shopName}</a>
         <nav class="nav-links" id="nav-links" aria-label="Main">
           ${link("index.html#shop", "shop", "")}
-          ${link("design.html?start=1", "design", "design")}
-          ${link("canvas.html", "canvas", "canvas")}
+          <div class="dd">
+            <button type="button" class="dd-btn" aria-haspopup="true">${N("sections")} <span aria-hidden="true">▾</span></button>
+            <div class="dd-menu">${[["sec-keychains", "Keychains & necklaces"], ["sec-accessories", "Accessories"], ["sec-statues", "Statues & decor"], ["sec-kitchen", "Kitchen & table"], ["sec-cutting", "Wooden cutting boards"], ["sec-paint", "Paintings"], ["sec-gift", "Custom gifts"]].map(([id, nm]) => `<a href="index.html#${id}">${nm}</a>`).join("")}</div>
+          </div>
           ${link("idea.html", "idea", "idea")}
           ${link("index.html#faq", "faq", "")}
         </nav>
@@ -124,8 +126,7 @@ function renderChrome() {
         </div>
         <nav class="foot-col" aria-label="Shop">
           <a href="index.html#shop">${N("shop")}</a>
-          <a href="design.html?start=1">${N("design")}</a>
-          <a href="canvas.html">${N("canvas")}</a>
+          <a href="index.html#sec-keychains">${N("sections")}</a>
           <a href="idea.html">${N("idea")}</a>
           <a href="index.html#faq">${N("faq")}</a>
         </nav>
