@@ -441,7 +441,6 @@ CONFIG.gallery = [
   { theme: "Dining & restaurant", items: [{ img: "images/real/g-paint1.jpg", cap: "Blue and sand soap dish" }, { img: "images/real/g-coaster-sea.jpg", cap: "Sea cup stands with starfish" }, { img: "images/real/g-coaster-ink.jpg", cap: "Ink cup stands with gold leaf" }, { img: "images/real/g-coaster-stone.jpg", cap: "Copper stone-pattern stand" }] },
   { theme: "Wooden cutting boards", items: [{ img: "images/real/g-tail.jpg", cap: "Mermaid tail board" }, { img: "images/real/g-woodtray.jpg", cap: "Resin on wood" }, { img: "images/real/g-paddle.jpg", cap: "Sea paddle board" }, { img: "images/real/g-tree.jpg", cap: "Wooden board with resin" }, { img: "images/real/g-copper.jpg", cap: "Copper abstract board" }] },
   { theme: "Canvas", items: [{ img: "images/real/g-round.jpg", cap: "Sea pour" }, { img: "images/real/g-paint3.jpg", cap: "Purple and gold" }, { img: "images/real/g-paint4.jpg", cap: "Green and gold" }, { img: "images/real/g-canvas.jpg", cap: "Sea canvas" }, { img: "images/real/g-plum.jpg", cap: "Plum abstract" }] },
-  { theme: "Custom gifts", items: [{ img: "images/real/g-saeed.jpg", cap: "Name in sand letters" }, { img: "images/real/g-collage.jpg", cap: "Photo collage" }] },
 ];
 
 /* =========================================================
