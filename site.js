@@ -55,14 +55,14 @@ function renderHome() {
           <p>${H("lettersSub")}</p>
         </div>
         <div class="make-grid">${[
-          ["Keychains & necklaces", "design.html?cat=keychains", [["Letter keychains (block, groovy)", "design.html?cat=keychains&group=letters"], ["Pendants to wear on a chain", "design.html?cat=keychains&group=pendants"], ["Heart sets for two", "design.html?cat=keychains&group=pendants"], ["Sea shapes", "design.html?cat=keychains&group=sea"]]],
-          ["Accessories", "design.html?cat=accessories", [["Bookmarks", "design.html?cat=accessories&group=bookmarks"], ["Hair combs and bun pin", "design.html?cat=accessories&group=combs"], ["Pens", "design.html?cat=accessories&group=pens"]]],
-          ["Statues & decor", "design.html?cat=statues", [["Hearts and hexagons", "design.html?cat=statues&group=statues"], ["Word molds", "design.html?cat=statues&group=statues"], ["Games", "design.html?cat=statues&group=statues"]]],
-          ["Kitchen & table", "design.html?cat=kitchen", [["Cup stands (single or set of 4)", "design.html?cat=kitchen&group=cups"], ["Serving boards", "design.html?cat=kitchen&group=boards"], ["Trays and wooden bases", "design.html?cat=kitchen&group=boards"]]],
-          ["Wooden cutting boards", "canvas.html?kind=board", [["Any size, any shape", "canvas.html?kind=board"], ["Send the size or a picture of the shape", "canvas.html?kind=board"]]],
-          ["Paintings", "design.html?cat=paint", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"], ["Resin on wood", "canvas.html?kind=board"], ["Photo canvas", "canvas.html?kind=photo"], ["Any size, any shape", "design.html?cat=paint"]]],
-          ["Custom gifts", "canvas.html?kind=photo", [["Your photo on a canvas", "canvas.html?kind=photo"], ["Photo in a circle or any shape", "canvas.html?kind=photo"]]],
-        ].map(([title, href, subs]) => `<div class="make"><h3><a href="${href}">${title}</a></h3><ul class="subs">${subs.map(([x, hr]) => `<li><a href="${hr}">${x}</a></li>`).join("")}</ul><a class="text-link" href="${href}">Open</a></div>`).join("")}
+          ["Keychains & necklaces", "design.html?cat=keychains", "images/real/g-round.jpg", "#134B63", [["Letters", "design.html?cat=keychains&group=letters"], ["Pendants & heart sets", "design.html?cat=keychains&group=pendants"], ["Sea shapes", "design.html?cat=keychains&group=sea"]]],
+          ["Accessories", "design.html?cat=accessories", "images/real/g-bookmark.jpg", "#E8806C", [["Bookmarks", "design.html?cat=accessories&group=bookmarks"], ["Hair pieces", "design.html?cat=accessories&group=combs"], ["Pens", "design.html?cat=accessories&group=pens"]]],
+          ["Statues & decor", "design.html?cat=statues", "images/real/g-domino.jpg", "#8C6BB1", [["Games", "design.html?cat=statues&group=statues"]]],
+          ["Kitchen & table", "design.html?cat=kitchen", "images/real/g-coaster-sea.jpg", "#2E8B8B", [["Cup stands", "design.html?cat=kitchen&group=cups"], ["Boards & trays", "design.html?cat=kitchen&group=boards"]]],
+          ["Wooden cutting boards", "canvas.html?kind=board", "images/real/g-woodtray.jpg", "#B5803E", [["Any size, any shape", "canvas.html?kind=board"]]],
+          ["Paintings", "design.html?cat=paint", "images/real/g-canvas.jpg", "#2F5FA8", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"]]],
+          ["Custom gifts", "canvas.html?kind=photo", "images/real/g-collage.jpg", "#C45160", [["Your photo, any shape", "canvas.html?kind=photo"]]],
+        ].map(([title, href, img, col, subs]) => `<div class="make" style="--c:${col}"><a class="make-img" href="${href}"><img src="${img}" alt="" loading="lazy"></a><div class="make-body"><h3><a href="${href}">${title}</a></h3><div class="chips-row">${subs.map(([x, hr]) => `<a class="pill" href="${hr}">${x}</a>`).join("")}</div></div></div>`).join("")}
       </div>
     </section>
 
