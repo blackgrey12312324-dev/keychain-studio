@@ -75,6 +75,7 @@ function renderHome() {
           <h2>${H("readyTitle")}</h2>
           <p>${H("readySub")}</p>
         </div>
+        <h3 class="theme-h" style="margin-top:0">${H("keychainsLabel")}</h3>
         <div class="products">${presets.map((p) => `
           <article class="product">
             <a class="product-photo" href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a>

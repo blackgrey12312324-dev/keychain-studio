@@ -423,7 +423,7 @@ CONFIG.seaItems.forEach((s) => {
 // Photos of pieces Anna already made, shown inside each section as a reference.
 // To add one: put the photo in images/real/ and add a line here.
 CONFIG.references = {
-  keychains: [{ img: "images/real/g-round.jpg", cap: "Sea pour pendant" }, { img: "images/real/g-tail.jpg", cap: "Mermaid tail" }, { img: "images/real/g-saeed.jpg", cap: "Name in sand letters" }],
+  keychains: [{ img: "images/real/g-round.jpg", cap: "Sea pour pendant" }, { img: "images/real/g-saeed.jpg", cap: "Name in sand letters" }],
   accessories: [{ img: "images/real/g-bookmark.jpg", cap: "Sea bookmark with tassel" }, { img: "images/real/g-pen.jpg", cap: "Pen with dried flowers and gold leaf" }],
   statues: [{ img: "images/real/g-domino.jpg", cap: "Domino set" }],
   kitchen: [{ img: "images/real/g-woodtray.jpg", cap: "Wooden tray" }, { img: "images/real/g-paddle.jpg", cap: "Paddle board" }],
@@ -440,7 +440,7 @@ CONFIG.gallery = [
   { theme: "Accessories", items: [{ img: "images/real/g-paint2.jpg", cap: "Blue and sand pen" }, { img: "images/real/g-pen-blue.jpg", cap: "Blue and sand gradient pen" }, { img: "images/real/g-pen-ink.jpg", cap: "Blue ink pen" }, { img: "images/real/g-hairpin.jpg", cap: "Butterfly bun pin" }, { img: "images/real/g-pen.jpg", cap: "Pen with dried flowers and gold leaf" }, { img: "images/real/g-bookmark.jpg", cap: "Sea bookmark with tassel" }] },
   { theme: "Statues & decor", items: [{ img: "images/real/g-domino.jpg", cap: "Domino set" }, { img: "images/real/g-tree.jpg", cap: "Tree piece" }, { video: "images/real/lamp.mp4", poster: "images/real/lamp.jpg", cap: "Resin lamp with LED lights (video)" }] },
   { theme: "Kitchen & table", items: [{ img: "images/real/g-paint1.jpg", cap: "Blue and sand soap dish" }, { img: "images/real/g-coaster-sea.jpg", cap: "Sea cup stands with starfish" }, { img: "images/real/g-coaster-ink.jpg", cap: "Ink cup stands with gold leaf" }, { img: "images/real/g-coaster-stone.jpg", cap: "Copper stone-pattern stand" }] },
-  { theme: "Wooden cutting boards", items: [{ img: "images/real/g-woodtray.jpg", cap: "Resin on wood" }, { img: "images/real/g-paddle.jpg", cap: "Sea paddle board" }] },
+  { theme: "Wooden cutting boards", items: [{ img: "images/real/g-tail.jpg", cap: "Mermaid tail board" }, { img: "images/real/g-woodtray.jpg", cap: "Resin on wood" }, { img: "images/real/g-paddle.jpg", cap: "Sea paddle board" }] },
   { theme: "Paintings", items: [{ img: "images/real/g-paint3.jpg", cap: "Purple and gold" }, { img: "images/real/g-paint4.jpg", cap: "Green and gold" }, { img: "images/real/g-canvas.jpg", cap: "Sea canvas" }, { img: "images/real/g-plum.jpg", cap: "Plum abstract" }, { img: "images/real/g-copper.jpg", cap: "Copper abstract" }] },
   { theme: "Custom gifts", items: [{ img: "images/real/g-saeed.jpg", cap: "Name in sand letters" }, { img: "images/real/g-collage.jpg", cap: "Photo collage" }] },
 ];

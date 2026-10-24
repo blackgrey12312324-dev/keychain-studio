@@ -20,6 +20,7 @@ Object.assign(I18N.en, {
     makeCanvasT: "Canvases", makeCanvasP: "Any size. Sea style or abstract, poured by hand.", makeCanvasC: "Design a canvas",
     makePhotoT: "Your photo on a canvas", makePhotoP: "Send us a photo and choose the shape to crop it into.", makePhotoC: "Add my photo",
     galleryTitle: "Made by hand", gallerySub: "Real pieces from our studio: sea pours, abstract art, wooden boards and photo canvases.",
+    keychainsLabel: "Keychains",
     readyTitle: "In the shop",
     readySub: "Ready to order now. Tap a piece to order it or customise it. Below are photos and videos of pieces we have made, sorted by section.",
     fromLine: "Keychains from {price}", customise: "Customise", order: "Order",
