@@ -66,6 +66,62 @@ function applyStaticText() {
   });
 }
 
+/* Any English text that has no entry in i18n.js is looked up in i18n-extra.js (PHRASES) and swapped automatically,
+   so pressing TH or RU translates the whole page. The English original is remembered, so EN restores it. */
+const ATTRS = ["placeholder", "alt", "title", "aria-label"];
+function phrase(s) {
+  const P = typeof PHRASES !== "undefined" ? PHRASES[ui.lang] : null;
+  if (!P) return null;
+  const key = s.trim();
+  if (!key) return null;
+  if (P[key]) return P[key];
+  const i = key.lastIndexOf(", ");
+  if (i > 0) {
+    const head = key.slice(0, i), tail = key.slice(i + 2);
+    if (P[head] || P[tail]) return (P[head] || head) + ", " + (P[tail] || tail);
+  }
+  return null;
+}
+function swapText(cur, en) {
+  if (ui.lang === "en") return en;
+  const p = phrase(en);
+  return p == null ? en : en.replace(en.trim(), p);
+}
+function translateTree(root) {
+  if (!root) return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let n;
+  while ((n = w.nextNode())) {
+    const pe = n.parentElement;
+    if (!pe || pe.tagName === "SCRIPT" || pe.tagName === "STYLE" || pe.tagName === "TEXTAREA") continue;
+    const cur = n.nodeValue;
+    const en = n._en !== undefined && cur === n._out ? n._en : cur;
+    const out = swapText(cur, en);
+    if (out !== cur) { n._en = en; n._out = out; n.nodeValue = out; }
+    else if (n._en !== undefined && cur === n._out) { n._en = undefined; }
+  }
+  const els = root.querySelectorAll ? root.querySelectorAll("[placeholder],[alt],[title],[aria-label],[data-en-placeholder],[data-en-alt],[data-en-title],[data-en-aria-label]") : [];
+  els.forEach((el) => ATTRS.forEach((a) => {
+    const stored = el.getAttribute("data-en-" + a);
+    const cur = el.getAttribute(a);
+    if (cur == null) return;
+    const en = stored != null && cur === el.getAttribute("data-out-" + a) ? stored : cur;
+    const out = swapText(cur, en);
+    if (out !== cur) { el.setAttribute("data-en-" + a, en); el.setAttribute("data-out-" + a, out); el.setAttribute(a, out); }
+  }));
+  if (root === document.body) {
+    if (document._titleEn === undefined || document.title !== document._titleOut) document._titleEn = document.title;
+    const tt = swapText(document.title, document._titleEn);
+    if (tt !== document.title) { document._titleOut = tt; document.title = tt; }
+  }
+}
+let trTimer = 0;
+function scheduleTranslate() { clearTimeout(trTimer); trTimer = setTimeout(() => translateTree(document.body), 60); }
+if (document.body) {
+  new MutationObserver(scheduleTranslate).observe(document.body, { childList: true, subtree: true, characterData: true });
+  scheduleTranslate();
+}
+
 /* Language buttons + a list of things to re-draw when the language changes */
 const langListeners = [applyStaticText];
 function onLangChange(fn) { langListeners.push(fn); }
@@ -75,6 +131,7 @@ document.addEventListener("click", (e) => {
   ui.lang = b.dataset.lang;
   try { localStorage.setItem(STORE_KEY, ui.lang); } catch (err) { /* storage blocked */ }
   langListeners.forEach((fn) => fn());
+  scheduleTranslate();
 });
 
 /* Mobile menu */
