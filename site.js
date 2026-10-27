@@ -59,7 +59,7 @@ function renderHome() {
         </div>
         <h3 class="theme-h rec-h" style="margin-top:0">Recommended sea designs</h3>
         <div class="gallery rec">${[["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-canvas", "Sea canvas"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("")}</div>
-        <h3 class="theme-h">${H("keychainsLabel")}</h3>
+        <h3 class="theme-h">Keychains &amp; necklaces</h3>
         <div class="products">${presets.map((p) => `
           <article class="product">
             <a class="product-photo" href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a>
@@ -68,7 +68,7 @@ function renderHome() {
           </article>`).join("")}
         </div>
         <div class="themes">${CONFIG.gallery.filter((t) => t.items.length).map((t) => `
-          <h3 class="theme-h">${esc(t.theme)}</h3>
+          ${t.theme === "Keychains & necklaces" ? "" : `<h3 class="theme-h">${esc(t.theme)}</h3>`}
           <div class="gallery">${t.items.map((it) => it.video
             ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption>${esc(it.cap)}</figcaption></figure>`
             : `<figure><img src="${it.img}" alt="${esc(it.cap)}" loading="lazy"><figcaption>${esc(it.cap)}</figcaption></figure>`).join("")}</div>`).join("")}

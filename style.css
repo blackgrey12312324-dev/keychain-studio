@@ -793,3 +793,8 @@ a.card { text-decoration: none; color: inherit; display: block; }
 .rec-h { color: #134B63; border-left: 5px solid #2E8B8B; padding-left: 12px; }
 .letters-band .section-head h2 { font-family: inherit; font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -0.01em; color: #0E3F57; }
 .letters-band .section-head h2::after { content: ""; display: block; width: 90px; height: 6px; border-radius: 3px; background: #E8806C; margin-top: 10px; }
+
+/* phones: the letter stays pinned at the top and the list scrolls underneath it (solid background, no see-through) */
+@media (max-width: 899px) {
+  .layout .stage, .stage { background: #EEF7F7 !important; box-shadow: 0 6px 12px -8px rgba(14, 63, 87, 0.25); }
+}
