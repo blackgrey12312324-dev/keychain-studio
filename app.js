@@ -257,11 +257,12 @@ const SAND = { natural: "#CBB28A", white: "#EEE7D8", golden: "#DDB35C", pink: "#
 function hasHardware(shape) { const c = CONFIG.shapes.find((x) => x.id === shape); return !(c && (c.wood || c.size === "big" || c.nohw)); }
 // What a new piece starts with: letters and the sea shapes from the letter molds are keychains
 // with chain and tassel; the other small molds are mostly pendants (necklace), tassel optional.
-const PENDANTS = ["tag", "rect-tag", "oval", "square", "curved", "pick", "heart", "circle", "star", "player", "wing-large", "wing-small", "heartset"];
+const PENDANTS = ["tag", "oval", "square", "curved", "pick", "circle", "heartset"];
+const SEA_KEYCHAINS = ["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"];
 function applyDefaults(d) {
   const c = CONFIG.shapes.find((x) => x.id === d.shape);
-  if (isLetter(d.shape) || isNumber(d.shape) || (c && c.mold === "groovy")) { d.hardware = "ringchain"; if (d.tassel.type === "none") d.tassel.type = "silk"; }
-  else if (PENDANTS.includes(d.shape)) { d.hardware = "necklace"; d.tassel.type = "none"; }
+  if (isLetter(d.shape) || isNumber(d.shape) || (c && c.mold === "groovy")) { d.hardware = "ringchain"; d.tassel.type = "none"; }
+  else if (PENDANTS.includes(d.shape)) { d.hardware = "none"; d.tassel.type = "none"; }
   else { d.hardware = "none"; d.tassel.type = "none"; }
 }
 function customShape(shape) { return CONFIG.shapes.find((x) => x.id === shape && x.d); }
@@ -964,8 +965,7 @@ const STEP_VIEWS = [
     let body = "";
     if (ui.cat === "keychains") {
       body = group(U("grpLetters"), card(U("fontBlock"), isL ? design.shape : "A", isL && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isL ? design.shape : "A", isL && design.font === "groovy", '{"font":"groovy"}'), "letters")
-        + group(U("grpPendants"), byIds(PENDANTS), "pendants")
-        + group(U("grpGroovy"), byIds(["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"]), "sea");
+        + group(U("grpPendants"), byIds(PENDANTS.concat(SEA_KEYCHAINS)), "pendants");
     } else if (ui.cat === "accessories") {
       body = group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]), "bookmarks")
         + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]), "textured")
