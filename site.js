@@ -106,15 +106,15 @@ function renderHome() {
           <p>${H("lettersSub")}</p>
         </div>
         <div class="make-grid">${[
-          ["Keychains & necklaces", "design.html?cat=keychains", "images/real/g-round.jpg", "#134B63", [["Letters", "design.html?cat=keychains&group=letters"], ["Necklaces", "design.html?cat=keychains&group=pendants"]]],
-          ["Accessories", "design.html?cat=accessories", "images/real/g-bookmark.jpg", "#E8806C", [["Bookmarks", "design.html?cat=accessories&group=bookmarks"], ["Hair pieces", "design.html?cat=accessories&group=combs"], ["Pens", "design.html?cat=accessories&group=pens"]]],
-          ["Statues & decor", "design.html?cat=statues", "images/real/g-domino.jpg", "#8C6BB1", [["Board games", "design.html?cat=statues&group=statues"]]],
-          ["Dining & restaurant", "design.html?cat=kitchen", "images/real/g-coaster-sea.jpg", "#2E8B8B", [["Cup stands", "design.html?cat=kitchen&group=cups"], ["Boards & trays", "design.html?cat=kitchen&group=boards"]]],
-          ["Wooden cutting boards", "canvas.html?kind=board", "images/real/g-woodtray.jpg", "#B5803E", [["Custom size", "canvas.html?kind=board"], ["Custom shape", "canvas.html?kind=board"]]],
-          ["Any size canvas", "canvas.html?kind=beach", "images/real/g-canvas.jpg", "#2F5FA8", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"]]],
-          ["Custom gifts", "canvas.html?kind=photo", "images/real/g-collage.jpg", "#C45160", [["Your photo, any shape", "canvas.html?kind=photo"], ["Your style, your theme", "canvas.html?kind=photo"]]],
+          ["Keychains & necklaces", "design.html?cat=keychains", "images/phuket-shoreline.jpg|images/real/g-key-tail.jpg", "#134B63", [["Letters", "design.html?cat=keychains&group=letters"], ["Necklaces", "design.html?cat=keychains&group=pendants"]]],
+          ["Accessories", "design.html?cat=accessories", "images/real/g-bookmark.jpg|images/real/g-pen-blue.jpg", "#E8806C", [["Bookmarks", "design.html?cat=accessories&group=bookmarks"], ["Hair pieces", "design.html?cat=accessories&group=combs"], ["Pens", "design.html?cat=accessories&group=pens"]]],
+          ["Statues & decor", "design.html?cat=statues", "images/real/g-domino.jpg|images/real/lamp.jpg", "#8C6BB1", [["Board games", "design.html?cat=statues&group=statues"]]],
+          ["Dining & restaurant", "design.html?cat=kitchen", "images/real/g-coaster-sea.jpg|images/real/g-fruit-bowl.jpg", "#2E8B8B", [["Cup stands", "design.html?cat=kitchen&group=cups"], ["Boards & trays", "design.html?cat=kitchen&group=boards"]]],
+          ["Wooden cutting boards", "canvas.html?kind=board", "images/real/g-tail.jpg|images/real/g-paddle.jpg", "#B5803E", [["Custom size", "canvas.html?kind=board"], ["Custom shape", "canvas.html?kind=board"]]],
+          ["Any size canvas", "canvas.html?kind=beach", "images/real/g-canvas.jpg|images/real/g-sea-wide.jpg", "#2F5FA8", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"]]],
+          ["Custom gifts", "canvas.html?kind=photo", "images/real/g-collage.jpg|images/real/g-saeed.jpg", "#C45160", [["Your photo, any shape", "canvas.html?kind=photo"], ["Your style, your theme", "canvas.html?kind=photo"]]],
           ["Send us a photo", "idea.html", "images/real/g-saeed.jpg", "#6B7A8F", [["Send a photo, we will tell you if we can make it", "idea.html"], ["Contact us", "idea.html"]]],
-        ].map(([title, href, img, col, subs], n) => `<div class="make" id="sec-${["keychains","accessories","statues","kitchen","cutting","paint","gift","send"][n]}" style="--c:${col}"><a class="make-img" href="${href}"><img src="${img}" alt="" loading="lazy"></a><div class="make-body"><h3><a href="${href}">${title}</a></h3><div class="chips-row">${subs.map(([x, hr, hl]) => `<a class="pill${hl ? " pill-hl" : ""}" href="${hr}">${x}</a>`).join("")}</div></div></div>`).join("")}
+        ].map(([title, href, img, col, subs], n) => `<div class="make" id="sec-${["keychains","accessories","statues","kitchen","cutting","paint","gift","send"][n]}" style="--c:${col}"><a class="make-img" href="${href}">${img.split("|").map((im, k) => k ? `<span class="curve"><span class="ci"><img src="${im}" alt="" loading="lazy"></span></span>` : `<img src="${im}" alt="" loading="lazy">`).join("")}</a><div class="make-body"><h3><a href="${href}">${title}</a></h3><div class="chips-row">${subs.map(([x, hr, hl]) => `<a class="pill${hl ? " pill-hl" : ""}" href="${hr}">${x}</a>`).join("")}</div></div></div>`).join("")}
       </div>
     </section>
 

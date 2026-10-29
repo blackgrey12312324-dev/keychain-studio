@@ -11,6 +11,7 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      waveSize: "How big are the waves?", waveDir: "Which way do the waves go?", oceanNote2: "Pick up to 3 water colours in the Colours step, from deep to shallow. The real piece will flow a little differently.",
       inkWarn: "Ink spreads and moves while it cures. Your finished piece will look similar, but it will not be exactly like this preview.", inkFlow: "How should the ink flow?", inkFlowWide: "Spread out more", inkFlowWideP: "Soft, wide clouds that blend into each other.", inkFlowTight: "More concentrated", inkFlowTightP: "Tighter, stronger spots of colour.", inkDrop: "Drop your ink", inkDropNote: "Pick a colour, then tap or drag on the piece to drop ink where you want it.", inkClear: "Clear ink", inkPickFirst: "Pick up to 3 ink colours first.", colours: "Colours", inkHint: "Tap or drag on the piece to drop ink.", inkDrops: "{n} drops",
       addCart: "Add to cart", addedCart: "Added to your cart. Open Cart to order several pieces together.", cartFail: "Could not save the cart on this device.",
       saveDraft: "Save as draft", draftSaved: "Draft saved on this device.", draftFail: "Could not save the draft.", draftContinue: "Continue my draft",
@@ -28,7 +29,7 @@ const I18N = {
       orderThis: "Order this one", changeIt: "Change it", fromScratch: "Start from scratch",
 
       catKey: "Keychains & necklaces", catKeyP: "Letter keychains, pendants for your neck, heart sets and sea shapes.", catStat: "Statues & decor", catStatP: "Big pieces: hearts, hexagons, stands, word molds and games.", catKit: "Dining & restaurant", catKitP: "Cup stands, serving boards and trays for the dining table or your restaurant.", catPaint: "Canvas", catPaintP: "Canvases of any size: sea style or abstract.", catGift: "Custom gifts", catGiftP: "Your photo on a canvas, or in a circle or any shape.", grpBoards: "Boards, trays and wooden bases",
-      catCut: "Wooden cutting boards", catCutP: "Any size, any shape. Give us the size or send a picture of the shape.", refTitle: "Pieces we have made", backHome: "← Back to home", pntSea: "Sea style", pntAbs: "Abstract", pntWood: "Resin on wood", pntPhoto: "Photo canvas", pntNote: "Every painting can be any size and any shape. Type the size or send a picture of the shape you want.", catH: "What are you making?", catP: "Pick a section. You will choose the exact mold next.", catAcc: "Accessories", catAccP: "Bookmarks, hair combs, a bun pin and pens.", catMed: "Medium pieces", catMedP: "Boards, coasters, word molds, games and wooden slices.", catBig: "Big trays and boards", catBigP: "Trays, platters, frames, hexagon and heart trays.", catBack: "← Back to sections", grpLetters: "Letter keychains", grpKeychains: "Keychains", grpPendants: "Keychain / worn on chain", grpGroovy: "Groovy mold: sea shapes (keychains)", grpBookmarks: "Bookmarks (animals, plain and feather)", grpTexBm: "Textured bookmarks (separate mold)", grpCombs: "Hair combs and bun pin", grpPens: "Pens", grpCups: "Stands for cups", cupsNote: "Cup stands come as a set of four with a holder, or as one single stand. No ring or chain. Choose sea, ink or colour styles and add flowers or small figures.", fontBlock: "Block letters", fontGroovy: "Groovy letters", moreSoon: "More molds are being added here soon.",
+      catCut: "Wooden cutting boards", catCutP: "Any size, any shape. Give us the size or send a picture of the shape.", refTitle: "Example work", backHome: "← Back to home", pntSea: "Sea style", pntAbs: "Abstract", pntWood: "Resin on wood", pntPhoto: "Photo canvas", pntNote: "Every painting can be any size and any shape. Type the size or send a picture of the shape you want.", catH: "What are you making?", catP: "Pick a section. You will choose the exact mold next.", catAcc: "Accessories", catAccP: "Bookmarks, hair combs, a bun pin and pens.", catMed: "Medium pieces", catMedP: "Boards, coasters, word molds, games and wooden slices.", catBig: "Big trays and boards", catBigP: "Trays, platters, frames, hexagon and heart trays.", catBack: "← Back to sections", grpLetters: "Letter keychains", grpKeychains: "Keychains", grpPendants: "Keychain / worn on chain", grpGroovy: "Groovy mold: sea shapes (keychains)", grpBookmarks: "Bookmarks (animals, plain and feather)", grpTexBm: "Textured bookmarks (separate mold)", grpCombs: "Hair combs and bun pin", grpPens: "Pens", grpCups: "Stands for cups", cupsNote: "Cup stands come as a set of four with a holder, or as one single stand. No ring or chain. Choose sea, ink or colour styles and add flowers or small figures.", fontBlock: "Block letters", fontGroovy: "Groovy letters", moreSoon: "More molds are being added here soon.",
       sMoldH: "Choose your mold", sMoldP: "Pick the shape first. Next you will choose the letter.", fontStyle: "Letter style", moldMedium: "Medium mold", moldBig: "Big mold", moldThin: "Thin mold", moldSmall: "Small mold", moldLetters: "Letters", moldNumbers: "Numbers", moldNoLetter: "This mold has no letter, so go ahead to Style.",
       s1h: "Choose your letter", s1p: "Tap a letter. Your keychain changes right away.", shapes: "Shapes", second: "Matching second keychain",
       secondNote: "For couples or best friends. Same design, another letter. Leave empty if you only want one.",
@@ -40,7 +41,7 @@ const I18N = {
       clearWindow: "Add a clear window", clearWindowNote: "A see-through stripe across the middle.",
       s3inkH: "Ink details", s3inkP: "Every ink piece is one of a kind.", inkAmount: "How much ink",
       inkWhere: "Where the ink goes", background: "Background", cells: "Little white cells", shimmer: "Shimmer",
-      s3oceanH: "Ocean details", s3oceanP: "Build your own little beach.", sand: "How high is the sand",
+      s3oceanH: "Sea details", s3oceanP: "Build your own little beach.", sand: "How high is the sand",
       wave: "Where is the wave", foam: "Foam", sandColor: "Sand colour",
       oceanNote: "Want shells, starfish or pearls? Add them in the Inside step.",
 
@@ -111,12 +112,12 @@ const I18N = {
     },
     labels: {
       font: { block: "Block (bold)", groovy: "Groovy (wavy)" },
-      style: { clear: "Clear", gradient: "Gradient", ink: "Ink dye", ocean: "Ocean wave" },
+      style: { clear: "Clear", gradient: "Gradient", ink: "Ink dye", ocean: "Sea" },
       styleText: {
         clear: "Clear resin. Put add-ons inside: flowers, shells, charms.",
         gradient: "A mix of colours fading into each other.",
         ink: "Ink dye swirls and little cells.",
-        ocean: "Sea, a white foamy wave and sand.",
+        ocean: "Your own beach: water colours, foam and sand.",
       },
       direction: { down: "Top to bottom", right: "Left to right", diagonal: "Diagonal", center: "Middle out" },
       glitter: { none: "No glitter", fine: "Fine", chunky: "Chunky", holo: "Holographic" },
@@ -128,6 +129,8 @@ const I18N = {
       wave: { top: "Top", middle: "Middle", bottom: "At the sand", diagonal: "Diagonal" },
       foam: { soft: "Soft", frothy: "Big and frothy" },
       sandColor: { natural: "Natural", white: "White", golden: "Golden", pink: "Pink" },
+      waveSize: { calm: "Calm", medium: "Medium waves", big: "Big waves" },
+      waveDir: { flat: "Straight", left: "Tilted left", right: "Tilted right" },
       amount: { few: "A little", some: "Some", lots: "A lot" },
       place: { anna: "Anna decides", top: "Top", middle: "Middle", bottom: "Bottom", scattered: "Scattered" },
       edge: { none: "No edge", gold: "Gold", silver: "Silver", rose: "Rose gold", painted: "Painted colour" },
@@ -156,6 +159,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      waveSize: "คลื่นใหญ่แค่ไหน?", waveDir: "คลื่นไปทางไหน?", oceanNote2: "เลือกสีน้ำได้สูงสุด 3 สีในขั้นตอนสี จากน้ำลึกไปน้ำตื้น ชิ้นงานจริงจะไหลต่างไปเล็กน้อย",
       inkWarn: "หมึกจะแผ่และเคลื่อนที่ขณะเรซินแข็งตัว ชิ้นงานจริงจะคล้ายกันแต่ไม่เหมือนตัวอย่างนี้ทุกประการ", inkFlow: "ให้หมึกไหลแบบไหน?", inkFlowWide: "กระจายมากขึ้น", inkFlowWideP: "กลุ่มสีนุ่มกว้างที่ผสมกัน", inkFlowTight: "เข้มข้นรวมกลุ่ม", inkFlowTightP: "จุดสีแน่นและเข้มกว่า", inkDrop: "หยดหมึกของคุณ", inkDropNote: "เลือกสี แล้วแตะหรือลากบนชิ้นงานเพื่อหยดหมึกตามที่ต้องการ", inkClear: "ล้างหมึก", inkPickFirst: "เลือกสีหมึกได้สูงสุด 3 สีก่อน", colours: "สี", inkHint: "แตะหรือลากบนชิ้นงานเพื่อหยดหมึก", inkDrops: "{n} หยด",
       addCart: "เพิ่มลงตะกร้า", addedCart: "เพิ่มลงตะกร้าแล้ว เปิดตะกร้าเพื่อสั่งหลายชิ้นพร้อมกัน", cartFail: "บันทึกตะกร้าในอุปกรณ์นี้ไม่ได้",
       saveDraft: "บันทึกแบบร่าง", draftSaved: "บันทึกแบบร่างในอุปกรณ์นี้แล้ว", draftFail: "บันทึกแบบร่างไม่ได้", draftContinue: "ทำแบบร่างต่อ",
@@ -241,7 +245,7 @@ const I18N = {
       tassel: "พู่ ({t})", ombre: "พู่ไล่สี", paint: "ลวดลายระบายเอง", matching: "พวงกุญแจคู่ ({l})",
     },
     labels: {
-      style: { clear: "ใส", gradient: "ไล่เฉดสี", ink: "หมึกย้อม", ocean: "คลื่นทะเล" },
+      style: { clear: "ใส", gradient: "ไล่เฉดสี", ink: "หมึกย้อม", ocean: "ทะเล" },
       styleText: {
         clear: "เรซินใส ใส่ของตกแต่งไว้ข้างใน: ดอกไม้ เปลือกหอย ชาร์ม",
         gradient: "สีหลายสีไล่เฉดเข้าหากัน",
@@ -258,6 +262,8 @@ const I18N = {
       wave: { top: "ด้านบน", middle: "ตรงกลาง", bottom: "ติดทราย", diagonal: "แนวทแยง" },
       foam: { soft: "นุ่มเบา", frothy: "ฟองเยอะ" },
       sandColor: { natural: "ธรรมชาติ", white: "ขาว", golden: "ทอง", pink: "ชมพู" },
+      waveSize: { calm: "เรียบสงบ", medium: "คลื่นกลาง", big: "คลื่นใหญ่" },
+      waveDir: { flat: "ตรง", left: "เอียงซ้าย", right: "เอียงขวา" },
       amount: { few: "นิดหน่อย", some: "ปานกลาง", lots: "เยอะ" },
       place: { anna: "ให้แอนนาเลือก", top: "ด้านบน", middle: "ตรงกลาง", bottom: "ด้านล่าง", scattered: "กระจาย" },
       edge: { none: "ไม่มีขอบ", gold: "ทอง", silver: "เงิน", rose: "โรสโกลด์", painted: "ทาสี" },
@@ -282,6 +288,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      waveSize: "Какие волны?", waveDir: "Куда идут волны?", oceanNote2: "Выберите до 3 цветов воды на шаге «Цвета» — от глубокой к мелкой. Настоящее изделие потечёт немного иначе.",
       inkWarn: "Чернила растекаются и двигаются, пока смола застывает. Готовое изделие будет похожим, но не точно таким, как в предпросмотре.", inkFlow: "Как должны растечься чернила?", inkFlowWide: "Шире и мягче", inkFlowWideP: "Мягкие широкие облака, которые смешиваются.", inkFlowTight: "Более концентрированно", inkFlowTightP: "Плотные яркие пятна цвета.", inkDrop: "Капните чернила", inkDropNote: "Выберите цвет и нажмите или проведите по изделию, чтобы капнуть чернила, где хотите.", inkClear: "Убрать чернила", inkPickFirst: "Сначала выберите до 3 цветов чернил.", colours: "Цвета", inkHint: "Нажмите или проведите по изделию, чтобы капнуть чернила.", inkDrops: "капель: {n}",
       addCart: "В корзину", addedCart: "Добавлено в корзину. Откройте корзину, чтобы заказать несколько изделий сразу.", cartFail: "Не удалось сохранить корзину на этом устройстве.",
       saveDraft: "Сохранить черновик", draftSaved: "Черновик сохранён на этом устройстве.", draftFail: "Не удалось сохранить черновик.", draftContinue: "Продолжить черновик",
@@ -367,7 +374,7 @@ const I18N = {
       tassel: "Кисточка: {t}", ombre: "Омбре-кисточка", paint: "Рисунок вручную", matching: "Парный брелок ({l})",
     },
     labels: {
-      style: { clear: "Прозрачный", gradient: "Градиент", ink: "Чернила", ocean: "Океан" },
+      style: { clear: "Прозрачный", gradient: "Градиент", ink: "Чернила", ocean: "Море" },
       styleText: {
         clear: "Прозрачная смола. Добавьте украшения внутрь: цветы, ракушки, подвески.",
         gradient: "Смесь цветов, плавно переходящих друг в друга.",
@@ -384,6 +391,8 @@ const I18N = {
       wave: { top: "Сверху", middle: "Посередине", bottom: "У песка", diagonal: "По диагонали" },
       foam: { soft: "Лёгкая", frothy: "Пышная" },
       sandColor: { natural: "Натуральный", white: "Белый", golden: "Золотистый", pink: "Розовый" },
+      waveSize: { calm: "Спокойное", medium: "Средние волны", big: "Большие волны" },
+      waveDir: { flat: "Ровно", left: "Наклон влево", right: "Наклон вправо" },
       amount: { few: "Немного", some: "Средне", lots: "Много" },
       place: { anna: "На выбор Анны", top: "Сверху", middle: "Посередине", bottom: "Снизу", scattered: "Вразброс" },
       edge: { none: "Без края", gold: "Золото", silver: "Серебро", rose: "Розовое золото", painted: "Цветной" },

@@ -43,7 +43,7 @@ function defaultDesign() {
     ink: { amount: "medium", background: "clear", spread: "all", cells: true, shimmer: "pearl", flow: "spread" },
     inkDrops: [],
     inkSize: "m",
-    ocean: { sand: "middle", wave: "middle", foam: "frothy", sandColor: "natural" },
+    ocean: { sand: "middle", wave: "middle", foam: "frothy", sandColor: "natural", size: "medium", dir: "flat" },
     addins: {},
     paint: [],
     edge: "none",
@@ -692,16 +692,30 @@ function styleLayer(d, id, R, T, B) {
     return s;
   }
 
-  // ocean: real photos of Anna's sea pour and sand
+  // sea: water in the colours the customer picked, a wavy sand edge with foam. All drawn, nothing copied from photos.
   const o = d.ocean;
   const sandY = o.sand === "none" ? null : T + h * { low: 0.8, middle: 0.64, high: 0.46 }[o.sand];
-  let s = `<image href="images/real/sea.jpg" x="0" y="${T - 20}" width="300" height="${(sandY ?? B) - T + 60}" preserveAspectRatio="xMidYMid slice"/>`;
+  const amp = { calm: 5, medium: 13, big: 25 }[o.size || "medium"];
+  const ang = { flat: 0, left: -16, right: 16 }[o.dir || "flat"];
+  const edgeY = sandY ?? (B + 40);
+  const wavePath = (y, ph, A) => { let p = `M-140 ${y}`; for (let k = 0; k < 8; k++) p += ` q 40 ${(k % 2 ? 1 : -1) * A * (ph ? -1 : 1)} 80 0`; return p; };
+  const cw = c.length === 3 ? c : [c[0], c[0], c[0]];
+  const sandCol = SAND[o.sandColor || "natural"];
+  const foamW = o.foam === "frothy" ? 13 : 7;
+  let s = `<defs><linearGradient id="${id}-wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cw[0]}"/><stop offset="0.5" stop-color="${cw[1]}"/><stop offset="1" stop-color="${cw[2]}"/></linearGradient>
+    <filter id="${id}-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.27  0 0 0 0 0.18  0 0 0 0.7 0"/></filter></defs>
+    <g transform="rotate(${ang} 150 ${(T + B) / 2})">
+    <rect x="-140" y="${T - 60}" width="580" height="${edgeY - T + 70}" fill="url(#${id}-wg)"/>
+    <path d="${wavePath(edgeY - 70 - amp, 1, amp * 0.7)} V ${edgeY} H -140 Z" fill="#fff" opacity="0.10"/>`;
   if (sandY) {
-    s += `<defs><mask id="${id}-sm"><rect width="300" height="440" fill="#000"/><path d="M-20 ${sandY} q 40 -14 80 0 t 80 0 t 80 0 t 80 0 V 450 H -20 Z" fill="#fff" filter="url(#${id}-foam)"/></mask></defs>
-      <rect x="-10" y="${sandY - 18}" width="320" height="30" fill="#DCEBEE" opacity="0.55" filter="url(#${id}-soft)"/>
-      <image href="images/real/sand.jpg" x="0" y="${sandY - 14}" width="300" height="${440 - sandY + 14}" preserveAspectRatio="xMidYMid slice" mask="url(#${id}-sm)"/>`;
+    s += `<path d="${wavePath(sandY - foamW - 3, 0, amp)}" fill="none" stroke="#fff" stroke-width="${foamW + 6}" opacity="0.4" filter="url(#${id}-soft)"/>
+      <path d="${wavePath(sandY - 2, 0, amp)} V 520 H -140 Z" fill="${sandCol}"/>
+      <path d="${wavePath(sandY - 2, 0, amp)} V 520 H -140 Z" fill="#000" filter="url(#${id}-grain)" opacity="0.5"/>
+      <path d="${wavePath(sandY - 4, 0, amp)}" fill="none" stroke="#fff" stroke-width="${foamW}" stroke-linecap="round" opacity="0.92" filter="url(#${id}-foam)"/>`;
   }
-  return s;
+  const bub = rng(hashText("sea" + d.shape));
+  for (let i = 0; i < (o.foam === "frothy" ? 26 : 12); i++) s += `<circle cx="${(-20 + bub() * 340).toFixed(0)}" cy="${(edgeY - foamW - 4 - bub() * (amp + 16)).toFixed(0)}" r="${(1 + bub() * 2.6).toFixed(1)}" fill="#fff" opacity="${(0.5 + bub() * 0.45).toFixed(2)}"/>`;
+  return s + "</g>";
 }
 
 function goldFlake(x, y, col, R, size) {
@@ -1120,7 +1134,7 @@ const STEP_VIEWS = [
   () => `
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
-    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => st !== "ocean").map((st) => {
+    <div class="cards">${Object.keys(I18N.en.labels.style).map((st) => {
       const d = merge(copy(design), { style: st, picked: design.picked.length ? design.picked : DEFAULT_COLORS.slice(), ink: Object.assign({}, design.ink, { legacy: true }) });
       applyPicked(d);
       return `<button type="button" class="card ${design.style === st ? "on" : ""}" aria-pressed="${design.style === st}" data-set="style" data-value="${st}">
@@ -1173,10 +1187,11 @@ const STEP_VIEWS = [
     const o = design.ocean;
     return `<h2>${U("s3oceanH")}</h2><p class="hint">${U("s3oceanP")}</p>
       ${field(U("sand"), chips("ocean.sand", "sand", o.sand))}
-      ${field(U("wave"), chips("ocean.wave", "wave", o.wave))}
+      ${field(U("waveSize"), chips("ocean.size", "waveSize", o.size))}
+      ${field(U("waveDir"), chips("ocean.dir", "waveDir", o.dir))}
       ${field(U("foam"), chips("ocean.foam", "foam", o.foam))}
       ${o.sand !== "none" ? field(U("sandColor"), chips("ocean.sandColor", "sandColor", o.sandColor)) : ""}
-      <p class="small-note">${U("oceanNote")}</p>`;
+      <p class="small-note">${U("oceanNote2")}</p>`;
   },
 
   // 6 Glitter
@@ -1450,7 +1465,7 @@ function surprise() {
   const cols = CONFIG.colors.map((c) => c.hex);
   const d = defaultDesign();
   d.shape = design.shape; d.second = design.second; d.note = design.note;
-  d.style = pick(["clear", "gradient", "gradient", "ink", "ink"]);
+  d.style = pick(["clear", "gradient", "gradient", "ink", "ink", "ocean"]);
   d.picked = Math.random() < 0.7 ? copy(pick(CONFIG.palettes).colors) : [pick(cols), pick(cols), pick(cols)];
   d.colors = d.picked.slice();
   d.gradient = { direction: pick(["down", "right", "diagonal", "center"]), glitter: "none" };

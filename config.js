@@ -439,6 +439,18 @@ CONFIG.gallery = [
   { theme: "Canvas", items: [{ img: "images/real/g-sea-wide.jpg", cap: "Wide sea canvas with a boat" }, { img: "images/real/g-sea-shells.jpg", cap: "Sea canvas with shells and starfish" }, { img: "images/real/g-round.jpg", cap: "Sea pour" }, { img: "images/real/g-paint3.jpg", cap: "Purple and gold" }, { img: "images/real/g-paint4.jpg", cap: "Green and gold" }, { img: "images/real/g-canvas.jpg", cap: "Sea canvas" }, { img: "images/real/g-plum.jpg", cap: "Plum abstract" }] },
 ];
 
+// "Example work" shown at the end of each section in the designer: built from the gallery so it never goes out of date.
+(() => {
+  const themeOf = { keychains: "Keychains & necklaces", accessories: "Accessories", statues: "Statues & decor", kitchen: "Dining & restaurant", cutting: "Wooden cutting boards", paint: "Canvas", gift: "Custom gifts" };
+  const refs = {};
+  for (const k in themeOf) {
+    const th = CONFIG.gallery.find((g) => g.theme === themeOf[k]);
+    refs[k] = th ? th.items.filter((i) => i.img).map((i) => ({ img: i.img, cap: i.cap })) : [];
+  }
+  refs.keychains = CONFIG.presets.map((p) => ({ img: p.photo, cap: p.name })).concat(refs.keychains);
+  CONFIG.references = refs;
+})();
+
 /* =========================================================
    ✏️ REVIEWS — paste your real customer reviews here.
    While this list is empty, the home page shows your Instagram instead.
