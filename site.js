@@ -58,20 +58,12 @@ function renderHome() {
           <p>${H("readySub")}</p>
         </div>
         <h3 class="theme-h rec-h" style="margin-top:0">Recommended sea designs</h3>
-        <div class="gallery rec">${[["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-canvas", "Sea canvas"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" loading="lazy"><figcaption>${c}</figcaption></figure>`).join("")}</div>
-        <h3 class="theme-h">Keychains &amp; necklaces</h3>
-        <div class="products">${presets.map((p) => `
-          <article class="product">
-            <a class="product-photo" href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a>
-            <h3><a href="design.html?preset=${p.id}">${esc(p.name)}</a></h3>
-            <p>${esc(tr(p, "blurb"))}</p>
-          </article>`).join("")}
-        </div>
+        <div class="gallery rec">${[["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-canvas", "Sea canvas"], ["g-bookmark", "Sea bookmark with tassel"], ["g-platter", "Sea platter"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" loading="lazy"><figcaption><strong>${c}</strong></figcaption></figure>`).join("")}</div>
         <div class="themes">${CONFIG.gallery.filter((t) => t.items.length).map((t) => `
-          ${t.theme === "Keychains & necklaces" ? "" : `<h3 class="theme-h">${esc(t.theme)}</h3>`}
-          <div class="gallery">${t.items.map((it) => it.video
-            ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption>${esc(it.cap)}</figcaption></figure>`
-            : `<figure><img src="${it.img}" alt="${esc(it.cap)}" loading="lazy"><figcaption>${esc(it.cap)}</figcaption></figure>`).join("")}</div>`).join("")}
+          <h3 class="theme-h">${esc(t.theme)}</h3>
+          <div class="gallery">${t.theme === "Keychains & necklaces" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption></figure>`).join("") : ""}${t.items.map((it) => it.video
+            ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption><strong>${esc(it.cap)}</strong></figcaption></figure>`
+            : `<figure><img src="${it.img}" alt="${esc(it.cap)}" loading="lazy"><figcaption><strong>${esc(it.cap)}</strong></figcaption></figure>`).join("")}</div>`).join("")}
         </div>
       </div>
     </section>

@@ -798,3 +798,15 @@ a.card { text-decoration: none; color: inherit; display: block; }
 @media (max-width: 899px) {
   .layout .stage, .stage { background: #EEF7F7 !important; box-shadow: 0 6px 12px -8px rgba(14, 63, 87, 0.25); }
 }
+
+/* shop: one tile size everywhere, captions in the same dark serif as the ready-made names */
+.gallery figure { display: flex; flex-direction: column; }
+.gallery img, .gallery video { aspect-ratio: 3 / 4; }
+.gallery figcaption { display: grid; gap: 3px; padding-top: 12px; font-size: 0.93rem; color: var(--ink-soft); }
+.gallery figcaption strong { font-family: var(--serif); font-weight: 500; font-size: 1.3rem; line-height: 1.2; color: var(--ink); }
+.gallery { gap: 28px 14px; }
+@media (min-width: 900px) { .gallery { gap: 36px 20px; } }
+.gallery.rec { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 900px) { .gallery.rec { grid-template-columns: repeat(3, 1fr); gap: 28px; } }
+.gallery.rec figcaption strong { font-size: 1.45rem; }
+.gallery figure { background: transparent; }
