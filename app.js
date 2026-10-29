@@ -101,7 +101,13 @@ function moldRank(shape) {
 }
 const CHARM_GROUPS = ["small", "charms"];
 const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1 };
+const INSIDE_STEP = 7;
+// gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
+const noInside = (d) => d.style === "gradient";
+const INK_GROUPS = ["small", "charms", "flowers", "dried"];
 function fits(a, d) {
+  if (d.style === "gradient") return false;
+  if (d.style === "ink" && !INK_GROUPS.includes(a.group)) return false;
   if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
   if (d.deco === "charms" && !CHARM_GROUPS.includes(a.group)) return false;
   const need = a.id === "tree-small" ? 1 : NEED[a.group] || 0;
@@ -473,7 +479,7 @@ function fillGlass(d, id) {
 const LTR_SIZE = { s: 13, m: 19, l: 27 };
 function lettersLayer(d, pid) {
   const L = d.letters;
-  if (!L || !L.text || d.deco === "natural") return "";
+  if (!L || !L.text || d.deco === "natural" || d.style === "gradient") return "";
   const fs = LTR_SIZE[L.size];
   const common = `font-family="Jost, 'Noto Sans Thai', Arial, sans-serif" font-weight="500" font-size="${fs}" fill="url(#${pid}-ltr)" stroke="rgba(0,0,0,0.35)" stroke-width="0.5" paint-order="stroke" style="filter:drop-shadow(0 0.8px 0.8px rgba(0,0,0,0.3))"`;
   let body;
@@ -779,16 +785,21 @@ function paintLayer(d, id) {
 function hardwareSvg(d, id) {
   const m = `url(#${id}-metal)`;
   const jump = (y) => `<circle cx="150" cy="${y}" r="8" fill="none" stroke="${m}" stroke-width="3"/>`;
-  const ring = `<circle cx="150" cy="42" r="27" fill="none" stroke="${m}" stroke-width="5"/>`;
+  const dk = METALS[d.metal][1], lt = METALS[d.metal][0];
+  const ring = `<circle cx="150" cy="42" r="27" fill="none" stroke="${dk}" stroke-width="6.5"/><circle cx="150" cy="42" r="27" fill="none" stroke="${m}" stroke-width="4.6"/><path d="M130 28 A 27 27 0 0 1 160 16" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.75"/>`;
+  // one chain link: dark rim, metal body, bright glint; alternate links are seen edge-on
+  const link = (y, edge) => edge
+    ? `<rect x="146.6" y="${y - 8.5}" width="6.8" height="17" rx="3.4" fill="${dk}"/><rect x="147.8" y="${y - 7.5}" width="4.4" height="15" rx="2.2" fill="${m}"/><line x1="149" y1="${y - 5}" x2="149" y2="${y + 2}" stroke="#fff" stroke-width="0.9" opacity="0.7"/>`
+    : `<ellipse cx="150" cy="${y}" rx="7" ry="9.5" fill="none" stroke="${dk}" stroke-width="3.6"/><ellipse cx="150" cy="${y}" rx="7" ry="9.5" fill="none" stroke="${m}" stroke-width="2.2"/><path d="M144.6 ${y - 4} q 0.8 -4 4.2 -5.2" fill="none" stroke="#fff" stroke-width="0.9" stroke-linecap="round" opacity="0.8"/>`;
   const lobster = (y) => `<circle cx="150" cy="${y - 6}" r="6" fill="none" stroke="${m}" stroke-width="3"/>
     <path d="M150 ${y} c -14 0 -18 14 -18 26 c 0 16 10 26 18 30 c 8 -4 18 -14 18 -30 c 0 -12 -4 -26 -18 -26 z" fill="none" stroke="${m}" stroke-width="5"/>
     <rect x="160" y="${y + 18}" width="6" height="12" rx="2" fill="${m}"/>`;
   switch (d.hardware) {
     case "none": return "";
-    case "necklace": return `<path d="M30 14 C 52 112 248 112 270 14" fill="none" stroke="${m}" stroke-width="3" stroke-dasharray="7 3" stroke-linecap="round"/><line x1="150" y1="88" x2="150" y2="108" stroke="${METALS[d.metal][1]}" stroke-width="3"/><circle cx="150" cy="114" r="7" fill="none" stroke="${m}" stroke-width="3"/><line x1="150" y1="121" x2="150" y2="${pinTop(d.shape) + 12}" stroke="${METALS[d.metal][1]}" stroke-width="3"/>`;
+    case "necklace": return `<path d="M30 14 C 52 112 248 112 270 14" fill="none" stroke="${METALS[d.metal][1]}" stroke-width="4" stroke-dasharray="5 1.6" stroke-linecap="round"/><path d="M30 14 C 52 112 248 112 270 14" fill="none" stroke="${m}" stroke-width="2.4" stroke-dasharray="5 1.6" stroke-linecap="round"/><line x1="150" y1="88" x2="150" y2="108" stroke="${METALS[d.metal][1]}" stroke-width="3"/><circle cx="150" cy="114" r="7" fill="none" stroke="${m}" stroke-width="3"/><line x1="150" y1="121" x2="150" y2="${pinTop(d.shape) + 12}" stroke="${METALS[d.metal][1]}" stroke-width="3"/>`;
     case "ring": return ring + jump(82) + jump(102);
     case "ringchain":
-      return ring + [80, 93, 106, 119].map((y, i) => `<ellipse cx="150" cy="${y}" rx="${i % 2 ? 3.5 : 6}" ry="8" fill="none" stroke="${m}" stroke-width="3"/>`).join("");
+      { const ys = []; for (let y = 76; y < pinTop(d.shape) - 2; y += 11) ys.push(y); return ring + ys.map((y, i) => link(y, i % 2)).join(""); }
     case "lobster": return lobster(30) + jump(104);
     case "swivel": return lobster(22) + `<circle cx="150" cy="90" r="6" fill="${m}"/>` + jump(106);
     case "carabiner":
@@ -910,7 +921,7 @@ function renderPiece(d, side = "front", opts = {}) {
     ${defs}
     ${hasHardware(d.shape) ? `${d.hardware === "none" ? "" : tasselSvg(d, id)}
     
-    ${d.hardware === "none" ? "" : `<line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="${METALS[d.metal][1]}" stroke-width="3"/>`}
+    ${d.hardware === "none" || d.hardware === "ringchain" ? "" : `<line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="${METALS[d.metal][1]}" stroke-width="3"/>`}
     ${hardwareSvg(d, id)}` : ""}
     <g filter="url(#${id}-shadow)" ${flip}>
       ${glow ? `<g filter="url(#${id}-glow)" opacity="0.65">${shapeMarkup(d.shape, `fill="${d.addins.glow.color}"`)}</g>` : ""}
@@ -1329,7 +1340,7 @@ function renderTotal() {
 }
 function renderSteps() {
   const names = t("steps");
-  els.steps.innerHTML = names.map((name, i) => (!hasHardware(design.shape) && (i === LAST - 2 || i === LAST - 1)) ? "" :
+  els.steps.innerHTML = names.map((name, i) => ((!hasHardware(design.shape) && (i === LAST - 2 || i === LAST - 1)) || (i === INSIDE_STEP && noInside(design))) ? "" :
     `<button type="button" class="step ${i === ui.step ? "current" : ""} ${ui.visited.has(i) && i !== ui.step ? "done" : ""}" data-step="${i}" ${i === ui.step ? 'aria-current="step"' : ""}>${name}</button>`
   ).join("");
   const cur = els.steps.querySelector(".current");
@@ -1362,6 +1373,8 @@ function swing() {
 }
 function changed() {
   applyPicked(design);
+  for (const id of Object.keys(design.addins)) { const ad = CONFIG.addins.find((x) => x.id === id); if (!ad || !fits(ad, design)) delete design.addins[id]; }
+  if (noInside(design)) design.letters.text = "";
   render();
   swing();
 }
@@ -1371,6 +1384,7 @@ function go(step) {
   const dir = step >= ui.step ? 1 : -1;
   step = Math.max(0, Math.min(LAST, step));
   if (step === LETTER_STEP && !isLetter(design.shape) && !isNumber(design.shape)) step += dir;
+  if (step === INSIDE_STEP && noInside(design)) step += dir;
   if (!hasHardware(design.shape) && (step === LAST - 2 || step === LAST - 1)) step = dir > 0 ? LAST : LAST - 3;
   ui.step = Math.max(0, Math.min(LAST, step));
   ui.visited.add(ui.step);
