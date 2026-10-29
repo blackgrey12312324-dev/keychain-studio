@@ -1,6 +1,8 @@
 /* Extra translations: every English text on the pages that has no entry in i18n.js. Applied automatically by core.js. */
 const PHRASES = {
 "th": {
+"Wide sea canvas with a boat": "ผ้าใบทะเลแนวนอนพร้อมเรือ",
+"Sea canvas with shells and starfish": "ผ้าใบทะเลพร้อมเปลือกหอยและปลาดาว",
 "A tiny LED string with its battery pack. It needs room, so it goes in medium and big molds. Only one fits.": "สายไฟ LED เล็กพร้อมกล่องแบตเตอรี่ ต้องใช้พื้นที่ จึงใส่ได้เฉพาะแม่พิมพ์ขนาดกลางและใหญ่ ใส่ได้เพียงเส้นเดียว",
 "Abstract": "แอบสแตรกต์",
 "Abstract canvases are poured by hand, so every one is unique. Pick the look closest to what you want.": "ผ้าใบแอบสแตรกต์เทด้วยมือ จึงไม่มีชิ้นไหนซ้ำกัน เลือกลุคที่ใกล้เคียงกับที่คุณต้องการ",
@@ -386,6 +388,8 @@ const PHRASES = {
 "Bun pin": "ปิ่นปักผม"
 },
 "ru": {
+"Wide sea canvas with a boat": "Широкий морской холст с лодкой",
+"Sea canvas with shells and starfish": "Морской холст с ракушками и морской звездой",
 "A tiny LED string with its battery pack. It needs room, so it goes in medium and big molds. Only one fits.": "Маленькая LED-гирлянда с батарейным блоком. Ей нужно место, поэтому она подходит для средних и больших форм. Помещается только одна.",
 "Abstract": "Абстракция",
 "Abstract canvases are poured by hand, so every one is unique. Pick the look closest to what you want.": "Абстрактные холсты заливаются вручную, поэтому каждый уникален. Выберите вариант, который ближе всего к желаемому.",
