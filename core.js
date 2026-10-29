@@ -261,9 +261,9 @@ function seaAtmosphere() {
   document.body.prepend(wrap);
   const hero = document.querySelector(".hero");
   if (hero) {
-    [["starfish", "4%", "18%", 86, "-12deg"], ["shell-scallop", "90%", "30%", 70, "14deg"], ["shell-spiral", "8%", "72%", 56, "20deg"], ["shell-mix2", "86%", "76%", 62, "-8deg"]].forEach(([f, x, y, w, r], i) => {
+    [["starfish-drawn.svg", "4%", "30%", 120, "-14deg"], ["starfish-drawn.svg", "88%", "12%", 80, "18deg"]].forEach(([f, x, y, w, r], i) => {
       const im = document.createElement("img");
-      im.className = "deco-shell"; im.src = `images/sea/${f}.png`; im.alt = "";
+      im.className = "deco-shell"; im.src = `images/sea/${f}`; im.alt = "";
       im.style.cssText = `left:${x};top:${y};width:${w}px;--r:${r};animation-delay:${-i * 1.7}s`;
       hero.appendChild(im);
     });
