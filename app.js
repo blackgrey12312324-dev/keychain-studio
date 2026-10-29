@@ -1153,7 +1153,7 @@ const STEP_VIEWS = [
     if (design.style === "clear") {
       return `<h2>${U("s4h")}</h2><p class="hint">${U("s4clearP")}</p>
         <button type="button" class="btn btn-line" data-action="goto" data-step="3">${U("changeStyle")}</button>
-        <p class="small-note">${U("paintTip")}</p>`;
+        `;
     }
     const picked = design.picked;
     const nameOf = (hex) => { const c = CONFIG.colors.find((x) => x.hex === hex); return c ? tr(c, "name") : hex; };
@@ -1166,7 +1166,7 @@ const STEP_VIEWS = [
         : `<span class="slot"><span class="blob empty"></span>${U("pickOne")}</span>`).join("")}</div>`)}
       ${field(U("allColours"), `<div class="swatches">${CONFIG.colors.map((c) =>
         `<button type="button" class="swatch ${picked.includes(c.hex) ? "on" : ""}" style="background:${c.hex}" title="${esc(tr(c, "name"))}" aria-label="${esc(tr(c, "name"))}" aria-pressed="${picked.includes(c.hex)}" data-action="swatch" data-hex="${c.hex}"></button>`).join("")}</div>`)}
-      <p class="small-note">${U("paintTip")}</p>`;
+      `;
   },
 
   // 5 Details (after the colours)
@@ -1344,18 +1344,9 @@ function renderStudioTools() {
   const cols = [...new Set([...design.colors, "#FFFFFF", "#D4AF37", ...CONFIG.colors.map((c) => c.hex)].map((c) => c.toUpperCase()))];
   const bc = brushColor().toUpperCase();
   box.innerHTML = `
-    <div class="tool-row">${seg("mode", "move", ui.mode, B("move"))}${seg("mode", "paint", ui.mode, B("paint"))}
+    <div class="tool-row">
       <label class="zoom"><span>${B("zoom")}</span><input type="range" min="1" max="4" step="0.25" value="${ui.zoom}" data-tool="zoom" aria-label="${B("zoom")}"></label>
-    </div>
-    ${ui.mode === "paint" ? `
-      <div class="tool-row">${seg("brush", "ink", ui.brush.tool, B("ink"))}${seg("brush", "glitter", ui.brush.tool, B("glitterBrush"))}${seg("brush", "gold", ui.brush.tool, B("goldBrush"))}
-        <span class="sep" aria-hidden="true"></span>${["s", "m", "l"].map((s) => seg("size", s, ui.brush.size, s.toUpperCase())).join("")}</div>
-      <div class="tool-row swatch-row" role="group" aria-label="${B("brushColour")}">${cols.map((c) =>
-        `<button type="button" class="swatch small ${c === bc ? "on" : ""}" style="background:${c}" aria-label="${esc(colorName(c))}" data-tool="color" data-value="${c}"></button>`).join("")}</div>
-      <div class="tool-row">
-        <button type="button" class="btn btn-line small" data-tool="undo" ${design.paint.length ? "" : "disabled"}>${B("undoPaint")}</button>
-        <button type="button" class="btn btn-line small" data-tool="clear" ${design.paint.length ? "" : "disabled"}>${B("clearPaint")}</button>
-      </div>` : ""}`;
+    </div>`;
 }
 
 /* =========================================================
@@ -1370,8 +1361,8 @@ const els = {
 
 const GLITTER_STEP = 6;
 const DETAILS_STEP = 5;
-const inking = () => ui.step === DETAILS_STEP && design.style === "ink" && design.picked.length > 0 && !(ui.full && ui.mode === "paint");
-const pouring = () => !!ui.pour.id && ui.step === GLITTER_STEP && !(ui.full && ui.mode === "paint");
+const inking = () => ui.step === DETAILS_STEP && design.style === "ink" && design.picked.length > 0 && !(false);
+const pouring = () => !!ui.pour.id && ui.step === GLITTER_STEP && !(false);
 function hasDraggables() {
   return activeAddins(design).some((a) => a.drag);
 }
@@ -1380,13 +1371,13 @@ function renderHint() {
   if (ui.side === "back") h = ui.full ? t("big.backHint") : "";
   else if (pouring()) h = U("glHint", { name: glitterName(ui.pour.id) });
   else if (inking()) h = U("inkHint");
-  else if (ui.full) h = ui.mode === "paint" ? t("big.paintHint") : hasDraggables() ? t("big.moveHint") : "";
+  else if (ui.full) h = hasDraggables() ? t("big.moveHint") : "";
   else if (hasDraggables()) h = U("dragHint");
   els.hint.textContent = h;
 }
 function renderPreview() {
   els.preview.innerHTML = renderPiece(design, ui.side, { interactive: true, zoom: ui.zoom, pan: ui.pan });
-  els.preview.classList.toggle("painting", ui.full && ui.mode === "paint" && ui.side === "front");
+  els.preview.classList.toggle("painting", false && ui.side === "front");
   renderHint();
 }
 function renderTotal() {
@@ -1429,6 +1420,7 @@ function swing() {
 }
 function changed() {
   applyPicked(design);
+  design.paint = [];
   for (const id of Object.keys(design.addins)) { const ad = CONFIG.addins.find((x) => x.id === id); if (!ad || !fits(ad, design)) delete design.addins[id]; }
   if (noInside(design) || design.style === "ocean") design.letters.text = "";
   if (design.style === "ocean") design.crush = [];
@@ -1715,7 +1707,7 @@ els.preview.addEventListener("pointerdown", (e) => {
     els.preview.setPointerCapture(e.pointerId);
     return;
   }
-  if (ui.full && ui.mode === "paint") {
+  if (false) {
     if (!insideShape(design.shape, p.x, p.y)) return;
     e.preventDefault();
     const live = els.preview.querySelector(".live");
