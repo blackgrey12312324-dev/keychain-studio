@@ -30,12 +30,19 @@ function startSlides() {
   document.querySelectorAll(".slides").forEach((el, i) => {
     const n = el.children.length;
     if (n < 2 || el._t) return;
+    el.appendChild(el.children[0].cloneNode(true));   // copy of the first photo so it can keep sliding the same way
     let at = 0;
+    const mark = () => [...el.children].forEach((im, k) => im.classList.toggle("cur", k === at || (at === n && k === 0 && false)));
+    mark();
+    el.addEventListener("transitionend", (e) => {
+      if (e.target !== el || at < n) return;
+      el.style.transition = "none"; at = 0; el.style.transform = "translateX(0)"; mark();
+      void el.offsetWidth; el.style.transition = "";
+    });
     el._t = setInterval(() => {
       if (document.hidden) return;
-      at = (at + 1) % n;
-      el.style.transform = `translateX(-${at * 100}%)`;
-    }, 3600 + i * 350);
+      at += 1; el.style.transform = `translateX(-${at * 100}%)`; mark();
+    }, 8000 + i * 700);
   });
 }
 new MutationObserver(() => startSlides()).observe(document.documentElement, { childList: true, subtree: true });

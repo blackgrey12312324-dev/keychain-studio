@@ -1076,3 +1076,11 @@ body { background: #F1F9F9 !important; }
 .make-img .slides img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; position: static !important; }
 .make-img > img, .make-img .curve { display: none !important; }
 .make:hover .make-img img { transform: none; }
+
+/* calmer, slower, dissolving slides; cards stay still so the eye is not pulled around */
+.make-img .slides { transition: transform 3.2s cubic-bezier(0.45, 0, 0.25, 1); }
+.make-img .slides img { opacity: 0.25; transition: opacity 3.2s ease; }
+.make-img .slides img.cur { opacity: 1; }
+.make:nth-child(odd), .make:nth-child(even) { transform: none !important; }
+.make:hover { transform: translateY(-4px) !important; }
+.make::after { background: linear-gradient(180deg, rgba(0,0,0,0) 45%, color-mix(in srgb, var(--c) 82%, #000) 100%) !important; }
