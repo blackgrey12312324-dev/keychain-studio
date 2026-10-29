@@ -15,12 +15,24 @@ const LAST = STEP_COUNT - 1;
 /* =========================================================
    Design state
    ========================================================= */
+const DEFAULT_COLORS = ["#1C6FC9", "#29B7A3", "#EFEAE6"];
+// Until a customer picks colours the piece shows as clear resin, so the colours they choose are the only colour they see.
+const isFresh = (d) => d.style !== "ocean" && Array.isArray(d.picked) && d.picked.length === 0 && d.colors.join() === DEFAULT_COLORS.join();
+function mixHex(a, b) { const p = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)); const x = p(a), y = p(b); return "#" + x.map((v, i) => Math.round((v + y[i]) / 2).toString(16).padStart(2, "0")).join(""); }
+function applyPicked(d) {
+  const p = d.picked;
+  if (!p || !p.length) return;
+  if (p.length === 1) d.colors = [p[0], p[0], p[0]];
+  else if (p.length === 2) d.colors = d.style === "ink" ? [p[0], p[1], p[0]] : [p[0], mixHex(p[0], p[1]), p[1]];
+  else d.colors = p.slice();
+}
 function defaultDesign() {
   return {
     shape: "A",
     second: "",
     style: "gradient",
-    colors: ["#1C6FC9", "#29B7A3", "#EFEAE6"],
+    colors: DEFAULT_COLORS.slice(),
+    picked: [],
     clearParts: false,
     font: "block",
     gradient: { direction: "down", glitter: "none" },
@@ -833,6 +845,7 @@ function zoomBox(z, pan = [0, 0]) {
 }
 
 function renderPiece(d, side = "front", opts = {}) {
+  if (isFresh(d)) d = Object.assign({}, d, { style: "clear" });
   ensureItems(d);
   const id = "k" + ++uid;
   const R = rng(20260);
@@ -1005,8 +1018,9 @@ const STEP_VIEWS = [
   () => `
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
-    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => st !== "ocean").map((st) => {
-      const d = merge(copy(design), { style: st });
+    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => st !== "ocean" && st !== "clear").map((st) => {
+      const d = merge(copy(design), { style: st, picked: design.picked.length ? design.picked : DEFAULT_COLORS.slice() });
+      applyPicked(d);
       return `<button type="button" class="card ${design.style === st ? "on" : ""}" aria-pressed="${design.style === st}" data-set="style" data-value="${st}">
         <span class="card-art">${renderPiece(d)}</span>
         <span class="card-name">${lab("style", st)}</span>
@@ -1014,7 +1028,23 @@ const STEP_VIEWS = [
       </button>`;
     }).join("")}</div>`,
 
-  // 4 Details
+  // 4 Colours (comes before the style details)
+  () => {
+    const picked = design.picked;
+    const nameOf = (hex) => { const c = CONFIG.colors.find((x) => x.hex === hex); return c ? tr(c, "name") : hex; };
+    return `<h2>${U("s4h")}</h2>
+      <p class="hint">${U("s4p")}</p>
+      ${field(U("palettes"), `<div class="chips">${CONFIG.palettes.map((p, i) =>
+        `<button type="button" class="chip" data-action="palette" data-i="${i}"><span class="dots">${p.colors.map((c) => `<span class="dot" style="background:${c}"></span>`).join("")}</span>${tr(p, "name")}</button>`).join("")}</div>`)}
+      ${field(U("yourColours"), `<div class="slots">${[0, 1, 2].map((i) => picked[i]
+        ? `<button type="button" class="slot on" data-action="slot" data-i="${i}" aria-label="${esc(nameOf(picked[i]))}"><span class="blob" style="background:${picked[i]}"></span>${esc(nameOf(picked[i]))} ✕</button>`
+        : `<span class="slot"><span class="blob empty"></span>${U("pickOne")}</span>`).join("")}</div>`)}
+      ${field(U("allColours"), `<div class="swatches">${CONFIG.colors.map((c) =>
+        `<button type="button" class="swatch ${picked.includes(c.hex) ? "on" : ""}" style="background:${c.hex}" title="${esc(tr(c, "name"))}" aria-label="${esc(tr(c, "name"))}" aria-pressed="${picked.includes(c.hex)}" data-action="swatch" data-hex="${c.hex}"></button>`).join("")}</div>`)}
+      <p class="small-note">${U("paintTip")}</p>`;
+  },
+
+  // 5 Details (after the colours)
   () => {
     if (design.style === "clear") return `<h2>${U("s3clearH")}</h2><p class="hint">${U("s3clearP")}</p>`;
     if (design.style === "gradient") {
@@ -1038,27 +1068,6 @@ const STEP_VIEWS = [
       ${field(U("foam"), chips("ocean.foam", "foam", o.foam))}
       ${o.sand !== "none" ? field(U("sandColor"), chips("ocean.sandColor", "sandColor", o.sandColor)) : ""}
       <p class="small-note">${U("oceanNote")}</p>`;
-  },
-
-  // 5 Colours
-  () => {
-    if (design.style === "clear") {
-      return `<h2>${U("s4h")}</h2><p class="hint">${U("s4clearP")}</p>
-        <button type="button" class="btn btn-line" data-action="goto" data-step="3">${U("changeStyle")}</button>
-        <p class="small-note">${U("paintTip")}</p>`;
-    }
-    const names = design.style === "ocean" ? U("slotOcean") : design.style === "ink" ? U("slotInk") : U("slotGrad");
-    const slot = ui.slot;
-    return `<h2>${U("s4h")}</h2>
-      <p class="hint">${U("s4p")}</p>
-      ${field(U("palettes"), `<div class="chips">${CONFIG.palettes.map((p, i) =>
-        `<button type="button" class="chip" data-action="palette" data-i="${i}"><span class="dots">${p.colors.map((c) => `<span class="dot" style="background:${c}"></span>`).join("")}</span>${tr(p, "name")}</button>`).join("")}</div>`)}
-      ${field(U("yourColours"), `<div class="slots">${design.colors.map((c, i) =>
-        `<button type="button" class="slot ${slot === i ? "on" : ""}" aria-pressed="${slot === i}" data-action="slot" data-i="${i}"><span class="blob" style="background:${c}"></span>${names[i]}</button>`).join("")}</div>`)}
-      ${field(U("coloursFor", { name: names[slot] }), `<div class="swatches">${CONFIG.colors.map((c) =>
-        `<button type="button" class="swatch" style="background:${c.hex}" title="${esc(tr(c, "name"))}" aria-label="${esc(tr(c, "name"))}" data-action="swatch" data-hex="${c.hex}"></button>`).join("")}</div>`)}
-      ${field(U("anyColour"), `<div class="color-row"><input type="color" aria-label="${esc(names[slot])}" data-set="colors.${slot}" value="${design.colors[slot]}"><span class="small-note">${U("anyColourNote")}</span></div>`)}
-      <p class="small-note">${U("paintTip")}</p>`;
   },
 
   // 6 Glitter
@@ -1286,6 +1295,7 @@ function swing() {
   els.preview.classList.add("swing");
 }
 function changed() {
+  applyPicked(design);
   render();
   swing();
 }
@@ -1321,8 +1331,9 @@ function surprise() {
   const cols = CONFIG.colors.map((c) => c.hex);
   const d = defaultDesign();
   d.shape = design.shape; d.second = design.second; d.note = design.note;
-  d.style = pick(["clear", "gradient", "gradient", "ink", "ink"]);
-  d.colors = Math.random() < 0.6 ? copy(pick(CONFIG.palettes).colors) : [pick(cols), pick(cols), pick(cols)];
+  d.style = pick(["gradient", "gradient", "ink", "ink"]);
+  d.picked = Math.random() < 0.7 ? copy(pick(CONFIG.palettes).colors) : [pick(cols), pick(cols), pick(cols)];
+  d.colors = d.picked.slice();
   d.gradient = { direction: pick(["down", "right", "diagonal", "center"]), glitter: "none" };
   d.clearParts = Math.random() < 0.25;
   d.ink = { amount: pick(["light", "medium", "bold"]), background: pick(["clear", "white", "cloudy"]),
@@ -1390,7 +1401,7 @@ els.panel.addEventListener("click", (e) => {
   const action = el.dataset.action;
   if (action === "preset") {
     const p = CONFIG.presets.find((x) => x.id === el.dataset.id);
-    design = merge(defaultDesign(), p.design);
+    design = merge(defaultDesign(), p.design); if (!design.picked.length && !isFresh(design)) design.picked = [...new Set(design.colors)];
     ui.side = "front";
     go(el.dataset.go === "review" ? LAST : 1);
     swing();
@@ -1435,14 +1446,16 @@ els.panel.addEventListener("click", (e) => {
   } else if (action === "goto") {
     go(Number(el.dataset.step));
   } else if (action === "palette") {
-    design.colors = copy(CONFIG.palettes[Number(el.dataset.i)].colors);
+    design.picked = copy(CONFIG.palettes[Number(el.dataset.i)].colors);
     changed();
   } else if (action === "slot") {
-    ui.slot = Number(el.dataset.i);
-    renderPanel();
+    design.picked.splice(Number(el.dataset.i), 1);
+    changed();
   } else if (action === "swatch") {
-    design.colors[ui.slot] = el.dataset.hex;
-    if (ui.slot < 2) ui.slot += 1;
+    const at = design.picked.indexOf(el.dataset.hex);
+    if (at >= 0) design.picked.splice(at, 1);
+    else if (design.picked.length < 3) design.picked.push(el.dataset.hex);
+    else { toast(U("maxColours")); return; }
     changed();
   } else if (action === "addin") {
     const a = CONFIG.addins.find((x) => x.id === el.dataset.id);
@@ -1796,7 +1809,7 @@ function loadFromLink() {
   const preset = new URLSearchParams(location.search).get("preset");
   const p = CONFIG.presets.find((x) => x.id === preset);
   if (p) {
-    design = merge(defaultDesign(), p.design);
+    design = merge(defaultDesign(), p.design); if (!design.picked.length && !isFresh(design)) design.picked = [...new Set(design.colors)];
     ui.step = 1;
     ui.visited = new Set([0, 1]);
   }
@@ -1809,7 +1822,7 @@ function loadFromLink() {
   const m = location.hash.match(/d=([^&]+)/);
   if (!m) return;
   try {
-    design = merge(defaultDesign(), decodeDesign(decodeURIComponent(m[1])));
+    design = merge(defaultDesign(), decodeDesign(decodeURIComponent(m[1]))); if (!design.picked.length && !isFresh(design)) design.picked = [...new Set(design.colors)];
     ui.step = LAST;
     ui.visited = new Set([...Array(STEP_COUNT).keys()]);
   } catch (err) {

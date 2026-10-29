@@ -811,3 +811,4 @@ a.card { text-decoration: none; color: inherit; display: block; }
 .gallery.rec figcaption strong { font-size: 1.45rem; }
 .gallery figure { background: transparent; }
 .tool[hidden]{display:none}
+.slot .blob.empty { background: transparent; border: 1px dashed #AEB4B0; }

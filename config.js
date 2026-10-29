@@ -64,12 +64,22 @@ const CONFIG = {
   ],
 
   palettes: [
-    { name: "Sunset", name_th: "พระอาทิตย์ตก", name_ru: "Закат", colors: ["#E0792F", "#E58FA6", "#D4A93C"] },
-    { name: "Andaman Sea", name_th: "ทะเลอันดามัน", name_ru: "Андаманское море", colors: ["#1C6FC9", "#29B7A3", "#EFEAE6"] },
-    { name: "Forest", name_th: "ป่า", name_ru: "Лес", colors: ["#2F5A4C", "#7CCFB6", "#EFEAE6"] },
+    // trios built only from the epoxy colours Anna has (hex values come from the colour list above)
+    { name: "Deep sea", name_th: "ทะเลลึก", name_ru: "Глубокое море", colors: ["#2F4FB5", "#2C93A8", "#EFEAE6"] },
+    { name: "Lagoon", name_th: "ลากูน", name_ru: "Лагуна", colors: ["#29B7A3", "#7CCFB6", "#EFEAE6"] },
+    { name: "Clear sky", name_th: "ท้องฟ้าใส", name_ru: "Ясное небо", colors: ["#4F9BE0", "#C9C9CB", "#EFEAE6"] },
+    { name: "Sunset", name_th: "พระอาทิตย์ตก", name_ru: "Закат", colors: ["#E0792F", "#D05563", "#D4A93C"] },
+    { name: "Rose gold", name_th: "โรสโกลด์", name_ru: "Розовое золото", colors: ["#C98B6E", "#F2C3CE", "#D9C2A8"] },
+    { name: "Blush", name_th: "ชมพูอ่อน", name_ru: "Румянец", colors: ["#EBA3B0", "#E58FA6", "#F2C3CE"] },
+    { name: "Berry", name_th: "เบอร์รี่", name_ru: "Ягодный", colors: ["#B2467D", "#7E4FB5", "#F2C3CE"] },
     { name: "Galaxy", name_th: "กาแล็กซี", name_ru: "Галактика", colors: ["#1E1E20", "#5A63C4", "#7E4FB5"] },
-    { name: "Rose gold", name_th: "โรสโกลด์", name_ru: "Розовое золото", colors: ["#C98B6E", "#F2C3CE", "#D4A93C"] },
+    { name: "Forest", name_th: "ป่า", name_ru: "Лес", colors: ["#2F5A4C", "#7CCFB6", "#EFEAE6"] },
+    { name: "Black & gold", name_th: "ดำและทอง", name_ru: "Чёрное и золото", colors: ["#1E1E20", "#D4A93C", "#D9C2A8"] },
+    { name: "Copper earth", name_th: "ทองแดงดิน", name_ru: "Медная земля", colors: ["#A56B3E", "#C07445", "#D9C2A8"] },
+    { name: "Smoke", name_th: "ควัน", name_ru: "Дымка", colors: ["#4A4C4A", "#7C7B76", "#C9C9CB"] },
+    { name: "Lavender", name_th: "ลาเวนเดอร์", name_ru: "Лаванда", colors: ["#7E4FB5", "#F2C3CE", "#EFEAE6"] },
   ],
+
 
   // Things inside the resin.
   // drag: true = customers can drag each piece around.

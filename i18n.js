@@ -9,7 +9,7 @@
 const I18N = {
   /* ---------------- ENGLISH ---------------- */
   en: {
-    steps: ["Ready-made", "Mold", "Letter", "Style", "Details", "Colours", "Glitter", "Tiny letters", "Inside", "Back", "Chain", "Tassel", "Review"],
+    steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Tiny letters", "Inside", "Back", "Chain", "Tassel", "Review"],
     ui: {
       tagline: "Design your own resin keychain, handmade in Phuket",
       flip: "Flip", dropInside: "Drop it inside the shape", zoomIn: "Zoom in", zoomOut: "Zoom out", dropHint: "Drag a glitter or decoration from the list onto your piece.", surprise: "Surprise me", bigView: "Big view", startOver: "Start over",
@@ -40,9 +40,9 @@ const I18N = {
       wave: "Where is the wave", foam: "Foam", sandColor: "Sand colour",
       oceanNote: "Want shells, starfish or pearls? Add them in the Inside step.",
 
-      s4h: "Pick your colours", s4p: "Tap a colour spot, then tap a colour below.",
+      s4h: "Pick your colours", s4p: "Pick up to 3 colours. Choose a ready trio, or tap the colours you want below.",
       s4clearP: "Clear style has no colour, so the things inside bring the colour. Want colour? Pick another style.",
-      changeStyle: "Change style", palettes: "Ready palettes", yourColours: "Your colours", coloursFor: "Colours for: {name}",
+      changeStyle: "Change style", palettes: "Ready trios", pickOne: "Pick a colour", allColours: "All our colours", maxColours: "3 colours is the most. Tap one of your colours to remove it.", yourColours: "Your colours", coloursFor: "Colours for: {name}",
       anyColour: "Or any colour", anyColourNote: "Anna will match it as close as she can.",
       slotOcean: ["Deep sea", "Middle water", "Shallow water"], slotInk: ["Ink 1", "Ink 2", "Ink 3"],
       slotGrad: ["Colour 1", "Colour 2", "Colour 3"], paintTip: "Tip: open Big view to paint on your keychain with your finger",
@@ -150,7 +150,7 @@ const I18N = {
 
   /* ---------------- THAI ---------------- */
   th: {
-    steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "รายละเอียด", "สี", "กากเพชร", "ตัวอักษรจิ๋ว", "ของข้างใน", "ด้านหลัง", "โซ่", "พู่", "ตรวจสอบ"],
+    steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ตัวอักษรจิ๋ว", "ของข้างใน", "ด้านหลัง", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
       tagline: "ออกแบบพวงกุญแจเรซินของคุณเอง งานทำมือจากภูเก็ต",
       flip: "พลิก", dropInside: "วางภายในรูปทรง", zoomIn: "ซูมเข้า", zoomOut: "ซูมออก", dropHint: "ลากกากเพชรหรือของตกแต่งจากรายการมาวางบนชิ้นงาน", surprise: "สุ่มให้หน่อย", bigView: "ดูภาพใหญ่", startOver: "เริ่มใหม่",
@@ -179,9 +179,9 @@ const I18N = {
       wave: "คลื่นอยู่ตรงไหน", foam: "ฟองคลื่น", sandColor: "สีทราย",
       oceanNote: "อยากได้เปลือกหอย ปลาดาว หรือไข่มุก? เพิ่มได้ในขั้นตอน ของข้างใน",
 
-      s4h: "เลือกสี", s4p: "แตะจุดสีก่อน แล้วแตะสีด้านล่าง",
+      s4h: "เลือกสี", s4p: "เลือกได้สูงสุด 3 สี เลือกชุดสีสำเร็จรูป หรือแตะสีที่ต้องการด้านล่าง",
       s4clearP: "สไตล์ใสไม่มีสี ของข้างในจะเติมสีให้ อยากได้สี? เลือกสไตล์อื่น",
-      changeStyle: "เปลี่ยนสไตล์", palettes: "ชุดสีสำเร็จรูป", yourColours: "สีของคุณ", coloursFor: "สีสำหรับ: {name}",
+      changeStyle: "เปลี่ยนสไตล์", palettes: "ชุดสี 3 สีสำเร็จรูป", pickOne: "เลือกสี", allColours: "สีทั้งหมดของเรา", maxColours: "เลือกได้สูงสุด 3 สี แตะสีที่เลือกไว้เพื่อลบออก", yourColours: "สีของคุณ", coloursFor: "สีสำหรับ: {name}",
       anyColour: "หรือเลือกสีใดก็ได้", anyColourNote: "แอนนาจะทำสีให้ใกล้เคียงที่สุด",
       slotOcean: ["ทะเลลึก", "น้ำกลาง", "น้ำตื้น"], slotInk: ["หมึก 1", "หมึก 2", "หมึก 3"],
       slotGrad: ["สี 1", "สี 2", "สี 3"], paintTip: "ทิป: เปิด ดูภาพใหญ่ เพื่อระบายสีบนพวงกุญแจด้วยนิ้ว",
@@ -271,7 +271,7 @@ const I18N = {
 
   /* ---------------- RUSSIAN ---------------- */
   ru: {
-    steps: ["Готовые", "Форма", "Буква", "Стиль", "Настройки", "Цвета", "Блёстки", "Мини-буквы", "Внутри", "Обратная сторона", "Цепочка", "Кисточка", "Итог"],
+    steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Мини-буквы", "Внутри", "Обратная сторона", "Цепочка", "Кисточка", "Итог"],
     ui: {
       tagline: "Создай свой брелок из смолы, ручная работа с Пхукета",
       flip: "Перевернуть", dropInside: "Отпусти внутри формы", zoomIn: "Приблизить", zoomOut: "Отдалить", dropHint: "Перетащи блёстки или украшение из списка на изделие.", surprise: "Удиви меня", bigView: "Крупно", startOver: "Сначала",
@@ -300,9 +300,9 @@ const I18N = {
       wave: "Где волна", foam: "Пена", sandColor: "Цвет песка",
       oceanNote: "Хочешь ракушки, морские звёзды или жемчуг? Добавь их на шаге «Внутри».",
 
-      s4h: "Выбери цвета", s4p: "Нажми на кружок цвета, потом выбери цвет ниже.",
+      s4h: "Выбери цвета", s4p: "Выбери до 3 цветов. Возьми готовую тройку или нажми на нужные цвета ниже.",
       s4clearP: "У прозрачного стиля нет цвета — цвет дают детали внутри. Хочешь цвет? Выбери другой стиль.",
-      changeStyle: "Сменить стиль", palettes: "Готовые палитры", yourColours: "Твои цвета", coloursFor: "Цвета для: {name}",
+      changeStyle: "Сменить стиль", palettes: "Готовые тройки", pickOne: "Выбери цвет", allColours: "Все наши цвета", maxColours: "Максимум 3 цвета. Нажми на выбранный цвет, чтобы убрать его.", yourColours: "Твои цвета", coloursFor: "Цвета для: {name}",
       anyColour: "Или любой цвет", anyColourNote: "Анна подберёт максимально похожий.",
       slotOcean: ["Глубокое море", "Средняя вода", "Мелководье"], slotInk: ["Чернила 1", "Чернила 2", "Чернила 3"],
       slotGrad: ["Цвет 1", "Цвет 2", "Цвет 3"], paintTip: "Совет: открой «Крупно», чтобы рисовать на брелоке пальцем",
