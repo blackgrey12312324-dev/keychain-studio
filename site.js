@@ -106,7 +106,7 @@ function renderHome() {
           <p>${H("lettersSub")}</p>
         </div>
         <div class="make-grid">${[
-          ["Keychains", "design.html?cat=keychains", "images/phuket-shoreline.jpg|images/real/g-key-tail.jpg", "#134B63", [["Letters", "design.html?cat=keychains&group=letters"]]],
+          ["Keychains", "design.html?cat=keychains", "images/phuket-shoreline.jpg|images/real/g-key-tail.jpg", "#134B63", [["Letters", "design.html?cat=keychains&group=letters"], ["Symbols", "design.html?cat=keychains&group=pendants"]]],
           ["Accessories", "design.html?cat=accessories", "images/real/g-bookmark.jpg|images/real/g-pen-blue.jpg", "#E8806C", [["Bookmarks", "design.html?cat=accessories&group=bookmarks"], ["Hair pieces", "design.html?cat=accessories&group=combs"], ["Pens", "design.html?cat=accessories&group=pens"]]],
           ["Games & decor", "design.html?cat=statues", "images/real/g-domino.jpg|images/real/lamp.jpg", "#8C6BB1", [["Domino", "design.html?cat=statues&group=statues"], ["Chess", "design.html?cat=statues&group=statues"]]],
           ["Dining & restaurant", "design.html?cat=kitchen", "images/real/g-coaster-sea.jpg|images/real/g-fruit-bowl.jpg", "#2E8B8B", [["Cup stands", "design.html?cat=kitchen&group=cups"], ["Boards & trays", "design.html?cat=kitchen&group=boards"]]],
