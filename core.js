@@ -290,20 +290,9 @@ function burst(x, y, n, spread) {
     setTimeout(() => p.remove(), 1700);
   }
 }
-let bubbleDown = false, lastTrail = 0;
 document.addEventListener("pointerdown", (e) => {
-  bubbleDown = true;
-  const b = e.target.closest(".btn, .chip, .pill, .card, .cart-btn, .letter, .swatch, .addin-head, .step, .tool");
-  burst(e.clientX, e.clientY, b ? 12 : 5, b ? 70 : 34);
-});
-document.addEventListener("pointerup", () => (bubbleDown = false));
-document.addEventListener("pointercancel", () => (bubbleDown = false));
-document.addEventListener("pointermove", (e) => {
-  if (!bubbleDown || e.pointerType === "touch" && false) return;
-  const now = performance.now();
-  if (now - lastTrail < 70) return;
-  lastTrail = now;
-  burst(e.clientX, e.clientY, 2, 26);
+  const b = e.target.closest(".btn-ink, .nav-design");
+  if (b) burst(e.clientX, e.clientY, 12, 70);
 });
 window.addEventListener("load", () => { seaAtmosphere(); revealScan(); });
 new MutationObserver(() => { clearTimeout(revealScan.t); revealScan.t = setTimeout(revealScan, 120); }).observe(document.documentElement, { childList: true, subtree: true });
