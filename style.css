@@ -1097,3 +1097,7 @@ body { background: #F1F9F9 !important; }
 .instagram { background: linear-gradient(180deg, #FDF3DF 0%, #EAF4EE 100%) !important; }
 .faq { background: linear-gradient(180deg, #EAF4EE 0%, #D3EBEC 100%) !important; }
 .site-footer { border-top: 0; }
+
+.stage.full .stage-top { position: sticky; top: 8px; z-index: 5; }
+.stage.full #done { background: #fff !important; color: #0E3F57 !important; border: 0 !important; box-shadow: 0 6px 16px rgba(0,0,0,0.25); font-weight: 700; padding: 10px 18px; border-radius: 999px; margin-left: auto; }
+.stage.full .wordmark { color: #fff; }

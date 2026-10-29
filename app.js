@@ -1967,6 +1967,8 @@ els.studioTools.addEventListener("input", (e) => {
 });
 $("bigview").addEventListener("click", () => setFull(true));
 $("done").addEventListener("click", () => { setFull(false); renderPanel(); });
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && ui.full) { setFull(false); renderPanel(); } });
+$("bigview").addEventListener("dblclick", (e) => e.preventDefault());
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && ui.full) { setFull(false); renderPanel(); }
 });
