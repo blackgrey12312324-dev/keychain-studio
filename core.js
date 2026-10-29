@@ -245,3 +245,51 @@ function renderChrome() {
   applyStaticText();
 }
 langListeners.unshift(renderChrome);
+
+/* =========================================================
+   Sea atmosphere: bubbles, floating shells, reveal on scroll, bubble pop on tap
+   ========================================================= */
+function seaAtmosphere() {
+  if (document.querySelector(".bubbles")) return;
+  const wrap = document.createElement("div");
+  wrap.className = "bubbles";
+  for (let i = 0; i < 14; i++) {
+    const b = document.createElement("i"), s = 8 + Math.random() * 26;
+    b.style.cssText = `left:${Math.random() * 100}%;width:${s}px;height:${s}px;animation-duration:${14 + Math.random() * 18}s;animation-delay:${-Math.random() * 30}s`;
+    wrap.appendChild(b);
+  }
+  document.body.prepend(wrap);
+  const hero = document.querySelector(".hero");
+  if (hero) {
+    [["starfish", "4%", "18%", 86, "-12deg"], ["shell-scallop", "90%", "30%", 70, "14deg"], ["shell-spiral", "8%", "72%", 56, "20deg"], ["shell-mix2", "86%", "76%", 62, "-8deg"]].forEach(([f, x, y, w, r], i) => {
+      const im = document.createElement("img");
+      im.className = "deco-shell"; im.src = `images/sea/${f}.png`; im.alt = "";
+      im.style.cssText = `left:${x};top:${y};width:${w}px;--r:${r};animation-delay:${-i * 1.7}s`;
+      hero.appendChild(im);
+    });
+  }
+}
+function revealScan() {
+  if (!("IntersectionObserver" in window)) return;
+  const io = revealScan.io || (revealScan.io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } }), { threshold: 0.08 }));
+  document.querySelectorAll(".section-head, .make, .product, .gallery figure, .style-card, .way, .how-steps li, .story-grid > *").forEach((el) => {
+    if (el.dataset.rv) return;
+    el.dataset.rv = "1"; el.classList.add("reveal");
+    const r = el.getBoundingClientRect();
+    if (r.top < innerHeight) el.classList.add("in"); else io.observe(el);
+  });
+}
+document.addEventListener("pointerdown", (e) => {
+  const b = e.target.closest(".btn, .chip, .pill, .card, .cart-btn, .letter, .swatch, .addin-head");
+  if (!b || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  for (let i = 0; i < 6; i++) {
+    const p = document.createElement("span");
+    p.className = "pop-bubble";
+    const a = Math.random() * Math.PI * 2, d = 24 + Math.random() * 26;
+    p.style.cssText = `left:${e.clientX - 5}px;top:${e.clientY - 5}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d - 14}px;width:${6 + Math.random() * 7}px;height:${6 + Math.random() * 7}px`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 750);
+  }
+});
+window.addEventListener("load", () => { seaAtmosphere(); revealScan(); });
+new MutationObserver(() => { clearTimeout(revealScan.t); revealScan.t = setTimeout(revealScan, 120); }).observe(document.documentElement, { childList: true, subtree: true });

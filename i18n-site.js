@@ -5,6 +5,7 @@
    (The designer's words are in i18n.js.)
    ========================================================= */
 Object.assign(I18N.en, {
+  shop: { addCart: "Add to cart", buyNow: "Purchase now", added: "Added" },
   nav: {
     shop: "Shop", sections: "Sections", design: "Design your own", canvas: "Canvases", idea: "Request something not on the site", reviews: "Reviews", faq: "FAQ", menu: "Menu", home: "Home",
     announce: "Handmade to order in Phuket. Ready in about 5–7 days.",
@@ -68,6 +69,7 @@ Object.assign(I18N.en, {
 });
 
 Object.assign(I18N.th, {
+  shop: { addCart: "เพิ่มลงตะกร้า", buyNow: "ซื้อเลย", added: "เพิ่มแล้ว" },
   nav: {
     shop: "ร้านค้า", sections: "หมวดหมู่", design: "ออกแบบเอง", canvas: "ผ้าใบ", idea: "ขอสิ่งที่ไม่มีในเว็บไซต์", reviews: "รีวิว", faq: "คำถาม", menu: "เมนู", home: "หน้าแรก",
     announce: "งานทำมือตามสั่งจากภูเก็ต เสร็จภายในประมาณ 5–7 วัน",
@@ -128,6 +130,7 @@ Object.assign(I18N.th, {
 });
 
 Object.assign(I18N.ru, {
+  shop: { addCart: "В корзину", buyNow: "Купить сейчас", added: "Добавлено" },
   nav: {
     shop: "Магазин", sections: "Разделы", design: "Создать своё", canvas: "Холсты", idea: "Заказать то, чего нет на сайте", reviews: "Отзывы", faq: "Вопросы", menu: "Меню", home: "Главная",
     announce: "Ручная работа на заказ, Пхукет. Готово примерно за 5–7 дней.",

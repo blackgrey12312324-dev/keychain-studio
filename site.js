@@ -15,6 +15,31 @@ const STYLE_PHOTOS = {
   ocean: "images/phuket-shoreline.jpg",
 };
 
+/* ---------------- Shop buy buttons ---------------- */
+function buyBtns(id, name, img, section) {
+  return `<div class="buy"><button type="button" class="btn btn-line small" data-buy="cart" data-name="${esc(name)}" data-img="${esc(img)}" data-id="${esc(id)}" data-sec="${esc(section)}">${t("shop.addCart", null)}</button><button type="button" class="btn btn-ink small" data-buy="now" data-name="${esc(name)}" data-img="${esc(img)}" data-id="${esc(id)}" data-sec="${esc(section)}">${t("shop.buyNow", null)}</button></div>`;
+}
+function buyItem(el) {
+  const link = el.dataset.sec === "preset" ? `\nOpen the design: ${location.href.split("#")[0].replace(/[^/]*$/, "")}design.html?preset=${el.dataset.id}` : "";
+  return { title: el.dataset.name, sub: el.dataset.sec === "preset" ? "Ready-made keychain" : el.dataset.sec, thumb: `<img src="${el.dataset.img}" alt="">`, text: `From the shop (${el.dataset.sec === "preset" ? "Keychains & necklaces" : el.dataset.sec}): ${el.dataset.name}${link}` };
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-buy]");
+  if (!b) return;
+  const item = buyItem(b);
+  if (b.dataset.buy === "cart") {
+    addToCart(item);
+    b.textContent = "✓ " + t("shop.added", null);
+    setTimeout(() => (b.textContent = t("shop.addCart", null)), 1600);
+    document.getElementById("cart-btn").classList.add("bump");
+    setTimeout(() => document.getElementById("cart-btn").classList.remove("bump"), 700);
+  } else {
+    const text = `Hi Anna! I'd like to order 1 piece 💛\n\n#1 ${item.title}\n${item.text}`;
+    copyText(text).catch(() => {});
+    window.open(igLink(), "_blank", "noopener");
+  }
+});
+
 /* ---------------- Home ---------------- */
 function renderHome() {
   const root = document.getElementById("home");
@@ -58,11 +83,11 @@ function renderHome() {
           <p>${H("readySub")}</p>
         </div>
         <h3 class="theme-h rec-h" style="margin-top:0">Recommended sea designs</h3>
-        <div class="gallery rec">${[["g-fruit-bowl", "Sea fruit bowl"], ["g-tail", "Mermaid tail board"], ["g-canvas", "Sea canvas"], ["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-bookmark", "Sea bookmark with tassel"], ["g-platter", "Sea platter"], ["g-sea-shells", "Sea canvas with shells and starfish"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" loading="lazy"><figcaption><strong>${c}</strong></figcaption></figure>`).join("")}</div>
+        <div class="gallery rec">${[["g-fruit-bowl", "Sea fruit bowl"], ["g-tail", "Mermaid tail board"], ["g-canvas", "Sea canvas"], ["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-bookmark", "Sea bookmark with tassel"], ["g-platter", "Sea platter"], ["g-sea-shells", "Sea canvas with shells and starfish"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" loading="lazy"><figcaption><strong>${c}</strong></figcaption>${buyBtns(n, c, "images/real/" + n + ".jpg", "Recommended sea designs")}</figure>`).join("")}</div>
         <div class="themes">${CONFIG.gallery.filter((t) => t.items.length).map((t) => `
           <h3 class="theme-h">${esc(t.theme)}</h3>
-          <div class="gallery">${t.theme === "Keychains & necklaces" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption></figure>`).join("") : ""}${t.items.map((it) => it.video
-            ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption><strong>${esc(it.cap)}</strong></figcaption></figure>`
+          <div class="gallery">${t.theme === "Keychains & necklaces" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption>${buyBtns(p.id, p.name, p.photo, "preset")}</figure>`).join("") : ""}${t.items.map((it) => it.video
+            ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns((it.img || it.cap).replace(/\W+/g, "-"), it.cap, it.img || it.poster, t.theme)}</figure>`
             : `<figure><img src="${it.img}" alt="${esc(it.cap)}" loading="lazy"><figcaption><strong>${esc(it.cap)}</strong></figcaption></figure>`).join("")}</div>`).join("")}
         </div>
       </div>

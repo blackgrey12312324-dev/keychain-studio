@@ -875,3 +875,50 @@ body[data-page="design"], body.designer { background: #F2EFE9 !important; }
 .cart-empty { border: 0 !important; color: var(--ink-soft); }
 .cart-actions { display: grid; gap: 10px; }
 @media (max-width: 899px) { .cart-btn span:nth-child(2) { display: none; } }
+
+.cart-thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+/* =========================================================
+   Sea theme: warm sand, foam and water. Waves between sections, real shells, bubbles, satisfying buttons.
+   ========================================================= */
+body { background: linear-gradient(180deg, #FFF9F1 0%, #F6EADB 40%, #E4F2F0 100%) fixed !important; }
+body[data-page="design"], body.designer { background: linear-gradient(180deg, #F3F8F6 0%, #E9F3F1 45%, #F6EADB 100%) fixed !important; }
+.bubbles { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+.bubbles i { position: absolute; bottom: -40px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(190,225,230,0.35) 60%, rgba(190,225,230,0.1)); border: 1px solid rgba(255,255,255,0.7); animation: rise linear infinite; }
+@keyframes rise { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 0.9; } 100% { transform: translateY(-115vh) translateX(30px); opacity: 0; } }
+main, .site-footer, .site-header, .layout { position: relative; z-index: 1; }
+.site-header { background: rgba(255, 255, 255, 0.92) !important; backdrop-filter: blur(8px); }
+.section, .hero { position: relative; }
+.section { background: transparent; }
+.hero::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 60px; pointer-events: none; background: url("data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 80%22 preserveAspectRatio=%22none%22%3E%3Cpath d=%22M0 40 C 180 90 360 0 540 30 C 720 60 900 90 1080 40 C 1260 -5 1350 20 1440 40 V80 H0 Z%22 fill=%22%23FFF9F1%22/%3E%3C/svg%3E"); background-size: 100% 100%; z-index: 2; }
+.letters-band { background: linear-gradient(180deg, #DDF0EE 0%, #CFE9E7 100%) !important; }
+.letters-band::before { content: ""; position: absolute; left: 0; right: 0; top: -59px; height: 60px; background: url("data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 80%22 preserveAspectRatio=%22none%22%3E%3Cpath d=%22M0 30 C 200 -10 400 70 640 35 C 860 5 1060 75 1240 40 C 1340 22 1400 30 1440 36 V80 H0 Z%22 fill=%22%23DDF0EE%22/%3E%3C/svg%3E"); background-size: 100% 100%; pointer-events: none; }
+.ways { background: linear-gradient(180deg, #0E3F57 0%, #135E73 100%) !important; }
+.how { background: linear-gradient(180deg, #F6E9D8, #FBF3E7) !important; }
+.faq { background: linear-gradient(180deg, #DDF0EE, #CFE9E7) !important; }
+.section-head h2::after { content: ""; display: block; width: 64px; height: 4px; margin-top: 10px; border-radius: 4px; background: repeating-linear-gradient(90deg, #2E8B8B 0 10px, transparent 10px 14px); }
+.deco-shell { position: absolute; pointer-events: none; opacity: 0.92; filter: drop-shadow(0 4px 6px rgba(14,63,87,0.25)); animation: bob 7s ease-in-out infinite; z-index: 1; }
+@keyframes bob { 0%, 100% { transform: translateY(0) rotate(var(--r, 0deg)); } 50% { transform: translateY(-9px) rotate(calc(var(--r, 0deg) + 4deg)); } }
+@media (max-width: 700px) { .deco-shell { display: none; } }
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+.reveal.in { opacity: 1; transform: none; }
+.make, .product, .gallery figure { transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease, opacity 0.7s ease; }
+.make:hover, .product:hover, .gallery figure:hover { transform: translateY(-6px); box-shadow: 0 18px 34px rgba(14, 63, 87, 0.18); }
+.gallery figure { padding-bottom: 12px; border-radius: 14px; overflow: hidden; background: #fff !important; box-shadow: 0 6px 18px rgba(14, 63, 87, 0.08); display: flex; flex-direction: column; }
+.gallery figure figcaption { padding: 12px 12px 0; }
+.gallery img, .gallery video { border-radius: 14px 14px 0 0; }
+.buy { display: flex; gap: 8px; padding: 12px 12px 0; flex-wrap: wrap; margin-top: auto; }
+.buy .btn.small { padding: 9px 12px; font-size: 0.82rem; flex: 1 1 auto; }
+.card:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(14, 63, 87, 0.14); }
+.pill:hover { transform: translateY(-2px) scale(1.04); }
+.btn, .chip, .card, .letter, .swatch, .step, .tool, .cart-btn, .pill, .addin-head { transition: transform 0.18s cubic-bezier(0.3, 1.6, 0.5, 1), box-shadow 0.2s, background 0.2s, color 0.2s; -webkit-tap-highlight-color: transparent; }
+.btn:hover, .chip:hover, .cart-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(14, 63, 87, 0.2); }
+.btn:active, .chip:active, .letter:active, .card:active, .swatch:active, .cart-btn:active, .pill:active { transform: scale(0.94); box-shadow: none; }
+.btn-ink { background: linear-gradient(135deg, #0E3F57, #19708A) !important; border-color: #0E3F57 !important; }
+.chip.on, .letter.on { animation: pop 0.35s cubic-bezier(0.3, 1.8, 0.5, 1); }
+@keyframes pop { 0% { transform: scale(0.88); } 60% { transform: scale(1.08); } 100% { transform: scale(1); } }
+.cart-btn.bump { animation: bump 0.6s cubic-bezier(0.3, 1.8, 0.5, 1); }
+@keyframes bump { 0% { transform: scale(1); } 30% { transform: scale(1.25) rotate(-6deg); } 60% { transform: scale(0.95) rotate(4deg); } 100% { transform: scale(1); } }
+.pop-bubble { position: fixed; z-index: 400; border-radius: 50%; pointer-events: none; background: radial-gradient(circle at 30% 30%, #fff, rgba(120,200,210,0.6)); border: 1px solid rgba(255,255,255,0.9); animation: popb 0.7s ease-out forwards; }
+@keyframes popb { from { transform: translate(0,0) scale(0.6); opacity: 1; } to { transform: translate(var(--dx), var(--dy)) scale(1.4); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .bubbles, .deco-shell, .pop-bubble { display: none; } .reveal { opacity: 1; transform: none; transition: none; } }
