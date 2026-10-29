@@ -105,7 +105,7 @@ const CHARM_GROUPS = ["small", "charms"];
 const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1 };
 const INSIDE_STEP = 7;
 const COLOURS_STEP = 4, GLITTER_STEP_NO = 6;
-const SEA_WATER = ["#1F6BC0", "#4F8A9C", "#BFD9DE"];   // the sea style always uses the same water colours
+const SEA_WATER = ["#0F3D8C", "#2373C4", "#5BB6C8"];   // deep navy to royal blue to turquoise, like Anna's sea pours   // the sea style always uses the same water colours
 const skipStep = (i, d) => d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO);
 // gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
 const noInside = (d) => d.style === "gradient";
@@ -704,8 +704,8 @@ function styleLayer(d, id, R, T, B) {
   const edgeY = sandY ?? (B + 40);
   const wavePath = (y, ph, A) => { let p = `M-140 ${y}`; for (let k = 0; k < 8; k++) p += ` q 40 ${(k % 2 ? 1 : -1) * A * (ph ? -1 : 1)} 80 0`; return p; };
   const cw = SEA_WATER;
-  const sandCol = SAND[o.sandColor || "natural"];
-  const foamW = o.foam === "frothy" ? 13 : 7;
+  const sandCol = "#9A7650";
+  const foamW = 12;
   let s = `<defs><linearGradient id="${id}-wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cw[0]}"/><stop offset="0.5" stop-color="${cw[1]}"/><stop offset="1" stop-color="${cw[2]}"/></linearGradient>
     <filter id="${id}-grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.27  0 0 0 0 0.18  0 0 0 0.7 0"/></filter></defs>
     <g transform="rotate(${ang} 150 ${(T + B) / 2})">
@@ -718,7 +718,7 @@ function styleLayer(d, id, R, T, B) {
       <path d="${wavePath(sandY - 4, 0, amp)}" fill="none" stroke="#fff" stroke-width="${foamW}" stroke-linecap="round" opacity="0.92" filter="url(#${id}-foam)"/>`;
   }
   const bub = rng(hashText("sea" + d.shape));
-  for (let i = 0; i < (o.foam === "frothy" ? 26 : 12); i++) s += `<circle cx="${(-20 + bub() * 340).toFixed(0)}" cy="${(edgeY - foamW - 4 - bub() * (amp + 16)).toFixed(0)}" r="${(1 + bub() * 2.6).toFixed(1)}" fill="#fff" opacity="${(0.5 + bub() * 0.45).toFixed(2)}"/>`;
+  for (let i = 0; i < 22; i++) s += `<circle cx="${(-20 + bub() * 340).toFixed(0)}" cy="${(edgeY - foamW - 4 - bub() * (amp + 16)).toFixed(0)}" r="${(1 + bub() * 2.6).toFixed(1)}" fill="#fff" opacity="${(0.5 + bub() * 0.45).toFixed(2)}"/>`;
   return s + "</g>";
 }
 
@@ -1193,8 +1193,6 @@ const STEP_VIEWS = [
       ${field(U("sand"), chips("ocean.sand", "sand", o.sand))}
       ${field(U("waveSize"), chips("ocean.size", "waveSize", o.size))}
       ${field(U("waveDir"), chips("ocean.dir", "waveDir", o.dir))}
-      ${field(U("foam"), chips("ocean.foam", "foam", o.foam))}
-      ${o.sand !== "none" ? field(U("sandColor"), chips("ocean.sandColor", "sandColor", o.sandColor)) : ""}
       <p class="small-note">${U("oceanNote2")}</p>`;
   },
 
