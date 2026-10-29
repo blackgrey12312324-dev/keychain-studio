@@ -810,3 +810,4 @@ a.card { text-decoration: none; color: inherit; display: block; }
 @media (min-width: 900px) { .gallery.rec { grid-template-columns: repeat(3, 1fr); gap: 28px; } }
 .gallery.rec figcaption strong { font-size: 1.45rem; }
 .gallery figure { background: transparent; }
+.tool[hidden]{display:none}

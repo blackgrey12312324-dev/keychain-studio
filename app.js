@@ -261,7 +261,7 @@ const PENDANTS = ["tag", "oval", "square", "curved", "pick", "circle", "heartset
 const SEA_KEYCHAINS = ["g-starfish", "g-shell", "g-paw", "g-tail", "g-jelly", "g-dolphin"];
 function applyDefaults(d) {
   const c = CONFIG.shapes.find((x) => x.id === d.shape);
-  if (isLetter(d.shape) || isNumber(d.shape) || (c && c.mold === "groovy")) { d.hardware = "ringchain"; d.tassel.type = "none"; }
+  if (isLetter(d.shape) || isNumber(d.shape) || (c && c.mold === "groovy")) { d.hardware = "none"; d.tassel.type = "none"; }
   else if (PENDANTS.includes(d.shape)) { d.hardware = "none"; d.tassel.type = "none"; }
   else { d.hardware = "none"; d.tassel.type = "none"; }
 }
@@ -954,7 +954,7 @@ const STEP_VIEWS = [
       }).join("")}</div>`;
     }
     const card = (label, shape, on, extra = "") => {
-      const d = merge(copy(design), { shape });
+      const d = merge(copy(design), { shape, hardware: "none" });
       if (extra) Object.assign(d, JSON.parse(extra));
       return `<button type="button" class="card ${on ? "on" : ""}" aria-pressed="${on}" data-action="mold" data-shape="${shape}" ${extra ? `data-extra='${extra}'` : ""}><span class="card-art">${renderPiece(d)}</span><span class="card-name">${label}</span></button>`;
     };
@@ -997,7 +997,7 @@ const STEP_VIEWS = [
     <div class="letters">${keys.map((k) =>
       `<button type="button" class="letter ${design.shape === k ? "on" : ""}" aria-pressed="${design.shape === k}" data-set="shape" data-value="${k}">${k}</button>`).join("")}</div>
     ${field(U("second"),
-      `<input class="text-input" type="text" maxlength="1" autocomplete="off" aria-label="${U("second")}" data-set="second" data-upper="1" value="${esc(design.second)}" placeholder="—">`,
+      `<div class="letters">${[""].concat(keys).map((k) => { const on = (design.second || "") === k; return `<button type="button" class="letter ${on ? "on" : ""}" aria-pressed="${on}" data-set="second" data-value="${on && k ? "" : k}">${k || "—"}</button>`; }).join("")}</div>`,
       U("secondNote"))}`;
   },
 
@@ -1005,7 +1005,7 @@ const STEP_VIEWS = [
   () => `
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
-    <div class="cards">${Object.keys(I18N.en.labels.style).map((st) => {
+    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => st !== "ocean").map((st) => {
       const d = merge(copy(design), { style: st });
       return `<button type="button" class="card ${design.style === st ? "on" : ""}" aria-pressed="${design.style === st}" data-set="style" data-value="${st}">
         <span class="card-art">${renderPiece(d)}</span>
@@ -1225,7 +1225,7 @@ function renderStudioTools() {
 const $ = (id) => document.getElementById(id);
 const els = {
   stage: $("stage"), preview: $("preview"), panel: $("panel"), steps: $("steps"), hint: $("stage-hint"),
-  total: $("total"), back: $("back"), next: $("next"), flip: $("flip"), toast: $("toast"),
+  total: $("total"), back: $("back"), next: $("next"), toast: $("toast"),
   toastText: $("toast-text"), toastAction: $("toast-action"), studioTools: $("studio-tools"),
 };
 
@@ -1263,6 +1263,7 @@ function renderSteps() {
 function renderPanel() {
   els.panel.innerHTML = STEP_VIEWS[ui.step]();
   els.back.hidden = ui.step === 0;
+  $("bigview").hidden = ui.step < 3;
   els.next.hidden = ui.step === LAST;
   els.next.textContent = ui.step === 0 ? U("startDesigning") : ui.step === LAST - 1 ? U("toReview") : U("next");
   els.back.textContent = U("back");
@@ -1320,7 +1321,7 @@ function surprise() {
   const cols = CONFIG.colors.map((c) => c.hex);
   const d = defaultDesign();
   d.shape = design.shape; d.second = design.second; d.note = design.note;
-  d.style = pick(["clear", "gradient", "gradient", "ink", "ink", "ocean"]);
+  d.style = pick(["clear", "gradient", "gradient", "ink", "ink"]);
   d.colors = Math.random() < 0.6 ? copy(pick(CONFIG.palettes).colors) : [pick(cols), pick(cols), pick(cols)];
   d.gradient = { direction: pick(["down", "right", "diagonal", "center"]), glitter: "none" };
   d.clearParts = Math.random() < 0.25;
@@ -1786,11 +1787,6 @@ els.steps.addEventListener("click", (e) => {
 });
 els.next.addEventListener("click", () => go(ui.step + 1));
 els.back.addEventListener("click", () => go(ui.step - 1));
-els.flip.addEventListener("click", () => {
-  ui.side = ui.side === "front" ? "back" : "front";
-  renderPreview();
-  swing();
-});
 $("surprise").addEventListener("click", surprise);
 $("startover").addEventListener("click", startOver);
 onLangChange(render);

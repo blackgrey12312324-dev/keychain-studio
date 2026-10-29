@@ -107,11 +107,11 @@ const I18N = {
     },
     labels: {
       font: { block: "Block (bold)", groovy: "Groovy (wavy)" },
-      style: { clear: "Clear", gradient: "Colour & glitter", ink: "Ink swirls", ocean: "Ocean wave" },
+      style: { clear: "Clear", gradient: "Gradient", ink: "Ink dye", ocean: "Ocean wave" },
       styleText: {
-        clear: "See-through resin. The things inside are the star.",
-        gradient: "Colours fading into each other, with glitter.",
-        ink: "Alcohol ink swirls and little cells.",
+        clear: "Clear resin. Put add-ons inside: flowers, shells, charms.",
+        gradient: "A mix of colours fading into each other.",
+        ink: "Ink dye swirls and little cells.",
         ocean: "Sea, a white foamy wave and sand.",
       },
       direction: { down: "Top to bottom", right: "Left to right", diagonal: "Diagonal", center: "Middle out" },
@@ -232,11 +232,11 @@ const I18N = {
       tassel: "พู่ ({t})", ombre: "พู่ไล่สี", paint: "ลวดลายระบายเอง", matching: "พวงกุญแจคู่ ({l})",
     },
     labels: {
-      style: { clear: "ใส", gradient: "สีและกากเพชร", ink: "หมึกพลิ้ว", ocean: "คลื่นทะเล" },
+      style: { clear: "ใส", gradient: "ไล่เฉดสี", ink: "หมึกย้อม", ocean: "คลื่นทะเล" },
       styleText: {
-        clear: "เรซินใส ให้ของข้างในเป็นจุดเด่น",
-        gradient: "สีไล่กันพร้อมกากเพชร",
-        ink: "ลายหมึกแอลกอฮอล์พลิ้วๆ และฟองเซลล์",
+        clear: "เรซินใส ใส่ของตกแต่งไว้ข้างใน: ดอกไม้ เปลือกหอย ชาร์ม",
+        gradient: "สีหลายสีไล่เฉดเข้าหากัน",
+        ink: "ลายหมึกย้อมวนและเซลล์เล็กๆ",
         ocean: "ทะเล คลื่นฟองสีขาว และทราย",
       },
       direction: { down: "บนลงล่าง", right: "ซ้ายไปขวา", diagonal: "แนวทแยง", center: "จากตรงกลาง" },
@@ -353,11 +353,11 @@ const I18N = {
       tassel: "Кисточка: {t}", ombre: "Омбре-кисточка", paint: "Рисунок вручную", matching: "Парный брелок ({l})",
     },
     labels: {
-      style: { clear: "Прозрачный", gradient: "Цвет и глиттер", ink: "Чернила", ocean: "Океан" },
+      style: { clear: "Прозрачный", gradient: "Градиент", ink: "Чернила", ocean: "Океан" },
       styleText: {
-        clear: "Прозрачная смола — главное детали внутри.",
-        gradient: "Цвета плавно переходят друг в друга, с глиттером.",
-        ink: "Разводы спиртовых чернил и ячейки.",
+        clear: "Прозрачная смола. Добавьте украшения внутрь: цветы, ракушки, подвески.",
+        gradient: "Смесь цветов, плавно переходящих друг в друга.",
+        ink: "Чернильные разводы и маленькие ячейки.",
         ocean: "Море, белая пенная волна и песок.",
       },
       direction: { down: "Сверху вниз", right: "Слева направо", diagonal: "По диагонали", center: "Из центра" },
