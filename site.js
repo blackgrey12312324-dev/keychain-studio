@@ -63,6 +63,12 @@ function renderHome() {
 
   root.innerHTML = `
     <section class="hero">
+      <div class="sea" aria-hidden="true">
+        <svg class="wave w1" viewBox="0 0 2880 200" preserveAspectRatio="none"><path d="M0 100 C 240 40 480 160 720 100 C 960 40 1200 160 1440 100 C 1680 40 1920 160 2160 100 C 2400 40 2640 160 2880 100 V200 H0 Z"/></svg>
+        <svg class="wave w2" viewBox="0 0 2880 200" preserveAspectRatio="none"><path d="M0 120 C 200 60 520 170 720 110 C 940 50 1220 170 1440 120 C 1640 60 1960 170 2160 110 C 2380 50 2660 170 2880 120 V200 H0 Z"/></svg>
+        <svg class="wave w3" viewBox="0 0 2880 200" preserveAspectRatio="none"><path d="M0 130 C 260 90 460 170 720 130 C 980 90 1180 170 1440 130 C 1700 90 1900 170 2160 130 C 2420 90 2620 170 2880 130 V200 H0 Z"/></svg>
+        <span class="sun"></span>
+      </div>
       <div class="hero-text">
         <p class="eyebrow">${H("heroEyebrow")}</p>
         <h1>${H("heroTitle2")}</h1>
@@ -88,7 +94,7 @@ function renderHome() {
           <h3 class="theme-h">${esc(t.theme)}</h3>
           <div class="gallery">${t.theme === "Keychains & necklaces" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption>${buyBtns(p.id, p.name, p.photo, "preset")}</figure>`).join("") : ""}${t.items.map((it) => it.video
             ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns((it.img || it.cap).replace(/\W+/g, "-"), it.cap, it.img || it.poster, t.theme)}</figure>`
-            : `<figure><img src="${it.img}" alt="${esc(it.cap)}" loading="lazy"><figcaption><strong>${esc(it.cap)}</strong></figcaption></figure>`).join("")}</div>`).join("")}
+            : `<figure><img src="${it.img}" alt="${esc(it.cap)}" loading="lazy"><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns(it.img.replace(/\W+/g, "-"), it.cap, it.img, t.theme)}</figure>`).join("")}</div>`).join("")}
         </div>
       </div>
     </section>
