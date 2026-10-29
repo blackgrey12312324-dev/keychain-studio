@@ -1287,7 +1287,7 @@ const STEP_VIEWS = [
     <p class="hint">${U("s7p")}</p>
     ${field(U("metal"), `<div class="chips">${["gold", "silver"].map((v) =>
       `<button type="button" class="chip ${design.metal === v ? "on" : ""}" aria-pressed="${design.metal === v}" data-set="metal" data-value="${v}"><span class="dot" style="background:linear-gradient(135deg, ${METALS[v][0]}, ${METALS[v][1]})"></span>${lab("metal", v)}</button>`).join("")}</div>`)}
-    ${field(U("type"), `<div class="cards">${["none", "ringchain", "necklace"].map((v) => {
+    ${field(U("type"), `<div class="cards">${["none", "ringchain"].map((v) => {
       return `<button type="button" class="card ${design.hardware === v ? "on" : ""}" aria-pressed="${design.hardware === v}" data-set="hardware" data-value="${v}">
         <span class="card-name">${lab("hardware", v)}</span><span class="card-text">${lab("hardwareTip", v)}</span></button>`;
     }).join("")}</div>`)}`,
