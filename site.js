@@ -15,6 +15,31 @@ const STYLE_PHOTOS = {
   ocean: "images/phuket-shoreline.jpg",
 };
 
+/* ---------------- Photo slides on the Create custom cards ---------------- */
+function slidesFor(n, img) {
+  const keys = ["keychains", "accessories", "statues", "kitchen", "cutting", "paint", "gift", "send"];
+  const k = keys[n];
+  let list = (CONFIG.references && CONFIG.references[k]) || [];
+  list = list.map((r) => r.img);
+  const first = img.split("|")[0];
+  if (k === "keychains") list = ["images/real/g-key-e.jpg", "images/real/g-key-a-star.jpg", "images/real/g-key-k.jpg", "images/phuket-shoreline.jpg", "images/real/g-key-green.jpg", "images/real/g-key-tail.jpg"];
+  else list = [first].concat(list.filter((x) => x !== first));
+  return list.slice(0, 7).length ? list.slice(0, 7) : [first];
+}
+function startSlides() {
+  document.querySelectorAll(".slides").forEach((el, i) => {
+    const n = el.children.length;
+    if (n < 2 || el._t) return;
+    let at = 0;
+    el._t = setInterval(() => {
+      if (document.hidden) return;
+      at = (at + 1) % n;
+      el.style.transform = `translateX(-${at * 100}%)`;
+    }, 3600 + i * 350);
+  });
+}
+new MutationObserver(() => startSlides()).observe(document.documentElement, { childList: true, subtree: true });
+
 /* ---------------- Shop buy buttons ---------------- */
 function buyBtns(id, name, img, section) {
   return `<div class="buy"><button type="button" class="btn btn-line small" data-buy="cart" data-name="${esc(name)}" data-img="${esc(img)}" data-id="${esc(id)}" data-sec="${esc(section)}">${t("shop.addCart", null)}</button><button type="button" class="btn btn-ink small" data-buy="now" data-name="${esc(name)}" data-img="${esc(img)}" data-id="${esc(id)}" data-sec="${esc(section)}">${t("shop.buyNow", null)}</button></div>`;
@@ -114,7 +139,7 @@ function renderHome() {
           ["Any size canvas", "canvas.html?kind=beach", "images/real/g-canvas.jpg|images/real/g-sea-wide.jpg", "#2F5FA8", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"]]],
           ["Custom gifts", "canvas.html?kind=photo", "images/real/g-collage.jpg|images/real/g-saeed.jpg", "#C45160", [["Your photo, any shape", "canvas.html?kind=photo"], ["Your style, your theme", "canvas.html?kind=photo"]]],
           ["Send us a photo", "idea.html", "images/real/g-saeed.jpg", "#6B7A8F", [["Send a photo, we will tell you if we can make it", "idea.html"], ["Contact us", "idea.html"]]],
-        ].map(([title, href, img, col, subs], n) => `<div class="make" id="sec-${["keychains","accessories","statues","kitchen","cutting","paint","gift","send"][n]}" style="--c:${col}"><a class="make-img" href="${href}">${img.split("|").map((im, k) => k ? `<span class="curve"><span class="ci"><img src="${im}" alt="" loading="lazy"></span></span>` : `<img src="${im}" alt="" loading="lazy">`).join("")}</a><div class="make-body"><h3><a href="${href}">${title}</a></h3><div class="chips-row">${subs.map(([x, hr, hl]) => `<a class="pill${hl ? " pill-hl" : ""}" href="${hr}">${x}</a>`).join("")}</div></div></div>`).join("")}
+        ].map(([title, href, img, col, subs], n) => `<div class="make" id="sec-${["keychains","accessories","statues","kitchen","cutting","paint","gift","send"][n]}" style="--c:${col}"><a class="make-img" href="${href}"><span class="slides" data-n="${slidesFor(n, img).length}">${slidesFor(n, img).map((im) => `<img src="${im}" alt="" loading="lazy">`).join("")}</span></a><div class="make-body"><h3><a href="${href}">${title}</a></h3><div class="chips-row">${subs.map(([x, hr, hl]) => `<a class="pill${hl ? " pill-hl" : ""}" href="${hr}">${x}</a>`).join("")}</div></div></div>`).join("")}
       </div>
     </section>
 
