@@ -108,7 +108,7 @@ function renderHome() {
         <div class="make-grid">${[
           ["Keychains", "design.html?cat=keychains", "images/phuket-shoreline.jpg|images/real/g-key-tail.jpg", "#134B63", [["Letters", "design.html?cat=keychains&group=letters"]]],
           ["Accessories", "design.html?cat=accessories", "images/real/g-bookmark.jpg|images/real/g-pen-blue.jpg", "#E8806C", [["Bookmarks", "design.html?cat=accessories&group=bookmarks"], ["Hair pieces", "design.html?cat=accessories&group=combs"], ["Pens", "design.html?cat=accessories&group=pens"]]],
-          ["Games / decor", "design.html?cat=statues", "images/real/g-domino.jpg|images/real/lamp.jpg", "#8C6BB1", [["Domino", "design.html?cat=statues&group=statues"], ["Chess", "design.html?cat=statues&group=statues"]]],
+          ["Games & decor", "design.html?cat=statues", "images/real/g-domino.jpg|images/real/lamp.jpg", "#8C6BB1", [["Domino", "design.html?cat=statues&group=statues"], ["Chess", "design.html?cat=statues&group=statues"]]],
           ["Dining & restaurant", "design.html?cat=kitchen", "images/real/g-coaster-sea.jpg|images/real/g-fruit-bowl.jpg", "#2E8B8B", [["Cup stands", "design.html?cat=kitchen&group=cups"], ["Boards & trays", "design.html?cat=kitchen&group=boards"]]],
           ["Wooden cutting boards", "canvas.html?kind=board", "images/real/g-tail.jpg|images/real/g-paddle.jpg", "#B5803E", [["Custom size", "canvas.html?kind=board"], ["Custom shape", "canvas.html?kind=board"]]],
           ["Any size canvas", "canvas.html?kind=beach", "images/real/g-canvas.jpg|images/real/g-sea-wide.jpg", "#2F5FA8", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"]]],
