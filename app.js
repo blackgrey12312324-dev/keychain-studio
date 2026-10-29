@@ -1410,6 +1410,18 @@ function renderPanel() {
   els.next.hidden = ui.step === LAST;
   els.next.textContent = ui.step === 0 ? U("startDesigning") : ui.step === LAST - 1 ? U("toReview") : U("next");
   els.back.textContent = U("back");
+  renderBarSummary();
+}
+function renderBarSummary() {
+  const box = document.getElementById("bar-summary");
+  if (!box) return;
+  const d = design;
+  const tas = d.tassel.photo && d.tassel.type !== "none" ? (CONFIG.tassels.find((x) => x.id === d.tassel.photo) || {}).name : "";
+  const dots = d.style !== "ocean" && d.picked && d.picked.length ? `<span class="bs-dots">${d.picked.map((c) => `<i style="background:${c}"></i>`).join("")}</span>` : "";
+  box.innerHTML = `<span class="bs-item"><small>${U("bsShape")}</small><b>${esc(shapeName(d.shape))}</b></span>
+    <span class="bs-item"><small>${U("bsStyle")}</small><b>${esc(lab("style", d.style))}</b></span>
+    ${dots ? `<span class="bs-item"><small>${U("colours")}</small>${dots}</span>` : ""}
+    ${tas ? `<span class="bs-item"><small>${U("tassel")}</small><b>${esc(tas)}</b></span>` : ""}`;
 }
 function renderStatic() {
   applyStaticText();
@@ -1430,6 +1442,7 @@ function swing() {
 }
 function changed() {
   applyPicked(design);
+  setTimeout(renderBarSummary, 0);
   design.paint = [];
   for (const id of Object.keys(design.addins)) { const ad = CONFIG.addins.find((x) => x.id === id); if (!ad || !fits(ad, design)) delete design.addins[id]; }
   if (noInside(design) || design.style === "ocean") design.letters.text = "";

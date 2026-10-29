@@ -11,6 +11,7 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      bsShape: "Shape", bsStyle: "Style",
       refSub: "Finished pieces from Anna's studio. Tap a shape above to start your own.",
       waveSize: "How big are the waves?", waveDir: "Which way do the waves go?", oceanNote2: "The sea always has the same water colours. In the next step you can add starfish and little shells. The real piece will look a little different.",
       inkWarn: "Ink spreads and moves while it cures. Your finished piece will look similar, but it will not be exactly like this preview.", inkFlow: "How should the ink flow?", inkFlowWide: "Spread out more", inkFlowWideP: "Soft, wide clouds that blend into each other.", inkFlowTight: "More concentrated", inkFlowTightP: "Tighter, stronger spots of colour.", inkDrop: "Drop your ink", inkDropNote: "Pick a colour, then tap or drag on the piece to drop ink where you want it.", inkClear: "Clear ink", inkPickFirst: "Pick up to 3 ink colours first.", colours: "Colours", inkHint: "Tap or drag on the piece to drop ink.", inkDrops: "{n} drops",
@@ -160,6 +161,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      bsShape: "รูปทรง", bsStyle: "สไตล์",
       refSub: "ผลงานจริงจากสตูดิโอของแอนนา เลือกรูปทรงด้านบนเพื่อเริ่มของคุณเอง",
       waveSize: "คลื่นใหญ่แค่ไหน?", waveDir: "คลื่นไปทางไหน?", oceanNote2: "ทะเลใช้สีน้ำชุดเดียวเสมอ ในขั้นตอนถัดไปเพิ่มปลาดาวและเปลือกหอยเล็กได้ ชิ้นงานจริงจะต่างไปเล็กน้อย",
       inkWarn: "หมึกจะแผ่และเคลื่อนที่ขณะเรซินแข็งตัว ชิ้นงานจริงจะคล้ายกันแต่ไม่เหมือนตัวอย่างนี้ทุกประการ", inkFlow: "ให้หมึกไหลแบบไหน?", inkFlowWide: "กระจายมากขึ้น", inkFlowWideP: "กลุ่มสีนุ่มกว้างที่ผสมกัน", inkFlowTight: "เข้มข้นรวมกลุ่ม", inkFlowTightP: "จุดสีแน่นและเข้มกว่า", inkDrop: "หยดหมึกของคุณ", inkDropNote: "เลือกสี แล้วแตะหรือลากบนชิ้นงานเพื่อหยดหมึกตามที่ต้องการ", inkClear: "ล้างหมึก", inkPickFirst: "เลือกสีหมึกได้สูงสุด 3 สีก่อน", colours: "สี", inkHint: "แตะหรือลากบนชิ้นงานเพื่อหยดหมึก", inkDrops: "{n} หยด",
@@ -290,6 +292,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      bsShape: "Форма", bsStyle: "Стиль",
       refSub: "Готовые работы из студии Анны. Выберите форму выше, чтобы начать своё.",
       waveSize: "Какие волны?", waveDir: "Куда идут волны?", oceanNote2: "У моря всегда одни и те же цвета воды. На следующем шаге можно добавить морские звёзды и ракушки. Настоящее изделие будет немного отличаться.",
       inkWarn: "Чернила растекаются и двигаются, пока смола застывает. Готовое изделие будет похожим, но не точно таким, как в предпросмотре.", inkFlow: "Как должны растечься чернила?", inkFlowWide: "Шире и мягче", inkFlowWideP: "Мягкие широкие облака, которые смешиваются.", inkFlowTight: "Более концентрированно", inkFlowTightP: "Плотные яркие пятна цвета.", inkDrop: "Капните чернила", inkDropNote: "Выберите цвет и нажмите или проведите по изделию, чтобы капнуть чернила, где хотите.", inkClear: "Убрать чернила", inkPickFirst: "Сначала выберите до 3 цветов чернил.", colours: "Цвета", inkHint: "Нажмите или проведите по изделию, чтобы капнуть чернила.", inkDrops: "капель: {n}",
