@@ -433,7 +433,7 @@ CONFIG.references = {
 CONFIG.gallery = [
   { theme: "Keychains", items: [{ img: "images/real/g-key-e.jpg", cap: "Gold letter E with tassel" }, { img: "images/real/g-key-a-star.jpg", cap: "Letter A and star with tassel" }, { img: "images/real/g-key-k.jpg", cap: "Blue ink letter K" }, { img: "images/real/g-key-green.jpg", cap: "Green groovy pendant" }, { img: "images/real/g-key-tail.jpg", cap: "Mermaid tail pendant" }] },
     { theme: "Accessories", items: [{ img: "images/real/g-pen-blue.jpg", cap: "Blue and sand gradient pen" }, { img: "images/real/g-pen-ink.jpg", cap: "Blue ink pen" }, { img: "images/real/g-hairpin.jpg", cap: "Butterfly bun pin" }, { img: "images/real/g-pen.jpg", cap: "Pen with dried flowers and gold leaf" }, { img: "images/real/g-bookmark.jpg", cap: "Sea bookmark with tassel" }] },
-  { theme: "Statues & decor", items: [{ img: "images/real/g-domino.jpg", cap: "Domino set" }, { video: "images/real/lamp.mp4", poster: "images/real/lamp.jpg", cap: "Resin lamp with LED lights (video)" }] },
+  { theme: "Games / decor", items: [{ img: "images/real/g-domino.jpg", cap: "Domino set" }, { video: "images/real/lamp.mp4", poster: "images/real/lamp.jpg", cap: "Resin lamp with LED lights (video)" }] },
   { theme: "Dining & restaurant", items: [{ img: "images/real/g-paint1.jpg", cap: "Blue and sand soap dish" }, { img: "images/real/g-coaster-sea.jpg", cap: "Sea cup stands with starfish" }, { img: "images/real/g-coaster-ink.jpg", cap: "Ink cup stands with gold leaf" }, { img: "images/real/g-coaster-stone.jpg", cap: "Copper stone-pattern stand" }, { img: "images/real/g-platter.jpg", cap: "Sea platter" }, { img: "images/real/g-nuts-dish.jpg", cap: "Wavy serving dish" }, { img: "images/real/g-fruit-bowl.jpg", cap: "Sea fruit bowl" }, { img: "images/real/g-tealight.jpg", cap: "Tea light holder" }] },
   { theme: "Wooden cutting boards", items: [{ img: "images/real/g-tail.jpg", cap: "Mermaid tail board" }, { img: "images/real/g-woodtray.jpg", cap: "Resin on wood" }, { img: "images/real/g-paddle.jpg", cap: "Sea paddle board" }, { img: "images/real/g-tree.jpg", cap: "Wooden board with resin" }, { img: "images/real/g-copper.jpg", cap: "Copper abstract board" }] },
   { theme: "Canvas", items: [{ img: "images/real/g-sea-wide.jpg", cap: "Wide sea canvas with a boat" }, { img: "images/real/g-sea-shells.jpg", cap: "Sea canvas with shells and starfish" }, { img: "images/real/g-round.jpg", cap: "Sea pour" }, { img: "images/real/g-paint3.jpg", cap: "Purple and gold" }, { img: "images/real/g-paint4.jpg", cap: "Green and gold" }, { img: "images/real/g-canvas.jpg", cap: "Sea canvas" }, { img: "images/real/g-plum.jpg", cap: "Plum abstract" }] },
@@ -441,7 +441,7 @@ CONFIG.gallery = [
 
 // "Example work" shown at the end of each section in the designer: built from the gallery so it never goes out of date.
 (() => {
-  const themeOf = { keychains: "Keychains", accessories: "Accessories", statues: "Statues & decor", kitchen: "Dining & restaurant", cutting: "Wooden cutting boards", paint: "Canvas", gift: "Custom gifts" };
+  const themeOf = { keychains: "Keychains", accessories: "Accessories", statues: "Games / decor", kitchen: "Dining & restaurant", cutting: "Wooden cutting boards", paint: "Canvas", gift: "Custom gifts" };
   const refs = {};
   for (const k in themeOf) {
     const th = CONFIG.gallery.find((g) => g.theme === themeOf[k]);
