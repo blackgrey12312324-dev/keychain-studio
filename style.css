@@ -1059,3 +1059,14 @@ body { background: #F1F9F9 !important; }
 .letters-band { background: linear-gradient(180deg, #F1F9F9 0px, #DDF0F0 220px, #D3EBEC 100%) !important; padding-bottom: 110px; }
 .letters-band::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 80px; pointer-events: none; background: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80' preserveAspectRatio='none'%3E%3Cpath d='M0 40 C 180 90 360 0 540 30 C 720 60 900 90 1080 40 C 1260 -5 1350 20 1440 40 V80 H0 Z' fill='%230E3F57'/%3E%3C/svg%3E") bottom/100% 100% no-repeat; }
 .ways { background: #0E3F57 !important; }
+
+/* hero flows into the shop with a wave instead of a hard edge */
+.hero { padding-bottom: 70px; }
+.hero::after { display: block !important; content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 90px; z-index: 3; pointer-events: none; background: url("data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 100%22 preserveAspectRatio=%22none%22%3E%3Cpath d=%22M0 50 C 160 100 320 0 480 45 C 640 90 800 10 960 50 C 1120 90 1280 20 1440 55 V100 H0 Z%22 fill=%22%23E6F4F5%22/%3E%3C/svg%3E") bottom/100% 100% no-repeat; }
+/* shop: soft water to sand, with faint ripples */
+#shop { background: linear-gradient(180deg, #E6F4F5 0%, #EEF7F5 35%, #F7F0E2 100%) !important; position: relative; padding-top: 40px; }
+#shop::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: url("data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22160%22 height=%2240%22 viewBox=%220 0 160 40%22%3E%3Cpath d=%22M0 20 C 20 6 40 6 60 20 S 100 34 120 20 S 150 8 160 20%22 fill=%22none%22 stroke=%22%239CCFD6%22 stroke-width=%221.4%22 opacity=%220.5%22/%3E%3C/svg%3E"); background-size: 160px 40px; opacity: 0.6; -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 60%); mask-image: linear-gradient(180deg, #000 0%, transparent 60%); }
+#shop > .wrap { position: relative; }
+.theme-h { display: flex; align-items: center; gap: 14px; }
+.theme-h::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, #A9D5D8 0 10px, transparent 10px 16px); }
+.letters-band { background: linear-gradient(180deg, #F7F0E2 0px, #DDF0F0 240px, #D3EBEC 100%) !important; }
