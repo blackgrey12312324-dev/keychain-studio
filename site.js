@@ -22,9 +22,9 @@ function slidesFor(n, img) {
   let list = (CONFIG.references && CONFIG.references[k]) || [];
   list = list.map((r) => r.img);
   const first = img.split("|")[0];
-  if (k === "keychains") list = ["images/real/g-key-e.jpg", "images/real/g-key-a-star.jpg", "images/real/g-key-k.jpg", "images/phuket-shoreline.jpg", "images/real/g-key-green.jpg", "images/real/g-key-tail.jpg"];
+  if (k === "keychains") list = ["images/real/g-key-e.jpg"].concat(list.filter((x) => x !== "images/real/g-key-e.jpg"));
   else list = [first].concat(list.filter((x) => x !== first));
-  return list.slice(0, 7).length ? list.slice(0, 7) : [first];
+  return list.length ? list : [first];
 }
 function startSlides() {
   document.querySelectorAll(".slides").forEach((el, i) => {
