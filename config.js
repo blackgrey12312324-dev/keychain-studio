@@ -310,7 +310,7 @@ const CONFIG = {
       blurb_ru: "Сухоцветы, перетекающие в синие и бирюзовые чернила.",
       design: {
         shape: "A", style: "ink", colors: ["#1C6FC9", "#29B7A3", "#EFEAE6"],
-        ink: { amount: "bold", background: "cloudy", spread: "right", cells: true, shimmer: "none" },
+        ink: { amount: "bold", background: "cloudy", spread: "right", cells: true, shimmer: "none", legacy: true },
         addins: { "flower-blue": { amount: "some", place: "top", color: "#D4AF37" } },
         edge: "none", back: "different", metal: "silver", hardware: "ring",
         tassel: { type: "cotton", ombre: false, color1: "#A9C8EC", color2: "#A9C8EC", cord: "match" },

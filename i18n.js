@@ -11,6 +11,7 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      inkWarn: "Ink spreads and moves while it cures. Your finished piece will look similar, but it will not be exactly like this preview.", inkFlow: "How should the ink flow?", inkFlowWide: "Spread out more", inkFlowWideP: "Soft, wide clouds that blend into each other.", inkFlowTight: "More concentrated", inkFlowTightP: "Tighter, stronger spots of colour.", inkDrop: "Drop your ink", inkDropNote: "Pick a colour, then tap or drag on the piece to drop ink where you want it.", inkClear: "Clear ink", inkPickFirst: "Pick up to 3 ink colours first.", colours: "Colours", inkHint: "Tap or drag on the piece to drop ink.", inkDrops: "{n} drops",
       addCart: "Add to cart", addedCart: "Added to your cart. Open Cart to order several pieces together.", cartFail: "Could not save the cart on this device.",
       saveDraft: "Save as draft", draftSaved: "Draft saved on this device.", draftFail: "Could not save the draft.", draftContinue: "Continue my draft",
       decoQ: "What kind of decoration?", decoNat: "Natural", decoNatP: "Shells, starfish, pressed flowers, dried plants.", decoCharm: "Charms", decoCharmP: "Small charms, metal charms and the mini frog.", decoHint: "Choose one style first. Natural and charms are not mixed on one piece.", decoChange: "Change style",
@@ -155,6 +156,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      inkWarn: "หมึกจะแผ่และเคลื่อนที่ขณะเรซินแข็งตัว ชิ้นงานจริงจะคล้ายกันแต่ไม่เหมือนตัวอย่างนี้ทุกประการ", inkFlow: "ให้หมึกไหลแบบไหน?", inkFlowWide: "กระจายมากขึ้น", inkFlowWideP: "กลุ่มสีนุ่มกว้างที่ผสมกัน", inkFlowTight: "เข้มข้นรวมกลุ่ม", inkFlowTightP: "จุดสีแน่นและเข้มกว่า", inkDrop: "หยดหมึกของคุณ", inkDropNote: "เลือกสี แล้วแตะหรือลากบนชิ้นงานเพื่อหยดหมึกตามที่ต้องการ", inkClear: "ล้างหมึก", inkPickFirst: "เลือกสีหมึกได้สูงสุด 3 สีก่อน", colours: "สี", inkHint: "แตะหรือลากบนชิ้นงานเพื่อหยดหมึก", inkDrops: "{n} หยด",
       addCart: "เพิ่มลงตะกร้า", addedCart: "เพิ่มลงตะกร้าแล้ว เปิดตะกร้าเพื่อสั่งหลายชิ้นพร้อมกัน", cartFail: "บันทึกตะกร้าในอุปกรณ์นี้ไม่ได้",
       saveDraft: "บันทึกแบบร่าง", draftSaved: "บันทึกแบบร่างในอุปกรณ์นี้แล้ว", draftFail: "บันทึกแบบร่างไม่ได้", draftContinue: "ทำแบบร่างต่อ",
       decoQ: "ตกแต่งแบบไหน?", decoNat: "ธรรมชาติ", decoNatP: "เปลือกหอย ปลาดาว ดอกไม้อัด พืชแห้ง", decoCharm: "ชาร์ม", decoCharmP: "ชาร์มเล็ก ชาร์มโลหะ และกบจิ๋ว", decoHint: "เลือกสไตล์ก่อน ธรรมชาติและชาร์มไม่ผสมกันในชิ้นเดียว", decoChange: "เปลี่ยนสไตล์",
@@ -280,6 +282,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      inkWarn: "Чернила растекаются и двигаются, пока смола застывает. Готовое изделие будет похожим, но не точно таким, как в предпросмотре.", inkFlow: "Как должны растечься чернила?", inkFlowWide: "Шире и мягче", inkFlowWideP: "Мягкие широкие облака, которые смешиваются.", inkFlowTight: "Более концентрированно", inkFlowTightP: "Плотные яркие пятна цвета.", inkDrop: "Капните чернила", inkDropNote: "Выберите цвет и нажмите или проведите по изделию, чтобы капнуть чернила, где хотите.", inkClear: "Убрать чернила", inkPickFirst: "Сначала выберите до 3 цветов чернил.", colours: "Цвета", inkHint: "Нажмите или проведите по изделию, чтобы капнуть чернила.", inkDrops: "капель: {n}",
       addCart: "В корзину", addedCart: "Добавлено в корзину. Откройте корзину, чтобы заказать несколько изделий сразу.", cartFail: "Не удалось сохранить корзину на этом устройстве.",
       saveDraft: "Сохранить черновик", draftSaved: "Черновик сохранён на этом устройстве.", draftFail: "Не удалось сохранить черновик.", draftContinue: "Продолжить черновик",
       decoQ: "Какое украшение?", decoNat: "Природное", decoNatP: "Ракушки, морские звёзды, прессованные цветы, сухоцветы.", decoCharm: "Подвески", decoCharmP: "Маленькие подвески, металлические подвески и мини-лягушка.", decoHint: "Сначала выберите стиль. Природное и подвески на одном изделии не смешиваются.", decoChange: "Сменить стиль",

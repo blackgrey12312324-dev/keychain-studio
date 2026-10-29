@@ -922,3 +922,8 @@ main, .site-footer, .site-header, .layout { position: relative; z-index: 1; }
 .pop-bubble { position: fixed; z-index: 400; border-radius: 50%; pointer-events: none; background: radial-gradient(circle at 30% 30%, #fff, rgba(120,200,210,0.6)); border: 1px solid rgba(255,255,255,0.9); animation: popb 0.7s ease-out forwards; }
 @keyframes popb { from { transform: translate(0,0) scale(0.6); opacity: 1; } to { transform: translate(var(--dx), var(--dy)) scale(1.4); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .bubbles, .deco-shell, .pop-bubble { display: none; } .reveal { opacity: 1; transform: none; transition: none; } }
+
+.ink-warn { background: #FFF4D8; border-left: 4px solid #E8B93C; padding: 10px 14px; margin: 0 0 16px; font-size: 0.92rem; }
+.flow-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.preview-ink, #preview.ink-mode { cursor: crosshair; }
+body.designer .bubbles { opacity: 0.35; }

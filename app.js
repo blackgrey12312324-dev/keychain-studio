@@ -7,7 +7,7 @@
 Object.assign(ui, {
   cat: "", step: 0, visited: new Set([0]), side: "front", slot: 0, photo: "",
   full: false, mode: "move", zoom: 1, pan: [0, 0],
-  open: new Set(["sea"]), pour: { id: "", amount: "m", size: "s" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
+  open: new Set(["sea"]), inkCol: 0, pour: { id: "", amount: "m", size: "s" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
 });
 const STEP_COUNT = I18N.en.steps.length;
 const LAST = STEP_COUNT - 1;
@@ -40,7 +40,9 @@ function defaultDesign() {
     crush: [],
     photo: { on: false, x: 0, y: 0, zoom: 1 },
     letters: { text: "", metal: "gold", size: "s", layout: "word", x: 150, y: 290, rot: 0, seed: 7 },
-    ink: { amount: "medium", background: "clear", spread: "all", cells: true, shimmer: "pearl" },
+    ink: { amount: "medium", background: "clear", spread: "all", cells: true, shimmer: "pearl", flow: "spread" },
+    inkDrops: [],
+    inkSize: "m",
     ocean: { sand: "middle", wave: "middle", foam: "frothy", sandColor: "natural" },
     addins: {},
     paint: [],
@@ -165,7 +167,7 @@ function styleDetails(d, lang) {
   }
   if (d.style === "ink") {
     const k = d.ink;
-    return [lab("amountInk", k.amount, lang), low(lab("spread", k.spread, lang)),
+    return [k.flow === "tight" ? t("ui.inkFlowTight", null, lang).toLowerCase() : t("ui.inkFlowWide", null, lang).toLowerCase(), t("ui.inkDrops", { n: (d.inkDrops || []).length }, lang),
       t("sum.bg", null, lang) + ": " + low(lab("background", k.background, lang)),
       k.cells ? low(t("ui.cells", null, lang)) : "",
       k.shimmer !== "none" ? t("sum.shimmer", null, lang) + ": " + low(lab("shimmer", k.shimmer, lang)) : ""].filter(Boolean).join(", ");
@@ -244,6 +246,7 @@ function orderText() {
   const lines = ["Hi Anna! I designed a keychain on Keychain Studio 💛", "Design code: " + designCode(design), ""];
   for (const [k, v] of summaryLines(design, "en")) lines.push(`${k}: ${v}`);
   if (SHOW_PRICES) lines.push("", "Estimated price: " + money(priceOf(design, "en").total));
+  if (design.style === "ink") lines.push("Ink note: the ink spreads while it cures, so the finished piece will not look exactly like the preview.");
   if (design.note.trim()) lines.push("Note: " + design.note.trim());
   if (ui.photo) lines.push("(I'll send my reference photo in this chat 📷)");
   if (design.crush.length > 150) lines.push("(I'll send a screenshot of where my glitter goes 📷)");
@@ -603,6 +606,17 @@ function glitterDots(R, type, colors, T, B) {
   return s;
 }
 
+function inkExtras(d, id, R, T, B, x0, x1, y0, y1, skipBg) {
+  const k = d.ink, h = B - T;
+  let s = "";
+  if (k.cells) for (let i = 0; i < 45; i++) s += `<circle cx="${(40 + R() * 220).toFixed(1)}" cy="${(T + R() * h).toFixed(1)}" r="${(1.5 + R() * 3.5).toFixed(1)}" fill="rgba(255,255,255,0.45)" stroke="#fff" stroke-width="0.8"/>`;
+  if (k.shimmer !== "none") {
+    const col = k.shimmer === "gold" ? "#E7C45A" : "#FFFFFF";
+    for (let i = 0; i < 70; i++) s += `<circle cx="${(40 + R() * 220).toFixed(1)}" cy="${(T + R() * h).toFixed(1)}" r="${(0.5 + R() * 0.8).toFixed(1)}" fill="${col}" opacity="0.85"/>`;
+  }
+  return s;
+}
+
 function styleLayer(d, id, R, T, B) {
   const c = d.colors;
   const h = B - T;
@@ -639,6 +653,23 @@ function styleLayer(d, id, R, T, B) {
       left: [30, 150, T, B], right: [150, 270, T, B],
     };
     const [x0, x1, y0, y1] = zones[k.spread];
+    if (!(d.inkDrops && d.inkDrops.length) && !k.legacy) {
+      // nothing dropped yet: clear resin with only the background / cells / shimmer
+      return s + inkExtras(d, id, R, T, B, x0, x1, y0, y1);
+    }
+    if (d.inkDrops && d.inkDrops.length) {
+      const wide = k.flow !== "tight";
+      let under = "", over = "";
+      d.inkDrops.forEach(([ci, x, y, rs], i) => {
+        const col = c[ci] || c[0], r = rs * (wide ? 1.55 : 0.8);
+        under += `<ellipse cx="${x}" cy="${y}" rx="${(r * 1.5).toFixed(0)}" ry="${(r * 1.2).toFixed(0)}" fill="${col}" opacity="${wide ? 0.4 : 0.22}"/>`;
+        over += `<ellipse cx="${x}" cy="${y}" rx="${r.toFixed(0)}" ry="${(r * (0.7 + (i % 3) * 0.12)).toFixed(0)}" fill="${col}" opacity="${wide ? 0.72 : 0.95}" transform="rotate(${(i * 47) % 180} ${x} ${y})"/>`;
+        if (!wide) over += `<circle cx="${x}" cy="${y}" r="${(r * 0.45).toFixed(0)}" fill="${col}"/>`;
+      });
+      s += `<g filter="url(#${id}-softink)">${under}</g><g filter="url(#${id}-ink)">${over}</g>`;
+      s += `<image href="images/real/swirl-gray.jpg" x="0" y="${T - 20}" width="300" height="${h + 40}" preserveAspectRatio="xMidYMid slice" style="mix-blend-mode:soft-light" opacity="0.55"/>`;
+      return s + inkExtras(d, id, R, T, B, x0, x1, y0, y1, true);
+    }
     const n = { light: 5, medium: 9, bold: 15 }[k.amount];
     const rBase = { light: 20, medium: 26, bold: 32 }[k.amount];
     const op = { light: 0.55, medium: 0.75, bold: 0.92 }[k.amount];
@@ -904,6 +935,7 @@ function renderPiece(d, side = "front", opts = {}) {
     <filter id="${id}-line" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>
     <filter id="${id}-foam"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
     <filter id="${id}-soft"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="${id}-softink" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="7"/></filter>
     <filter id="${id}-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
     <filter id="${id}-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000000" flood-opacity="0.16"/></filter>
   </defs>`;
@@ -1089,7 +1121,7 @@ const STEP_VIEWS = [
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
     <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => st !== "ocean").map((st) => {
-      const d = merge(copy(design), { style: st, picked: design.picked.length ? design.picked : DEFAULT_COLORS.slice() });
+      const d = merge(copy(design), { style: st, picked: design.picked.length ? design.picked : DEFAULT_COLORS.slice(), ink: Object.assign({}, design.ink, { legacy: true }) });
       applyPicked(d);
       return `<button type="button" class="card ${design.style === st ? "on" : ""}" aria-pressed="${design.style === st}" data-set="style" data-value="${st}">
         <span class="card-art">${renderPiece(d)}</span>
@@ -1129,8 +1161,11 @@ const STEP_VIEWS = [
     if (design.style === "ink") {
       const k = design.ink;
       return `<h2>${U("s3inkH")}</h2><p class="hint">${U("s3inkP")}</p>
-        ${field(U("inkAmount"), chips("ink.amount", "amountInk", k.amount))}
-        ${field(U("inkWhere"), chips("ink.spread", "spread", k.spread))}
+        <p class="ink-warn">${U("inkWarn")}</p>
+        ${field(U("inkFlow"), `<div class="cards flow-cards">${["spread", "tight"].map((v) => `<button type="button" class="card ${k.flow === v ? "on" : ""}" aria-pressed="${k.flow === v}" data-set="ink.flow" data-value="${v}"><span class="card-name">${U(v === "spread" ? "inkFlowWide" : "inkFlowTight")}</span><span class="card-text">${U(v === "spread" ? "inkFlowWideP" : "inkFlowTightP")}</span></button>`).join("")}</div>`)}
+        ${design.picked.length ? field(U("inkDrop"), `<div class="slots ink-colours">${design.picked.map((hex, i) => `<button type="button" class="slot ${ui.inkCol === i ? "on" : ""}" data-action="inkcol" data-i="${i}"><span class="blob" style="background:${hex}"></span>${esc(colorName(hex))}</button>`).join("")}</div>
+          <div class="chips brush-sizes">${["s", "m", "l"].map((v) => `<button type="button" class="chip brush ${design.inkSize === v ? "on" : ""}" data-set="inkSize" data-value="${v}"><span class="brush-dot" style="width:${{ s: 8, m: 16, l: 28 }[v]}px;height:${{ s: 8, m: 16, l: 28 }[v]}px"></span>${U("glSz")[v]}</button>`).join("")}</div>
+          <div class="chips"><button type="button" class="btn btn-line small" data-action="inkundo" ${design.inkDrops.length ? "" : "disabled"}>${U("glUndo")}</button><button type="button" class="btn btn-line small" data-action="inkclear" ${design.inkDrops.length ? "" : "disabled"}>${U("inkClear")}</button></div>`, U("inkDropNote")) : `<p class="small-note">${U("inkPickFirst")} <button type="button" class="btn btn-line small" data-action="goto" data-step="4">${U("colours")}</button></p>`}
         ${field(U("background"), chips("ink.background", "background", k.background))}
         ${field(U("cells"), yesNo("ink.cells", k.cells))}
         ${field(U("shimmer"), chips("ink.shimmer", "shimmer", k.shimmer))}`;
@@ -1317,6 +1352,8 @@ const els = {
 };
 
 const GLITTER_STEP = 6;
+const DETAILS_STEP = 5;
+const inking = () => ui.step === DETAILS_STEP && design.style === "ink" && design.picked.length > 0 && !(ui.full && ui.mode === "paint");
 const pouring = () => !!ui.pour.id && ui.step === GLITTER_STEP && !(ui.full && ui.mode === "paint");
 function hasDraggables() {
   return activeAddins(design).some((a) => a.drag);
@@ -1325,6 +1362,7 @@ function renderHint() {
   let h = "";
   if (ui.side === "back") h = ui.full ? t("big.backHint") : "";
   else if (pouring()) h = U("glHint", { name: glitterName(ui.pour.id) });
+  else if (inking()) h = U("inkHint");
   else if (ui.full) h = ui.mode === "paint" ? t("big.paintHint") : hasDraggables() ? t("big.moveHint") : "";
   else if (hasDraggables()) h = U("dragHint");
   els.hint.textContent = h;
@@ -1496,6 +1534,12 @@ els.panel.addEventListener("click", (e) => {
     toast(ok ? U("addedCart") : U("cartFail"));
   } else if (action === "draft") {
     saveDraft();
+  } else if (action === "inkcol") {
+    ui.inkCol = Number(el.dataset.i); renderPanel();
+  } else if (action === "inkundo") {
+    design.inkDrops.pop(); renderPanel(); renderPreview();
+  } else if (action === "inkclear") {
+    design.inkDrops = []; renderPanel(); renderPreview();
   } else if (action === "loaddraft") {
     loadDraft();
   } else if (action === "deco") {
@@ -1635,6 +1679,14 @@ function svgPoint(e) {
 els.preview.addEventListener("pointerdown", (e) => {
   if (ui.side !== "front") return;
   const p = svgPoint(e);
+  if (inking()) {
+    if (!insideShape(design.shape, p.x, p.y)) return;
+    e.preventDefault();
+    gesture = { type: "ink", lx: p.x, ly: p.y, n: 0 };
+    addInk(p.x, p.y);
+    els.preview.setPointerCapture(e.pointerId);
+    return;
+  }
   if (pouring()) {
     if (!nearShape(design.shape, p.x, p.y)) return;
     e.preventDefault();
@@ -1696,6 +1748,13 @@ els.preview.addEventListener("pointermove", (e) => {
     if (L.layout === "scatter") renderPreview();
     return;
   }
+  if (gesture.type === "ink") {
+    const p = svgPoint(e);
+    if (Math.hypot(p.x - gesture.lx, p.y - gesture.ly) < 14) return;
+    gesture.lx = p.x; gesture.ly = p.y;
+    if (insideShape(design.shape, p.x, p.y)) addInk(p.x, p.y);
+    return;
+  }
   if (gesture.type === "pour") {
     const p = svgPoint(e);
     if (Math.hypot(p.x - gesture.lx, p.y - gesture.ly) < Math.max(4, GLASS_RADIUS[ui.pour.size] * 0.7)) return;
@@ -1725,12 +1784,19 @@ els.preview.addEventListener("pointermove", (e) => {
   }
 });
 
+let inkRaf = 0;
+function addInk(x, y) {
+  design.inkDrops.push([Math.min(ui.inkCol, design.picked.length - 1), Math.round(x), Math.round(y), { s: 12, m: 20, l: 32 }[design.inkSize]]);
+  if (design.inkDrops.length > 160) design.inkDrops.shift();
+  cancelAnimationFrame(inkRaf); inkRaf = requestAnimationFrame(renderPreview);
+}
 function endGesture() {
   if (!gesture) return;
   const g = gesture;
   gesture = null;
   if (g.type === "pan") return;
   if (g.type === "ltr") { design.letters.moved = true; const box = $("order-text"); if (box) box.value = orderText(); return; }
+  if (g.type === "ink") { renderPanel(); const box = $("order-text"); if (box) box.value = orderText(); return; }
   if (g.type === "pour") {
     ui.pourHistory.push(g.n);
     renderPanel();
