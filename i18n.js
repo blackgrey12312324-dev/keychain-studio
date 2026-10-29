@@ -12,7 +12,7 @@ const I18N = {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
       refSub: "Finished pieces from Anna's studio. Tap a shape above to start your own.",
-      waveSize: "How big are the waves?", waveDir: "Which way do the waves go?", oceanNote2: "Pick up to 3 water colours in the Colours step, from deep to shallow. The real piece will flow a little differently.",
+      waveSize: "How big are the waves?", waveDir: "Which way do the waves go?", oceanNote2: "The sea always has the same water colours. In the next step you can add starfish and little shells. The real piece will look a little different.",
       inkWarn: "Ink spreads and moves while it cures. Your finished piece will look similar, but it will not be exactly like this preview.", inkFlow: "How should the ink flow?", inkFlowWide: "Spread out more", inkFlowWideP: "Soft, wide clouds that blend into each other.", inkFlowTight: "More concentrated", inkFlowTightP: "Tighter, stronger spots of colour.", inkDrop: "Drop your ink", inkDropNote: "Pick a colour, then tap or drag on the piece to drop ink where you want it.", inkClear: "Clear ink", inkPickFirst: "Pick up to 3 ink colours first.", colours: "Colours", inkHint: "Tap or drag on the piece to drop ink.", inkDrops: "{n} drops",
       addCart: "Add to cart", addedCart: "Added to your cart. Open Cart to order several pieces together.", cartFail: "Could not save the cart on this device.",
       saveDraft: "Save as draft", draftSaved: "Draft saved on this device.", draftFail: "Could not save the draft.", draftContinue: "Continue my draft",
@@ -161,7 +161,7 @@ const I18N = {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
       refSub: "ผลงานจริงจากสตูดิโอของแอนนา เลือกรูปทรงด้านบนเพื่อเริ่มของคุณเอง",
-      waveSize: "คลื่นใหญ่แค่ไหน?", waveDir: "คลื่นไปทางไหน?", oceanNote2: "เลือกสีน้ำได้สูงสุด 3 สีในขั้นตอนสี จากน้ำลึกไปน้ำตื้น ชิ้นงานจริงจะไหลต่างไปเล็กน้อย",
+      waveSize: "คลื่นใหญ่แค่ไหน?", waveDir: "คลื่นไปทางไหน?", oceanNote2: "ทะเลใช้สีน้ำชุดเดียวเสมอ ในขั้นตอนถัดไปเพิ่มปลาดาวและเปลือกหอยเล็กได้ ชิ้นงานจริงจะต่างไปเล็กน้อย",
       inkWarn: "หมึกจะแผ่และเคลื่อนที่ขณะเรซินแข็งตัว ชิ้นงานจริงจะคล้ายกันแต่ไม่เหมือนตัวอย่างนี้ทุกประการ", inkFlow: "ให้หมึกไหลแบบไหน?", inkFlowWide: "กระจายมากขึ้น", inkFlowWideP: "กลุ่มสีนุ่มกว้างที่ผสมกัน", inkFlowTight: "เข้มข้นรวมกลุ่ม", inkFlowTightP: "จุดสีแน่นและเข้มกว่า", inkDrop: "หยดหมึกของคุณ", inkDropNote: "เลือกสี แล้วแตะหรือลากบนชิ้นงานเพื่อหยดหมึกตามที่ต้องการ", inkClear: "ล้างหมึก", inkPickFirst: "เลือกสีหมึกได้สูงสุด 3 สีก่อน", colours: "สี", inkHint: "แตะหรือลากบนชิ้นงานเพื่อหยดหมึก", inkDrops: "{n} หยด",
       addCart: "เพิ่มลงตะกร้า", addedCart: "เพิ่มลงตะกร้าแล้ว เปิดตะกร้าเพื่อสั่งหลายชิ้นพร้อมกัน", cartFail: "บันทึกตะกร้าในอุปกรณ์นี้ไม่ได้",
       saveDraft: "บันทึกแบบร่าง", draftSaved: "บันทึกแบบร่างในอุปกรณ์นี้แล้ว", draftFail: "บันทึกแบบร่างไม่ได้", draftContinue: "ทำแบบร่างต่อ",
@@ -291,7 +291,7 @@ const I18N = {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
       refSub: "Готовые работы из студии Анны. Выберите форму выше, чтобы начать своё.",
-      waveSize: "Какие волны?", waveDir: "Куда идут волны?", oceanNote2: "Выберите до 3 цветов воды на шаге «Цвета» — от глубокой к мелкой. Настоящее изделие потечёт немного иначе.",
+      waveSize: "Какие волны?", waveDir: "Куда идут волны?", oceanNote2: "У моря всегда одни и те же цвета воды. На следующем шаге можно добавить морские звёзды и ракушки. Настоящее изделие будет немного отличаться.",
       inkWarn: "Чернила растекаются и двигаются, пока смола застывает. Готовое изделие будет похожим, но не точно таким, как в предпросмотре.", inkFlow: "Как должны растечься чернила?", inkFlowWide: "Шире и мягче", inkFlowWideP: "Мягкие широкие облака, которые смешиваются.", inkFlowTight: "Более концентрированно", inkFlowTightP: "Плотные яркие пятна цвета.", inkDrop: "Капните чернила", inkDropNote: "Выберите цвет и нажмите или проведите по изделию, чтобы капнуть чернила, где хотите.", inkClear: "Убрать чернила", inkPickFirst: "Сначала выберите до 3 цветов чернил.", colours: "Цвета", inkHint: "Нажмите или проведите по изделию, чтобы капнуть чернила.", inkDrops: "капель: {n}",
       addCart: "В корзину", addedCart: "Добавлено в корзину. Откройте корзину, чтобы заказать несколько изделий сразу.", cartFail: "Не удалось сохранить корзину на этом устройстве.",
       saveDraft: "Сохранить черновик", draftSaved: "Черновик сохранён на этом устройстве.", draftFail: "Не удалось сохранить черновик.", draftContinue: "Продолжить черновик",

@@ -104,11 +104,15 @@ function moldRank(shape) {
 const CHARM_GROUPS = ["small", "charms"];
 const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1 };
 const INSIDE_STEP = 7;
+const COLOURS_STEP = 4, GLITTER_STEP_NO = 6;
+const SEA_WATER = ["#1F6BC0", "#4F8A9C", "#BFD9DE"];   // the sea style always uses the same water colours
+const skipStep = (i, d) => d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO);
 // gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
 const noInside = (d) => d.style === "gradient";
 const INK_GROUPS = ["small", "charms", "flowers", "dried"];
 function fits(a, d) {
   if (d.style === "gradient") return false;
+  if (d.style === "ocean") return a.group === "sea";
   if (d.style === "ink" && !INK_GROUPS.includes(a.group)) return false;
   if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
   if (d.deco === "charms" && !CHARM_GROUPS.includes(a.group)) return false;
@@ -482,7 +486,7 @@ function fillGlass(d, id) {
 const LTR_SIZE = { s: 13, m: 19, l: 27 };
 function lettersLayer(d, pid) {
   const L = d.letters;
-  if (!L || !L.text || d.deco === "natural" || d.style === "gradient") return "";
+  if (!L || !L.text || d.deco === "natural" || d.style === "gradient" || d.style === "ocean") return "";
   const fs = LTR_SIZE[L.size];
   const common = `font-family="Jost, 'Noto Sans Thai', Arial, sans-serif" font-weight="500" font-size="${fs}" fill="url(#${pid}-ltr)" stroke="rgba(0,0,0,0.35)" stroke-width="0.5" paint-order="stroke" style="filter:drop-shadow(0 0.8px 0.8px rgba(0,0,0,0.3))"`;
   let body;
@@ -699,7 +703,7 @@ function styleLayer(d, id, R, T, B) {
   const ang = { flat: 0, left: -16, right: 16 }[o.dir || "flat"];
   const edgeY = sandY ?? (B + 40);
   const wavePath = (y, ph, A) => { let p = `M-140 ${y}`; for (let k = 0; k < 8; k++) p += ` q 40 ${(k % 2 ? 1 : -1) * A * (ph ? -1 : 1)} 80 0`; return p; };
-  const cw = c.length === 3 ? c : [c[0], c[0], c[0]];
+  const cw = SEA_WATER;
   const sandCol = SAND[o.sandColor || "natural"];
   const foamW = o.foam === "frothy" ? 13 : 7;
   let s = `<defs><linearGradient id="${id}-wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${cw[0]}"/><stop offset="0.5" stop-color="${cw[1]}"/><stop offset="1" stop-color="${cw[2]}"/></linearGradient>
@@ -1233,7 +1237,7 @@ const STEP_VIEWS = [
     const decoPick = `<div class="field"><span class="field-label">${U("decoQ")}</span><div class="cards deco-cards">
       <button type="button" class="card deco ${design.deco === "natural" ? "on" : ""}" data-action="deco" data-id="natural"><span class="deco-pics"><img src="images/sea/starfish.png" alt=""><img src="images/sea/shell-mix1.png" alt=""><img src="images/flowers/cream.png" alt=""><img src="images/dried/lavender.png" alt=""></span><span class="card-name">${U("decoNat")}</span><span class="card-text">${U("decoNatP")}</span></button>
       <button type="button" class="card deco ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="deco-pics"><img src="images/small/frog-green.png" alt=""><img src="images/small/crown-gold.png" alt=""><img src="images/small/butterfly-teal.png" alt=""><img src="images/charms/dollar.png" alt=""></span><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
-    if (!design.deco) return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick}`;
+    if (!design.deco && design.style !== "ocean") return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick}`;
     const list = CONFIG.addins.filter((a) => fits(a, design));
     const itemHtml = (a) => {
       const sel = design.addins[a.id];
@@ -1275,10 +1279,10 @@ const STEP_VIEWS = [
     const lettersOpen = ui.open.has("letters"), photoOpen = ui.open.has("photo");
     return `
     <h2>${U("s5h")}</h2>
-    <p class="hint">${U("s5p")} <button type="button" class="btn btn-line small" data-action="deco" data-id="">${U("decoChange")}</button></p>
-    ${design.deco === "charms" ? `<details class="ins-sec" data-key="letters" ${lettersOpen ? "open" : ""}><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>` : ""}
+    <p class="hint">${U("s5p")} ${design.style === "ocean" ? "" : `<button type="button" class="btn btn-line small" data-action="deco" data-id="">${U("decoChange")}</button>`}</p>
+    ${design.deco === "charms" && design.style !== "ocean" ? `<details class="ins-sec" data-key="letters" ${lettersOpen ? "open" : ""}><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>` : ""}
     ${sections.join("")}
-    ${moldRank(design.shape) === 2 ? `<details class="ins-sec" data-key="photo" ${photoOpen ? "open" : ""}><summary><span class="ins-title">${U("photoH")}</span><span class="ins-count">${design.photo.on ? U("added") : ""}</span></summary><div class="ins-body">${photoBlock}</div></details>` : ""}`;
+    ${moldRank(design.shape) === 2 && design.style !== "ocean" ? `<details class="ins-sec" data-key="photo" ${photoOpen ? "open" : ""}><summary><span class="ins-title">${U("photoH")}</span><span class="ins-count">${design.photo.on ? U("added") : ""}</span></summary><div class="ins-body">${photoBlock}</div></details>` : ""}`;
   },
 
   // 9 Chain
@@ -1394,7 +1398,7 @@ function renderTotal() {
 }
 function renderSteps() {
   const names = t("steps");
-  els.steps.innerHTML = names.map((name, i) => ((!hasHardware(design.shape) && (i === LAST - 2 || i === LAST - 1)) || (i === INSIDE_STEP && noInside(design))) ? "" :
+  els.steps.innerHTML = names.map((name, i) => ((!hasHardware(design.shape) && (i === LAST - 2 || i === LAST - 1)) || (i === INSIDE_STEP && noInside(design)) || skipStep(i, design)) ? "" :
     `<button type="button" class="step ${i === ui.step ? "current" : ""} ${ui.visited.has(i) && i !== ui.step ? "done" : ""}" data-step="${i}" ${i === ui.step ? 'aria-current="step"' : ""}>${name}</button>`
   ).join("");
   const cur = els.steps.querySelector(".current");
@@ -1428,7 +1432,8 @@ function swing() {
 function changed() {
   applyPicked(design);
   for (const id of Object.keys(design.addins)) { const ad = CONFIG.addins.find((x) => x.id === id); if (!ad || !fits(ad, design)) delete design.addins[id]; }
-  if (noInside(design)) design.letters.text = "";
+  if (noInside(design) || design.style === "ocean") design.letters.text = "";
+  if (design.style === "ocean") design.crush = [];
   render();
   swing();
 }
@@ -1439,6 +1444,7 @@ function go(step) {
   step = Math.max(0, Math.min(LAST, step));
   if (step === LETTER_STEP && !isLetter(design.shape) && !isNumber(design.shape)) step += dir;
   if (step === INSIDE_STEP && noInside(design)) step += dir;
+  if (skipStep(step, design)) step += dir;
   if (!hasHardware(design.shape) && (step === LAST - 2 || step === LAST - 1)) step = dir > 0 ? LAST : LAST - 3;
   ui.step = Math.max(0, Math.min(LAST, step));
   ui.visited.add(ui.step);
