@@ -842,3 +842,14 @@ body[data-page="design"], body.designer { background: #F2EFE9 !important; }
 .rv figcaption { font-size: 0.78rem; color: var(--ink-soft); margin-top: 4px; line-height: 1.2; }
 .chip.brush { display: inline-flex; align-items: center; gap: 10px; min-width: 96px; }
 .brush-dot { display: inline-block; border-radius: 50%; background: currentColor; flex: none; }
+
+/* decoration choice cards with pictures */
+.deco-cards { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.card.deco { background: linear-gradient(160deg, #fff 0%, #EAF3F1 100%); }
+.deco-pics { display: flex; gap: 6px; height: 70px; margin-bottom: 10px; }
+.deco-pics img { height: 100%; width: 25%; object-fit: contain; }
+.sec-tag { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 10px; padding: 4px 12px; border-radius: 999px; background: var(--c); color: #fff; font-size: 0.82rem; font-weight: 600; }
+.sec-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; opacity: 0.8; }
+/* nav pills stay on one line */
+.nav-links a.nav-cta, .nav-links .dd-btn.nav-cta { white-space: nowrap; }
+@media (min-width: 900px) and (max-width: 1359px) { .nav-links { gap: 6px; } .nav-links a.nav-cta, .nav-links .dd-btn.nav-cta { padding: 5px 9px; font-size: 0.78rem; } }

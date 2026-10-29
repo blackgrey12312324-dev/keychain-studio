@@ -15,7 +15,7 @@ const LAST = STEP_COUNT - 1;
 /* =========================================================
    Design state
    ========================================================= */
-const DEFAULT_COLORS = ["#1C6FC9", "#29B7A3", "#EFEAE6"];
+const DEFAULT_COLORS = ["#1F6BC0", "#4F8A9C", "#E6E0D8"];
 // Until a customer picks colours the piece shows as clear resin, so the colours they choose are the only colour they see.
 const isFresh = (d) => d.style !== "ocean" && Array.isArray(d.picked) && d.picked.length === 0 && d.colors.join() === DEFAULT_COLORS.join();
 function mixHex(a, b) { const p = (h) => [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16)); const x = p(a), y = p(b); return "#" + x.map((v, i) => Math.round((v + y[i]) / 2).toString(16).padStart(2, "0")).join(""); }
@@ -473,7 +473,7 @@ function fillGlass(d, id) {
 const LTR_SIZE = { s: 13, m: 19, l: 27 };
 function lettersLayer(d, pid) {
   const L = d.letters;
-  if (!L || !L.text) return "";
+  if (!L || !L.text || d.deco === "natural") return "";
   const fs = LTR_SIZE[L.size];
   const common = `font-family="Jost, 'Noto Sans Thai', Arial, sans-serif" font-weight="500" font-size="${fs}" fill="url(#${pid}-ltr)" stroke="rgba(0,0,0,0.35)" stroke-width="0.5" paint-order="stroke" style="filter:drop-shadow(0 0.8px 0.8px rgba(0,0,0,0.3))"`;
   let body;
@@ -968,6 +968,22 @@ function reviewThumbs(d) {
   return th.map(([img, cap]) => `<figure class="rv"><div class="rv-img">${img}</div><figcaption>${esc(cap)}</figcaption></figure>`).join("");
 }
 
+const SEC_COL = { keychains: "#134B63", accessories: "#E8806C", statues: "#8C6BB1", kitchen: "#2E8B8B", paint: "#2F5FA8" };
+const SEC_NAME = { keychains: "catKey", accessories: "catAcc", statues: "catStat", kitchen: "catKit", paint: "catPaint" };
+function secTag() {
+  const k = ui.cat || (design.shape ? catOf(design.shape) : "");
+  if (!k || ui.step === 0 || !SEC_NAME[k]) return "";
+  return `<p class="sec-tag" style="--c:${SEC_COL[k]}"><span class="sec-dot"></span>${U(SEC_NAME[k])}</p>`;
+}
+function saveDraft() {
+  try { localStorage.setItem("rc-draft", JSON.stringify({ design, step: ui.step, cat: ui.cat, t: Date.now() })); toast(U("draftSaved")); }
+  catch (e) { toast(U("draftFail")); }
+}
+function loadDraft() {
+  try { const d = JSON.parse(localStorage.getItem("rc-draft") || "null"); if (!d) return false; design = merge(defaultDesign(), d.design); ui.cat = d.cat || ""; ui.visited = new Set([...Array(d.step + 1).keys()]); go(d.step); return true; } catch (e) { return false; }
+}
+const hasDraft = () => { try { return !!localStorage.getItem("rc-draft"); } catch (e) { return false; } };
+
 const STEP_VIEWS = [
   // 0 Ready-made
   () => `
@@ -1001,7 +1017,7 @@ const STEP_VIEWS = [
       { id: "gift", name: U("catGift"), text: U("catGiftP"), href: "canvas.html?kind=photo", shape: "circle" },
     ];
     if (!ui.cat) {
-      return `<a class="btn btn-line small" href="index.html">${U("backHome")}</a><h2>${U("catH")}</h2><p class="hint">${U("catP")}</p>
+      return `<a class="btn btn-line small" href="index.html">${U("backHome")}</a>${hasDraft() ? `<button type="button" class="btn btn-ink small" data-action="loaddraft">${U("draftContinue")}</button>` : ""}<h2>${U("catH")}</h2><p class="hint">${U("catP")}</p>
       <div class="cards cats">${CATS.map((c) => {
         const d = merge(copy(design), { shape: c.shape, hardware: "none" });
         if (c.shape === "A") d.font = "block";
@@ -1154,10 +1170,9 @@ const STEP_VIEWS = [
       <button type="button" class="btn btn-line small" data-action="photooff">${U("photoRemove")}</button>` : ""}`, U("photoNote2"))}
 `;
     const decoPick = `<div class="field"><span class="field-label">${U("decoQ")}</span><div class="cards deco-cards">
-      <button type="button" class="card ${design.deco === "natural" ? "on" : ""}" data-action="deco" data-id="natural"><span class="card-name">${U("decoNat")}</span><span class="card-text">${U("decoNatP")}</span></button>
-      <button type="button" class="card ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
-    if (!design.deco) return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick}
-      <details class="ins-sec" data-key="letters"><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>`;
+      <button type="button" class="card deco ${design.deco === "natural" ? "on" : ""}" data-action="deco" data-id="natural"><span class="deco-pics"><img src="images/sea/starfish.png" alt=""><img src="images/sea/shell-mix1.png" alt=""><img src="images/flowers/cream.png" alt=""><img src="images/dried/lavender.png" alt=""></span><span class="card-name">${U("decoNat")}</span><span class="card-text">${U("decoNatP")}</span></button>
+      <button type="button" class="card deco ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="deco-pics"><img src="images/small/frog-green.png" alt=""><img src="images/small/crown-gold.png" alt=""><img src="images/small/butterfly-teal.png" alt=""><img src="images/charms/dollar.png" alt=""></span><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
+    if (!design.deco) return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick}`;
     const list = CONFIG.addins.filter((a) => fits(a, design));
     const itemHtml = (a) => {
       const sel = design.addins[a.id];
@@ -1200,7 +1215,7 @@ const STEP_VIEWS = [
     return `
     <h2>${U("s5h")}</h2>
     <p class="hint">${U("s5p")} <button type="button" class="btn btn-line small" data-action="deco" data-id="">${U("decoChange")}</button></p>
-    <details class="ins-sec" data-key="letters" ${lettersOpen ? "open" : ""}><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>
+    ${design.deco === "charms" ? `<details class="ins-sec" data-key="letters" ${lettersOpen ? "open" : ""}><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>` : ""}
     ${sections.join("")}
     ${moldRank(design.shape) === 2 ? `<details class="ins-sec" data-key="photo" ${photoOpen ? "open" : ""}><summary><span class="ins-title">${U("photoH")}</span><span class="ins-count">${design.photo.on ? U("added") : ""}</span></summary><div class="ins-body">${photoBlock}</div></details>` : ""}`;
   },
@@ -1321,7 +1336,7 @@ function renderSteps() {
   if (cur) els.steps.scrollTo({ left: cur.offsetLeft - els.steps.clientWidth / 2 + cur.clientWidth / 2 });
 }
 function renderPanel() {
-  els.panel.innerHTML = STEP_VIEWS[ui.step]();
+  els.panel.innerHTML = secTag() + STEP_VIEWS[ui.step]();
   els.back.hidden = ui.step === 0;
   $("bigview").hidden = ui.step < 3;
   els.next.hidden = ui.step === LAST;
@@ -1459,6 +1474,8 @@ els.panel.addEventListener("click", (e) => {
     if (design.tassel.photo && design.tassel.type === "none") design.tassel.type = "silk";
     if (design.tassel.photo && design.hardware === "none") design.hardware = "ringchain";
     changed();
+  } else if (action === "loaddraft") {
+    loadDraft();
   } else if (action === "deco") {
     design.deco = el.dataset.id;
     for (const id of Object.keys(design.addins)) { const ad = CONFIG.addins.find((x) => x.id === id); if (!ad || !fits(ad, design)) delete design.addins[id]; }
@@ -1862,6 +1879,7 @@ els.steps.addEventListener("click", (e) => {
 els.next.addEventListener("click", () => go(ui.step + 1));
 els.back.addEventListener("click", () => go(ui.step - 1));
 $("startover").addEventListener("click", startOver);
+$("savedraft").addEventListener("click", saveDraft);
 onLangChange(render);
 
 /* ---------- Open a shared design link (…#d=...) ---------- */
