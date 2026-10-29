@@ -21,7 +21,7 @@ function buyBtns(id, name, img, section) {
 }
 function buyItem(el) {
   const link = el.dataset.sec === "preset" ? `\nOpen the design: ${location.href.split("#")[0].replace(/[^/]*$/, "")}design.html?preset=${el.dataset.id}` : "";
-  return { title: el.dataset.name, sub: el.dataset.sec === "preset" ? "Ready-made keychain" : el.dataset.sec, thumb: `<img src="${el.dataset.img}" alt="">`, text: `From the shop (${el.dataset.sec === "preset" ? "Keychains & necklaces" : el.dataset.sec}): ${el.dataset.name}${link}` };
+  return { title: el.dataset.name, sub: el.dataset.sec === "preset" ? "Ready-made keychain" : el.dataset.sec, thumb: `<img src="${el.dataset.img}" alt="">`, text: `From the shop (${el.dataset.sec === "preset" ? "Keychains" : el.dataset.sec}): ${el.dataset.name}${link}` };
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-buy]");
@@ -92,7 +92,7 @@ function renderHome() {
         <div class="gallery rec">${[["g-fruit-bowl", "Sea fruit bowl"], ["g-tail", "Mermaid tail board"], ["g-canvas", "Sea canvas"], ["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-bookmark", "Sea bookmark with tassel"], ["g-platter", "Sea platter"], ["g-sea-shells", "Sea canvas with shells and starfish"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" loading="lazy"><figcaption><strong>${c}</strong></figcaption>${buyBtns(n, c, "images/real/" + n + ".jpg", "Recommended sea designs")}</figure>`).join("")}</div>
         <div class="themes">${CONFIG.gallery.filter((t) => t.items.length).map((t) => `
           <h3 class="theme-h">${esc(t.theme)}</h3>
-          <div class="gallery">${t.theme === "Keychains & necklaces" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption>${buyBtns(p.id, p.name, p.photo, "preset")}</figure>`).join("") : ""}${t.items.map((it) => it.video
+          <div class="gallery">${t.theme === "Keychains" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption>${buyBtns(p.id, p.name, p.photo, "preset")}</figure>`).join("") : ""}${t.items.map((it) => it.video
             ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns((it.img || it.cap).replace(/\W+/g, "-"), it.cap, it.img || it.poster, t.theme)}</figure>`
             : `<figure><img src="${it.img}" alt="${esc(it.cap)}" loading="lazy"><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns(it.img.replace(/\W+/g, "-"), it.cap, it.img, t.theme)}</figure>`).join("")}</div>`).join("")}
         </div>
@@ -106,7 +106,7 @@ function renderHome() {
           <p>${H("lettersSub")}</p>
         </div>
         <div class="make-grid">${[
-          ["Keychains & necklaces", "design.html?cat=keychains", "images/phuket-shoreline.jpg|images/real/g-key-tail.jpg", "#134B63", [["Letters", "design.html?cat=keychains&group=letters"]]],
+          ["Keychains", "design.html?cat=keychains", "images/phuket-shoreline.jpg|images/real/g-key-tail.jpg", "#134B63", [["Letters", "design.html?cat=keychains&group=letters"]]],
           ["Accessories", "design.html?cat=accessories", "images/real/g-bookmark.jpg|images/real/g-pen-blue.jpg", "#E8806C", [["Bookmarks", "design.html?cat=accessories&group=bookmarks"], ["Hair pieces", "design.html?cat=accessories&group=combs"], ["Pens", "design.html?cat=accessories&group=pens"]]],
           ["Statues & decor", "design.html?cat=statues", "images/real/g-domino.jpg|images/real/lamp.jpg", "#8C6BB1", [["Board games", "design.html?cat=statues&group=statues"]]],
           ["Dining & restaurant", "design.html?cat=kitchen", "images/real/g-coaster-sea.jpg|images/real/g-fruit-bowl.jpg", "#2E8B8B", [["Cup stands", "design.html?cat=kitchen&group=cups"], ["Boards & trays", "design.html?cat=kitchen&group=boards"]]],
