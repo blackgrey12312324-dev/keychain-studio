@@ -1119,3 +1119,5 @@ body { background: #F1F9F9 !important; }
 
 .pop-bubble { background: radial-gradient(circle at 30% 28%, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.55) 14%, rgba(150,220,235,0.25) 45%, rgba(160,190,255,0.35) 70%, rgba(255,190,230,0.35) 100%) !important; border: 1.5px solid rgba(255,255,255,0.95) !important; box-shadow: inset -2px -3px 5px rgba(120,190,215,0.35), 0 0 8px rgba(160,225,240,0.6); animation-name: popb2 !important; animation-timing-function: ease-out !important; }
 @keyframes popb2 { 0% { transform: translate(0,0) scale(0.4); opacity: 0; } 15% { opacity: 1; } 80% { opacity: 0.9; } 100% { transform: translate(var(--dx), var(--dy)) scale(1.25); opacity: 0; } }
+.site-header { position: sticky !important; top: 0; z-index: 300 !important; }
+.dd-menu { z-index: 310; }
