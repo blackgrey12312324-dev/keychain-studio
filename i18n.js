@@ -9,7 +9,7 @@
 const I18N = {
   /* ---------------- ENGLISH ---------------- */
   en: {
-    steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Tiny letters", "Inside", "Back", "Chain", "Tassel", "Review"],
+    steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
       tagline: "Design your own resin keychain, handmade in Phuket",
       flip: "Flip", dropInside: "Drop it inside the shape", zoomIn: "Zoom in", zoomOut: "Zoom out", dropHint: "Drag a glitter or decoration from the list onto your piece.", surprise: "Surprise me", bigView: "Big view", startOver: "Start over",
@@ -48,9 +48,9 @@ const I18N = {
       slotGrad: ["Colour 1", "Colour 2", "Colour 3"], paintTip: "Tip: open Big view to paint on your keychain with your finger",
 
       photoH: "Your own photo inside the resin (big molds)", photoZoom: "Photo zoom", photoX: "Photo left / right", photoY: "Photo up / down", photoRemove: "Remove photo", photoNote2: "Best in big molds. Send the same photo in the DM chat too.",
-      sLtH: "Tiny metal letters", sLtP: "Type a name or any word. The tiny letters sit inside the resin. Drag the word on your piece to place it.",
-      ltText: "Your word", ltPh: "For example: ANNA", ltNote: "Letters A to Z and numbers, up to 14.", ltMetal: "Metal", ltLayout: "Layout", ltSize: "Letter size", ltTurn: "Turn", ltDrag: "Drag the word on the piece to move it.",
-      seaH: "Shells and starfish", seaP: "Real starfish and shells. Recommended for beach and sea pieces, and they fit anywhere.",
+      sLtH: "Tiny metal letters", noTassel: "No tassel", recommended: "Recommended", nAdded: "{n} added",  sLtP: "Type a name or any word. The tiny letters sit inside the resin. Drag the word on your piece to place it.",
+      ltText: "Your word", ltPh: "For example: AB", ltNote: "Up to 4 letters or numbers.", ltMetal: "Metal", ltLayout: "Layout", ltSize: "Letter size", ltTurn: "Turn", ltDrag: "Drag the word on the piece to move it.",
+      seaH: "Starfish and mini shells", seaP: "Pick the kind you like, tap it, then drag it onto your piece.",
       smallH: "Small charms", smallP: "Tiny resin butterflies, turtles, crabs, roses, hearts, crowns, bakery treats and more. Small, so they fit anywhere.",
       driedH: "Dried plants", driedP: "Real dried lavender, baby's breath and wheat. Thin and flat, so they fit anywhere.",
       natureH: "Pine cones and nuts", natureP: "Real dried cones, seed pods and a walnut shell. They are chunky, so they only fit medium and big molds.",
@@ -60,10 +60,10 @@ const I18N = {
       realTassels: "Our real tassels",
       flowersH: "Pressed flowers", flowersP: "Real pressed flowers in twelve colours. They are flat, so they fit almost anywhere.",
       charmsH: "Metal charms", charmsP: "Tiny gold charms that sit inside the resin. They are small, so they fit almost anywhere.",
-      sGlH: "Crushed glass glitter", sGlP: "Tap a colour, then drag over your piece to sprinkle it. You can also drag a colour straight onto the piece.",
-      glPick: "Colour", glAmount: "How much each time", glSize: "Chip size", glFill: "Fill the whole piece", glUndo: "Undo", glClear: "Clear glitter",
+      sGlH: "Glitter and sprinkles", sGlP: "Tap a material, then drag over your piece to sprinkle it. A small cursor sprinkles a few pieces, a bigger cursor sprinkles more.",
+      glPick: "Colour", glAmount: "How much each time", glSize: "Cursor size", glFill: "Fill the whole piece", glUndo: "Undo", glClear: "Clear glitter",
       glStop: "Stop sprinkling", glHint: "Sprinkling {name}. Drag on the piece. Tap the colour again to stop.",
-      glAmt: { s: "Sprinkle", m: "Handful", l: "Pour" }, glSz: { s: "Fine", m: "Medium", l: "Chunky" },
+      glAmt: { s: "Sprinkle", m: "Handful", l: "Pour" }, glSz: { s: "Small cursor", m: "Big cursor", l: "Bigger cursor" },
       s5h: "Add things inside", s5p: "Choose as many as you like, then drag them on the keychain to place them.",
       howMuch: "How much", where: "Where", colour: "Colour",
 
@@ -73,7 +73,7 @@ const I18N = {
 
       s7h: "Chain and clip", s7p: "How will you carry it?", metal: "Metal colour", type: "Type",
 
-      s8h: "Tassel and extras", s8p: "The finishing touch.", tassel: "Tassel", tasselNote: "Silk is shiny. Cotton is soft and matte.",
+      s8h: "Tassel", s8p: "The finishing touch. Silk tassels hang from the ring.", tassel: "Tassel", tasselNote: "Silk is shiny. Cotton is soft and matte.",
       ombre: "Two colours fading (ombre)", topColour: "Top colour", tasselColour: "Tassel colour", bottomColour: "Bottom colour",
       cord: "Cord", extra: "Extra",
 
@@ -150,8 +150,9 @@ const I18N = {
 
   /* ---------------- THAI ---------------- */
   th: {
-    steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ตัวอักษรจิ๋ว", "ของข้างใน", "ด้านหลัง", "โซ่", "พู่", "ตรวจสอบ"],
+    steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      recommended: "แนะนำ", nAdded: "เพิ่มแล้ว {n}", noTassel: "ไม่ใส่พู่", seaH: "ปลาดาวและเปลือกหอยจิ๋ว", seaP: "เลือกแบบที่ชอบ แตะ แล้วลากไปวางบนชิ้นงาน", ltNote: "ตัวอักษรหรือตัวเลขสูงสุด 4 ตัว", ltPh: "เช่น AB",
       tagline: "ออกแบบพวงกุญแจเรซินของคุณเอง งานทำมือจากภูเก็ต",
       flip: "พลิก", dropInside: "วางภายในรูปทรง", zoomIn: "ซูมเข้า", zoomOut: "ซูมออก", dropHint: "ลากกากเพชรหรือของตกแต่งจากรายการมาวางบนชิ้นงาน", surprise: "สุ่มให้หน่อย", bigView: "ดูภาพใหญ่", startOver: "เริ่มใหม่",
       startedOver: "เริ่มใหม่แล้ว", surprised: "นี่คือดีไซน์เซอร์ไพรส์", undo: "เลิกทำ", removed: "ลบแล้ว",
@@ -186,10 +187,10 @@ const I18N = {
       slotOcean: ["ทะเลลึก", "น้ำกลาง", "น้ำตื้น"], slotInk: ["หมึก 1", "หมึก 2", "หมึก 3"],
       slotGrad: ["สี 1", "สี 2", "สี 3"], paintTip: "ทิป: เปิด ดูภาพใหญ่ เพื่อระบายสีบนพวงกุญแจด้วยนิ้ว",
 
-      sGlH: "กากเพชรแก้วบด", sGlP: "แตะสี แล้วลากบนชิ้นงานเพื่อโรย หรือลากสีไปวางบนชิ้นงานได้เลย",
-      glPick: "สี", glAmount: "ปริมาณแต่ละครั้ง", glSize: "ขนาดเม็ด", glFill: "เติมเต็มทั้งชิ้น", glUndo: "เลิกทำ", glClear: "ล้างกากเพชร",
+      sGlH: "กากเพชรและของโรย", sGlP: "แตะวัสดุ แล้วลากบนชิ้นงานเพื่อโรย เคอร์เซอร์เล็กโรยน้อย เคอร์เซอร์ใหญ่โรยมากขึ้น",
+      glPick: "สี", glAmount: "ปริมาณแต่ละครั้ง", glSize: "ขนาดเคอร์เซอร์", glFill: "เติมเต็มทั้งชิ้น", glUndo: "เลิกทำ", glClear: "ล้างกากเพชร",
       glStop: "หยุดโรย", glHint: "กำลังโรย {name} ลากบนชิ้นงาน แตะสีอีกครั้งเพื่อหยุด",
-      glAmt: { s: "โรยเล็กน้อย", m: "หนึ่งกำมือ", l: "เทเยอะ" }, glSz: { s: "ละเอียด", m: "กลาง", l: "ใหญ่" },
+      glAmt: { s: "โรยเล็กน้อย", m: "หนึ่งกำมือ", l: "เทเยอะ" }, glSz: { s: "เคอร์เซอร์เล็ก", m: "เคอร์เซอร์ใหญ่", l: "เคอร์เซอร์ใหญ่มาก" },
       s5h: "ใส่ของข้างใน", s5p: "เลือกได้หลายอย่าง แล้วลากบนพวงกุญแจเพื่อจัดตำแหน่ง",
       howMuch: "ปริมาณ", where: "ตำแหน่ง", colour: "สี",
 
@@ -199,7 +200,7 @@ const I18N = {
 
       s7h: "โซ่และตัวคล้อง", s7p: "จะพกแบบไหน?", metal: "สีโลหะ", type: "แบบ",
 
-      s8h: "พู่และของเพิ่มเติม", s8p: "รายละเอียดสุดท้าย", tassel: "พู่", tasselNote: "ไหมจะเงางาม ฝ้ายจะนุ่มและด้าน",
+      s8h: "พู่", s8p: "รายละเอียดสุดท้าย", tassel: "พู่", tasselNote: "ไหมจะเงางาม ฝ้ายจะนุ่มและด้าน",
       ombre: "ไล่สองสี (ombre)", topColour: "สีด้านบน", tasselColour: "สีพู่", bottomColour: "สีด้านล่าง",
       cord: "เชือก", extra: "ของเพิ่มเติม",
 
@@ -271,8 +272,9 @@ const I18N = {
 
   /* ---------------- RUSSIAN ---------------- */
   ru: {
-    steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Мини-буквы", "Внутри", "Обратная сторона", "Цепочка", "Кисточка", "Итог"],
+    steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      recommended: "Рекомендуем", nAdded: "добавлено: {n}", noTassel: "Без кисточки", seaH: "Морская звезда и мини-ракушки", seaP: "Выберите понравившийся вариант, нажмите и перетащите на изделие.", ltNote: "До 4 букв или цифр.", ltPh: "Например: AB",
       tagline: "Создай свой брелок из смолы, ручная работа с Пхукета",
       flip: "Перевернуть", dropInside: "Отпусти внутри формы", zoomIn: "Приблизить", zoomOut: "Отдалить", dropHint: "Перетащи блёстки или украшение из списка на изделие.", surprise: "Удиви меня", bigView: "Крупно", startOver: "Сначала",
       startedOver: "Начали заново", surprised: "Вот дизайн-сюрприз", undo: "Отменить", removed: "Удалено",
@@ -307,10 +309,10 @@ const I18N = {
       slotOcean: ["Глубокое море", "Средняя вода", "Мелководье"], slotInk: ["Чернила 1", "Чернила 2", "Чернила 3"],
       slotGrad: ["Цвет 1", "Цвет 2", "Цвет 3"], paintTip: "Совет: открой «Крупно», чтобы рисовать на брелоке пальцем",
 
-      sGlH: "Дроблёное стекло", sGlP: "Выбери цвет и проведи по изделию, чтобы посыпать. Или перетащи цвет прямо на изделие.",
-      glPick: "Цвет", glAmount: "Сколько за раз", glSize: "Размер кусочков", glFill: "Засыпать всё изделие", glUndo: "Отменить", glClear: "Убрать блёстки",
+      sGlH: "Блёстки и посыпка", sGlP: "Выберите материал и проведите по изделию, чтобы посыпать. Малый курсор сыплет немного, больший — больше.",
+      glPick: "Цвет", glAmount: "Сколько за раз", glSize: "Размер курсора", glFill: "Засыпать всё изделие", glUndo: "Отменить", glClear: "Убрать блёстки",
       glStop: "Закончить", glHint: "Сыплем: {name}. Води по изделию. Нажми на цвет ещё раз, чтобы остановиться.",
-      glAmt: { s: "Щепотка", m: "Горсть", l: "Много" }, glSz: { s: "Мелкие", m: "Средние", l: "Крупные" },
+      glAmt: { s: "Щепотка", m: "Горсть", l: "Много" }, glSz: { s: "Малый курсор", m: "Большой курсор", l: "Очень большой курсор" },
       s5h: "Добавь детали внутрь", s5p: "Выбирай сколько хочешь, а потом перетаскивай их на брелоке.",
       howMuch: "Сколько", where: "Где", colour: "Цвет",
 
@@ -320,7 +322,7 @@ const I18N = {
 
       s7h: "Цепочка и застёжка", s7p: "Как будешь носить?", metal: "Цвет металла", type: "Тип",
 
-      s8h: "Кисточка и дополнения", s8p: "Последний штрих.", tassel: "Кисточка", tasselNote: "Шёлк блестит. Хлопок мягкий и матовый.",
+      s8h: "Кисточка", s8p: "Последний штрих.", tassel: "Кисточка", tasselNote: "Шёлк блестит. Хлопок мягкий и матовый.",
       ombre: "Два цвета с переходом (омбре)", topColour: "Цвет сверху", tasselColour: "Цвет кисточки", bottomColour: "Цвет снизу",
       cord: "Шнурок", extra: "Дополнение",
 

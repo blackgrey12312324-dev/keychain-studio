@@ -812,3 +812,31 @@ a.card { text-decoration: none; color: inherit; display: block; }
 .gallery figure { background: transparent; }
 .tool[hidden]{display:none}
 .slot .blob.empty { background: transparent; border: 1px dashed #AEB4B0; }
+
+/* Inside step: folded sections */
+.ins-sec { border: 1px solid var(--line); background: #fff; margin: 0 0 10px; }
+.ins-sec summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 14px 16px; }
+.ins-sec summary::-webkit-details-marker { display: none; }
+.ins-sec summary::after { content: "+"; margin-left: auto; font-size: 1.3rem; color: var(--ink-soft); }
+.ins-sec[open] summary::after { content: "–"; }
+.ins-title { font-family: var(--serif); font-size: 1.25rem; }
+.rec-tag { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; background: #E8F3F1; color: #1C6B63; padding: 3px 8px; border-radius: 999px; }
+.ins-count { font-size: 0.85rem; color: var(--ink-soft); }
+.ins-body { padding: 0 16px 16px; }
+.ins-body > .field:first-child { margin-top: 0; }
+
+/* designer: one calm background everywhere */
+body[data-page="design"], body.designer { background: #F2EFE9 !important; }
+.stage, .layout .stage { background: #E7E3DB !important; }
+.steps, .studio, .panel { background: transparent; }
+
+/* review thumbnails */
+.rev-thumbs { display: flex; flex-wrap: wrap; gap: 12px; margin: 10px 0 16px; }
+.rv { margin: 0; width: 96px; text-align: center; }
+.rv-img { height: 96px; background: #fff; border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; }
+.rv-img img { max-width: 80%; max-height: 80%; object-fit: contain; }
+.rv-art svg { height: 84px; width: auto; }
+.rv-dots { display: flex; gap: 4px; }
+.rv-dots .dot { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.12); }
+.rv-text { font-family: var(--serif); font-size: 1.5rem; letter-spacing: 0.08em; }
+.rv figcaption { font-size: 0.78rem; color: var(--ink-soft); margin-top: 4px; line-height: 1.2; }

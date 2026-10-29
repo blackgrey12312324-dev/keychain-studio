@@ -7,7 +7,7 @@
 Object.assign(ui, {
   cat: "", step: 0, visited: new Set([0]), side: "front", slot: 0, photo: "",
   full: false, mode: "move", zoom: 1, pan: [0, 0],
-  pour: { id: "", amount: "m", size: "m" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
+  open: new Set(["sea"]), pour: { id: "", amount: "m", size: "s" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
 });
 const STEP_COUNT = I18N.en.steps.length;
 const LAST = STEP_COUNT - 1;
@@ -38,7 +38,7 @@ function defaultDesign() {
     gradient: { direction: "down", glitter: "none" },
     crush: [],
     photo: { on: false, x: 0, y: 0, zoom: 1 },
-    letters: { text: "", metal: "gold", size: "m", layout: "word", x: 150, y: 290, rot: 0, seed: 7 },
+    letters: { text: "", metal: "gold", size: "s", layout: "word", x: 150, y: 290, rot: 0, seed: 7 },
     ink: { amount: "medium", background: "clear", spread: "all", cells: true, shimmer: "pearl" },
     ocean: { sand: "middle", wave: "middle", foam: "frothy", sandColor: "natural" },
     addins: {},
@@ -92,8 +92,19 @@ function blockedReason(id, d, lang = ui.lang) {
   const rule = CONFIG.incompatible[id];
   return rule && rule.styles.includes(d.style) ? tr(rule, "why", lang) : "";
 }
+// How big a mold is: 0 small (letters, tags, keychain shapes, bookmarks), 1 medium, 2 big. Pieces that are too big for the mold are not offered.
+function moldRank(shape) {
+  const c = CONFIG.shapes.find((x) => x.id === shape);
+  const s = c && c.size;
+  return s === "big" ? 2 : s === "medium" ? 1 : 0;
+}
+const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1 };
+function fits(a, d) {
+  const need = a.id === "tree-small" ? 1 : NEED[a.group] || 0;
+  return need <= moldRank(d.shape);
+}
 function activeAddins(d) {
-  return CONFIG.addins.filter((a) => d.addins[a.id] && !blockedReason(a.id, d));
+  return CONFIG.addins.filter((a) => d.addins[a.id] && !blockedReason(a.id, d) && fits(a, d));
 }
 const isLetter = (sh) => /^[A-Z]$/.test(sh);
 const isNumber = (sh) => /^[0-9]$/.test(sh);
@@ -115,7 +126,6 @@ function priceOf(d, lang = ui.lang) {
   if (P.style[d.style]) lines.push([L("style", { style: lab("style", d.style, lang) }), P.style[d.style]]);
   for (const a of activeAddins(d)) if (a.price) lines.push([tr(a, "name", lang), a.price]);
   if (P.edge[d.edge]) lines.push([L("edge", { edge: lab("edge", d.edge, lang) }), P.edge[d.edge]]);
-  if (P.back[d.back]) lines.push([L("back"), P.back[d.back]]);
   if (P.hardware[d.hardware]) lines.push([lab("hardware", d.hardware, lang), P.hardware[d.hardware]]);
   if (P.tassel[d.tassel.type]) lines.push([L("tassel", { t: lab("tassel", d.tassel.type, lang) }), P.tassel[d.tassel.type]]);
   if (d.tassel.type !== "none" && d.tassel.ombre) lines.push([L("ombre"), P.ombre]);
@@ -193,11 +203,9 @@ function summaryLines(d, lang = ui.lang) {
   if (d.photo && d.photo.on) L.push([S("photo"), S("photoText")]);
   if (d.letters.text) L.push([S("letters"), `"${d.letters.text}", ${lab("lmetal", d.letters.metal, lang)}, ${lab("llayout", d.letters.layout, lang)}`]);
   if (d.paint.length) L.push([S("paint"), S("strokes", { n: d.paint.length })]);
-  L.push([S("back"), lab("back", d.back, lang)]);
   if (hasHardware(d.shape)) {
     if (d.hardware !== "none") L.push([S("chain"), `${lab("metal", d.metal, lang)}, ${lab("hardware", d.hardware, lang)}`]);
     if (d.hardware !== "none") L.push([S("tassel"), tasselText(d, lang)]);
-    if (d.hardware !== "none" && d.hardware !== "necklace" && d.extra !== "none") L.push([S("extra"), lab("extra", d.extra, lang)]);
   }
   if (d.second) L.push([S("matching"), S("matchingText", { l: d.second })]);
   return L;
@@ -401,25 +409,39 @@ function genItems(a, sel, d, rand) {
   return items;
 }
 /* ---------- Crushed glass glitter (real photos of the chips) ---------- */
-const GLASS = 52;                 // sprite size in drawing units
-const GLASS_MAX = 450;            // keeps the drawing fast
-const GLASS_SIZE = { s: 0.65, m: 1, l: 1.5 };
-const GLASS_COUNT = { s: 1, m: 3, l: 6 };
+const GLASS = 15;                 // sprite size in drawing units (tiny, so it looks sprinkled)
+const GLASS_MAX = 4000;           // keeps the drawing fast
+const GLASS_RADIUS = { s: 7, m: 16, l: 30 };   // small, big and bigger cursor
+const GLASS_COUNT = { s: 5, m: 22, l: 110 };
 const glitterName = (id, lang = ui.lang) => { const g = CONFIG.glitters.find((x) => x.id === id); return g ? tr(g, "name", lang) : id; };
+const SPRINKLE_COLOURS = { goldleaf: ["#D4AF37", "#E8C75A", "#B8902A"], hearts: ["#DE2D44", "#FA768D", "#FB9BB2"], stars: ["#F5B510", "#E4BE28", "#EFEAE6"] };
 function glassSprite(c) {
-  const sz = GLASS * (c[4] / 100);
-  return `<image href="images/glitter/${c[0]}.png" x="${(c[1] - sz / 2).toFixed(1)}" y="${(c[2] - sz / 2).toFixed(1)}" width="${sz.toFixed(1)}" height="${sz.toFixed(1)}" transform="rotate(${c[3]} ${c[1]} ${c[2]})" pointer-events="none"/>`;
+  const g = CONFIG.glitters.find((x) => x.id === c[0]) || {};
+  const h = (c[1] * 73 + c[2] * 151 + c[3] * 31) >>> 0;
+  if (g.shape) {
+    const cols = SPRINKLE_COLOURS[c[0]], col = cols[h % cols.length], r = (c[4] / 100) * 3.6;
+    const body = g.shape === "heart" ? `<path d="${heartPath(0, 0, r * 1.05)}" fill="${col}"/>`
+      : g.shape === "star" ? `<path d="${starPath(0, 0, r * 1.2, r * 0.5, 5)}" fill="${col}"/>`
+      : `<polygon points="${[0, 1, 2, 3, 4].map((k) => { const an = k * 1.26 + (h % 40) / 20, rr = r * (0.55 + ((k * 37 + h) % 10) / 14); return `${(Math.cos(an) * rr).toFixed(1)},${(Math.sin(an) * rr).toFixed(1)}`; }).join(" ")}" fill="${col}" stroke="#FFF3C4" stroke-width="0.25"/>`;
+    return `<g transform="translate(${c[1]} ${c[2]}) rotate(${c[3]})" pointer-events="none">${body}</g>`;
+  }
+  // a single tiny chip of crushed glass, coloured from the real photo of that glitter
+  const pal = g.pal || ["#888"];
+  const col = pal[h % pal.length], r = (c[4] / 100) * 3.1;
+  const pts = [0, 1, 2, 3, 4].map((k) => { const an = k * 1.25 + (h % 31) / 10, rr = r * (0.6 + ((k * 53 + h) % 9) / 11); return `${(Math.cos(an) * rr).toFixed(1)},${(Math.sin(an) * rr).toFixed(1)}`; }).join(" ");
+  const shine = h % 4 === 0 ? `<line x1="${(-r * 0.4).toFixed(1)}" y1="${(-r * 0.3).toFixed(1)}" x2="${(r * 0.2).toFixed(1)}" y2="${(-r * 0.5).toFixed(1)}" stroke="#fff" stroke-width="0.5" opacity="0.8"/>` : "";
+  return `<g transform="translate(${c[1]} ${c[2]}) rotate(${c[3]})" pointer-events="none"><polygon points="${pts}" fill="${col}" stroke="rgba(0,0,0,0.25)" stroke-width="0.2"/>${shine}</g>`;
 }
 function glassLayer(d) {
   return d.crush && d.crush.length ? `<g class="crush">${d.crush.map(glassSprite).join("")}</g>` : '<g class="crush"></g>';
 }
 // add a little pile of chips around a point; returns the new sprites
-function stamp(d, id, x, y, amount = ui.pour.amount, size = ui.pour.size) {
+function stamp(d, id, x, y, amount, size = ui.pour.size) {
   const out = [];
-  const n = GLASS_COUNT[amount], k = GLASS_SIZE[size];
+  const n = GLASS_COUNT[size], rad = GLASS_RADIUS[size];
   for (let i = 0; i < n; i++) {
-    const a = Math.random() * Math.PI * 2, r = (n === 1 ? 0 : Math.random()) * 14 * k;
-    out.push([id, Math.round(x + Math.cos(a) * r), Math.round(y + Math.sin(a) * r), Math.floor(Math.random() * 360), Math.round(k * (88 + Math.random() * 24))]);
+    const an = Math.random() * Math.PI * 2, r = Math.sqrt(Math.random()) * rad;
+    out.push([id, Math.round(x + Math.cos(an) * r), Math.round(y + Math.sin(an) * r), Math.floor(Math.random() * 360), Math.round(80 + Math.random() * 45)]);
   }
   d.crush.push(...out);
   if (d.crush.length > GLASS_MAX) d.crush.splice(0, d.crush.length - GLASS_MAX);
@@ -579,7 +601,7 @@ function styleLayer(d, id, R, T, B) {
   if (d.style === "gradient") {
     const g = d.gradient;
     const dirs = { down: [0, 0, 0, 1], right: [0, 0, 1, 0], diagonal: [0, 0, 1, 1] };
-    const stops = c.map((col, i) => `<stop offset="${i / (c.length - 1)}" stop-color="${col}" stop-opacity="0.92"/>`).join("");
+    const stops = [[0, 0], [0.2, 0], [0.4, 1], [0.6, 1], [0.8, 2], [1, 2]].map(([o, i]) => `<stop offset="${o}" stop-color="${c[i]}" stop-opacity="1"/>`).join("");
     const grad = g.direction === "center"
       ? `<radialGradient id="${id}-g" cx="0.5" cy="0.55" r="0.6">${stops}</radialGradient>`
       : `<linearGradient id="${id}-g" x1="${dirs[g.direction][0]}" y1="${dirs[g.direction][1]}" x2="${dirs[g.direction][2]}" y2="${dirs[g.direction][3]}">${stops}</linearGradient>`;
@@ -589,7 +611,7 @@ function styleLayer(d, id, R, T, B) {
     return `<defs>${grad}${mask}</defs>
       <g ${d.clearParts ? `mask="url(#${id}-m)"` : ""}>
         <rect x="0" y="${T - 20}" width="300" height="${h + 40}" fill="url(#${id}-g)"/>
-        <image href="images/real/swirl-gray.jpg" x="0" y="${T - 20}" width="300" height="${h + 40}" preserveAspectRatio="xMidYMid slice" style="mix-blend-mode:soft-light" opacity="0.8"/>
+        <image href="images/real/swirl-gray.jpg" x="0" y="${T - 20}" width="300" height="${h + 40}" preserveAspectRatio="xMidYMid slice" style="mix-blend-mode:soft-light" opacity="0.45"/>
         ${glitterDots(R, g.glitter, c, T, B)}
       </g>`;
   }
@@ -780,14 +802,15 @@ function tasselSvg(d, id) {
   if (tt.type === "none") return "";
   const R = rng(99);
   const cordColor = tt.photo ? "#C8A13A" : { gold: "#C8A13A", silver: "#AEB5BE", match: tt.color1, twist: tt.color1 }[tt.cord];
-  const cordPath = d.hardware === "necklace" ? "M156 114 C 190 110, 222 108, 232 114" : "M152 70 C 190 70, 225 80, 232 112";
+  const cordPath = d.hardware === "necklace" ? "M150 112 C 190 108, 224 104, 232 114" : "M171 56 C 205 58, 232 76, 232 112";
   let s = `<path d="${cordPath}" fill="none" stroke="${cordColor}" stroke-width="3.5" stroke-linecap="round"/>`;
   if (tt.cord === "twist") s += `<path d="${cordPath}" fill="none" stroke="#C8A13A" stroke-width="3.5" stroke-dasharray="4 4"/>`;
   const ph = tt.photo && CONFIG.tassels.find((x) => x.id === tt.photo);
   if (ph) {
-    const h = 215, w = h * ph.ratio;
-    return `<path d="${cordPath}" fill="none" stroke="${ph.hex}" stroke-width="3.5" stroke-linecap="round"/>
-      <image href="images/tassels/${ph.id}.png" x="${(232 - w * ph.kx).toFixed(1)}" y="108" width="${w.toFixed(1)}" height="${h}" preserveAspectRatio="none" style="filter:drop-shadow(0 2px 2px rgba(0,0,0,0.25))"/>`;
+    const h = 170, w = h * ph.ratio;
+    const loop = d.hardware === "necklace" ? `<ellipse cx="150" cy="112" rx="5" ry="7" fill="none" stroke="${ph.hex}" stroke-width="3"/>` : `<ellipse cx="172" cy="55" rx="5.5" ry="9" transform="rotate(35 172 55)" fill="none" stroke="${ph.hex}" stroke-width="3"/>`;
+    return `<path d="${cordPath}" fill="none" stroke="${ph.hex}" stroke-width="3.5" stroke-linecap="round"/>${loop}
+      <image href="images/tassels/${ph.id}.png" x="${(232 - w * ph.kx).toFixed(1)}" y="108" width="${w.toFixed(1)}" height="${h}" preserveAspectRatio="none"/>`;
   }
   const silk = tt.type === "silk";
   const n = silk ? 34 : 26;
@@ -859,7 +882,7 @@ function renderPiece(d, side = "front", opts = {}) {
     <linearGradient id="${id}-metal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${m1}"/><stop offset="1" stop-color="${m2}"/></linearGradient>
     <linearGradient id="${id}-tas" x1="0" y1="0" x2="0" y2="1"><stop offset="0.1" stop-color="${tt.color1}"/><stop offset="0.9" stop-color="${tt.ombre ? tt.color2 : tt.color1}"/></linearGradient>
     <radialGradient id="${id}-pearl" cx="0.35" cy="0.35" r="0.7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#D9D2C6"/></radialGradient>
-    <pattern id="${id}-wood" patternUnits="userSpaceOnUse" width="300" height="440"><image href="images/wood/${(customShape(d.shape) || {}).wood}.jpg" width="300" height="440" preserveAspectRatio="xMidYMid slice"/></pattern>
+    ${(customShape(d.shape) || {}).wood ? `<pattern id="${id}-wood" patternUnits="userSpaceOnUse" width="300" height="440"><image href="images/wood/${(customShape(d.shape) || {}).wood}.jpg" width="300" height="440" preserveAspectRatio="xMidYMid slice"/></pattern>` : ""}
     <pattern id="${id}-ltr" patternUnits="userSpaceOnUse" width="70" height="70"><image href="images/letters/${d.letters.metal}.jpg" width="70" height="70" preserveAspectRatio="xMidYMid slice" style="filter:brightness(1.7) contrast(1.15) saturate(1.2)"/></pattern>
     <clipPath id="${id}-clip">${shapeMarkup(d.shape, "")}</clipPath>
     <filter id="${id}-ink" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="38" xChannelSelector="R" yChannelSelector="G"/></filter>
@@ -874,7 +897,7 @@ function renderPiece(d, side = "front", opts = {}) {
   const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
-  const rim = `fill="none" stroke="#B8BDC2" stroke-width="2.6" stroke-linejoin="round"`;
+  const rim = `fill="none" stroke="#9AA4AB" stroke-width="2.6" stroke-linejoin="round"`;
 
   const flip = side === "back" ? `transform="matrix(-1 0 0 1 300 0)"` : "";
   const label = `${shapeName(d.shape)}, ${lab("style", d.style)}`;
@@ -882,13 +905,13 @@ function renderPiece(d, side = "front", opts = {}) {
   return `<svg viewBox="${zoomBox(opts.zoom, opts.pan)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(label)}">
     ${defs}
     ${hasHardware(d.shape) ? `${d.hardware === "none" ? "" : tasselSvg(d, id)}
-    ${d.hardware === "necklace" || d.hardware === "none" ? "" : extraSvg(d, id)}
+    
     ${d.hardware === "none" ? "" : `<line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="${METALS[d.metal][1]}" stroke-width="3"/>`}
     ${hardwareSvg(d, id)}` : ""}
     <g filter="url(#${id}-shadow)" ${flip}>
       ${glow ? `<g filter="url(#${id}-glow)" opacity="0.65">${shapeMarkup(d.shape, `fill="${d.addins.glow.color}"`)}</g>` : ""}
       <g clip-path="url(#${id}-clip)" class="resin">
-        ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(226,244,242,0.6)"/>`}
+        ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(176,214,226,0.55)"/>`}
         ${fill}
         ${CONFIG.showTexture ? gridLines(d.shape) + textureLayer(d.shape) : ""}
       </g>
@@ -923,6 +946,22 @@ function presetArt(p, d) {
   const drawing = renderPiece(d);
   if (!p.photo) return drawing;
   return `<img src="${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy" onerror="this.parentNode.classList.add('no-photo');this.remove()"><div class="fallback">${drawing}</div>`;
+}
+
+function reviewThumbs(d) {
+  const bare = (o) => renderPiece(Object.assign(copy(d), { hardware: "none", tassel: Object.assign(copy(d.tassel), { type: "none" }) }, o || {}));
+  const th = [];
+  th.push([`<span class="rv-art">${renderPiece(d)}</span>`, shapeName(d.shape)]);
+  if (d.style !== "clear" && !isFresh(d)) th.push([`<span class="rv-dots">${d.colors.map((c) => `<span class="dot" style="background:${c}"></span>`).join("")}</span>`, lab("style", d.style)]);
+  const gl = [...new Set((d.crush || []).map((c) => c[0]))];
+  gl.slice(0, 4).forEach((g) => th.push([`<img src="images/glitter/${g}.png" alt="">`, glitterName(g)]));
+  activeAddins(d).forEach((a) => th.push([`<img src="${a.img}" alt="">`, tr(a, "name")]));
+  if (d.letters && d.letters.text) th.push([`<span class="rv-text">${esc(d.letters.text)}</span>`, t("ui.sLtH")]);
+  if (d.hardware !== "none" && hasHardware(d.shape)) th.push([`<span class="rv-dots"><span class="dot" style="background:linear-gradient(135deg, ${METALS[d.metal][0]}, ${METALS[d.metal][1]})"></span></span>`, lab("hardware", d.hardware)]);
+  const tas = d.tassel.photo && CONFIG.tassels.find((x) => x.id === d.tassel.photo);
+  if (d.tassel.type !== "none" && tas) th.push([`<img src="images/tassels/${tas.id}.png" alt="">`, t("ui.tassel")]);
+  if (d.second) th.push([`<span class="rv-text">${esc(d.second)}</span>`, t("sum.matching", { l: d.second })]);
+  return th.map(([img, cap]) => `<figure class="rv"><div class="rv-img">${img}</div><figcaption>${esc(cap)}</figcaption></figure>`).join("");
 }
 
 const STEP_VIEWS = [
@@ -1018,7 +1057,7 @@ const STEP_VIEWS = [
   () => `
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
-    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => st !== "ocean" && st !== "clear").map((st) => {
+    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => st !== "ocean").map((st) => {
       const d = merge(copy(design), { style: st, picked: design.picked.length ? design.picked : DEFAULT_COLORS.slice() });
       applyPicked(d);
       return `<button type="button" class="card ${design.style === st ? "on" : ""}" aria-pressed="${design.style === st}" data-set="style" data-value="${st}">
@@ -1030,6 +1069,11 @@ const STEP_VIEWS = [
 
   // 4 Colours (comes before the style details)
   () => {
+    if (design.style === "clear") {
+      return `<h2>${U("s4h")}</h2><p class="hint">${U("s4clearP")}</p>
+        <button type="button" class="btn btn-line" data-action="goto" data-step="3">${U("changeStyle")}</button>
+        <p class="small-note">${U("paintTip")}</p>`;
+    }
     const picked = design.picked;
     const nameOf = (hex) => { const c = CONFIG.colors.find((x) => x.hex === hex); return c ? tr(c, "name") : hex; };
     return `<h2>${U("s4h")}</h2>
@@ -1049,8 +1093,7 @@ const STEP_VIEWS = [
     if (design.style === "clear") return `<h2>${U("s3clearH")}</h2><p class="hint">${U("s3clearP")}</p>`;
     if (design.style === "gradient") {
       return `<h2>${U("s3gradH")}</h2><p class="hint">${U("s3gradP")}</p>
-        ${field(U("direction"), chips("gradient.direction", "direction", design.gradient.direction))}
-        ${field(U("clearWindow"), yesNo("clearParts", design.clearParts), U("clearWindowNote"))}`;
+        ${field(U("direction"), chips("gradient.direction", "direction", design.gradient.direction))}`;
     }
     if (design.style === "ink") {
       const k = design.ink;
@@ -1083,7 +1126,6 @@ const STEP_VIEWS = [
     <p class="hint">${U("sGlP")}</p>
     <div class="gl-grid">${grid}</div>
     ${cur ? `<p class="gl-hint">${U("glHint", { name: glitterName(cur) })}</p>` : ""}
-    ${field(U("glAmount"), seg("amount", ["s", "m", "l"], ui.pour.amount, "glAmt"))}
     ${field(U("glSize"), seg("size", ["s", "m", "l"], ui.pour.size, "glSz"))}
     <div class="chips">
       <button type="button" class="btn btn-line small" data-action="glfill" ${cur ? "" : "disabled"}>${U("glFill")}</button>
@@ -1092,70 +1134,73 @@ const STEP_VIEWS = [
     </div>`;
   },
 
-  // Tiny letters
+  // 7 Inside (tiny metal letters and your photo are part of this step)
   () => {
     const L = design.letters;
-    const seg = (key, vals, cur, grp) => `<div class="chips">${vals.map((v) =>
-      `<button type="button" class="chip ${cur === v ? "on" : ""}" aria-pressed="${cur === v}" data-set="letters.${key}" data-value="${v}">${lab(grp, v)}</button>`).join("")}</div>`;
-    return `
-    <h2>${U("sLtH")}</h2>
-    <p class="hint">${U("sLtP")}</p>
-    ${field(U("ltText"), `<input class="text-input wide-input" type="text" maxlength="14" autocomplete="off" aria-label="${U("ltText")}" data-set="letters.text" data-ltr="1" value="${esc(L.text)}" placeholder="${esc(U("ltPh"))}">`, U("ltNote"))}
-    ${field(U("ltMetal"), `<div class="chips">${["gold", "yellow", "copper", "silver", "chrome", "black"].map((m) =>
-      `<button type="button" class="chip ${L.metal === m ? "on" : ""}" aria-pressed="${L.metal === m}" data-set="letters.metal" data-value="${m}"><span class="dot lt-dot" style="background:url(images/letters/${m}.jpg) center/cover"></span>${lab("lmetal", m)}</button>`).join("")}</div>`)}
-    ${field(U("ltLayout"), seg("layout", ["word", "scatter"], L.layout, "llayout"))}
-    ${field(U("ltSize"), seg("size", ["s", "m", "l"], L.size, "lsize"))}
-    ${field(U("photoH"), `<input type="file" accept="image/*" id="piece-photo">${design.photo.on && ui.photo ? `
+    const lettersBlock = `<div class="addin ${L.text ? "on" : ""}">
+      ${field(U("ltText"), `<input class="text-input wide-input" type="text" maxlength="4" autocomplete="off" aria-label="${U("ltText")}" data-set="letters.text" data-ltr="1" value="${esc(L.text)}" placeholder="${esc(U("ltPh"))}">`, U("ltNote"))}
+      ${field(U("ltMetal"), `<div class="chips">${["gold", "yellow", "copper", "silver", "chrome", "black"].map((m) =>
+        `<button type="button" class="chip ${L.metal === m ? "on" : ""}" aria-pressed="${L.metal === m}" data-set="letters.metal" data-value="${m}"><span class="dot lt-dot" style="background:url(images/letters/${m}.jpg) center/cover"></span>${lab("lmetal", m)}</button>`).join("")}</div>`, L.text ? U("ltDrag") : "")}
+    </div>`;
+    const photoBlock = `
+    ${field("", `<input type="file" accept="image/*" id="piece-photo">${design.photo.on && ui.photo ? `
       <div class="field"><span class="field-label">${U("photoZoom")}</span><input type="range" min="1" max="3" step="0.05" value="${design.photo.zoom}" data-set="photo.zoom" data-num="1"></div>
       <div class="field"><span class="field-label">${U("photoX")}</span><input type="range" min="-100" max="100" step="2" value="${design.photo.x}" data-set="photo.x" data-num="1"></div>
       <div class="field"><span class="field-label">${U("photoY")}</span><input type="range" min="-150" max="150" step="2" value="${design.photo.y}" data-set="photo.y" data-num="1"></div>
       <button type="button" class="btn btn-line small" data-action="photooff">${U("photoRemove")}</button>` : ""}`, U("photoNote2"))}
-    ${field(U("ltTurn"), `<input type="range" min="-90" max="90" step="5" value="${L.rot}" data-set="letters.rot" data-num="1" aria-label="${U("ltTurn")}">`, L.text ? U("ltDrag") : "")}
-    ${L.layout === "scatter" ? `<button type="button" class="btn btn-line small" data-action="ltshuffle">${U("shuffle")}</button>` : ""}`;
-  },
-
-  // 7 Add-ins
-  () => `
-    <h2>${U("s5h")}</h2>
-    <p class="hint">${U("s5p")}</p>
-    ${CONFIG.addins.map((a, ai) => {
+`;
+    const list = CONFIG.addins.filter((a) => fits(a, design));
+    const itemHtml = (a) => {
       const sel = design.addins[a.id];
       const reason = blockedReason(a.id, design);
       const on = !!sel && !reason;
       const body = on ? `<div class="addin-body">
-          ${a.single ? "" : `<div><span class="field-label">${U("howMuch")}</span>${chips(`addins.${a.id}.amount`, "amount", sel.amount)}</div>`}
-          ${a.id === "glow" ? "" : `<div><span class="field-label">${U("where")}</span>${chips(`addins.${a.id}.place`, "place", sel.place)}</div>`}
-          ${a.img ? "" : `<div class="color-row"><span class="field-label">${U("colour")}</span><input type="color" aria-label="${esc(tr(a, "name"))}" data-set="addins.${a.id}.color" value="${sel.color}"></div>`}
-          ${a.drag ? `<div class="chips">
+          <div><span class="field-label">${U("where")}</span>${chips(`addins.${a.id}.place`, "place", sel.place)}</div>
+          <div class="chips">
             <button type="button" class="chip" data-action="shuffle" data-id="${a.id}">${U("shuffle")}</button>
             ${a.single ? "" : `<button type="button" class="chip" data-action="onemore" data-id="${a.id}">${U("oneMore")}</button>`}
-          </div>` : ""}
+          </div>
         </div>` : "";
-      const head = a.group && !(CONFIG.addins[ai - 1] && CONFIG.addins[ai - 1].group === a.group) ? `<h3 class="addin-group">${U(a.group + "H")}</h3><p class="small-note">${U(a.group + "P")}</p>` : "";
-      return `${head}<div class="addin ${on ? "on" : ""} ${reason ? "off" : ""}">
+      return `<div class="addin ${on ? "on" : ""} ${reason ? "off" : ""}">
         <button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on}" ${reason ? "disabled" : ""}>
-          <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:${a.img ? `#E9F1F0 url(${a.img}) center/78% no-repeat` : a.color}"></span>
+          <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:#E9F1F0 url(${a.img}) center/78% no-repeat"></span>
           <span class="nm">${tr(a, "name")}</span>
           <span class="tick">${on ? U("added") : U("add")}</span>
         </button>
         ${reason ? `<p class="why">${reason}</p>` : ""}
         ${body}
       </div>`;
-    }).join("")}`,
-
-  // 8 Back
-  () => `
-    <h2>${U("s6h")}</h2>
-    <p class="hint">${U("s6p")}</p>
-    ${field(U("backSide"), chips("back", "back", design.back), design.back === "different" ? U("backNoteDiff") : U("backNoteSame"))}`,
+    };
+    // one folded section per kind of piece, so the list stays calm
+    const order = [];
+    list.forEach((a) => { const k = a.group || "frog"; if (!order.includes(k)) order.push(k); });
+    const RECOMMENDED = ["frog", "sea"];
+    const sections = order.map((k) => {
+      const items = list.filter((a) => (a.group || "frog") === k);
+      const n = items.filter((a) => design.addins[a.id]).length;
+      const title = k === "frog" ? tr(items[0], "name") : U(k + "H");
+      const note = k === "frog" ? "" : `<p class="small-note">${U(k + "P")}</p>`;
+      const open = ui.open.has(k);
+      return `<details class="ins-sec" data-key="${k}" ${open ? "open" : ""}>
+        <summary><span class="ins-title">${title}</span>${RECOMMENDED.includes(k) ? `<span class="rec-tag">${U("recommended")}</span>` : ""}<span class="ins-count">${n ? U("nAdded", { n }) : ""}</span></summary>
+        <div class="ins-body">${note}${items.map(itemHtml).join("")}</div></details>`;
+    });
+    const lettersOpen = ui.open.has("letters"), photoOpen = ui.open.has("photo");
+    return `
+    <h2>${U("s5h")}</h2>
+    <p class="hint">${U("s5p")}</p>
+    <details class="ins-sec" data-key="letters" ${lettersOpen ? "open" : ""}><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>
+    ${sections.join("")}
+    <details class="ins-sec" data-key="photo" ${photoOpen ? "open" : ""}><summary><span class="ins-title">${U("photoH")}</span><span class="ins-count">${design.photo.on ? U("added") : ""}</span></summary><div class="ins-body">${photoBlock}</div></details>`;
+  },
 
   // 9 Chain
   () => `
     <h2>${U("s7h")}</h2>
     <p class="hint">${U("s7p")}</p>
-    ${field(U("metal"), `<div class="chips">${Object.keys(METALS).map((v) =>
+    ${field(U("metal"), `<div class="chips">${["gold", "silver"].map((v) =>
       `<button type="button" class="chip ${design.metal === v ? "on" : ""}" aria-pressed="${design.metal === v}" data-set="metal" data-value="${v}"><span class="dot" style="background:linear-gradient(135deg, ${METALS[v][0]}, ${METALS[v][1]})"></span>${lab("metal", v)}</button>`).join("")}</div>`)}
-    ${field(U("type"), `<div class="cards">${Object.keys(I18N.en.labels.hardware).map((v) => {
+    ${field(U("type"), `<div class="cards">${["none", "ringchain", "necklace"].map((v) => {
       return `<button type="button" class="card ${design.hardware === v ? "on" : ""}" aria-pressed="${design.hardware === v}" data-set="hardware" data-value="${v}">
         <span class="card-name">${lab("hardware", v)}</span><span class="card-text">${lab("hardwareTip", v)}</span></button>`;
     }).join("")}</div>`)}`,
@@ -1168,13 +1213,7 @@ const STEP_VIEWS = [
     <p class="hint">${U("s8p")}</p>
     ${field(U("realTassels"), `<div class="gl-grid">${CONFIG.tassels.map((x) =>
       `<button type="button" class="gl ${tt.photo === x.id && tt.type !== "none" ? "on" : ""}" aria-pressed="${tt.photo === x.id}" data-action="tassel" data-id="${x.id}"><span class="gl-img tas-img"><img src="images/tassels/${x.id}.png" alt=""></span><span class="gl-name">${x.name}</span></button>`).join("")}</div>`)}
-    ${field(U("tassel"), chips("tassel.type", "tassel", tt.type), U("tasselNote"))}
-    ${tt.type !== "none" && !tt.photo ? `
-      ${field(U("ombre"), yesNo("tassel.ombre", tt.ombre))}
-      ${field(tt.ombre ? U("topColour") : U("tasselColour"), `<input type="color" aria-label="${U("tasselColour")}" data-set="tassel.color1" value="${tt.color1}">`)}
-      ${tt.ombre ? field(U("bottomColour"), `<input type="color" aria-label="${U("bottomColour")}" data-set="tassel.color2" value="${tt.color2}">`) : ""}
-      ${field(U("cord"), chips("tassel.cord", "cord", tt.cord))}` : ""}
-    ${field(U("extra"), chips("extra", "extra", design.extra))}`;
+    ${tt.type !== "none" ? `<button type="button" class="btn btn-line small" data-action="notassel">${U("noTassel")}</button>` : ""}`;
   },
 
   // 11 Review
@@ -1183,6 +1222,7 @@ const STEP_VIEWS = [
     return `
     <h2>${U("s9h")}</h2>
     <p class="hint">${U("s9p")}</p>
+    <div class="rev-thumbs">${reviewThumbs(design)}</div>
     <p>${U("designCode")}: <span class="code">${designCode(design)}</span></p>
     <ul class="summary">${summaryLines(design).map(([k, v]) => `<li><b>${esc(k)}</b><span>${esc(v)}</span></li>`).join("")}</ul>
     ${SHOW_PRICES ? field(U("price"), `<ul class="prices">${pr.lines.map(([k, v]) => `<li><span>${esc(k)}</span><span>${money(v)}</span></li>`).join("")}
@@ -1331,25 +1371,23 @@ function surprise() {
   const cols = CONFIG.colors.map((c) => c.hex);
   const d = defaultDesign();
   d.shape = design.shape; d.second = design.second; d.note = design.note;
-  d.style = pick(["gradient", "gradient", "ink", "ink"]);
+  d.style = pick(["clear", "gradient", "gradient", "ink", "ink"]);
   d.picked = Math.random() < 0.7 ? copy(pick(CONFIG.palettes).colors) : [pick(cols), pick(cols), pick(cols)];
   d.colors = d.picked.slice();
   d.gradient = { direction: pick(["down", "right", "diagonal", "center"]), glitter: "none" };
-  d.clearParts = Math.random() < 0.25;
   d.ink = { amount: pick(["light", "medium", "bold"]), background: pick(["clear", "white", "cloudy"]),
     spread: pick(["all", "all", "top", "bottom", "left", "right"]), cells: Math.random() < 0.6, shimmer: pick(["none", "pearl", "gold"]) };
   d.ocean = { sand: pick(["low", "middle", "middle", "high"]), wave: pick(["top", "middle", "bottom", "diagonal"]),
     foam: pick(["soft", "frothy"]), sandColor: pick(["natural", "natural", "white", "golden", "pink"]) };
-  const natural = ["frog", "starfish", "shells", "pearl", "goldleaf"];
+  const natural = ["frog", "sea-starfish", "sea-shell-mix1", "sea-shell-mix2", "sea-shell-mix3", "sea-shell-mix4", "sea-shell-scallop", "sea-shell-spiral"];
   let pool = CONFIG.addins.filter((a) => a.group !== "charms" && !blockedReason(a.id, d)).sort(() => Math.random() - 0.5);
-  if (d.style === "ocean") pool = [CONFIG.addins.find((a) => a.id === "starfish"), ...pool.filter((a) => a.id !== "starfish")];
+  
   pool.slice(0, 1 + Math.floor(Math.random() * 3)).forEach((a) => {
-    d.addins[a.id] = { amount: pick(["few", "some", "lots"]), place: "anna", color: natural.includes(a.id) ? a.color : pick(cols) };
+    d.addins[a.id] = { amount: a.img ? "few" : pick(["few", "some", "lots"]), place: "anna", color: natural.includes(a.id) ? a.color : pick(cols) };
   });
   d.metal = pick(["gold", "silver", "rose", "black"]);
   d.hardware = pick(["ring", "ringchain", "ringchain", "lobster", "swivel", "carabiner"]);
   d.tassel = { type: pick(["silk", "silk", "cotton", "none"]), ombre: Math.random() < 0.6, color1: pick(cols), color2: pick(cols), cord: pick(["gold", "silver", "match", "twist"]) };
-  d.extra = Math.random() < 0.25 ? pick(["ribbon", "pompom", "beads", "charm"]) : "none";
   d.crush = [];
   for (let k = 0; k < 1 + Math.floor(Math.random() * 2); k++) fillGlass(d, pick(CONFIG.glitters).id, 0.35 + Math.random() * 0.4);
   design = d;
@@ -1408,7 +1446,10 @@ els.panel.addEventListener("click", (e) => {
   } else if (action === "tassel") {
     design.tassel.photo = design.tassel.photo === el.dataset.id ? "" : el.dataset.id;
     if (design.tassel.photo && design.tassel.type === "none") design.tassel.type = "silk";
+    if (design.tassel.photo && design.hardware === "none") design.hardware = "ringchain";
     changed();
+  } else if (action === "notassel") {
+    design.tassel.photo = ""; design.tassel.type = "none"; changed();
   } else if (action === "photooff") {
     design.photo.on = false; ui.photo = ""; changed();
   } else if (action === "ltshuffle") {
@@ -1495,7 +1536,7 @@ els.panel.addEventListener("input", (e) => {
     el.value = v;
   }
   if (el.dataset.ltr) {
-    v = v.toUpperCase().replace(/[^A-Z0-9 &]/g, "").slice(0, 14);
+    v = v.toUpperCase().replace(/[^A-Z0-9 &]/g, "").slice(0, 4);
     if (v !== el.value) el.value = v;
     if (!design.letters.moved) [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
   }
@@ -1506,6 +1547,11 @@ els.panel.addEventListener("input", (e) => {
   const box = $("order-text");
   if (box) box.value = orderText();
 });
+els.panel.addEventListener("toggle", (e) => {
+  const d = e.target;
+  if (!d.classList || !d.classList.contains("ins-sec")) return;
+  if (d.open) ui.open.add(d.dataset.key); else ui.open.delete(d.dataset.key);
+}, true);
 els.panel.addEventListener("change", (e) => {
   if (e.target.type === "color") renderPanel();
   if (e.target.id === "piece-photo" && e.target.files[0]) {
@@ -1598,7 +1644,7 @@ els.preview.addEventListener("pointermove", (e) => {
   }
   if (gesture.type === "pour") {
     const p = svgPoint(e);
-    if (Math.hypot(p.x - gesture.lx, p.y - gesture.ly) < 9) return;
+    if (Math.hypot(p.x - gesture.lx, p.y - gesture.ly) < Math.max(4, GLASS_RADIUS[ui.pour.size] * 0.7)) return;
     gesture.lx = p.x; gesture.ly = p.y;
     if (nearShape(design.shape, p.x, p.y)) gesture.n += addStamp(gesture, p.x, p.y);
     return;
@@ -1800,7 +1846,6 @@ els.steps.addEventListener("click", (e) => {
 });
 els.next.addEventListener("click", () => go(ui.step + 1));
 els.back.addEventListener("click", () => go(ui.step - 1));
-$("surprise").addEventListener("click", surprise);
 $("startover").addEventListener("click", startOver);
 onLangChange(render);
 
