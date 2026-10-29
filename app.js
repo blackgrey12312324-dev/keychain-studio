@@ -33,6 +33,7 @@ function defaultDesign() {
     style: "gradient",
     colors: DEFAULT_COLORS.slice(),
     picked: [],
+    deco: "",
     clearParts: false,
     font: "block",
     gradient: { direction: "down", glitter: "none" },
@@ -98,8 +99,11 @@ function moldRank(shape) {
   const s = c && c.size;
   return s === "big" ? 2 : s === "medium" ? 1 : 0;
 }
+const CHARM_GROUPS = ["small", "charms"];
 const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1 };
 function fits(a, d) {
+  if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
+  if (d.deco === "charms" && !CHARM_GROUPS.includes(a.group)) return false;
   const need = a.id === "tree-small" ? 1 : NEED[a.group] || 0;
   return need <= moldRank(d.shape);
 }
@@ -1149,6 +1153,11 @@ const STEP_VIEWS = [
       <div class="field"><span class="field-label">${U("photoY")}</span><input type="range" min="-150" max="150" step="2" value="${design.photo.y}" data-set="photo.y" data-num="1"></div>
       <button type="button" class="btn btn-line small" data-action="photooff">${U("photoRemove")}</button>` : ""}`, U("photoNote2"))}
 `;
+    const decoPick = `<div class="field"><span class="field-label">${U("decoQ")}</span><div class="cards deco-cards">
+      <button type="button" class="card ${design.deco === "natural" ? "on" : ""}" data-action="deco" data-id="natural"><span class="card-name">${U("decoNat")}</span><span class="card-text">${U("decoNatP")}</span></button>
+      <button type="button" class="card ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
+    if (!design.deco) return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick}
+      <details class="ins-sec" data-key="letters"><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>`;
     const list = CONFIG.addins.filter((a) => fits(a, design));
     const itemHtml = (a) => {
       const sel = design.addins[a.id];
@@ -1174,7 +1183,8 @@ const STEP_VIEWS = [
     // one folded section per kind of piece, so the list stays calm
     const order = [];
     list.forEach((a) => { const k = a.group || "frog"; if (!order.includes(k)) order.push(k); });
-    order.sort((x, y) => (x === "small" ? -1 : 0) - (y === "small" ? -1 : 0));
+    const RANK = ["sea", "small", "charms", "flowers", "dried", "paperflowers", "trees", "nature", "lights"];
+    order.sort((x, y) => (RANK.indexOf(x) < 0 ? 99 : RANK.indexOf(x)) - (RANK.indexOf(y) < 0 ? 99 : RANK.indexOf(y)));
     const RECOMMENDED = ["sea"];
     const sections = order.map((k) => {
       const items = list.filter((a) => (a.group || "frog") === k);
@@ -1189,10 +1199,10 @@ const STEP_VIEWS = [
     const lettersOpen = ui.open.has("letters"), photoOpen = ui.open.has("photo");
     return `
     <h2>${U("s5h")}</h2>
-    <p class="hint">${U("s5p")}</p>
+    <p class="hint">${U("s5p")} <button type="button" class="btn btn-line small" data-action="deco" data-id="">${U("decoChange")}</button></p>
     <details class="ins-sec" data-key="letters" ${lettersOpen ? "open" : ""}><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>
     ${sections.join("")}
-    <details class="ins-sec" data-key="photo" ${photoOpen ? "open" : ""}><summary><span class="ins-title">${U("photoH")}</span><span class="ins-count">${design.photo.on ? U("added") : ""}</span></summary><div class="ins-body">${photoBlock}</div></details>`;
+    ${moldRank(design.shape) === 2 ? `<details class="ins-sec" data-key="photo" ${photoOpen ? "open" : ""}><summary><span class="ins-title">${U("photoH")}</span><span class="ins-count">${design.photo.on ? U("added") : ""}</span></summary><div class="ins-body">${photoBlock}</div></details>` : ""}`;
   },
 
   // 9 Chain
@@ -1449,6 +1459,10 @@ els.panel.addEventListener("click", (e) => {
     if (design.tassel.photo && design.tassel.type === "none") design.tassel.type = "silk";
     if (design.tassel.photo && design.hardware === "none") design.hardware = "ringchain";
     changed();
+  } else if (action === "deco") {
+    design.deco = el.dataset.id;
+    for (const id of Object.keys(design.addins)) { const ad = CONFIG.addins.find((x) => x.id === id); if (!ad || !fits(ad, design)) delete design.addins[id]; }
+    renderPanel(); renderPreview(); renderTotal();
   } else if (action === "notassel") {
     design.tassel.photo = ""; design.tassel.type = "none"; changed();
   } else if (action === "photooff") {

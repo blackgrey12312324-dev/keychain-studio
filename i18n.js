@@ -11,6 +11,7 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      decoQ: "What kind of decoration?", decoNat: "Natural", decoNatP: "Shells, starfish, pressed flowers, dried plants.", decoCharm: "Charms", decoCharmP: "Small charms, metal charms and the mini frog.", decoHint: "Choose one style first. Natural and charms are not mixed on one piece.", decoChange: "Change style",
       tagline: "Design your own resin keychain, handmade in Phuket",
       flip: "Flip", dropInside: "Drop it inside the shape", zoomIn: "Zoom in", zoomOut: "Zoom out", dropHint: "Drag a glitter or decoration from the list onto your piece.", surprise: "Surprise me", bigView: "Big view", startOver: "Start over",
       startedOver: "Started over", surprised: "Here's a surprise design", undo: "Undo", removed: "Removed",
@@ -152,6 +153,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      decoQ: "ตกแต่งแบบไหน?", decoNat: "ธรรมชาติ", decoNatP: "เปลือกหอย ปลาดาว ดอกไม้อัด พืชแห้ง", decoCharm: "ชาร์ม", decoCharmP: "ชาร์มเล็ก ชาร์มโลหะ และกบจิ๋ว", decoHint: "เลือกสไตล์ก่อน ธรรมชาติและชาร์มไม่ผสมกันในชิ้นเดียว", decoChange: "เปลี่ยนสไตล์",
       recommended: "แนะนำ", nAdded: "เพิ่มแล้ว {n}", noTassel: "ไม่ใส่พู่", seaH: "ปลาดาวและเปลือกหอยจิ๋ว", seaP: "เลือกแบบที่ชอบ แตะ แล้วลากไปวางบนชิ้นงาน", ltNote: "ตัวอักษรหรือตัวเลขสูงสุด 4 ตัว", ltPh: "เช่น AB",
       tagline: "ออกแบบพวงกุญแจเรซินของคุณเอง งานทำมือจากภูเก็ต",
       flip: "พลิก", dropInside: "วางภายในรูปทรง", zoomIn: "ซูมเข้า", zoomOut: "ซูมออก", dropHint: "ลากกากเพชรหรือของตกแต่งจากรายการมาวางบนชิ้นงาน", surprise: "สุ่มให้หน่อย", bigView: "ดูภาพใหญ่", startOver: "เริ่มใหม่",
@@ -274,6 +276,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      decoQ: "Какое украшение?", decoNat: "Природное", decoNatP: "Ракушки, морские звёзды, прессованные цветы, сухоцветы.", decoCharm: "Подвески", decoCharmP: "Маленькие подвески, металлические подвески и мини-лягушка.", decoHint: "Сначала выберите стиль. Природное и подвески на одном изделии не смешиваются.", decoChange: "Сменить стиль",
       recommended: "Рекомендуем", nAdded: "добавлено: {n}", noTassel: "Без кисточки", seaH: "Морская звезда и мини-ракушки", seaP: "Выберите понравившийся вариант, нажмите и перетащите на изделие.", ltNote: "До 4 букв или цифр.", ltPh: "Например: AB",
       tagline: "Создай свой брелок из смолы, ручная работа с Пхукета",
       flip: "Перевернуть", dropInside: "Отпусти внутри формы", zoomIn: "Приблизить", zoomOut: "Отдалить", dropHint: "Перетащи блёстки или украшение из списка на изделие.", surprise: "Удиви меня", bigView: "Крупно", startOver: "Сначала",
