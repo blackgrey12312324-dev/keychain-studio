@@ -1343,10 +1343,20 @@ function renderStudioTools() {
   const seg = (action, val, cur, label) => `<button type="button" class="chip ${cur === val ? "on" : ""}" aria-pressed="${cur === val}" data-tool="${action}" data-value="${val}">${label}</button>`;
   const cols = [...new Set([...design.colors, "#FFFFFF", "#D4AF37", ...CONFIG.colors.map((c) => c.hex)].map((c) => c.toUpperCase()))];
   const bc = brushColor().toUpperCase();
+  const gl = ui.step === GLITTER_STEP && design.style !== "ocean";
+  const zoom = `<label class="zoom"><span>${B("zoom")}</span><input type="range" min="1" max="4" step="0.25" value="${ui.zoom}" data-tool="zoom" aria-label="${B("zoom")}"></label>`;
+  if (!gl) { box.innerHTML = `<div class="tool-row">${zoom}</div>`; return; }
+  const cur = ui.pour.id;
   box.innerHTML = `
-    <div class="tool-row">
-      <label class="zoom"><span>${B("zoom")}</span><input type="range" min="1" max="4" step="0.25" value="${ui.zoom}" data-tool="zoom" aria-label="${B("zoom")}"></label>
-    </div>`;
+    <div class="ft-title">${U("sGlH")}</div>
+    <div class="ft-grid">${CONFIG.glitters.map((g) => `<button type="button" class="ft-g ${cur === g.id ? "on" : ""}" data-glitter="${g.id}" title="${esc(tr(g, "name"))}" aria-label="${esc(tr(g, "name"))}" aria-pressed="${cur === g.id}"><img src="images/glitter/${g.id}.png" alt=""></button>`).join("")}</div>
+    <div class="ft-sizes">${["s", "m", "l"].map((v) => `<button type="button" class="chip brush ${ui.pour.size === v ? "on" : ""}" data-pour="size" data-value="${v}" title="${U("glSz")[v]}"><span class="brush-dot" style="width:${{ s: 6, m: 14, l: 26 }[v]}px;height:${{ s: 6, m: 14, l: 26 }[v]}px"></span></button>`).join("")}</div>
+    <div class="ft-actions">
+      <button type="button" class="btn btn-line small" data-action="glfill" ${cur ? "" : "disabled"}>${U("glFill")}</button>
+      <button type="button" class="btn btn-line small" data-action="glundo" ${ui.pourHistory.length ? "" : "disabled"}>${U("glUndo")}</button>
+      <button type="button" class="btn btn-line small" data-action="glclear" ${design.crush.length ? "" : "disabled"}>${U("glClear")}</button>
+    </div>
+    ${zoom}`;
 }
 
 /* =========================================================
@@ -1812,6 +1822,7 @@ function endGesture() {
   if (g.type === "pour") {
     ui.pourHistory.push(g.n);
     renderPanel();
+    renderStudioTools();
     const box = $("order-text");
     if (box) box.value = orderText();
     return;
@@ -1946,6 +1957,15 @@ function setFull(on) {
   if (on) $("done").focus();
 }
 els.studioTools.addEventListener("click", (e) => {
+  const gb = e.target.closest("[data-glitter], [data-pour], [data-action]");
+  if (gb && !gb.disabled) {
+    if (gb.dataset.glitter) { ui.pour.id = ui.pour.id === gb.dataset.glitter ? "" : gb.dataset.glitter; }
+    else if (gb.dataset.pour) { ui.pour[gb.dataset.pour] = gb.dataset.value; }
+    else if (gb.dataset.action === "glfill" && ui.pour.id) { ui.pourHistory.push(fillGlass(design, ui.pour.id)); }
+    else if (gb.dataset.action === "glundo") { const n = ui.pourHistory.pop() || 0; design.crush.splice(Math.max(0, design.crush.length - n), n); }
+    else if (gb.dataset.action === "glclear") { design.crush = []; ui.pourHistory = []; }
+    renderPreview(); renderStudioTools(); renderPanel(); e.stopPropagation(); return;
+  }
   const b = e.target.closest("[data-tool]");
   if (!b || b.disabled || b.type === "range") return;
   const tool = b.dataset.tool, v = b.dataset.value;

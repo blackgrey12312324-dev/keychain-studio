@@ -1101,3 +1101,18 @@ body { background: #F1F9F9 !important; }
 .stage.full .stage-top { position: sticky; top: 8px; z-index: 5; }
 .stage.full #done { background: #fff !important; color: #0E3F57 !important; border: 0 !important; box-shadow: 0 6px 16px rgba(0,0,0,0.25); font-weight: 700; padding: 10px 18px; border-radius: 999px; margin-left: auto; }
 .stage.full .wordmark { color: #fff; }
+
+/* full screen: tools float at the side so the letter keeps its size */
+.stage.full .studio-tools { position: absolute; right: 14px; top: 76px; width: 178px; max-width: none; margin: 0; padding: 12px; border-radius: 16px; border: 0; background: rgba(255,255,255,0.94); box-shadow: 0 10px 26px rgba(0,0,0,0.25); max-height: calc(100% - 150px); overflow-y: auto; gap: 10px; z-index: 6; }
+.ft-title { font-weight: 700; font-size: 0.85rem; color: #0E3F57; }
+.ft-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+.ft-g { border: 0; padding: 0; background: none; border-radius: 50%; aspect-ratio: 1; overflow: hidden; box-shadow: 0 0 0 1px #CDD1CD; }
+.ft-g img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ft-g.on { box-shadow: 0 0 0 3px #19708A; }
+.ft-sizes { display: flex; gap: 6px; }
+.ft-sizes .chip { min-width: 0; flex: 1; justify-content: center; padding: 6px 0; }
+.ft-actions { display: grid; gap: 6px; }
+.ft-actions .btn { width: 100%; padding: 7px 10px; font-size: 0.8rem; }
+.stage.full .studio-tools .zoom { font-size: 0.8rem; }
+@media (max-width: 700px) { .stage.full .studio-tools { top: auto; bottom: 8px; right: 8px; left: 8px; width: auto; max-height: 38%; } .ft-grid { grid-template-columns: repeat(8, 1fr); } .ft-actions { grid-template-columns: repeat(3, 1fr); } }
+.stage.full .stage-art { height: calc(100dvh - 190px) !important; max-height: none !important; }
