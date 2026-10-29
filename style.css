@@ -1035,3 +1035,27 @@ footer.bar .btn { border-radius: 999px; padding-left: 28px; padding-right: 28px;
 body.designer .layout::before, body.designer .layout::after { left: calc(50% - 50vw) !important; right: auto !important; width: 100vw; }
 body.designer { overflow-x: hidden; }
 .btn-line.small { border-radius: 999px; border: 0; background: #fff; box-shadow: 0 3px 8px rgba(14,63,87,0.12); }
+
+/* ===== calmer designer: nothing competes with the piece ===== */
+body[data-page="design"], body.designer { background: #EEF5F4 !important; }
+body.designer .layout::before, body.designer .layout::after { display: none !important; }
+body.designer .bubbles { display: none; }
+.stage::before { display: none !important; }
+.stage, .layout .stage { background: linear-gradient(180deg, #6FB7C8 0%, #3F93AB 100%) !important; }
+
+/* ===== Example work: its own bright section at the bottom ===== */
+.example-work { margin: 36px -8px 10px; padding: 22px 20px 26px; border-radius: 22px; background: linear-gradient(135deg, #0E3F57 0%, #19708A 100%); color: #fff; box-shadow: 0 16px 34px rgba(14,63,87,0.28); }
+.ex-head h3 { font-family: var(--serif); font-size: 2rem; margin: 0 0 4px; color: #fff; }
+.ex-head p { margin: 0 0 18px; color: rgba(255,255,255,0.85); }
+.example-work .refs { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; margin: 0; }
+.example-work .refs figure { background: #fff !important; border-radius: 14px; overflow: hidden; box-shadow: 0 8px 18px rgba(0,0,0,0.25); transition: transform 0.3s; }
+.example-work .refs figure:hover { transform: translateY(-5px) rotate(-0.8deg); }
+.example-work .refs img { border-radius: 0; }
+.example-work .refs figcaption { color: #0E3F57; font-weight: 600; padding: 8px 10px 10px; }
+
+/* ===== Front page: smooth transitions, no hard edges ===== */
+body { background: #F1F9F9 !important; }
+#shop { background: #F1F9F9 !important; }
+.letters-band { background: linear-gradient(180deg, #F1F9F9 0px, #DDF0F0 220px, #D3EBEC 100%) !important; padding-bottom: 110px; }
+.letters-band::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 80px; pointer-events: none; background: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80' preserveAspectRatio='none'%3E%3Cpath d='M0 40 C 180 90 360 0 540 30 C 720 60 900 90 1080 40 C 1260 -5 1350 20 1440 40 V80 H0 Z' fill='%230E3F57'/%3E%3C/svg%3E") bottom/100% 100% no-repeat; }
+.ways { background: #0E3F57 !important; }

@@ -1110,7 +1110,7 @@ const STEP_VIEWS = [
         + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall"]), "boards") + `<p class="small-note">${U("moreSoon")}</p>`;
     }
     const refs = (CONFIG.references && CONFIG.references[ui.cat]) || [];
-    const refHtml = refs.length ? `<h3 class="mold-group">${U("refTitle")}</h3><div class="refs">${refs.map((r) => `<figure><img src="${r.img}" alt="" loading="lazy"><figcaption>${esc(r.cap)}</figcaption></figure>`).join("")}</div>` : "";
+    const refHtml = refs.length ? `<section class="example-work"><div class="ex-head"><h3>${U("refTitle")}</h3><p>${U("refSub")}</p></div><div class="refs">${refs.map((r) => `<figure><img src="${r.img}" alt="" loading="lazy"><figcaption>${esc(r.cap)}</figcaption></figure>`).join("")}</div></section>` : "";
     return `<button type="button" class="btn btn-line small" data-action="cat" data-id="">${U("catBack")}</button>
       <h2>${U("sMoldH")}</h2><p class="hint">${U("sMoldP")}</p>${body}${refHtml}`;
   },
@@ -1594,6 +1594,7 @@ els.panel.addEventListener("click", (e) => {
     resetItems(design);
     ui.zoom = 1; ui.pan = [0, 0];
     changed();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   } else if (action === "scratch") {
     design = defaultDesign();
     go(1);
