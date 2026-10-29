@@ -279,17 +279,31 @@ function revealScan() {
     if (r.top < innerHeight) el.classList.add("in"); else io.observe(el);
   });
 }
-document.addEventListener("pointerdown", (e) => {
-  const b = e.target.closest(".btn, .chip, .pill, .card, .cart-btn, .letter, .swatch, .addin-head");
-  if (!b || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  for (let i = 0; i < 6; i++) {
+function burst(x, y, n, spread) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  for (let i = 0; i < n; i++) {
     const p = document.createElement("span");
     p.className = "pop-bubble";
-    const a = Math.random() * Math.PI * 2, d = 24 + Math.random() * 26;
-    p.style.cssText = `left:${e.clientX - 5}px;top:${e.clientY - 5}px;--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d - 14}px;width:${6 + Math.random() * 7}px;height:${6 + Math.random() * 7}px`;
+    const an = Math.random() * Math.PI * 2, d = spread * (0.4 + Math.random() * 0.8), s = 8 + Math.random() * 16;
+    p.style.cssText = `left:${x - s / 2}px;top:${y - s / 2}px;--dx:${Math.cos(an) * d}px;--dy:${Math.sin(an) * d - 30}px;width:${s}px;height:${s}px;animation-duration:${0.9 + Math.random() * 0.7}s`;
     document.body.appendChild(p);
-    setTimeout(() => p.remove(), 750);
+    setTimeout(() => p.remove(), 1700);
   }
+}
+let bubbleDown = false, lastTrail = 0;
+document.addEventListener("pointerdown", (e) => {
+  bubbleDown = true;
+  const b = e.target.closest(".btn, .chip, .pill, .card, .cart-btn, .letter, .swatch, .addin-head, .step, .tool");
+  burst(e.clientX, e.clientY, b ? 12 : 5, b ? 70 : 34);
+});
+document.addEventListener("pointerup", () => (bubbleDown = false));
+document.addEventListener("pointercancel", () => (bubbleDown = false));
+document.addEventListener("pointermove", (e) => {
+  if (!bubbleDown || e.pointerType === "touch" && false) return;
+  const now = performance.now();
+  if (now - lastTrail < 70) return;
+  lastTrail = now;
+  burst(e.clientX, e.clientY, 2, 26);
 });
 window.addEventListener("load", () => { seaAtmosphere(); revealScan(); });
 new MutationObserver(() => { clearTimeout(revealScan.t); revealScan.t = setTimeout(revealScan, 120); }).observe(document.documentElement, { childList: true, subtree: true });

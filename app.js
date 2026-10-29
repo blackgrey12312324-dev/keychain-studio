@@ -835,7 +835,7 @@ function hardwareSvg(d, id) {
   const m = `url(#${id}-metal)`;
   const jump = (y) => `<circle cx="150" cy="${y}" r="8" fill="none" stroke="${m}" stroke-width="3"/>`;
   const dk = METALS[d.metal][1], lt = METALS[d.metal][0];
-  const ring = `<circle cx="150" cy="42" r="27" fill="none" stroke="${dk}" stroke-width="6.5"/><circle cx="150" cy="42" r="27" fill="none" stroke="${m}" stroke-width="4.6"/><path d="M130 28 A 27 27 0 0 1 160 16" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.75"/>`;
+  const ring = `<circle cx="150" cy="42" r="27" fill="none" stroke="${dk}" stroke-width="8.5"/><circle cx="150" cy="42" r="27" fill="none" stroke="${m}" stroke-width="6.2"/><path d="M130 28 A 27 27 0 0 1 160 16" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" opacity="0.75"/>`;
   // one chain link: dark rim, metal body, bright glint; alternate links are seen edge-on
   const link = (y, edge) => edge
     ? `<rect x="146.6" y="${y - 8.5}" width="6.8" height="17" rx="3.4" fill="${dk}"/><rect x="147.8" y="${y - 7.5}" width="4.4" height="15" rx="2.2" fill="${m}"/><line x1="149" y1="${y - 5}" x2="149" y2="${y + 2}" stroke="#fff" stroke-width="0.9" opacity="0.7"/>`

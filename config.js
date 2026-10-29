@@ -212,14 +212,14 @@ const CONFIG = {
 
   // Real tassels (photos in images/tassels). kx = where the knot sits across the picture.
   tassels: [
-    { id: "black", name: "Black", hex: "#1A1A1C", kx: 0.52, ratio: 0.463 },
-    { id: "navy", name: "Navy", hex: "#1B2A6B", kx: 0.52, ratio: 0.463 },
-    { id: "cream", name: "Cream to grey", hex: "#C9C2B0", kx: 0.52, ratio: 0.463 },
-    { id: "gold", name: "Gold", hex: "#A98524", kx: 0.52, ratio: 0.463 },
-    { id: "teal", name: "Yellow to teal", hex: "#9CC9C0", kx: 0.52, ratio: 0.463 },
-    { id: "greyblue", name: "Grey blue", hex: "#8E9BB0", kx: 0.52, ratio: 0.463 },
-    { id: "green", name: "Lime green", hex: "#8BE04B", kx: 0.52, ratio: 0.463 },
-    { id: "orange", name: "Orange", hex: "#F2561D", kx: 0.52, ratio: 0.463 },
+    { id: "black", name: "Black", hex: "#1A1A1C", kx: 0.42, ratio: 0.406 },
+    { id: "navy", name: "Navy", hex: "#1B2A6B", kx: 0.42, ratio: 0.406 },
+    { id: "cream", name: "Cream to grey", hex: "#C9C2B0", kx: 0.42, ratio: 0.406 },
+    { id: "gold", name: "Gold", hex: "#A98524", kx: 0.42, ratio: 0.406 },
+    { id: "teal", name: "Yellow to teal", hex: "#9CC9C0", kx: 0.42, ratio: 0.406 },
+    { id: "greyblue", name: "Grey blue", hex: "#8E9BB0", kx: 0.42, ratio: 0.406 },
+    { id: "green", name: "Lime green", hex: "#8BE04B", kx: 0.42, ratio: 0.406 },
+    { id: "orange", name: "Orange", hex: "#F2561D", kx: 0.42, ratio: 0.406 },
   ],
 
   shapes: [
