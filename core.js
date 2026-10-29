@@ -143,6 +143,42 @@ document.addEventListener("click", (e) => {
 });
 
 /* =========================================================
+   Cart: several pieces in one order. Kept on this device; the order is sent as one Instagram message.
+   ========================================================= */
+const CART_KEY = "rc-cart";
+function getCart() { try { return JSON.parse(localStorage.getItem(CART_KEY) || "[]"); } catch (e) { return []; } }
+function setCart(list) { try { localStorage.setItem(CART_KEY, JSON.stringify(list)); } catch (e) { return false; } renderCart(); return true; }
+function addToCart(item) { const l = getCart(); l.push(Object.assign({ id: Date.now() + Math.random().toString(36).slice(2, 6) }, item)); return setCart(l); }
+function cartOrderText() {
+  const l = getCart();
+  const out = [`Hi Anna! I'd like to order ${l.length} ${l.length === 1 ? "piece" : "pieces"} 💛`, ""];
+  l.forEach((it, i) => { out.push(`#${i + 1} ${it.title}`, it.text, ""); });
+  return out.join("\n");
+}
+function renderCart() {
+  const n = getCart().length;
+  const btn = document.getElementById("cart-btn");
+  if (btn) { btn.querySelector(".cart-n").textContent = n; btn.classList.toggle("has", n > 0); }
+  const dr = document.getElementById("cart-drawer");
+  if (!dr) return;
+  const l = getCart();
+  dr.querySelector(".cart-list").innerHTML = l.length ? l.map((it) => `<li><span class="cart-thumb">${it.thumb || ""}</span><span class="cart-info"><strong>${esc(it.title)}</strong><small>${esc(it.sub || "")}</small></span><button type="button" class="cart-x" data-cart-del="${it.id}" aria-label="Remove">✕</button></li>`).join("") : `<li class="cart-empty">Your cart is empty. Design a piece and tap Add to cart.</li>`;
+  dr.querySelector(".cart-actions").hidden = !l.length;
+  if (document.body) translateTree(dr);
+}
+document.addEventListener("click", (e) => {
+  const open = e.target.closest("#cart-btn");
+  const dr = document.getElementById("cart-drawer");
+  if (open && dr) { renderCart(); dr.classList.add("open"); return; }
+  if (e.target.closest("[data-cart-close]") && dr) { dr.classList.remove("open"); return; }
+  const del = e.target.closest("[data-cart-del]");
+  if (del) { setCart(getCart().filter((x) => x.id !== del.dataset.cartDel)); return; }
+  if (e.target.closest("[data-cart-copy]")) { copyText(cartOrderText()).catch(() => {}); e.target.closest("[data-cart-copy]").textContent = ui.lang === "en" ? "Copied ✓" : (phrase("Copied ✓") || "Copied ✓"); return; }
+  if (e.target.closest("[data-cart-dm]")) { copyText(cartOrderText()).catch(() => {}); return; }
+  if (e.target.closest("[data-cart-clear]")) { setCart([]); }
+});
+
+/* =========================================================
    Header and footer, shared by every page
    ========================================================= */
 function renderChrome() {
@@ -167,12 +203,21 @@ function renderChrome() {
           <a href="index.html#faq" class="nav-cta">${N("faq")}</a>
         </nav>
         <div class="nav-end">
+          <button type="button" id="cart-btn" class="cart-btn" aria-label="Cart"><span aria-hidden="true">🛒</span> <span>Cart</span> <span class="cart-n">0</span></button>
           <div class="langs" role="group" aria-label="Language">
             <button type="button" data-lang="en">EN</button><button type="button" data-lang="th">TH</button><button type="button" data-lang="ru">RU</button>
           </div>
         </div>
       </div>`;
   }
+  if (header && !document.getElementById("cart-drawer")) {
+    const dr = document.createElement("aside");
+    dr.id = "cart-drawer"; dr.className = "cart-drawer";
+    dr.innerHTML = `<div class="cart-back" data-cart-close></div><div class="cart-panel"><div class="cart-head"><h2>Your cart</h2><button type="button" data-cart-close aria-label="Close">✕</button></div><ul class="cart-list"></ul>
+      <div class="cart-actions" hidden><a class="btn btn-ink wide" href="${igLink()}" target="_blank" rel="noopener" data-cart-dm>Send the order to Anna on Instagram</a><button type="button" class="btn btn-line wide" data-cart-copy>Copy the order text</button><button type="button" class="btn btn-line small" data-cart-clear>Empty the cart</button><p class="small-note">The order text is copied when you tap Send. Paste it into the chat.</p></div></div>`;
+    document.body.appendChild(dr);
+  }
+  renderCart();
   const footer = document.getElementById("site-footer");
   if (footer) {
     const H = (k, v) => t("home." + k, v);

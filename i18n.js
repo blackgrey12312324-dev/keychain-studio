@@ -11,6 +11,7 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      addCart: "Add to cart", addedCart: "Added to your cart. Open Cart to order several pieces together.", cartFail: "Could not save the cart on this device.",
       saveDraft: "Save as draft", draftSaved: "Draft saved on this device.", draftFail: "Could not save the draft.", draftContinue: "Continue my draft",
       decoQ: "What kind of decoration?", decoNat: "Natural", decoNatP: "Shells, starfish, pressed flowers, dried plants.", decoCharm: "Charms", decoCharmP: "Small charms, metal charms and the mini frog.", decoHint: "Choose one style first. Natural and charms are not mixed on one piece.", decoChange: "Change style",
       tagline: "Design your own resin keychain, handmade in Phuket",
@@ -154,6 +155,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      addCart: "เพิ่มลงตะกร้า", addedCart: "เพิ่มลงตะกร้าแล้ว เปิดตะกร้าเพื่อสั่งหลายชิ้นพร้อมกัน", cartFail: "บันทึกตะกร้าในอุปกรณ์นี้ไม่ได้",
       saveDraft: "บันทึกแบบร่าง", draftSaved: "บันทึกแบบร่างในอุปกรณ์นี้แล้ว", draftFail: "บันทึกแบบร่างไม่ได้", draftContinue: "ทำแบบร่างต่อ",
       decoQ: "ตกแต่งแบบไหน?", decoNat: "ธรรมชาติ", decoNatP: "เปลือกหอย ปลาดาว ดอกไม้อัด พืชแห้ง", decoCharm: "ชาร์ม", decoCharmP: "ชาร์มเล็ก ชาร์มโลหะ และกบจิ๋ว", decoHint: "เลือกสไตล์ก่อน ธรรมชาติและชาร์มไม่ผสมกันในชิ้นเดียว", decoChange: "เปลี่ยนสไตล์",
       recommended: "แนะนำ", nAdded: "เพิ่มแล้ว {n}", noTassel: "ไม่ใส่พู่", seaH: "ปลาดาวและเปลือกหอยจิ๋ว", seaP: "เลือกแบบที่ชอบ แตะ แล้วลากไปวางบนชิ้นงาน", ltNote: "ตัวอักษรหรือตัวเลขสูงสุด 4 ตัว", ltPh: "เช่น AB",
@@ -278,6 +280,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      addCart: "В корзину", addedCart: "Добавлено в корзину. Откройте корзину, чтобы заказать несколько изделий сразу.", cartFail: "Не удалось сохранить корзину на этом устройстве.",
       saveDraft: "Сохранить черновик", draftSaved: "Черновик сохранён на этом устройстве.", draftFail: "Не удалось сохранить черновик.", draftContinue: "Продолжить черновик",
       decoQ: "Какое украшение?", decoNat: "Природное", decoNatP: "Ракушки, морские звёзды, прессованные цветы, сухоцветы.", decoCharm: "Подвески", decoCharmP: "Маленькие подвески, металлические подвески и мини-лягушка.", decoHint: "Сначала выберите стиль. Природное и подвески на одном изделии не смешиваются.", decoChange: "Сменить стиль",
       recommended: "Рекомендуем", nAdded: "добавлено: {n}", noTassel: "Без кисточки", seaH: "Морская звезда и мини-ракушки", seaP: "Выберите понравившийся вариант, нажмите и перетащите на изделие.", ltNote: "До 4 букв или цифр.", ltPh: "Например: AB",

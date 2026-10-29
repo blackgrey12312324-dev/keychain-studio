@@ -1271,6 +1271,7 @@ const STEP_VIEWS = [
       <a class="btn btn-ink wide" href="${igLink()}" target="_blank" rel="noopener" data-action="dm">${U("sendDM")}</a>
       <button type="button" class="btn btn-line wide" data-action="copylink">${U("copyLink")}</button>
     </div>
+    <div class="send-row"><button type="button" class="btn btn-ink wide" data-action="addcart">${U("addCart")}</button><button type="button" class="btn btn-line wide" data-action="draft">${U("saveDraft")}</button></div>
     ${field(U("message"), `<textarea class="order-text" readonly id="order-text" aria-label="${U("message")}">${esc(orderText())}</textarea>`, U("messageNote"))}
     <p class="small-note">${U("customOrders")}</p>`;
   },
@@ -1488,6 +1489,13 @@ els.panel.addEventListener("click", (e) => {
     if (design.tassel.photo && design.tassel.type === "none") design.tassel.type = "silk";
     if (design.tassel.photo && design.hardware === "none") design.hardware = "ringchain";
     changed();
+  } else if (action === "addcart") {
+    const d2 = copy(design); if (d2.crush.length > 500) d2.crush = d2.crush.slice(-500);
+    const sub = summaryLines(design, "en").slice(0, 3).map(([k, v]) => v).join(" · ");
+    const ok = addToCart({ title: shapeName(design.shape, "en") + " – " + lab("style", design.style, "en"), sub, thumb: renderPiece(d2).replace(/<svg /, '<svg class="cart-svg" '), text: orderText().split("\n").slice(1).join("\n") });
+    toast(ok ? U("addedCart") : U("cartFail"));
+  } else if (action === "draft") {
+    saveDraft();
   } else if (action === "loaddraft") {
     loadDraft();
   } else if (action === "deco") {

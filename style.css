@@ -853,3 +853,25 @@ body[data-page="design"], body.designer { background: #F2EFE9 !important; }
 /* nav pills stay on one line */
 .nav-links a.nav-cta, .nav-links .dd-btn.nav-cta { white-space: nowrap; }
 @media (min-width: 900px) and (max-width: 1359px) { .nav-links { gap: 6px; } .nav-links a.nav-cta, .nav-links .dd-btn.nav-cta { padding: 5px 9px; font-size: 0.78rem; } }
+
+/* cart */
+.cart-btn { border: 1.5px solid #0E3F57; background: #fff; color: #0E3F57; border-radius: 999px; padding: 5px 12px; font-weight: 600; font-size: 0.85rem; cursor: pointer; margin-right: 10px; white-space: nowrap; }
+.cart-btn .cart-n { display: inline-block; min-width: 20px; text-align: center; border-radius: 999px; background: #E8E4DC; padding: 0 6px; }
+.cart-btn.has { background: #0E3F57; color: #fff; }
+.cart-btn.has .cart-n { background: #E8806C; color: #fff; }
+.cart-drawer { position: fixed; inset: 0; z-index: 100; display: none; }
+.cart-drawer.open { display: block; }
+.cart-back { position: absolute; inset: 0; background: rgba(14, 63, 87, 0.35); }
+.cart-panel { position: absolute; top: 0; right: 0; bottom: 0; width: min(420px, 100%); background: #fff; padding: 18px; overflow-y: auto; box-shadow: -8px 0 30px rgba(0,0,0,0.15); }
+.cart-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.cart-head h2 { margin: 0; }
+.cart-head button, .cart-x { border: 0; background: none; font-size: 1.1rem; cursor: pointer; }
+.cart-list { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 10px; }
+.cart-list li { display: flex; align-items: center; gap: 12px; border: 1px solid var(--line); padding: 8px; }
+.cart-thumb { width: 64px; height: 84px; flex: none; background: #F2EFE9; display: grid; place-items: center; overflow: hidden; }
+.cart-thumb svg { height: 100%; width: auto; }
+.cart-info { flex: 1; display: grid; gap: 2px; }
+.cart-info small { color: var(--ink-soft); }
+.cart-empty { border: 0 !important; color: var(--ink-soft); }
+.cart-actions { display: grid; gap: 10px; }
+@media (max-width: 899px) { .cart-btn span:nth-child(2) { display: none; } }

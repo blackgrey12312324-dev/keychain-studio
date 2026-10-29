@@ -1,6 +1,14 @@
 /* Extra translations: every English text on the pages that has no entry in i18n.js. Applied automatically by core.js. */
 const PHRASES = {
 "th": {
+"Cart": "ตะกร้า",
+"Your cart": "ตะกร้าของคุณ",
+"Your cart is empty. Design a piece and tap Add to cart.": "ตะกร้าว่าง ออกแบบชิ้นงานแล้วกดเพิ่มลงตะกร้า",
+"Send the order to Anna on Instagram": "ส่งออเดอร์ให้แอนนาทาง Instagram",
+"Copy the order text": "คัดลอกข้อความออเดอร์",
+"Empty the cart": "ล้างตะกร้า",
+"The order text is copied when you tap Send. Paste it into the chat.": "ข้อความออเดอร์จะถูกคัดลอกเมื่อกดส่ง วางลงในแชท",
+"Copied ✓": "คัดลอกแล้ว ✓",
 "Wide sea canvas with a boat": "ผ้าใบทะเลแนวนอนพร้อมเรือ",
 "Sea canvas with shells and starfish": "ผ้าใบทะเลพร้อมเปลือกหอยและปลาดาว",
 "A tiny LED string with its battery pack. It needs room, so it goes in medium and big molds. Only one fits.": "สายไฟ LED เล็กพร้อมกล่องแบตเตอรี่ ต้องใช้พื้นที่ จึงใส่ได้เฉพาะแม่พิมพ์ขนาดกลางและใหญ่ ใส่ได้เพียงเส้นเดียว",
@@ -388,6 +396,14 @@ const PHRASES = {
 "Bun pin": "ปิ่นปักผม"
 },
 "ru": {
+"Cart": "Корзина",
+"Your cart": "Ваша корзина",
+"Your cart is empty. Design a piece and tap Add to cart.": "Корзина пуста. Создайте изделие и нажмите «В корзину».",
+"Send the order to Anna on Instagram": "Отправить заказ Анне в Instagram",
+"Copy the order text": "Скопировать текст заказа",
+"Empty the cart": "Очистить корзину",
+"The order text is copied when you tap Send. Paste it into the chat.": "Текст заказа копируется при нажатии «Отправить». Вставьте его в чат.",
+"Copied ✓": "Скопировано ✓",
 "Wide sea canvas with a boat": "Широкий морской холст с лодкой",
 "Sea canvas with shells and starfish": "Морской холст с ракушками и морской звездой",
 "A tiny LED string with its battery pack. It needs room, so it goes in medium and big molds. Only one fits.": "Маленькая LED-гирлянда с батарейным блоком. Ей нужно место, поэтому она подходит для средних и больших форм. Помещается только одна.",
