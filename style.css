@@ -840,3 +840,5 @@ body[data-page="design"], body.designer { background: #F2EFE9 !important; }
 .rv-dots .dot { width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.12); }
 .rv-text { font-family: var(--serif); font-size: 1.5rem; letter-spacing: 0.08em; }
 .rv figcaption { font-size: 0.78rem; color: var(--ink-soft); margin-top: 4px; line-height: 1.2; }
+.chip.brush { display: inline-flex; align-items: center; gap: 10px; min-width: 96px; }
+.brush-dot { display: inline-block; border-radius: 50%; background: currentColor; flex: none; }

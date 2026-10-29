@@ -60,10 +60,10 @@ const I18N = {
       realTassels: "Our real tassels",
       flowersH: "Pressed flowers", flowersP: "Real pressed flowers in twelve colours. They are flat, so they fit almost anywhere.",
       charmsH: "Metal charms", charmsP: "Tiny gold charms that sit inside the resin. They are small, so they fit almost anywhere.",
-      sGlH: "Glitter and sprinkles", sGlP: "Tap a material, then drag over your piece to sprinkle it. A small cursor sprinkles a few pieces, a bigger cursor sprinkles more.",
-      glPick: "Colour", glAmount: "How much each time", glSize: "Cursor size", glFill: "Fill the whole piece", glUndo: "Undo", glClear: "Clear glitter",
+      sGlH: "Glitter and sprinkles", sGlP: "Tap a material, then drag over your piece to sprinkle it. Small puts one dot at a time, medium and big sprinkle more.",
+      glPick: "Colour", glAmount: "How much each time", glSize: "Brush size", glFill: "Fill the whole piece", glUndo: "Undo", glClear: "Clear glitter",
       glStop: "Stop sprinkling", glHint: "Sprinkling {name}. Drag on the piece. Tap the colour again to stop.",
-      glAmt: { s: "Sprinkle", m: "Handful", l: "Pour" }, glSz: { s: "Small cursor", m: "Big cursor", l: "Bigger cursor" },
+      glAmt: { s: "Sprinkle", m: "Handful", l: "Pour" }, glSz: { s: "Small", m: "Medium", l: "Big" },
       s5h: "Add things inside", s5p: "Choose as many as you like, then drag them on the keychain to place them.",
       howMuch: "How much", where: "Where", colour: "Colour",
 
@@ -187,10 +187,10 @@ const I18N = {
       slotOcean: ["ทะเลลึก", "น้ำกลาง", "น้ำตื้น"], slotInk: ["หมึก 1", "หมึก 2", "หมึก 3"],
       slotGrad: ["สี 1", "สี 2", "สี 3"], paintTip: "ทิป: เปิด ดูภาพใหญ่ เพื่อระบายสีบนพวงกุญแจด้วยนิ้ว",
 
-      sGlH: "กากเพชรและของโรย", sGlP: "แตะวัสดุ แล้วลากบนชิ้นงานเพื่อโรย เคอร์เซอร์เล็กโรยน้อย เคอร์เซอร์ใหญ่โรยมากขึ้น",
-      glPick: "สี", glAmount: "ปริมาณแต่ละครั้ง", glSize: "ขนาดเคอร์เซอร์", glFill: "เติมเต็มทั้งชิ้น", glUndo: "เลิกทำ", glClear: "ล้างกากเพชร",
+      sGlH: "กากเพชรและของโรย", sGlP: "แตะวัสดุ แล้วลากบนชิ้นงานเพื่อโรย ขนาดเล็กโรยทีละจุด ขนาดกลางและใหญ่โรยมากขึ้น",
+      glPick: "สี", glAmount: "ปริมาณแต่ละครั้ง", glSize: "ขนาดแปรง", glFill: "เติมเต็มทั้งชิ้น", glUndo: "เลิกทำ", glClear: "ล้างกากเพชร",
       glStop: "หยุดโรย", glHint: "กำลังโรย {name} ลากบนชิ้นงาน แตะสีอีกครั้งเพื่อหยุด",
-      glAmt: { s: "โรยเล็กน้อย", m: "หนึ่งกำมือ", l: "เทเยอะ" }, glSz: { s: "เคอร์เซอร์เล็ก", m: "เคอร์เซอร์ใหญ่", l: "เคอร์เซอร์ใหญ่มาก" },
+      glAmt: { s: "โรยเล็กน้อย", m: "หนึ่งกำมือ", l: "เทเยอะ" }, glSz: { s: "เล็ก", m: "กลาง", l: "ใหญ่" },
       s5h: "ใส่ของข้างใน", s5p: "เลือกได้หลายอย่าง แล้วลากบนพวงกุญแจเพื่อจัดตำแหน่ง",
       howMuch: "ปริมาณ", where: "ตำแหน่ง", colour: "สี",
 
@@ -309,10 +309,10 @@ const I18N = {
       slotOcean: ["Глубокое море", "Средняя вода", "Мелководье"], slotInk: ["Чернила 1", "Чернила 2", "Чернила 3"],
       slotGrad: ["Цвет 1", "Цвет 2", "Цвет 3"], paintTip: "Совет: открой «Крупно», чтобы рисовать на брелоке пальцем",
 
-      sGlH: "Блёстки и посыпка", sGlP: "Выберите материал и проведите по изделию, чтобы посыпать. Малый курсор сыплет немного, больший — больше.",
-      glPick: "Цвет", glAmount: "Сколько за раз", glSize: "Размер курсора", glFill: "Засыпать всё изделие", glUndo: "Отменить", glClear: "Убрать блёстки",
+      sGlH: "Блёстки и посыпка", sGlP: "Выберите материал и проведите по изделию, чтобы посыпать. Маленький — по одной точке, средний и большой сыплют больше.",
+      glPick: "Цвет", glAmount: "Сколько за раз", glSize: "Размер кисти", glFill: "Засыпать всё изделие", glUndo: "Отменить", glClear: "Убрать блёстки",
       glStop: "Закончить", glHint: "Сыплем: {name}. Води по изделию. Нажми на цвет ещё раз, чтобы остановиться.",
-      glAmt: { s: "Щепотка", m: "Горсть", l: "Много" }, glSz: { s: "Малый курсор", m: "Большой курсор", l: "Очень большой курсор" },
+      glAmt: { s: "Щепотка", m: "Горсть", l: "Много" }, glSz: { s: "Маленький", m: "Средний", l: "Большой" },
       s5h: "Добавь детали внутрь", s5p: "Выбирай сколько хочешь, а потом перетаскивай их на брелоке.",
       howMuch: "Сколько", where: "Где", colour: "Цвет",
 

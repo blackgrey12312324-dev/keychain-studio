@@ -411,15 +411,15 @@ function genItems(a, sel, d, rand) {
 /* ---------- Crushed glass glitter (real photos of the chips) ---------- */
 const GLASS = 15;                 // sprite size in drawing units (tiny, so it looks sprinkled)
 const GLASS_MAX = 4000;           // keeps the drawing fast
-const GLASS_RADIUS = { s: 7, m: 16, l: 30 };   // small, big and bigger cursor
-const GLASS_COUNT = { s: 5, m: 22, l: 110 };
+const GLASS_RADIUS = { s: 0, m: 13, l: 28 };   // small = one dot, medium and big sprinkle an area
+const GLASS_COUNT = { s: 1, m: 16, l: 95 };
 const glitterName = (id, lang = ui.lang) => { const g = CONFIG.glitters.find((x) => x.id === id); return g ? tr(g, "name", lang) : id; };
 const SPRINKLE_COLOURS = { goldleaf: ["#D4AF37", "#E8C75A", "#B8902A"], hearts: ["#DE2D44", "#FA768D", "#FB9BB2"], stars: ["#F5B510", "#E4BE28", "#EFEAE6"] };
 function glassSprite(c) {
   const g = CONFIG.glitters.find((x) => x.id === c[0]) || {};
   const h = (c[1] * 73 + c[2] * 151 + c[3] * 31) >>> 0;
   if (g.shape) {
-    const cols = SPRINKLE_COLOURS[c[0]], col = cols[h % cols.length], r = (c[4] / 100) * 3.6;
+    const cols = SPRINKLE_COLOURS[c[0]], col = cols[h % cols.length], r = (c[4] / 100) * 3;
     const body = g.shape === "heart" ? `<path d="${heartPath(0, 0, r * 1.05)}" fill="${col}"/>`
       : g.shape === "star" ? `<path d="${starPath(0, 0, r * 1.2, r * 0.5, 5)}" fill="${col}"/>`
       : `<polygon points="${[0, 1, 2, 3, 4].map((k) => { const an = k * 1.26 + (h % 40) / 20, rr = r * (0.55 + ((k * 37 + h) % 10) / 14); return `${(Math.cos(an) * rr).toFixed(1)},${(Math.sin(an) * rr).toFixed(1)}`; }).join(" ")}" fill="${col}" stroke="#FFF3C4" stroke-width="0.25"/>`;
@@ -427,7 +427,7 @@ function glassSprite(c) {
   }
   // a single tiny chip of crushed glass, coloured from the real photo of that glitter
   const pal = g.pal || ["#888"];
-  const col = pal[h % pal.length], r = (c[4] / 100) * 3.1;
+  const col = pal[h % pal.length], r = (c[4] / 100) * 2.5;
   const pts = [0, 1, 2, 3, 4].map((k) => { const an = k * 1.25 + (h % 31) / 10, rr = r * (0.6 + ((k * 53 + h) % 9) / 11); return `${(Math.cos(an) * rr).toFixed(1)},${(Math.sin(an) * rr).toFixed(1)}`; }).join(" ");
   const shine = h % 4 === 0 ? `<line x1="${(-r * 0.4).toFixed(1)}" y1="${(-r * 0.3).toFixed(1)}" x2="${(r * 0.2).toFixed(1)}" y2="${(-r * 0.5).toFixed(1)}" stroke="#fff" stroke-width="0.5" opacity="0.8"/>` : "";
   return `<g transform="translate(${c[1]} ${c[2]}) rotate(${c[3]})" pointer-events="none"><polygon points="${pts}" fill="${col}" stroke="rgba(0,0,0,0.25)" stroke-width="0.2"/>${shine}</g>`;
@@ -452,16 +452,16 @@ function nearShape(shape, x, y) {
   return m(x, y) || m(x + 14, y) || m(x - 14, y) || m(x, y + 14) || m(x, y - 14);
 }
 // cover (part of) the piece: share = 0..1
-function fillGlass(d, id, share = 0.75) {
+function fillGlass(d, id) {
   const [T, B] = bounds(d.shape);
-  const step = 26;
-  const pts = [];
-  for (let y = T; y <= B; y += step) for (let x = 30; x <= 270; x += step) {
-    const px = x + (Math.random() - 0.5) * step, py = y + (Math.random() - 0.5) * step;
-    if (nearShape(d.shape, px, py) && Math.random() < share) pts.push([px, py]);
+  const step = 4.4, added = [];
+  for (let y = T; y <= B; y += step) for (let x = 14; x <= 286; x += step) {
+    const px = x + (Math.random() - 0.5) * step * 1.3, py = y + (Math.random() - 0.5) * step * 1.3;
+    if (!insideShape(d.shape, px, py)) continue;
+    added.push([id, Math.round(px), Math.round(py), Math.floor(Math.random() * 360), Math.round(85 + Math.random() * 40)]);
   }
-  const added = [];
-  for (const [px, py] of pts) added.push(...stamp(d, id, px, py, "s", "m"));
+  d.crush.push(...added);
+  if (d.crush.length > GLASS_MAX) d.crush.splice(0, d.crush.length - GLASS_MAX);
   return added.length;
 }
 
@@ -1126,7 +1126,7 @@ const STEP_VIEWS = [
     <p class="hint">${U("sGlP")}</p>
     <div class="gl-grid">${grid}</div>
     ${cur ? `<p class="gl-hint">${U("glHint", { name: glitterName(cur) })}</p>` : ""}
-    ${field(U("glSize"), seg("size", ["s", "m", "l"], ui.pour.size, "glSz"))}
+    ${field(U("glSize"), `<div class="chips brush-sizes">${["s", "m", "l"].map((v) => `<button type="button" class="chip brush ${ui.pour.size === v ? "on" : ""}" aria-pressed="${ui.pour.size === v}" data-pour="size" data-value="${v}"><span class="brush-dot" style="width:${{ s: 6, m: 16, l: 30 }[v]}px;height:${{ s: 6, m: 16, l: 30 }[v]}px"></span>${U("glSz")[v]}</button>`).join("")}</div>`)}
     <div class="chips">
       <button type="button" class="btn btn-line small" data-action="glfill" ${cur ? "" : "disabled"}>${U("glFill")}</button>
       <button type="button" class="btn btn-line small" data-action="glundo" ${ui.pourHistory.length ? "" : "disabled"}>${U("glUndo")}</button>
@@ -1174,7 +1174,8 @@ const STEP_VIEWS = [
     // one folded section per kind of piece, so the list stays calm
     const order = [];
     list.forEach((a) => { const k = a.group || "frog"; if (!order.includes(k)) order.push(k); });
-    const RECOMMENDED = ["frog", "sea"];
+    order.sort((x, y) => (x === "small" ? -1 : 0) - (y === "small" ? -1 : 0));
+    const RECOMMENDED = ["sea"];
     const sections = order.map((k) => {
       const items = list.filter((a) => (a.group || "frog") === k);
       const n = items.filter((a) => design.addins[a.id]).length;
