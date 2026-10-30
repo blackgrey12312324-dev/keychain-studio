@@ -431,6 +431,7 @@ const GLASS_MAX = 4000;           // keeps the drawing fast
 const GLASS_RADIUS = { s: 0, m: 13, l: 28 };   // small = one dot, medium and big sprinkle an area
 const GLASS_COUNT = { s: 1, m: 16, l: 95 };
 const glitterName = (id, lang = ui.lang) => { const g = CONFIG.glitters.find((x) => x.id === id); return g ? tr(g, "name", lang) : id; };
+function lighten(hex, k) { const p = (i) => parseInt(hex.slice(i, i + 2), 16); return "#" + [1, 3, 5].map((i) => Math.round(p(i) + (255 - p(i)) * k).toString(16).padStart(2, "0")).join(""); }
 const SPRINKLE_COLOURS = { goldleaf: ["#D4AF37", "#E8C75A", "#B8902A"], hearts: ["#DE2D44", "#FA768D", "#FB9BB2"], stars: ["#F5B510", "#E4BE28", "#EFEAE6"] };
 function glassSprite(c) {
   const g = CONFIG.glitters.find((x) => x.id === c[0]) || {};
@@ -444,7 +445,7 @@ function glassSprite(c) {
   }
   // a single tiny chip of crushed glass, coloured from the real photo of that glitter
   const pal = g.pal || ["#888"];
-  const col = pal[h % pal.length], r = (c[4] / 100) * 2.5;
+  const col = lighten(pal[h % pal.length], 0.22), r = (c[4] / 100) * 2.5;
   const pts = [0, 1, 2, 3, 4].map((k) => { const an = k * 1.25 + (h % 31) / 10, rr = r * (0.6 + ((k * 53 + h) % 9) / 11); return `${(Math.cos(an) * rr).toFixed(1)},${(Math.sin(an) * rr).toFixed(1)}`; }).join(" ");
   const shine = h % 4 === 0 ? `<line x1="${(-r * 0.4).toFixed(1)}" y1="${(-r * 0.3).toFixed(1)}" x2="${(r * 0.2).toFixed(1)}" y2="${(-r * 0.5).toFixed(1)}" stroke="#fff" stroke-width="0.5" opacity="0.8"/>` : "";
   return `<g transform="translate(${c[1]} ${c[2]}) rotate(${c[3]})" pointer-events="none"><polygon points="${pts}" fill="${col}" stroke="rgba(0,0,0,0.25)" stroke-width="0.2"/>${shine}</g>`;
