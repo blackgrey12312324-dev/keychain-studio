@@ -994,6 +994,8 @@ function renderPiece(d, side = "front", opts = {}) {
     <filter id="${id}-line" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G"/></filter>
     <filter id="${id}-foam"><feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="5" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/></filter>
     <filter id="${id}-soft"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="${id}-soft2" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.4"/></filter>
+    <linearGradient id="${id}-sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.38"/><stop offset="0.28" stop-color="#fff" stop-opacity="0.08"/><stop offset="0.6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0.16"/></linearGradient>
     <filter id="${id}-softink" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="7"/></filter>
     <filter id="${id}-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
     <filter id="${id}-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000000" flood-opacity="0.16"/></filter>
@@ -1020,6 +1022,9 @@ function renderPiece(d, side = "front", opts = {}) {
         ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(176,214,226,0.55)"/>`}
         ${fill}
         ${CONFIG.showTexture ? gridLines(d.shape) + textureLayer(d.shape) : ""}
+        <rect x="0" y="100" width="300" height="340" fill="url(#${id}-sheen)" pointer-events="none"/>
+        ${shapeMarkup(d.shape, `fill="none" stroke="#fff" stroke-width="7" opacity="0.5" filter="url(#${id}-soft2)" pointer-events="none"`)}
+        ${shapeMarkup(d.shape, `fill="none" stroke="rgba(14,63,87,0.22)" stroke-width="9" filter="url(#${id}-soft2)" pointer-events="none"`)}
       </g>
       ${shapeMarkup(d.shape, rim + ' pointer-events="none"')}
     </g>
@@ -1216,7 +1221,7 @@ function placeNear(d, id, tx, ty, taken) {
 }
 // lay out every piece that has no position yet: composed, fully inside, not on top of each other
 function layoutItems(d) {
-  const [T, B] = bounds(d.shape), h = B - T, taken = [];
+  const [T, B] = bounds(d.shape), h = B - T, taken = [[150, pinTop(d.shape) + 14, 22]];   // keep clear of the key hole
   const sandY = d.style === "ocean" && d.ocean.sand !== "none" ? T + h * { low: 0.8, middle: 0.64, high: 0.46 }[d.ocean.sand] : null;
   let n = 0;
   for (const id of Object.keys(d.addins)) {
@@ -1475,7 +1480,7 @@ const STEP_VIEWS = [
     }
     const o = design.ocean;
     return `<h2>${U("s3oceanH")}</h2><p class="hint">${U("s3oceanP")}</p>
-      ${field(U("sand"), chips("ocean.sand", "sand", o.sand))}
+      ${field(U("sand"), chips("ocean.sand", "sand", o.sand, ["low", "middle", "high"]))}
       ${field(U("waveSize"), chips("ocean.size", "waveSize", o.size))}
       ${field(U("waveDir"), chips("ocean.dir", "waveDir", o.dir))}
       <p class="small-note">${U("oceanNote2")}</p>`;
@@ -1784,6 +1789,7 @@ function render() {
 function swing() { /* no flicker: the piece no longer bounces when it changes */ }
 // Each style keeps only its own settings, so nothing from the previous style stays on the piece.
 function normaliseStyle(d) {
+  if (d.ocean && d.ocean.sand === "none") d.ocean.sand = "low";
   if (d.ink) { d.ink.shimmer = "none"; d.ink.cells = false; d.ink.background = "clear"; }
   if (d.style === "ink") { d.ink.cells = false; d.ink.background = "clear"; }
   if (d.style === "ocean") { d.picked = []; d.colors = DEFAULT_COLORS.slice(); d.inkDrops = []; d.crush = []; d.letters.text = ""; d.gradient = { direction: "down", glitter: "none" }; }
@@ -2425,11 +2431,12 @@ function loadFromLink() {
   const letter = (params.get("letter") || "").toUpperCase();
   if (letter) ui.cat = "keychains";
   if (/^[A-Z0-9]$/.test(letter)) { design.shape = letter; resetItems(design); ui.step = 2; ui.visited = new Set([0, 1, 2]); }
+  if (p || gd || /^[A-Z0-9]$/.test(letter)) ui.chosen = true;
   const m = location.hash.match(/d=([^&]+)/);
   if (!m) return;
   try {
     design = merge(defaultDesign(), decodeDesign(decodeURIComponent(m[1]))); if (!design.picked.length && !isFresh(design)) design.picked = [...new Set(design.colors)];
-    ui.step = LAST;
+    ui.step = LAST; ui.chosen = true;
     ui.visited = new Set([...Array(STEP_COUNT).keys()]);
   } catch (err) {
     console.warn("Could not read shared design", err);
