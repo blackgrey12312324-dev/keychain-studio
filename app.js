@@ -7,7 +7,7 @@
 Object.assign(ui, {
   cat: "", step: 0, visited: new Set([0]), side: "front", slot: 0, photo: "",
   full: false, mode: "move", zoom: 1, pan: [0, 0],
-  open: new Set(["sea"]), inkCol: 0, pour: { id: "", amount: "m", size: "s" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
+  chosen: false, open: new Set(["sea"]), inkCol: 0, pour: { id: "", amount: "m", size: "s" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
 });
 const STEP_COUNT = I18N.en.steps.length;
 const LAST = STEP_COUNT - 1;
@@ -1591,7 +1591,28 @@ function renderHint() {
   else if (hasDraggables()) h = U("dragHint");
   els.hint.textContent = h;
 }
+let showTimer = 0;
+function showcaseHtml() {
+  const seen = new Set(), list = [];
+  CONFIG.presets.forEach((p) => { if (!seen.has(p.photo)) { seen.add(p.photo); list.push([p.photo, p.name]); } });
+  Object.values(CONFIG.references || {}).forEach((arr) => arr.forEach((r) => { if (r.img && !seen.has(r.img)) { seen.add(r.img); list.push([r.img, r.cap]); } }));
+  list.push(list[0]);
+  return `<div class="showcase"><div class="show-track">${list.map(([im, c]) => `<figure><img src="${im}" alt="" loading="lazy"><figcaption>${esc(c)}</figcaption></figure>`).join("")}</div><p class="show-note">${U("showNote")}</p></div>`;
+}
+function startShowcase() {
+  clearInterval(showTimer);
+  const tr = els.preview.querySelector(".show-track"); if (!tr) return;
+  const n = tr.children.length; let at = 0;
+  tr.addEventListener("transitionend", () => { if (at >= n - 1) { tr.style.transition = "none"; at = 0; tr.style.transform = "translateX(0)"; void tr.offsetWidth; tr.style.transition = ""; } });
+  showTimer = setInterval(() => { if (document.hidden) return; at += 1; tr.style.transform = `translateX(-${at * 100}%)`; }, 4200);
+}
+const showingShowcase = () => ui.step === 1 && !ui.chosen && !ui.full;
 function renderPreview() {
+  if (showingShowcase()) {
+    if (!els.preview.querySelector(".showcase")) { els.preview.innerHTML = showcaseHtml(); startShowcase(); }
+    els.stage.classList.add("showing"); renderHint(); return;
+  }
+  clearInterval(showTimer); els.stage.classList.remove("showing");
   els.preview.innerHTML = renderPiece(design, ui.side, { interactive: true, zoom: ui.zoom, pan: ui.pan });
   els.preview.classList.toggle("painting", false && ui.side === "front");
   renderHint();
@@ -1679,6 +1700,7 @@ function go(step) {
   if (design.style === "clear" && (step === 6 || step === 7) && !ui.visited) step = step;
   if (!hasHardware(design.shape) && (step === LAST - 2 || step === LAST - 1)) step = dir > 0 ? LAST : LAST - 3;
   ui.step = Math.max(0, Math.min(LAST, step));
+  if (ui.step > 1) ui.chosen = true;
   ui.visited.add(ui.step);
   render();
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1731,6 +1753,7 @@ function surprise() {
 }
 
 function startOver() {
+  ui.chosen = false;
   const before = copy(design);
   const step = ui.step;
   design = defaultDesign();
@@ -1762,6 +1785,7 @@ els.panel.addEventListener("click", (e) => {
       resetItems(design);
       if (!design.letters.moved) [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
     }
+    if (path === "style" && ui.step === 3) { changed(); setTimeout(() => go(neighbour(1)), 280); return; }
     const m = path.match(/^addins\.(\w+)\.(amount|place)$/);
     if (m) { delete design.addins[m[1]].items; delete design.addins[m[1]].moved; }
     changed();
@@ -1829,6 +1853,7 @@ els.panel.addEventListener("click", (e) => {
     renderPanel();
     return;
   } else if (action === "mold") {
+    ui.chosen = true;
     design.shape = el.dataset.shape;
     if (el.dataset.extra) Object.assign(design, JSON.parse(el.dataset.extra));
     applyDefaults(design);

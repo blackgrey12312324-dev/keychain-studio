@@ -1244,3 +1244,13 @@ body[data-page="design"], body.designer { background: linear-gradient(180deg, #E
 .ex-open { position: absolute; left: 8px; right: 8px; bottom: 8px; background: rgba(14,63,87,0.9); color: #fff; font-size: 0.75rem; font-weight: 600; text-align: center; padding: 6px; border-radius: 999px; opacity: 0; transform: translateY(6px); transition: .25s; }
 .ex-link:hover .ex-open { opacity: 1; transform: none; }
 @media (hover: none) { .ex-open { opacity: 1; transform: none; } }
+
+/* preview shows finished pieces until a mold is chosen */
+.stage.showing .stage-tools, .stage.showing .stage-deco { display: none !important; }
+.stage.showing .stage-art { aspect-ratio: auto !important; width: 100%; max-width: 520px; height: min(62vh, 560px) !important; overflow: hidden; border-radius: 22px; box-shadow: 0 16px 34px rgba(14,63,87,0.2); position: relative; }
+.showcase { position: relative; width: 100%; height: 100%; }
+.show-track { display: flex; height: 100%; transition: transform 1.6s cubic-bezier(0.45, 0, 0.25, 1); }
+.show-track figure { flex: 0 0 100%; margin: 0; position: relative; height: 100%; background: #F4F0E9; }
+.show-track img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.show-track figcaption { position: absolute; left: 14px; bottom: 54px; background: rgba(255,255,255,0.92); color: #0E3F57; font-family: var(--serif); font-size: 1.1rem; padding: 6px 14px; border-radius: 999px; }
+.show-note { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 12px 16px; text-align: center; color: #fff; font-size: 0.85rem; background: linear-gradient(180deg, rgba(14,63,87,0), rgba(14,63,87,0.75)); }
