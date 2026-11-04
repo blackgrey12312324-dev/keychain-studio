@@ -1130,6 +1130,34 @@ function stylesBar() {
 }
 document.addEventListener("click", (e) => { const b = e.target.closest("[data-sv-apply]"); if (b) applyStyle(b.dataset.svApply); });
 
+/* ---------- Inspiration: five ready looks, drawn on whatever mold is chosen, from Anna's own colours and materials ---------- */
+function sprinkle(d, gid, n, seed) {
+  const R = rng(hashText(seed + d.shape)), [T, B] = bounds(d.shape);
+  let tries = 0;
+  while (n > 0 && tries++ < n * 40) {
+    const x = 20 + R() * 260, y = T + R() * (B - T);
+    if (!insideShape(d.shape, x, y)) continue;
+    d.crush.push([gid, Math.round(x), Math.round(y), Math.floor(R() * 360), Math.round(85 + R() * 40)]); n--;
+  }
+}
+const LOOKS = [
+  { id: "ocean", name: "Ocean shore", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = { "sea-starfish": { amount: "few", place: "anna", color: "#D4AF37" }, "sea-shell-mix2": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; } },
+  { id: "rosegold", name: "Rose gold glitter", apply(d) { d.style = "gradient"; d.picked = ["#B8693F", "#C9A99A", "#D9959C"]; d.gradient = { direction: "diagonal", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "rosecopper", 130, "rg"); sprinkle(d, "champagne", 90, "rg2"); } },
+  { id: "blossom", name: "Pink blossom", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = { "flower-pink": { amount: "few", place: "anna", color: "#D4AF37" }, "flower-cream": { amount: "few", place: "anna", color: "#D4AF37" }, "dried-pink": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "palerose", 70, "bl"); } },
+  { id: "midnight", name: "Midnight ink", apply(d) { d.style = "ink"; d.picked = ["#4A5090", "#6A4B94", "#14151A"]; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "gold" }); const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = [[0, 130, Math.round(T + h * 0.3), 20], [1, 170, Math.round(T + h * 0.55), 22], [2, 140, Math.round(T + h * 0.78), 18]]; d.addins = {}; d.crush = []; sprinkle(d, "gold", 60, "mi"); } },
+  { id: "sunset", name: "Sunset gold", apply(d) { d.style = "gradient"; d.picked = ["#D9742E", "#B04855", "#C89B2E"]; d.gradient = { direction: "down", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "goldleaf", 70, "sg"); } },
+];
+function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); applyPicked(d); return d; }
+function inspirationHtml() {
+  return `<div class="field"><span class="field-label">${U("inspoH")}</span><p class="small-note">${U("inspoP")}</p><div class="looks">${LOOKS.map((l) => `<button type="button" class="look" data-look-id="${l.id}"><span class="look-art">${renderPiece(lookDesign(l))}</span><span class="look-name">${U("look_" + l.id)}</span></button>`).join("")}</div></div>`;
+}
+document.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-look-id]"); if (!b) return;
+  const look = LOOKS.find((l) => l.id === b.dataset.lookId);
+  look.apply(design); resetItems(design); applyPicked(design);
+  changed();
+});
+
 const STEP_VIEWS = [
   // 0 Ready-made
   () => `
@@ -1223,6 +1251,7 @@ const STEP_VIEWS = [
   () => `
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
+    ${inspirationHtml()}
     <div class="cards">${Object.keys(I18N.en.labels.style).map((st) => {
       const d = merge(copy(design), { style: st, picked: design.picked.length ? design.picked : DEFAULT_COLORS.slice(), ink: Object.assign({}, design.ink, { legacy: true }) });
       applyPicked(d);

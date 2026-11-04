@@ -1200,3 +1200,12 @@ body[data-page="design"], body.designer { background: linear-gradient(180deg, #E
 .styles-bar .chip { padding: 6px 12px; }
 #saves-drawer .cart-list li .btn { flex: none; }
 .cart-drawer { z-index: 400 !important; }
+
+.looks { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 8px; }
+.look { border: 0; padding: 8px 6px 10px; background: #fff; border-radius: 16px; box-shadow: 0 6px 16px rgba(14,63,87,0.10); display: grid; gap: 6px; text-align: center; cursor: pointer; transition: transform .25s, box-shadow .25s; }
+.look:hover { transform: translateY(-5px) rotate(-0.6deg); box-shadow: 0 14px 26px rgba(14,63,87,0.18); }
+.look-art { display: block; height: 130px; background: linear-gradient(160deg, #E9F6F6, #FDEBDD); border-radius: 10px; overflow: hidden; }
+.look-art svg { width: 100%; height: 100%; }
+.look-name { font-family: var(--serif); font-size: 1rem; color: #0E3F57; line-height: 1.15; }
+@media (max-width: 700px) { .looks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.look-art { height: 165px !important; }
