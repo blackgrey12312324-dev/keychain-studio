@@ -1333,7 +1333,8 @@ const STEP_VIEWS = [
         const imgs = (CONFIG.references[c.id] || []).map((r) => r.img).slice(0, 8);
         const art = imgs.length ? `<span class="card-art cat-slides"><span class="slides">${imgs.concat(imgs[0]).map((im) => `<img src="${im}" alt="" loading="lazy">`).join("")}</span></span>` : `<span class="card-art">${renderPiece(d)}</span>`;
         const inner = `${art}<span class="card-name">${c.name}</span><span class="card-text">${c.text}</span>`;
-        return c.href ? `<a class="card cat" href="${c.href}">${inner}</a>` : `<button type="button" class="card cat" data-action="cat" data-id="${c.id}">${inner}</button>`;
+        const col = { keychains: "#134B63", accessories: "#E8806C", statues: "#8C6BB1", kitchen: "#2E8B8B", cutting: "#B5803E", paint: "#2F5FA8", gift: "#C45160" }[c.id] || "#134B63";
+        return c.href ? `<a class="card cat photo" style="--c:${col}" href="${c.href}">${inner}</a>` : `<button type="button" class="card cat photo" style="--c:${col}" data-action="cat" data-id="${c.id}">${inner}</button>`;
       }).join("")}</div>`;
     }
     const card = (label, shape, on, extra = "") => {
