@@ -40,7 +40,7 @@ function defaultDesign() {
     crush: [],
     photo: { on: false, x: 0, y: 0, zoom: 1 },
     letters: { text: "", metal: "gold", size: "s", layout: "word", x: 150, y: 290, rot: 0, seed: 7 },
-    ink: { amount: "medium", background: "clear", spread: "all", cells: true, shimmer: "pearl", flow: "spread" },
+    ink: { amount: "medium", background: "clear", spread: "all", cells: false, shimmer: "none", flow: "spread" },
     inkDrops: [],
     inkSize: "m",
     ocean: { sand: "middle", wave: "middle", foam: "frothy", sandColor: "natural", size: "medium", dir: "flat" },
@@ -1138,21 +1138,33 @@ function sprinkle(d, gid, n, seed) {
     d.crush.push([gid, Math.round(x), Math.round(y), Math.floor(R() * 360), Math.round(85 + R() * 40)]); n--;
   }
 }
+const AI = (ids) => { const o = {}; ids.forEach((id) => (o[id] = { amount: "few", place: "anna", color: "#D4AF37" })); return o; };
+function inkDrops(d, cols, spots) { const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = spots.map(([ci, fx, fy, r]) => [ci, Math.round(150 + (fx - 0.5) * 150), Math.round(T + h * fy), r]); }
+function inkLook(d, picked, spots, extra = {}) { d.style = "ink"; d.picked = picked; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "none", cells: false, background: "clear" }, extra); inkDrops(d, picked, spots); d.crush = []; }
+function gradLook(d, picked, dir) { d.style = "gradient"; d.picked = picked; d.gradient = { direction: dir, glitter: "none" }; d.addins = {}; d.crush = []; }
 const LOOKS = [
-  { id: "ocean", name: "Ocean shore", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = { "sea-starfish": { amount: "few", place: "anna", color: "#D4AF37" }, "sea-shell-scallop": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; } },
-  { id: "rosegold", name: "Rose gold glitter", apply(d) { d.style = "gradient"; d.picked = ["#B8693F", "#C9A99A", "#D9959C"]; d.gradient = { direction: "diagonal", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "rosecopper", 130, "rg"); sprinkle(d, "champagne", 90, "rg2"); } },
-  { id: "blossom", name: "Pink blossom", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = { "flower-pink": { amount: "few", place: "anna", color: "#D4AF37" }, "flower-cream": { amount: "few", place: "anna", color: "#D4AF37" }, "dried-pink": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "palerose", 70, "bl"); } },
-  { id: "midnight", name: "Midnight ink", apply(d) { d.style = "ink"; d.picked = ["#4A5090", "#6A4B94", "#14151A"]; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "gold" }); const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = [[0, 130, Math.round(T + h * 0.3), 20], [1, 170, Math.round(T + h * 0.55), 22], [2, 140, Math.round(T + h * 0.78), 18]]; d.addins = {}; d.crush = []; sprinkle(d, "gold", 60, "mi"); } },
-  { id: "lavender", name: "Lavender dream", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = { "flower-purple": { amount: "few", place: "anna", color: "#D4AF37" }, "flower-mauve": { amount: "few", place: "anna", color: "#D4AF37" }, "dried-lavender": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "purple", 60, "lv"); sprinkle(d, "palerose", 40, "lv2"); } },
-  { id: "inkrose", name: "Rose ink", apply(d) { d.style = "ink"; d.deco = "natural"; d.picked = ["#D9959C", "#C97080", "#E6E0D8"]; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "pearl" }); const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = [[0, 140, Math.round(T + h * 0.35), 20], [1, 165, Math.round(T + h * 0.62), 18], [2, 135, Math.round(T + h * 0.8), 16]]; d.addins = { "flower-pink": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "pink", 40, "ir"); } },
-  { id: "goldenhour", name: "Golden hour", apply(d) { d.style = "gradient"; d.picked = ["#C9A99A", "#C89B2E", "#8A5F3C"]; d.gradient = { direction: "diagonal", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "gold", 110, "gh"); sprinkle(d, "lightgold", 70, "gh2"); } },
-  { id: "forest", name: "Forest", apply(d) { d.style = "gradient"; d.picked = ["#3A5F55", "#4C8A7C", "#E6E0D8"]; d.gradient = { direction: "center", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "goldleaf", 60, "fo"); sprinkle(d, "green", 50, "fo2"); } },
-  { id: "seaglass", name: "Sea glass", apply(d) { d.style = "ink"; d.deco = "natural"; d.picked = ["#4F8A9C", "#7F9CC0", "#E6E0D8"]; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "pearl" }); const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = [[0, 140, Math.round(T + h * 0.4), 22], [1, 165, Math.round(T + h * 0.68), 20], [2, 125, Math.round(T + h * 0.58), 14]]; d.addins = { "dried-blue": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "clear", 80, "sg2"); } },
-  { id: "sunset", name: "Sunset gold", apply(d) { d.style = "gradient"; d.picked = ["#D9742E", "#B04855", "#C89B2E"]; d.gradient = { direction: "down", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "goldleaf", 70, "sg"); } },
+  { id: "ocean", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish", "sea-shell-scallop"]); d.crush = []; } },
+  { id: "seaglass", apply(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .42, .3, 20], [1, .6, .6, 20], [2, .4, .78, 14]]); d.deco = "natural"; d.addins = AI(["dried-blue"]); sprinkle(d, "clear", 70, "sg"); } },
+  { id: "rosegold", apply(d) { gradLook(d, ["#B8693F", "#C9A99A", "#D9959C"], "diagonal"); sprinkle(d, "rosecopper", 130, "rg"); sprinkle(d, "champagne", 90, "rg2"); } },
+  { id: "sunset", apply(d) { gradLook(d, ["#D9742E", "#B04855", "#C89B2E"], "down"); sprinkle(d, "goldleaf", 70, "sg"); } },
+  { id: "goldenhour", apply(d) { gradLook(d, ["#C9A99A", "#C89B2E", "#8A5F3C"], "diagonal"); sprinkle(d, "gold", 110, "gh"); sprinkle(d, "lightgold", 70, "gh2"); } },
+  { id: "forest", apply(d) { gradLook(d, ["#3A5F55", "#4C8A7C", "#E6E0D8"], "center"); sprinkle(d, "goldleaf", 60, "fo"); sprinkle(d, "green", 50, "fo2"); } },
+  { id: "deepsea", apply(d) { gradLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], "down"); sprinkle(d, "cobalt", 80, "ds"); sprinkle(d, "clear", 50, "ds2"); } },
+  { id: "berry", apply(d) { gradLook(d, ["#8E3560", "#6A4B94", "#D9959C"], "right"); sprinkle(d, "plum", 70, "be"); sprinkle(d, "fuchsia", 60, "be2"); } },
+  { id: "blossom", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-pink", "flower-cream", "dried-pink"]); d.crush = []; sprinkle(d, "palerose", 70, "bl"); } },
+  { id: "lavender", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-purple", "flower-mauve", "dried-lavender"]); d.crush = []; sprinkle(d, "purple", 60, "lv"); } },
+  { id: "royal", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-crown-gold", "sm-heart-ruby"]); d.crush = []; sprinkle(d, "gold", 90, "ro"); } },
+  { id: "garden", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-butterfly-teal", "sm-rose-pink", "sm-ladybug"]); d.crush = []; sprinkle(d, "pink", 60, "ga"); } },
+  { id: "lucky", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["frog", "charm-coin", "sm-sunflower"]); d.crush = []; sprinkle(d, "goldleaf", 60, "lu"); } },
+  { id: "sweet", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-donut", "sm-bow-pink", "sm-heart-yellow"]); d.crush = []; sprinkle(d, "champagne", 70, "sw"); } },
+  { id: "midnight", apply(d) { inkLook(d, ["#4A5090", "#6A4B94", "#14151A"], [[0, .45, .28, 20], [1, .62, .56, 22], [2, .4, .8, 18]]); d.addins = {}; sprinkle(d, "gold", 50, "mi"); } },
+  { id: "inkrose", apply(d) { inkLook(d, ["#D9959C", "#C97080", "#E6E0D8"], [[0, .45, .33, 20], [1, .6, .62, 18], [2, .4, .8, 16]]); d.deco = "natural"; d.addins = AI(["flower-pink"]); sprinkle(d, "pink", 40, "ir"); } },
+  { id: "inkocean", apply(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .45, .3, 22], [1, .6, .58, 20], [2, .42, .8, 16]]); d.addins = {}; sprinkle(d, "clear", 50, "io"); } },
+  { id: "inkcopper", apply(d) { inkLook(d, ["#B8693F", "#C89B2E", "#14151A"], [[0, .42, .3, 20], [1, .6, .55, 20], [2, .45, .8, 14]]); d.deco = "charms"; d.addins = AI(["sm-crown-bronze"]); sprinkle(d, "copper", 50, "ic"); } },
 ];
 function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); return d; }
 function inspirationHtml() {
-  return `<div class="field"><span class="field-label">${U("inspoH")}</span><p class="small-note">${U("inspoP")}</p><div class="looks">${LOOKS.map((l) => `<button type="button" class="look" data-look-id="${l.id}"><span class="look-art">${renderPiece(lookDesign(l))}</span><span class="look-name">${U("look_" + l.id)}</span></button>`).join("")}</div></div>`;
+  return `<div class="field"><span class="field-label">${U("inspoH")}</span><p class="small-note">${U("inspoP")}</p><div class="looks">${LOOKS.map((l) => `<button type="button" class="look" data-look-id="${l.id}"><span class="look-art">${renderPiece(lookDesign(l))}</span><span class="look-name">${U("look_" + l.id)} <small>(${esc(lab("style", lookDesign(l).style))})</small></span></button>`).join("")}</div></div>`;
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-look-id]"); if (!b) return;
@@ -1301,8 +1313,6 @@ const STEP_VIEWS = [
         ${design.picked.length ? field(U("inkDrop"), `<div class="slots ink-colours">${design.picked.map((hex, i) => `<button type="button" class="slot ${ui.inkCol === i ? "on" : ""}" data-action="inkcol" data-i="${i}"><span class="blob" style="background:${hex}"></span>${esc(colorName(hex))}</button>`).join("")}</div>
           <div class="chips brush-sizes">${["s", "m", "l"].map((v) => `<button type="button" class="chip brush ${design.inkSize === v ? "on" : ""}" data-set="inkSize" data-value="${v}"><span class="brush-dot" style="width:${{ s: 8, m: 16, l: 28 }[v]}px;height:${{ s: 8, m: 16, l: 28 }[v]}px"></span>${U("glSz")[v]}</button>`).join("")}</div>
           <div class="chips"><button type="button" class="btn btn-line small" data-action="inkundo" ${design.inkDrops.length ? "" : "disabled"}>${U("glUndo")}</button><button type="button" class="btn btn-line small" data-action="inkclear" ${design.inkDrops.length ? "" : "disabled"}>${U("inkClear")}</button></div>`, U("inkDropNote")) : `<p class="small-note">${U("inkPickFirst")} <button type="button" class="btn btn-line small" data-action="goto" data-step="4">${U("colours")}</button></p>`}
-        ${field(U("background"), chips("ink.background", "background", k.background))}
-        ${field(U("cells"), yesNo("ink.cells", k.cells))}
         ${field(U("shimmer"), chips("ink.shimmer", "shimmer", k.shimmer))}`;
     }
     const o = design.ocean;
@@ -1350,8 +1360,8 @@ const STEP_VIEWS = [
       <button type="button" class="btn btn-line small" data-action="photooff">${U("photoRemove")}</button>` : ""}`, U("photoNote2"))}
 `;
     const decoPick = `<div class="field"><span class="field-label">${U("decoQ")}</span><div class="cards deco-cards">
-      <button type="button" class="card deco ${design.deco === "natural" ? "on" : ""}" data-action="deco" data-id="natural"><span class="deco-pics"><img src="images/sea/starfish.png" alt=""><img src="images/sea/shell-mix1.png" alt=""><img src="images/flowers/cream.png" alt=""><img src="images/dried/lavender.png" alt=""></span><span class="card-name">${U("decoNat")}</span><span class="card-text">${U("decoNatP")}</span></button>
-      <button type="button" class="card deco ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="deco-pics"><img src="images/small/frog-green.png" alt=""><img src="images/small/crown-gold.png" alt=""><img src="images/small/butterfly-teal.png" alt=""><img src="images/charms/dollar.png" alt=""></span><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
+      <button type="button" class="card deco ${design.deco === "natural" ? "on" : ""}" data-action="deco" data-id="natural"><span class="deco-pics charms-pics"><i><img src="images/sea/starfish.png" alt=""></i><i><img src="images/sea/shell-scallop.png" alt=""></i><i><img src="images/flowers/pink.png" alt=""></i><i><img src="images/dried/lavender.png" alt=""></i></span><span class="card-name">${U("decoNat")}</span><span class="card-text">${U("decoNatP")}</span></button>
+      <button type="button" class="card deco ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="deco-pics charms-pics"><i><img src="images/small/frog-green.png" alt=""></i><i><img src="images/small/crown-gold.png" alt=""></i><i><img src="images/small/butterfly-teal.png" alt=""></i><i><img src="images/small/rose-pink.png" alt=""></i></span><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
     if (!design.deco && design.style !== "ocean") return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick}`;
     const list = CONFIG.addins.filter((a) => fits(a, design));
     const itemHtml = (a) => {
@@ -1510,7 +1520,8 @@ function renderTotal() {
 }
 function renderSteps() {
   const names = t("steps");
-  els.steps.innerHTML = names.map((name, i) => ((!hasHardware(design.shape) && (i === LAST - 2 || i === LAST - 1)) || (i === INSIDE_STEP && noInside(design)) || skipStep(i, design)) ? "" :
+  const ord = stepOrder() || names.map((_, k) => k);
+  els.steps.innerHTML = ord.map((i) => [names[i], i]).map(([name, i]) => ((!hasHardware(design.shape) && (i === LAST - 2 || i === LAST - 1)) || (i === INSIDE_STEP && noInside(design)) || skipStep(i, design)) ? "" :
     `<button type="button" class="step ${i === ui.step ? "current" : ""} ${ui.visited.has(i) && i !== ui.step ? "done" : ""}" data-step="${i}" ${i === ui.step ? 'aria-current="step"' : ""}>${name}</button>`
   ).join("");
   const cur = els.steps.querySelector(".current");
@@ -1555,6 +1566,7 @@ function swing() {
 }
 // Each style keeps only its own settings, so nothing from the previous style stays on the piece.
 function normaliseStyle(d) {
+  if (d.style === "ink") { d.ink.cells = false; d.ink.background = "clear"; }
   if (d.style === "ocean") { d.picked = []; d.colors = DEFAULT_COLORS.slice(); d.inkDrops = []; d.crush = []; d.letters.text = ""; d.gradient = { direction: "down", glitter: "none" }; }
   else if (d.style === "clear") { d.picked = []; d.colors = DEFAULT_COLORS.slice(); d.inkDrops = []; }
   else if (d.style === "gradient") { d.inkDrops = []; }
@@ -1580,6 +1592,7 @@ function go(step) {
   if (step === LETTER_STEP && !isLetter(design.shape) && !isNumber(design.shape)) step += dir;
   if (step === INSIDE_STEP && noInside(design)) step += dir;
   while (skipStep(step, design) && step > 0 && step < LAST) step += dir;
+  if (design.style === "clear" && (step === 6 || step === 7) && !ui.visited) step = step;
   if (!hasHardware(design.shape) && (step === LAST - 2 || step === LAST - 1)) step = dir > 0 ? LAST : LAST - 3;
   ui.step = Math.max(0, Math.min(LAST, step));
   ui.visited.add(ui.step);
@@ -2143,8 +2156,16 @@ els.steps.addEventListener("click", (e) => {
   const b = e.target.closest("[data-step]");
   if (b) go(Number(b.dataset.step));
 });
-els.next.addEventListener("click", () => go(ui.step + 1));
-els.back.addEventListener("click", () => go(ui.step - 1));
+// Clear resin: things inside come before glitter and sprinkles.
+const stepOrder = () => (design.style === "clear" ? [0, 1, 2, 3, 7, 6, 8, 9, 10] : null);
+function neighbour(dir) {
+  const o = stepOrder();
+  if (!o) return ui.step + dir;
+  const k = o.indexOf(ui.step);
+  return k < 0 ? ui.step + dir : o[Math.max(0, Math.min(o.length - 1, k + dir))];
+}
+els.next.addEventListener("click", () => go(neighbour(1)));
+els.back.addEventListener("click", () => go(neighbour(-1)));
 $("startover").addEventListener("click", startOver);
 $("savedraft").addEventListener("click", saveDraft);
 $("mysaves").addEventListener("click", openSaves);

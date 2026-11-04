@@ -1209,3 +1209,15 @@ body[data-page="design"], body.designer { background: linear-gradient(180deg, #E
 .look-name { font-family: var(--serif); font-size: 1rem; color: #0E3F57; line-height: 1.15; }
 @media (max-width: 700px) { .looks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .look-art { height: 165px !important; }
+
+/* charm and natural picture tiles: each piece on its own soft tile */
+.card.deco { background: #fff !important; padding: 14px !important; }
+.charms-pics { height: auto !important; gap: 10px !important; margin-bottom: 14px !important; }
+.charms-pics i { flex: 1; aspect-ratio: 1; border-radius: 16px; background: radial-gradient(circle at 50% 35%, #FFFFFF 0%, #F6EADD 70%, #EFDCC8 100%); display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgba(200,160,120,0.18); overflow: hidden; }
+.charms-pics img { width: 78% !important; height: 78% !important; object-fit: contain; filter: drop-shadow(0 4px 5px rgba(120,70,30,0.28)); }
+.addin-head .em { background-color: #FBF2E8 !important; border-radius: 12px !important; box-shadow: inset 0 0 0 1px rgba(200,160,120,0.2); }
+.addin-head .em { background-size: 74% !important; }
+.look-name small { display: block; font-family: var(--sans); font-size: 0.72rem; color: #6C8791; }
+.looks { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+@media (max-width: 900px) { .looks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.look-art { height: 140px !important; }
