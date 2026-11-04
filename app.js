@@ -101,7 +101,7 @@ function moldRank(shape) {
   const s = c && c.size;
   return s === "big" ? 2 : s === "medium" ? 1 : 0;
 }
-const CHARM_GROUPS = ["small", "charms"];
+const CHARM_GROUPS = ["small", "seaanimals", "charms"];
 const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1, dried: 1 };
 const INSIDE_STEP = 7;
 const COLOURS_STEP = 4, GLITTER_STEP_NO = 6;
@@ -110,7 +110,7 @@ const SEA_WATER = ["#0F3D8C", "#2373C4", "#5BB6C8"];   // deep navy to royal blu
 const skipStep = (i, d) => (d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO)) || (d.style === "clear" && (i === COLOURS_STEP || i === 5));
 // gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
 const noInside = (d) => d.style === "gradient";
-const INK_GROUPS = ["small", "charms", "flowers", "dried"];
+const INK_GROUPS = ["small", "seaanimals", "charms", "flowers", "dried"];
 function fits(a, d) {
   if (d.style === "gradient") return false;
   if (d.style === "ocean") return a.group === "sea";
@@ -512,21 +512,20 @@ function lettersLayer(d, pid) {
 
 // a spot on solid resin where a word fits: the widest unbroken stretch of the piece
 function bestTextSpot(shape) {
-  const m = shapeMask(shape), [T, B] = bounds(shape);
-  let best = [150, (T + B) / 2], bestRun = 0;
-  for (let y = T + 20; y <= B - 20; y += 6) {
-    let start = -1;
-    for (let x = 0; x <= 300; x++) {
-      if (m(x, y)) { if (start < 0) start = x; }
-      if ((!m(x, y) || x === 300) && start >= 0) {
-        const run = x - start - (m(x, y) ? 0 : 0);
-        const bias = run - Math.abs(y - (T + B) / 2) * 0.05;
-        if (bias > bestRun) { bestRun = bias; best = [Math.round((start + x) / 2), y]; }
-        start = -1;
+  // the middle of the mold: the widest solid stretch on the row closest to the centre
+  const m = shapeMask(shape), [T, B] = bounds(shape), mid = (T + B) / 2;
+  for (let d = 0; d <= (B - T) / 2; d += 4) {
+    for (const y of d === 0 ? [mid] : [mid - d, mid + d]) {
+      let start = -1, best = null;
+      for (let x = 0; x <= 300; x++) {
+        const on = m(x, y);
+        if (on && start < 0) start = x;
+        if ((!on || x === 300) && start >= 0) { const run = x - start; if (run >= 44 && (!best || run > best[0])) best = [run, Math.round((start + x) / 2)]; start = -1; }
       }
+      if (best) return [best[1], Math.round(y)];
     }
   }
-  return best;
+  return [150, Math.round(mid)];
 }
 
 /* ---------- Customer photo inside the piece (big molds) ---------- */
@@ -1505,7 +1504,7 @@ const STEP_VIEWS = [
     // one folded section per kind of piece, so the list stays calm
     const order = [];
     list.forEach((a) => { const k = a.group || "frog"; if (!order.includes(k)) order.push(k); });
-    const RANK = ["sea", "small", "charms", "flowers", "dried", "paperflowers", "trees", "nature", "lights"];
+    const RANK = ["sea", "seaanimals", "small", "charms", "flowers", "dried", "paperflowers", "trees", "nature", "lights"];
     order.sort((x, y) => (RANK.indexOf(x) < 0 ? 99 : RANK.indexOf(x)) - (RANK.indexOf(y) < 0 ? 99 : RANK.indexOf(y)));
     const RECOMMENDED = ["sea"];
     const sections = order.map((k) => {
