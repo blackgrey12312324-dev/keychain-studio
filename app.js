@@ -667,8 +667,8 @@ function styleLayer(d, id, R, T, B) {
       // one drop: strongest in the middle, thinning out towards the edge
       let defs = "";
       d.inkDrops.forEach(([ci, x, y, rs], i) => {
-        const col = c[ci] || c[0], r = rs * (wide ? 2.5 : 1.6);
-        defs += `<radialGradient id="${id}-d${i}"><stop offset="0" stop-color="${col}" stop-opacity="0.96"/><stop offset="0.22" stop-color="${col}" stop-opacity="0.95"/><stop offset="0.4" stop-color="${col}" stop-opacity="${wide ? 0.7 : 0.85}"/><stop offset="0.65" stop-color="${col}" stop-opacity="${wide ? 0.34 : 0.22}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>`;
+        const col = c[ci] || c[0], r = rs * (wide ? 3.6 : 2);
+        defs += `<radialGradient id="${id}-d${i}"><stop offset="0" stop-color="${col}" stop-opacity="1"/><stop offset="0.14" stop-color="${col}" stop-opacity="0.96"/><stop offset="0.32" stop-color="${col}" stop-opacity="${wide ? 0.72 : 0.85}"/><stop offset="0.55" stop-color="${col}" stop-opacity="${wide ? 0.4 : 0.22}"/><stop offset="0.8" stop-color="${col}" stop-opacity="${wide ? 0.16 : 0.05}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>`;
         over += `<ellipse cx="${x}" cy="${y}" rx="${r.toFixed(0)}" ry="${(r * (0.85 + (i % 3) * 0.08)).toFixed(0)}" fill="url(#${id}-d${i})" transform="rotate(${(i * 47) % 180} ${x} ${y})"/>`;
       });
       s += `<defs>${defs}</defs><g filter="url(#${id}-ink)">${over}</g>`;
@@ -1174,12 +1174,14 @@ const LOOKS = [
   { id: "forest", apply(d) { gradLook(d, ["#3A5F55", "#4C8A7C", "#E6E0D8"], "center"); sprinkle(d, "goldleaf", 60, "fo"); sprinkle(d, "green", 50, "fo2"); } },
   { id: "deepsea", apply(d) { gradLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], "down"); sprinkle(d, "cobalt", 80, "ds"); sprinkle(d, "clear", 50, "ds2"); } },
   { id: "berry", apply(d) { gradLook(d, ["#8E3560", "#6A4B94", "#D9959C"], "right"); sprinkle(d, "plum", 70, "be"); sprinkle(d, "fuchsia", 60, "be2"); } },
-  { id: "blossom", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-pink", "flower-cream", "dried-pink"]); d.crush = []; sprinkle(d, "palerose", 70, "bl"); } },
-  { id: "lavender", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-purple", "flower-mauve", "dried-lavender"]); d.crush = []; sprinkle(d, "purple", 60, "lv"); } },
-  { id: "royal", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-crown-gold", "sm-heart-ruby"]); d.crush = []; sprinkle(d, "gold", 90, "ro"); } },
-  { id: "garden", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-butterfly-teal", "sm-rose-pink", "sm-ladybug"]); d.crush = []; sprinkle(d, "pink", 60, "ga"); } },
-  { id: "lucky", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["frog", "charm-coin", "sm-sunflower"]); d.crush = []; sprinkle(d, "goldleaf", 60, "lu"); } },
-  { id: "sweet", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-donut", "sm-bow-pink", "sm-heart-yellow"]); d.crush = []; sprinkle(d, "champagne", 70, "sw"); } },
+  { id: "blossom", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-pink", "flower-cream", "flower-mauve", "dried-pink"]); d.crush = []; sprinkle(d, "palerose", 130, "bl"); sprinkle(d, "goldleaf", 40, "bl2"); sprinkle(d, "champagne", 40, "bl3"); } },
+  { id: "lavender", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-purple", "flower-mauve", "dried-lavender", "dried-blue"]); d.crush = []; sprinkle(d, "purple", 110, "lv"); sprinkle(d, "clear", 60, "lv2"); sprinkle(d, "palerose", 30, "lv3"); } },
+  { id: "royal", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-crown-gold", "sm-heart-ruby", "sm-crown-rose"]); d.crush = []; sprinkle(d, "gold", 140, "ro"); sprinkle(d, "goldleaf", 90, "ro2"); } },
+  { id: "garden", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-butterfly-teal", "sm-rose-pink", "sm-ladybug", "sm-sunflower"]); d.crush = []; sprinkle(d, "pink", 90, "ga"); sprinkle(d, "green", 50, "ga2"); sprinkle(d, "goldleaf", 40, "ga3"); } },
+  { id: "lucky", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["frog", "charm-coin", "sm-sunflower"]); d.crush = []; sprinkle(d, "goldleaf", 130, "lu"); sprinkle(d, "green", 60, "lu2"); sprinkle(d, "gold", 40, "lu3"); } },
+  { id: "sweet", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-donut", "sm-bow-pink", "sm-heart-yellow", "sm-cookie"]); d.crush = []; sprinkle(d, "champagne", 100, "sw"); sprinkle(d, "pink", 70, "sw2"); sprinkle(d, "palerose", 40, "sw3"); } },
+  { id: "goldleaf", apply(d) { d.style = "clear"; d.deco = ""; d.addins = {}; d.crush = []; sprinkle(d, "goldleaf", 190, "gl"); sprinkle(d, "gold", 60, "gl2"); } },
+  { id: "pond", apply(d) { inkLook(d, ["#7FD8B2", "#3A9C5A", "#E6E0D8"], [[0, .36, .78, 20], [1, .45, .68, 15]]); d.addins = AI(["frog", "flower-teal"]); d.deco = ""; sprinkle(d, "green", 50, "po"); } },
   { id: "midnight", apply(d) { inkLook(d, ["#4A5090", "#6A4B94", "#14151A"], [[0, .45, .28, 20], [1, .62, .56, 22], [2, .4, .8, 18]]); d.addins = {}; sprinkle(d, "gold", 50, "mi"); } },
   { id: "inkrose", apply(d) { inkLook(d, ["#D9959C", "#C97080", "#E6E0D8"], [[0, .45, .33, 20], [1, .6, .62, 18], [2, .4, .8, 16]]); d.deco = "natural"; d.addins = AI(["flower-pink"]); sprinkle(d, "pink", 40, "ir"); } },
   { id: "inkocean", apply(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .45, .3, 22], [1, .6, .58, 20], [2, .42, .8, 16]]); d.addins = {}; sprinkle(d, "clear", 50, "io"); } },
@@ -1187,7 +1189,7 @@ const LOOKS = [
 ];
 function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); return d; }
 function inspirationHtml() {
-  return `<div class="field"><span class="field-label">${U("inspoH")}</span><p class="small-note">${U("inspoP")}</p><div class="looks">${LOOKS.map((l) => `<button type="button" class="look" data-look-id="${l.id}"><span class="look-art">${renderPiece(lookDesign(l))}</span><span class="look-name">${U("look_" + l.id)} <small>(${esc(lab("style", lookDesign(l).style))})</small></span></button>`).join("")}</div></div>`;
+  return `<details class="inspo" ${ui.open.has("inspo") ? "open" : ""} data-key="inspo"><summary><span>${U("inspoH")}</span><span class="inspo-arrow" aria-hidden="true">⌄</span></summary><p class="small-note">${U("inspoP")}</p><div class="looks">${LOOKS.map((l) => `<button type="button" class="look" data-look-id="${l.id}"><span class="look-art">${renderPiece(lookDesign(l))}</span><span class="look-name">${U("look_" + l.id)} <small>(${esc(lab("style", lookDesign(l).style))})</small></span></button>`).join("")}</div></details>`;
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-look-id]"); if (!b) return;
@@ -1869,7 +1871,7 @@ els.panel.addEventListener("input", (e) => {
 });
 els.panel.addEventListener("toggle", (e) => {
   const d = e.target;
-  if (!d.classList || !d.classList.contains("ins-sec")) return;
+  if (!d.classList || !(d.classList.contains("ins-sec") || d.classList.contains("inspo"))) return;
   if (d.open) ui.open.add(d.dataset.key); else ui.open.delete(d.dataset.key);
 }, true);
 els.panel.addEventListener("change", (e) => {
