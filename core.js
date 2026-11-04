@@ -195,9 +195,10 @@ function renderChrome() {
         <nav class="nav-links" id="nav-links" aria-label="Main">
           <a href="index.html#shop" class="nav-cta nav-shop">${N("shop")}</a>
           <a href="design.html?start=1" class="nav-cta nav-design">${N("design")}</a>
+          <a href="design.html?saves=1" class="nav-cta nav-drafts">${t("ui.myDraftsBtn")}</a>
           <div class="dd">
             <button type="button" class="dd-btn nav-cta nav-sec" aria-haspopup="true">${N("sections")} <span aria-hidden="true">▾</span></button>
-            <div class="dd-menu">${[["sec-keychains", "Keychains"], ["sec-accessories", "Accessories"], ["sec-statues", "Games & decor"], ["sec-kitchen", "Dining & restaurant"], ["sec-cutting", "Wooden cutting boards"], ["sec-paint", "Any size canvas"], ["sec-gift", "Custom gifts"], ["sec-send", "Send us a photo"]].map(([id, nm]) => `<a href="index.html#${id}">${nm}</a>`).join("")}</div>
+            <div class="dd-menu">${[["design.html?cat=keychains", "Keychains"], ["design.html?cat=accessories", "Accessories"], ["design.html?cat=statues", "Games & decor"], ["design.html?cat=kitchen", "Dining & restaurant"], ["canvas.html?kind=board", "Wooden cutting boards"], ["canvas.html?kind=beach", "Any size canvas"], ["canvas.html?kind=photo", "Custom gifts"], ["idea.html", "Send us a photo"]].map(([href, nm]) => `<a href="${href}">${nm}</a>`).join("")}</div>
           </div>
           <a href="idea.html" class="nav-cta${page === "idea" ? " here" : ""}">${N("idea")}</a>
           <a href="index.html#faq" class="nav-cta">${N("faq")}</a>

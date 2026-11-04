@@ -11,6 +11,7 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      autoSaved: "Saved automatically", myDraftsBtn: "My drafts",
       metalseaH: "Metal seashells (not natural)", metalseaP: "Artificial shells and a starfish made of metal. They are not real shells.",
       pickKind: "Choose one:",
       pickColour: "Choose the colour:",
@@ -175,6 +176,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      autoSaved: "บันทึกอัตโนมัติ", myDraftsBtn: "แบบร่างของฉัน",
       metalseaH: "เปลือกหอยโลหะ (ไม่ใช่ของธรรมชาติ)", metalseaP: "เปลือกหอยและปลาดาวเทียมทำจากโลหะ ไม่ใช่เปลือกหอยจริง",
       pickKind: "เลือกแบบ:",
       pickColour: "เลือกสี:",
@@ -320,6 +322,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      autoSaved: "Сохранено автоматически", myDraftsBtn: "Мои черновики",
       metalseaH: "Металлические ракушки (не натуральные)", metalseaP: "Искусственные ракушки и морская звезда из металла. Это не настоящие ракушки.",
       pickKind: "Выберите вид:",
       pickColour: "Выберите цвет:",

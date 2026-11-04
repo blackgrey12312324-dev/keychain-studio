@@ -1100,7 +1100,23 @@ function openDraft(id) {
   design = merge(defaultDesign(), d.design); ui.cat = d.cat || ""; ui.visited = new Set([...Array(d.step + 1).keys()]); closeSaves(); go(d.step); window.scrollTo({ top: 0 });
 }
 const loadDraft = () => openSaves();
-const hasDraft = () => store.get("rc-drafts").length > 0;
+/* the piece in progress is saved automatically, so closing the phone never loses it */
+const AUTO_KEY = "rc-auto";
+function getAuto() { try { return JSON.parse(localStorage.getItem(AUTO_KEY) || "null"); } catch (e) { return null; } }
+let autoTimer = 0;
+function saveAuto() {
+  clearTimeout(autoTimer);
+  autoTimer = setTimeout(() => {
+    if (!ui.chosen) return;
+    const d2 = copy(design); delete d2.note;
+    try { localStorage.setItem(AUTO_KEY, JSON.stringify({ t: Date.now(), design: d2, step: ui.step, cat: ui.cat, name: shapeName(design.shape) + " – " + lab("style", design.style) })); } catch (e) { /* storage full or blocked */ }
+  }, 400);
+}
+function openAuto() {
+  const d = getAuto(); if (!d) return false;
+  design = merge(defaultDesign(), d.design); ui.cat = d.cat || ""; ui.chosen = true; ui.visited = new Set([...Array(d.step + 1).keys()]); closeSaves(); go(d.step); window.scrollTo({ top: 0 }); return true;
+}
+const hasDraft = () => store.get("rc-drafts").length > 0 || !!getAuto();
 const STYLE_KEYS = ["style", "colors", "picked", "gradient", "ink", "inkDrops", "inkSize", "ocean", "crush", "deco", "edge", "edgeColor", "metal", "hardware", "tassel", "paint"];
 function saveStyle() {
   const l = store.get("rc-styles");
@@ -1135,7 +1151,8 @@ function renderSaves() {
   const dr = document.getElementById("saves-drawer");
   if (!dr) return;
   const ds = store.get("rc-drafts"), ss = store.get("rc-styles");
-  dr.querySelector(".saves-drafts").innerHTML = ds.length ? ds.map((x) => `<li><span class="cart-thumb">${x.thumb || ""}</span><span class="cart-info"><strong>${esc(x.name)}</strong><small>${new Date(x.t).toLocaleString()}</small></span><button type="button" class="btn btn-ink small" data-sv="open" data-id="${x.id}">${U("open")}</button><button type="button" class="cart-x" data-sv="deldraft" data-id="${x.id}" aria-label="Delete">✕</button></li>`).join("") : `<li class="cart-empty">${U("noDrafts")}</li>`;
+  const au = getAuto();
+  dr.querySelector(".saves-drafts").innerHTML = (au ? `<li class="auto-li"><span class="cart-info"><strong>${U("autoSaved")}: ${esc(au.name || "")}</strong><small>${new Date(au.t).toLocaleString()}</small></span><button type="button" class="btn btn-ink small" data-sv="openauto">${U("open")}</button></li>` : "") + (ds.length ? ds.map((x) => `<li><span class="cart-thumb">${x.thumb || ""}</span><span class="cart-info"><strong>${esc(x.name)}</strong><small>${new Date(x.t).toLocaleString()}</small></span><button type="button" class="btn btn-ink small" data-sv="open" data-id="${x.id}">${U("open")}</button><button type="button" class="cart-x" data-sv="deldraft" data-id="${x.id}" aria-label="Delete">✕</button></li>`).join("") : (au ? "" : `<li class="cart-empty">${U("noDrafts")}</li>`));
   dr.querySelector(".saves-styles").innerHTML = ss.length ? ss.map((x) => `<li><span class="cart-info"><strong>${esc(x.name)}</strong><small>${esc(lab("style", x.style))} <span class="bs-dots">${(x.dots || []).map((c) => `<i style="background:${c}"></i>`).join("")}</span></small></span><button type="button" class="btn btn-ink small" data-sv="apply" data-id="${x.id}">${U("applyStyle")}</button><button type="button" class="cart-x" data-sv="delstyle" data-id="${x.id}" aria-label="Delete">✕</button></li>`).join("") : `<li class="cart-empty">${U("noStyles")}</li>`;
 }
 function openSaves() { const dr = document.getElementById("saves-drawer"); if (dr) { renderSaves(); dr.classList.add("open"); } }
@@ -1155,6 +1172,7 @@ function closeSaves() { const dr = document.getElementById("saves-drawer"); if (
     const k = b.dataset.sv, id = b.dataset.id;
     if (k === "close") closeSaves();
     else if (k === "open") openDraft(id);
+    else if (k === "openauto") openAuto();
     else if (k === "deldraft") { store.set("rc-drafts", store.get("rc-drafts").filter((x) => x.id !== id)); renderSaves(); }
     else if (k === "apply") applyStyle(id);
     else if (k === "delstyle") { store.set("rc-styles", store.get("rc-styles").filter((x) => x.id !== id)); renderSaves(); renderPanel(); }
@@ -1754,6 +1772,7 @@ function renderStatic() {
   applyStaticText();
 }
 function render() {
+  saveAuto();
   curFont = design.font || "block";
   renderStatic();
   renderPreview();
@@ -2420,6 +2439,7 @@ function loadFromLink() {
 loadFromLink();
 renderChrome();
 render();
+if (new URLSearchParams(location.search).has("saves")) setTimeout(openSaves, 300);
 if (ui.jump) setTimeout(() => { const el = document.getElementById("grp-" + ui.jump); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); }, 250);
 if (document.fonts && document.fonts.load) {
   Promise.all([document.fonts.load("20px 'Archivo Black'"), document.fonts.load("20px 'Bagel Fat One'")]).catch(() => {}).then(() => { maskCache = {}; render(); });
