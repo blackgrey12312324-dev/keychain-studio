@@ -1544,7 +1544,7 @@ const STEP_VIEWS = [
   metalsea: { name: "Metal seashell (not natural)", thumb: true, ids: ["sm-shell-gold", "sm-shell-blue", "sm-starfish-gold"] },
   scallop: { name: "Scallop shell", ids: ["sea-shell-scallop", "sea-shell-pink"], cols: ["#F2DCCB", "#EFA9A0"] },
   silver: { name: "Random silver charm", random: true, ids: ["sm-metal-wing", "sm-metal-horn", "sm-metal-moth", "sm-metal-bird"] },
-  pressed: { name: "Pressed flower", ids: ["flower-red", "flower-orange", "flower-yellow", "flower-mint", "flower-teal", "flower-blue", "flower-purple", "flower-plum", "flower-magenta", "flower-pink", "flower-mauve", "flower-cream"], cols: ["#B8756F", "#D7A06A", "#DCC47A", "#9DBBA3", "#7FA9A6", "#8398B8", "#8E7CAD", "#8F6A86", "#B5718F", "#D9A3B0", "#A98AA0", "#E9DEC8"] },
+  pressed: { name: "Pressed flower", ids: ["flower-red", "flower-orange", "flower-yellow", "flower-mint", "flower-teal", "flower-blue", "flower-purple", "flower-plum", "flower-magenta", "flower-pink", "flower-mauve", "flower-cream"], cols: ["#9C2F2F", "#C8601F", "#B48F1E", "#9DB5A5", "#2F7F78", "#1F3F86", "#4A2F5E", "#5E2F5A", "#8E2F68", "#C98078", "#8E5A70", "#CFC49A"] },
   paperflower: { name: "Paper flower", ids: ["pf-blue", "pf-pink", "pf-pink2", "pf-magenta", "pf-magenta2", "pf-purple", "pf-purple2"], cols: ["#5F86D8", "#F4A0BB", "#E8809C", "#C2308A", "#D43A9C", "#7B4BC4", "#A98AD0"] },
   paperrose: { name: "Paper rose", ids: ["pf-rose", "pf-rose2", "pf-rose3", "pf-whiterose", "pf-whiterose2", "pf-whiterose3"], cols: ["#C8283A", "#F08A78", "#D95870", "#F4F0EA", "#EFE6D4", "#F2E3C8"] },
   silkflower: { name: "Silk flower", ids: ["silk-yellow", "silk-lime"], cols: ["#E8C23A", "#A8D060"] },
