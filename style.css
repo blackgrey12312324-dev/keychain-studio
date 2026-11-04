@@ -1221,3 +1221,6 @@ body[data-page="design"], body.designer { background: linear-gradient(180deg, #E
 .looks { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 @media (max-width: 900px) { .looks { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .look-art { height: 140px !important; }
+
+.item.sel { filter: drop-shadow(0 0 3px #F08A6B) drop-shadow(0 0 6px #F08A6B); }
+.del-item { position: absolute !important; right: 14px; top: 14px; z-index: 8; border-radius: 999px; background: #D8434D !important; border-color: #D8434D !important; box-shadow: 0 6px 14px rgba(0,0,0,0.25); }

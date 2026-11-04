@@ -805,6 +805,29 @@ function itemsLayer(d, pid, interactive) {
   return s;
 }
 
+/* ---------- select a piece, then Delete it ---------- */
+function markSelected() {
+  els.preview.querySelectorAll(".item.sel").forEach((n) => n.classList.remove("sel"));
+  const s = ui.sel;
+  let btn = document.getElementById("del-item");
+  if (!s || !design.addins[s.id] || !design.addins[s.id].items || !design.addins[s.id].items[s.i]) { ui.sel = null; if (btn) btn.hidden = true; return; }
+  const n = els.preview.querySelector(`.item[data-id="${s.id}"][data-i="${s.i}"]`);
+  if (n) n.classList.add("sel");
+  if (!btn) {
+    btn = document.createElement("button"); btn.type = "button"; btn.id = "del-item"; btn.className = "btn btn-ink small del-item";
+    btn.addEventListener("click", deleteSelected);
+    els.stage.appendChild(btn);
+  }
+  btn.textContent = "🗑 " + U("deleteItem"); btn.hidden = false;
+}
+function deleteSelected() {
+  const s = ui.sel; if (!s) return;
+  const sel = design.addins[s.id];
+  if (sel && sel.items) { sel.items.splice(s.i, 1); if (!sel.items.length) delete design.addins[s.id]; }
+  ui.sel = null; render(); markSelected();
+}
+document.addEventListener("keydown", (e) => { if ((e.key === "Delete" || e.key === "Backspace") && ui.sel && !/INPUT|TEXTAREA/.test((e.target || {}).tagName || "")) { e.preventDefault(); deleteSelected(); } });
+setTimeout(() => els.preview.addEventListener("pointerdown", (e) => { if (!e.target.closest(".item") && ui.sel) { ui.sel = null; markSelected(); } }, true), 0);
 const BRUSH = { s: 4, m: 9, l: 16 };
 function strokePath(pts) {
   let p = "";
@@ -1512,6 +1535,7 @@ function renderPreview() {
   els.preview.innerHTML = renderPiece(design, ui.side, { interactive: true, zoom: ui.zoom, pan: ui.pan });
   els.preview.classList.toggle("painting", false && ui.side === "front");
   renderHint();
+  if (typeof markSelected === "function") markSelected();
 }
 function renderTotal() {
   const box = els.total.parentNode;
@@ -1912,6 +1936,8 @@ els.preview.addEventListener("pointerdown", (e) => {
   e.preventDefault();
   const id = item.dataset.id, i = Number(item.dataset.i);
   const it = design.addins[id].items[i];
+  ui.sel = { id, i };
+  markSelected();
   gesture = { type: "drag", id, i, el: item, sx: p.x, sy: p.y, ox: it[0], oy: it[1] };
   item.classList.add("dragging");
   els.preview.setPointerCapture(e.pointerId);

@@ -11,6 +11,7 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      deleteItem: "Delete",
       look_deepsea: "Deep sea", look_berry: "Berry", look_royal: "Royal", look_garden: "Garden", look_lucky: "Lucky charms", look_sweet: "Sweet treats", look_inkocean: "Ink ocean", look_inkcopper: "Ink copper",
       dragPlace: "Tap Add, then drag the piece to where you want it. If it leaves the shape it is removed.", look_lavender: "Lavender dream", look_inkrose: "Rose ink", look_goldenhour: "Golden hour", look_forest: "Forest", look_seaglass: "Sea glass",
       inspoH: "Need inspiration?", inspoP: "Eighteen finished looks on your mold. Tap one to start from it, then change anything.", look_ocean: "Ocean shore", look_rosegold: "Rose gold glitter", look_blossom: "Pink blossom", look_midnight: "Midnight ink", look_sunset: "Sunset gold",
@@ -165,6 +166,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      deleteItem: "ลบ",
       look_deepsea: "ทะเลลึก", look_berry: "เบอร์รี่", look_royal: "ราชวงศ์", look_garden: "สวน", look_lucky: "ชาร์มนำโชค", look_sweet: "ขนมหวาน", look_inkocean: "หมึกมหาสมุทร", look_inkcopper: "หมึกทองแดง",
       dragPlace: "แตะเพิ่ม แล้วลากชิ้นไปวางตำแหน่งที่ต้องการ ถ้าลากออกนอกรูปทรง ชิ้นนั้นจะถูกลบ", look_lavender: "ลาเวนเดอร์ดรีม", look_inkrose: "หมึกชมพูกุหลาบ", look_goldenhour: "โกลเดนอาวร์", look_forest: "ป่า", look_seaglass: "แก้วทะเล",
       inspoH: "อยากได้แรงบันดาลใจไหม?", inspoP: "สิบแปดลุคสำเร็จบนแม่พิมพ์ของคุณ แตะเพื่อเริ่มจากลุคนั้น แล้วแก้ได้ทุกอย่าง", look_ocean: "ชายฝั่งทะเล", look_rosegold: "กากเพชรโรสโกลด์", look_blossom: "ดอกไม้สีชมพู", look_midnight: "หมึกเที่ยงคืน", look_sunset: "พระอาทิตย์ตกสีทอง",
@@ -300,6 +302,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      deleteItem: "Удалить",
       look_deepsea: "Глубокое море", look_berry: "Ягодный", look_royal: "Королевский", look_garden: "Сад", look_lucky: "Талисманы", look_sweet: "Сладости", look_inkocean: "Чернила-океан", look_inkcopper: "Чернила-медь",
       dragPlace: "Нажмите «Добавить», затем перетащите деталь, куда хотите. Если она выйдет за форму, она удалится.", look_lavender: "Лавандовая мечта", look_inkrose: "Розовые чернила", look_goldenhour: "Золотой час", look_forest: "Лес", look_seaglass: "Морское стекло",
       inspoH: "Нужно вдохновение?", inspoP: "Восемнадцать готовых образов на вашей форме. Нажмите, чтобы начать с него, и меняйте что угодно.", look_ocean: "Морской берег", look_rosegold: "Блёстки розовое золото", look_blossom: "Розовое цветение", look_midnight: "Полночные чернила", look_sunset: "Золотой закат",
