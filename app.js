@@ -1293,7 +1293,9 @@ const STEP_VIEWS = [
       <div class="cards cats">${CATS.map((c) => {
         const d = merge(copy(design), { shape: c.shape, hardware: "none" });
         if (c.shape === "A") d.font = "block";
-        const inner = `<span class="card-art">${renderPiece(d)}</span><span class="card-name">${c.name}</span><span class="card-text">${c.text}</span>`;
+        const imgs = (CONFIG.references[c.id] || []).map((r) => r.img).slice(0, 8);
+        const art = imgs.length ? `<span class="card-art cat-slides"><span class="slides">${imgs.concat(imgs[0]).map((im) => `<img src="${im}" alt="" loading="lazy">`).join("")}</span></span>` : `<span class="card-art">${renderPiece(d)}</span>`;
+        const inner = `${art}<span class="card-name">${c.name}</span><span class="card-text">${c.text}</span>`;
         return c.href ? `<a class="card cat" href="${c.href}">${inner}</a>` : `<button type="button" class="card cat" data-action="cat" data-id="${c.id}">${inner}</button>`;
       }).join("")}</div>`;
     }
@@ -1606,13 +1608,19 @@ function startShowcase() {
   tr.addEventListener("transitionend", () => { if (at >= n - 1) { tr.style.transition = "none"; at = 0; tr.style.transform = "translateX(0)"; void tr.offsetWidth; tr.style.transition = ""; } });
   showTimer = setInterval(() => { if (document.hidden) return; at += 1; tr.style.transform = `translateX(-${at * 100}%)`; }, 4200);
 }
+function startCatSlides() {
+  clearInterval(startCatSlides.t);
+  const sl = [...els.panel.querySelectorAll(".cat-slides .slides")];
+  if (!sl.length) return;
+  const st = sl.map((el, i) => ({ el, n: el.children.length, at: 0, wait: i }));
+  st.forEach((s) => s.el.addEventListener("transitionend", () => { if (s.at >= s.n - 1) { s.el.style.transition = "none"; s.at = 0; s.el.style.transform = "translateX(0)"; void s.el.offsetWidth; s.el.style.transition = ""; } }));
+  startCatSlides.t = setInterval(() => { if (document.hidden) return; st.forEach((s) => { if (s.n < 2) return; if (s.wait-- > 0) return; s.at += 1; s.el.style.transform = `translateX(-${s.at * 100}%)`; }); }, 3600);
+}
 const showingShowcase = () => ui.step === 1 && !ui.chosen && !ui.full;
 function renderPreview() {
-  if (showingShowcase()) {
-    if (!els.preview.querySelector(".showcase")) { els.preview.innerHTML = showcaseHtml(); startShowcase(); }
-    els.stage.classList.add("showing"); renderHint(); return;
-  }
-  clearInterval(showTimer); els.stage.classList.remove("showing");
+  document.body.classList.toggle("noprev", showingShowcase());
+  if (showingShowcase()) { els.preview.innerHTML = ""; els.stage.classList.add("showing"); return; }
+  els.stage.classList.remove("showing");
   els.preview.innerHTML = renderPiece(design, ui.side, { interactive: true, zoom: ui.zoom, pan: ui.pan });
   els.preview.classList.toggle("painting", false && ui.side === "front");
   renderHint();
@@ -1634,6 +1642,7 @@ function renderSteps() {
 }
 function renderPanel() {
   els.panel.innerHTML = secTag() + stylesBar() + STEP_VIEWS[ui.step]();
+  startCatSlides();
   els.back.hidden = ui.step === 0;
   $("bigview").hidden = ui.step < 3;
   els.next.hidden = ui.step === LAST;
