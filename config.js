@@ -139,8 +139,6 @@ const CONFIG = {
   // Crushed glass glitter: real photos of Anna's chips live in images/glitter/<id>.png
   glitters: [
     { id: "clear", name: "Clear", pal: ["#B9C4C8", "#D6DEE0", "#EEF3F4", "#FFFFFF", "#C6D2D6", "#E4EAEC"] },
-    { id: "rainbow", name: "Rainbow mix", pal: ["#E2453C", "#F2A33A", "#F2E04A", "#48B96A", "#3A8FD8", "#7A55C8", "#E7B4D6", "#FFFFFF"] },
-    { id: "iridescent", name: "Iridescent dark", pal: ["#2B2D3E", "#3E6B77", "#7B4F86", "#B58A52", "#1C1F2B", "#6C8DA3", "#D8C6B0"] },
     { id: "black", name: "Black", pal: ["#000000", "#000001", "#000002", "#010103", "#020204", "#040407", "#08080A", "#161618", "#39373F"] },
     { id: "gunmetal", name: "Gunmetal", pal: ["#000000", "#000002", "#060409", "#0F0E0E", "#141414", "#181B1D", "#28282A", "#4F514F", "#969995"] },
     { id: "navy", name: "Navy", pal: ["#000203", "#00000F", "#000019", "#03061B", "#00101F", "#03102F", "#161A37", "#2E3952", "#4C5E80"] },
