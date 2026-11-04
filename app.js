@@ -1196,13 +1196,30 @@ document.addEventListener("click", (e) => {
   changed();
 });
 
+/* ---------- The ready-made keychains rebuilt in the designer with Anna's own materials ---------- */
+const PRESET_RECIPES = {
+  "pink-heartbeat": (d) => { d.style = "ink"; d.picked = ["#C45160", "#D9959C", "#E6E0D8"]; d.ink = Object.assign({}, d.ink, { flow: "tight", cells: false, background: "clear", shimmer: "none", legacy: false }); inkDrops(d, d.picked, [[0, .5, .78, 20], [0, .4, .66, 14]]); sprinkle(d, "red", 70, "ph"); sprinkle(d, "hearts", 18, "ph2"); sprinkle(d, "rosecopper", 30, "ph3"); d.edge = "gold"; d.tassel = Object.assign(d.tassel, { type: "silk", photo: "cream" }); },
+  "golden-hour": (d) => { d.style = "clear"; d.picked = []; sprinkle(d, "goldleaf", 150, "gh"); sprinkle(d, "gold", 40, "gh2"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "gold" }); },
+  "andaman-bloom": (d) => { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .62, .7, 24], [1, .55, .55, 16]]); d.addins = AI(["flower-blue", "flower-cream"]); d.deco = ""; d.metal = "silver"; d.hardware = "ring"; d.tassel = Object.assign(d.tassel, { type: "silk", photo: "greyblue" }); },
+  "froggy-pond": (d) => { inkLook(d, ["#7FD8B2", "#3A9C5A", "#E6E0D8"], [[0, .35, .78, 18], [1, .42, .7, 14]]); d.addins = AI(["frog", "flower-teal"]); d.deco = ""; d.metal = "silver"; d.hardware = "ringchain"; d.edge = "painted"; d.tassel = Object.assign(d.tassel, { type: "silk", photo: "teal" }); },
+  "phuket-shoreline": (d) => { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.tassel = Object.assign(d.tassel, { type: "none", photo: "" }); },
+};
+function presetDesign(p) {
+  const d = merge(defaultDesign(), p.design);
+  d.addins = {}; d.crush = []; d.picked = []; d.inkDrops = []; d.deco = "";
+  const f = PRESET_RECIPES[p.id];
+  if (f) f(d); else if (!d.picked.length && !isFresh(d)) d.picked = [...new Set(d.colors)];
+  normaliseStyle(d); applyPicked(d); resetItems(d);
+  return d;
+}
+
 const STEP_VIEWS = [
   // 0 Ready-made
   () => `
     <h2>${U("s0h")}</h2>
     <p class="hint">${U("s0p")}</p>
     <div class="cards presets">${CONFIG.presets.map((p) => {
-      const d = merge(defaultDesign(), p.design);
+      const d = presetDesign(p);
       return `<div class="card">
         <div class="card-art ${p.photo ? "has-photo" : ""}">${presetArt(p, d)}</div>
         <span class="card-name">${p.name}</span>
@@ -1711,7 +1728,7 @@ els.panel.addEventListener("click", (e) => {
   const action = el.dataset.action;
   if (action === "preset") {
     const p = CONFIG.presets.find((x) => x.id === el.dataset.id);
-    design = merge(defaultDesign(), p.design); if (!design.picked.length && !isFresh(design)) design.picked = [...new Set(design.colors)];
+    design = presetDesign(p);
     ui.side = "front";
     go(el.dataset.go === "review" ? LAST : 1);
     swing();
@@ -2203,7 +2220,7 @@ function loadFromLink() {
   const preset = new URLSearchParams(location.search).get("preset");
   const p = CONFIG.presets.find((x) => x.id === preset);
   if (p) {
-    design = merge(defaultDesign(), p.design); if (!design.picked.length && !isFresh(design)) design.picked = [...new Set(design.colors)];
+    design = presetDesign(p);
     ui.step = 1;
     ui.visited = new Set([0, 1]);
   }
