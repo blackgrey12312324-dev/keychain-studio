@@ -1190,6 +1190,7 @@ function layoutItems(d) {
     if (!fits(ad, d)) { delete d.addins[id]; continue; }
     let tx, ty;
     if (sandY) { tx = 110 + (n % 3) * 45; ty = sandY + (B - sandY) * (0.45 + 0.2 * (n % 2)); }
+    else if (d.cluster) { const CL = [[0, 0], [30, -16], [-26, 24], [34, 30], [-4, 50]]; const q = CL[n % CL.length]; tx = 150 + q[0]; ty = T + h * 0.62 + q[1]; }
     else { const p = LAYOUT[n % LAYOUT.length]; tx = 40 + p[0] * 220; ty = T + p[1] * h; }
     const spot = placeNear(d, id, tx, ty, taken);
     n++;
@@ -1206,27 +1207,27 @@ const LOOKS = [
   { id: "ocean", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish", "sea-shell-scallop"]); d.crush = []; } },
   { id: "shellbeach", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "high", size: "calm", dir: "flat" }); d.addins = AI(["sea-shell-pink", "sea-shell-cone"]); d.crush = []; } },
   { id: "stormsea", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "right" }); d.addins = AI(["sea-starfish"]); d.crush = []; } },
-  { id: "seaglass", apply(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .42, .3, 20], [1, .6, .6, 20], [2, .4, .78, 14]]); d.deco = "natural"; d.addins = AI(["dried-blue"]); sprinkle(d, "aqua", 60, "sg"); sprinkle(d, "clear", 60, "sg2"); } },
+  { id: "seaglass", apply(d) {inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .42, .26, 22], [1, .6, .5, 22], [2, .4, .7, 16], [0, .58, .85, 14]]); d.deco = "natural"; d.addins = AI(["dried-blue"]); } },
   { id: "rosegold", apply(d) { gradLook(d, ["#B8693F", "#C9A99A", "#D9959C"], "diagonal"); sprinkle(d, "rosecopper", 120, "rg"); sprinkle(d, "pink", 60, "rg2"); sprinkle(d, "champagne", 50, "rg3"); } },
-  { id: "sunset", apply(d) { gradLook(d, ["#D9742E", "#B04855", "#C89B2E"], "down"); sprinkle(d, "red", 40, "su"); sprinkle(d, "copper", 60, "su2"); sprinkle(d, "goldleaf", 50, "su3"); } },
+  { id: "sunset", apply(d) { gradLook(d, ["#D9742E", "#B04855", "#C89B2E"], "down"); } },
   { id: "goldenhour", apply(d) { gradLook(d, ["#C9A99A", "#C89B2E", "#8A5F3C"], "diagonal"); sprinkle(d, "gold", 100, "gh"); sprinkle(d, "lightgold", 70, "gh2"); sprinkle(d, "champagne", 40, "gh3"); } },
-  { id: "forest", apply(d) { gradLook(d, ["#3A5F55", "#4C8A7C", "#E6E0D8"], "center"); sprinkle(d, "green", 90, "fo"); sprinkle(d, "olive", 60, "fo2"); sprinkle(d, "aqua", 30, "fo3"); } },
-  { id: "deepsea", apply(d) { gradLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], "down"); sprinkle(d, "aqua", 90, "ds"); sprinkle(d, "clear", 70, "ds2"); sprinkle(d, "cobalt", 25, "ds3"); } },
-  { id: "berry", apply(d) { gradLook(d, ["#8E3560", "#6A4B94", "#D9959C"], "right"); sprinkle(d, "plum", 60, "be"); sprinkle(d, "fuchsia", 70, "be2"); sprinkle(d, "pink", 40, "be3"); } },
-  { id: "blossom", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-pink", "flower-cream", "flower-mauve", "dried-pink"]); d.crush = []; sprinkle(d, "pink", 90, "bl"); sprinkle(d, "palerose", 90, "bl2"); sprinkle(d, "clear", 40, "bl3"); } },
-  { id: "lavender", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-purple", "flower-mauve", "dried-lavender", "dried-blue"]); d.crush = []; sprinkle(d, "purple", 90, "lv"); sprinkle(d, "palerose", 50, "lv2"); sprinkle(d, "clear", 60, "lv3"); } },
+  { id: "forest", apply(d) { gradLook(d, ["#3A5F55", "#4C8A7C", "#E6E0D8"], "center"); } },
+  { id: "deepsea", apply(d) { gradLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], "down"); } },
+  { id: "berry", apply(d) { gradLook(d, ["#8E3560", "#6A4B94", "#D9959C"], "right"); } },
+  { id: "blossom", apply(d) {d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-pink", "flower-cream", "flower-mauve", "dried-pink"]); d.cluster = true; d.crush = []; sprinkle(d, "pink", 170, "bl"); sprinkle(d, "palerose", 140, "bl2"); sprinkle(d, "fuchsia", 30, "bl3"); } },
+  { id: "lavender", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-purple", "flower-mauve", "dried-lavender", "dried-blue"]); d.crush = []; d.cluster = true; sprinkle(d, "purple", 80, "lv"); sprinkle(d, "palerose", 30, "lv2"); } },
   { id: "royal", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-crown-gold", "sm-heart-ruby", "sm-crown-rose"]); d.crush = []; sprinkle(d, "gold", 120, "ro"); sprinkle(d, "goldleaf", 80, "ro2"); } },
   { id: "garden", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-butterfly-teal", "sm-rose-pink", "sm-ladybug", "sm-sunflower"]); d.crush = []; sprinkle(d, "pink", 70, "ga"); sprinkle(d, "green", 50, "ga2"); sprinkle(d, "palerose", 40, "ga3"); } },
   { id: "lucky", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["frog", "charm-coin", "sm-sunflower"]); d.crush = []; sprinkle(d, "goldleaf", 110, "lu"); sprinkle(d, "green", 60, "lu2"); } },
   { id: "sweet", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-donut", "sm-bow-pink", "sm-heart-yellow", "sm-cookie"]); d.crush = []; sprinkle(d, "pink", 80, "sw"); sprinkle(d, "palerose", 70, "sw2"); sprinkle(d, "champagne", 50, "sw3"); } },
   { id: "goldleaf", apply(d) { d.style = "clear"; d.deco = ""; d.addins = {}; d.crush = []; sprinkle(d, "goldleaf", 190, "gl"); sprinkle(d, "gold", 60, "gl2"); } },
   { id: "pond", apply(d) { inkLook(d, ["#7FD8B2", "#3A9C5A", "#E6E0D8"], [[0, .36, .78, 20], [1, .45, .68, 15]]); d.addins = AI(["frog", "flower-teal"]); d.deco = ""; sprinkle(d, "green", 60, "po"); sprinkle(d, "aqua", 30, "po2"); } },
-  { id: "midnight", apply(d) { inkLook(d, ["#4A5090", "#6A4B94", "#14151A"], [[0, .45, .28, 20], [1, .62, .56, 22], [2, .4, .8, 18]]); d.addins = {}; sprinkle(d, "navy", 50, "mi"); sprinkle(d, "purple", 50, "mi2"); sprinkle(d, "gold", 25, "mi3"); } },
-  { id: "inkrose", apply(d) { inkLook(d, ["#D9959C", "#C97080", "#E6E0D8"], [[0, .45, .33, 20], [1, .6, .62, 18], [2, .4, .8, 16]]); d.deco = "natural"; d.addins = AI(["flower-pink"]); sprinkle(d, "pink", 60, "ir"); sprinkle(d, "palerose", 60, "ir2"); sprinkle(d, "clear", 30, "ir3"); } },
-  { id: "inkocean", apply(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .45, .3, 22], [1, .6, .58, 20], [2, .42, .8, 16]]); d.addins = {}; sprinkle(d, "aqua", 60, "io"); sprinkle(d, "clear", 60, "io2"); sprinkle(d, "cobalt", 20, "io3"); } },
-  { id: "inkcopper", apply(d) { inkLook(d, ["#B8693F", "#C89B2E", "#14151A"], [[0, .42, .3, 20], [1, .6, .55, 20], [2, .45, .8, 14]]); d.deco = "charms"; d.addins = AI(["sm-crown-bronze"]); sprinkle(d, "copper", 60, "ic"); sprinkle(d, "gold", 40, "ic2"); } },
+  { id: "midnight", apply(d) {inkLook(d, ["#4A5090", "#6A4B94", "#14151A"], [[0, .45, .22, 22], [1, .62, .42, 24], [2, .4, .62, 20], [0, .55, .82, 18]]); d.addins = {}; } },
+  { id: "inkrose", apply(d) {inkLook(d, ["#D9959C", "#C97080", "#E6E0D8"], [[0, .45, .22, 22], [1, .6, .38, 20], [0, .4, .5, 20], [1, .58, .65, 22], [2, .45, .8, 16], [0, .6, .85, 14]]); d.deco = "natural"; d.addins = AI(["flower-pink"]); d.cluster = true; sprinkle(d, "pink", 30, "ir"); } },
+  { id: "inkocean", apply(d) {inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .45, .24, 24], [1, .6, .48, 22], [0, .42, .68, 20], [2, .55, .84, 14]]); d.addins = {}; } },
+  { id: "inkcopper", apply(d) { inkLook(d, ["#B8693F", "#C89B2E", "#14151A"], [[0, .42, .3, 20], [1, .6, .55, 20], [2, .45, .8, 14]]); d.deco = "charms"; d.addins = AI(["sm-crown-bronze"]); sprinkle(d, "copper", 25, "ic"); } },
 ];
-function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); layoutItems(d); return d; }
+function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); layoutItems(d); delete d.cluster; return d; }
 function inspirationHtml() {
   const ds = LOOKS.map((l) => [l, lookDesign(l)]);
   const groups = ["ocean", "gradient", "ink", "clear"].map((st) => {
@@ -1239,7 +1240,7 @@ function inspirationHtml() {
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-look-id]"); if (!b) return;
   const look = LOOKS.find((l) => l.id === b.dataset.lookId);
-  look.apply(design); resetItems(design); applyPicked(design); layoutItems(design);
+  look.apply(design); resetItems(design); applyPicked(design); layoutItems(design); delete design.cluster;
   changed();
 });
 
