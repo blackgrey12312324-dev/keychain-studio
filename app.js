@@ -1486,7 +1486,18 @@ const STEP_VIEWS = [
       <button type="button" class="card deco ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="deco-pics charms-pics"><i><img src="images/small/frog-green.png" alt=""></i><i><img src="images/small/crown-gold.png" alt=""></i><i><img src="images/small/butterfly-teal.png" alt=""></i><i><img src="images/small/rose-pink.png" alt=""></i></span><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
     if (!design.deco && design.style !== "ocean") return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick}`;
     const list = CONFIG.addins.filter((a) => fits(a, design));
-    const itemHtml = (a) => {
+    const itemHtml = (a0) => {
+      const fk = familyOf(a0.id);
+      let a = a0;
+      if (fk) {
+        const F = FAMILIES[fk];
+        if (a0.id !== F.ids[0]) return "";
+        const cur = F.ids.find((id) => design.addins[id]) || ui.fam[fk] || F.ids[0];
+        a = CONFIG.addins.find((x) => x.id === cur) || a0;
+        const dots = F.ids.map((id, i) => `<button type="button" class="fam-dot ${F.thumb ? "thumb" : ""} ${cur === id ? "on" : ""}" style="background:${F.thumb ? `#fff url(${(CONFIG.addins.find((x) => x.id === id) || {}).img}) center/contain no-repeat` : F.cols[i]}" data-action="variant" data-fam="${fk}" data-id="${id}" aria-label="${esc(F.name)} ${i + 1}"></button>`).join("");
+        const sel0 = design.addins[a.id], on0 = !!sel0;
+        return `<div class="addin ${on0 ? "on" : ""}"><button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on0}"><span class="em" style="background:#E9F1F0 url(${a.img}) center/78% no-repeat"></span><span class="nm">${tr({ name: F.name, name_th: (PHRASES.th || {})[F.name], name_ru: (PHRASES.ru || {})[F.name] }, "name")}</span><span class="tick">${on0 ? U("added") : U("add")}</span></button><div class="fam-dots"><span class="small-note">${F.thumb ? U("pickKind") : U("pickColour")}</span>${dots}</div></div>`;
+      }
       const sel = design.addins[a.id];
       const reason = blockedReason(a.id, design);
       const on = !!sel && !reason;
@@ -1504,7 +1515,29 @@ const STEP_VIEWS = [
     // one folded section per kind of piece, so the list stays calm
     const order = [];
     list.forEach((a) => { const k = a.group || "frog"; if (!order.includes(k)) order.push(k); });
-    const RANK = ["sea", "seaanimals", "small", "charms", "flowers", "dried", "paperflowers", "trees", "nature", "lights"];
+    window.FAMILIES = {
+  butterfly: { name: "Butterfly", ids: ["sm-butterfly-teal", "sm-butterfly-pink", "sm-butterfly-sunset", "sm-butterfly-amber", "sm-butterfly-brown", "sm-butterfly-black"], cols: ["#4F9FA3", "#E58FA6", "#E7A24A", "#D8B66A", "#8A5A3A", "#2A2A30"] },
+  heart: { name: "Heart", ids: ["sm-heart-ruby", "sm-heart-blue", "sm-heart-yellow", "sm-heart-black"], cols: ["#C8283A", "#2F5FC4", "#E8C23A", "#1E1E22"] },
+  crown: { name: "Crown", ids: ["sm-crown-gold", "sm-crown-rose", "sm-crown-bronze"], cols: ["#D4A93C", "#D9959C", "#A56B3E"] },
+  rose: { name: "Rose", ids: ["sm-rose-pink", "sm-rose-red", "sm-rose-champagne", "sm-rose-purple", "sm-rose-blue"], cols: ["#E58FA6", "#B5232F", "#E3C9A8", "#7E4FB5", "#8FB6D9"] },
+  turtle: { name: "Turtle", ids: ["sm-turtle-pink", "sm-turtle-yellow", "sm-turtle-brown"], cols: ["#E58FA6", "#E8C23A", "#8A5A3A"] },
+  crab: { name: "Crab", ids: ["sm-crab-red", "sm-crab-yellow", "sm-crab-green"], cols: ["#C8283A", "#E8C23A", "#4C9A4A"] },
+  shell: { name: "Shell charm", ids: ["sm-shell-gold", "sm-shell-blue"], cols: ["#D4A93C", "#6FA3D9"] },
+  silver: { name: "Silver charm", thumb: true, ids: ["sm-metal-wing", "sm-metal-horn", "sm-metal-moth", "sm-metal-bird"] },
+  pressed: { name: "Pressed flower", ids: ["flower-red", "flower-orange", "flower-yellow", "flower-mint", "flower-teal", "flower-blue", "flower-purple", "flower-plum", "flower-magenta", "flower-pink", "flower-mauve", "flower-cream"], cols: ["#B8756F", "#D7A06A", "#DCC47A", "#9DBBA3", "#7FA9A6", "#8398B8", "#8E7CAD", "#8F6A86", "#B5718F", "#D9A3B0", "#A98AA0", "#E9DEC8"] },
+  paperflower: { name: "Paper flower", ids: ["pf-blue", "pf-pink", "pf-pink2", "pf-magenta", "pf-magenta2", "pf-purple", "pf-purple2"], cols: ["#5F86D8", "#F4A0BB", "#E8809C", "#C2308A", "#D43A9C", "#7B4BC4", "#A98AD0"] },
+  paperrose: { name: "Paper rose", ids: ["pf-rose", "pf-rose2", "pf-rose3", "pf-whiterose", "pf-whiterose2", "pf-whiterose3"], cols: ["#C8283A", "#F08A78", "#D95870", "#F4F0EA", "#EFE6D4", "#F2E3C8"] },
+  silkflower: { name: "Silk flower", ids: ["silk-yellow", "silk-lime"], cols: ["#E8C23A", "#A8D060"] },
+  babysbreath: { name: "Baby's breath", ids: ["dried-blue", "dried-pink"], cols: ["#8FB0D8", "#E8A5B8"] },
+  tree: { name: "Tree", ids: ["tree-green", "tree-pink", "tree-orange", "tree-yellow"], cols: ["#4C9A4A", "#E58FA6", "#E07A2E", "#E8C23A"] },
+  rifle: { name: "Rifle", thumb: true, ids: ["charm-ak", "charm-ak-long", "charm-ak-mini", "charm-m4"] },
+  pistol: { name: "Pistol", thumb: true, ids: ["charm-pistol", "charm-pistol2"] },
+  dollar: { name: "Dollar sign", thumb: true, ids: ["charm-dollar", "charm-dollar-stones"] },
+  moneybag: { name: "Money bag", thumb: true, ids: ["charm-moneybag", "charm-moneybag-mini"] },
+};
+window.familyOf = (id) => Object.keys(FAMILIES).find((k) => FAMILIES[k].ids.includes(id));
+ui.fam = ui.fam || {};
+const RANK = ["sea", "seaanimals", "small", "charms", "flowers", "dried", "paperflowers", "trees", "nature", "lights"];
     order.sort((x, y) => (RANK.indexOf(x) < 0 ? 99 : RANK.indexOf(x)) - (RANK.indexOf(y) < 0 ? 99 : RANK.indexOf(y)));
     const RECOMMENDED = ["sea"];
     const sections = order.map((k) => {
@@ -1866,6 +1899,12 @@ els.panel.addEventListener("click", (e) => {
     design.inkDrops.pop(); renderPanel(); renderPreview();
   } else if (action === "inkclear") {
     design.inkDrops = []; renderPanel(); renderPreview();
+  } else if (action === "variant") {
+    const fk = el.dataset.fam, F = FAMILIES[fk], to = el.dataset.id;
+    const have = F.ids.find((id) => design.addins[id]);
+    ui.fam[fk] = to;
+    if (have && have !== to) { design.addins[to] = Object.assign({}, design.addins[have]); delete design.addins[have]; }
+    changed();
   } else if (action === "loaddraft") {
     openSaves();
   } else if (action === "deco") {
