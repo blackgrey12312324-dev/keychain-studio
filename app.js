@@ -106,7 +106,8 @@ const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1 };
 const INSIDE_STEP = 7;
 const COLOURS_STEP = 4, GLITTER_STEP_NO = 6;
 const SEA_WATER = ["#0F3D8C", "#2373C4", "#5BB6C8"];   // deep navy to royal blue to turquoise, like Anna's sea pours   // the sea style always uses the same water colours
-const skipStep = (i, d) => d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO);
+// Clear resin has no colour or details step (it is decorated with glitter and things inside); the sea style has fixed colours and no glitter.
+const skipStep = (i, d) => (d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO)) || (d.style === "clear" && (i === COLOURS_STEP || i === 5));
 // gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
 const noInside = (d) => d.style === "gradient";
 const INK_GROUPS = ["small", "charms", "flowers", "dried"];
@@ -665,13 +666,14 @@ function styleLayer(d, id, R, T, B) {
     if (d.inkDrops && d.inkDrops.length) {
       const wide = k.flow !== "tight";
       let under = "", over = "";
+      // one drop: strongest in the middle, thinning out towards the edge
+      let defs = "";
       d.inkDrops.forEach(([ci, x, y, rs], i) => {
-        const col = c[ci] || c[0], r = rs * (wide ? 1.55 : 0.8);
-        under += `<ellipse cx="${x}" cy="${y}" rx="${(r * 1.5).toFixed(0)}" ry="${(r * 1.2).toFixed(0)}" fill="${col}" opacity="${wide ? 0.4 : 0.22}"/>`;
-        over += `<ellipse cx="${x}" cy="${y}" rx="${r.toFixed(0)}" ry="${(r * (0.7 + (i % 3) * 0.12)).toFixed(0)}" fill="${col}" opacity="${wide ? 0.72 : 0.95}" transform="rotate(${(i * 47) % 180} ${x} ${y})"/>`;
-        if (!wide) over += `<circle cx="${x}" cy="${y}" r="${(r * 0.45).toFixed(0)}" fill="${col}"/>`;
+        const col = c[ci] || c[0], r = rs * (wide ? 3.4 : 2.1);
+        defs += `<radialGradient id="${id}-d${i}"><stop offset="0" stop-color="${col}" stop-opacity="0.96"/><stop offset="0.28" stop-color="${col}" stop-opacity="${wide ? 0.78 : 0.9}"/><stop offset="0.65" stop-color="${col}" stop-opacity="${wide ? 0.34 : 0.22}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>`;
+        over += `<ellipse cx="${x}" cy="${y}" rx="${r.toFixed(0)}" ry="${(r * (0.85 + (i % 3) * 0.08)).toFixed(0)}" fill="url(#${id}-d${i})" transform="rotate(${(i * 47) % 180} ${x} ${y})"/>`;
       });
-      s += `<g filter="url(#${id}-softink)">${under}</g><g filter="url(#${id}-ink)">${over}</g>`;
+      s += `<defs>${defs}</defs><g filter="url(#${id}-ink)">${over}</g>`;
       s += `<image href="images/real/swirl-gray.jpg" x="0" y="${T - 20}" width="300" height="${h + 40}" preserveAspectRatio="xMidYMid slice" style="mix-blend-mode:soft-light" opacity="0.55"/>`;
       return s + inkExtras(d, id, R, T, B, x0, x1, y0, y1, true);
     }
@@ -1037,14 +1039,96 @@ function secTag() {
   if (!k || ui.step === 0 || !SEC_NAME[k]) return "";
   return `<p class="sec-tag" style="--c:${SEC_COL[k]}"><span class="sec-dot"></span>${U(SEC_NAME[k])}</p>`;
 }
+/* ---------- Saves on this device: drafts, styles, open a design code ---------- */
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k) || "[]"); } catch (e) { return []; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+};
+(function migrateDraft() {   // the first version kept a single draft
+  try { const old = JSON.parse(localStorage.getItem("rc-draft") || "null"); if (old && old.design) { const l = store.get("rc-drafts"); l.push({ id: "d" + old.t, t: old.t, design: old.design, step: old.step, cat: old.cat, name: "Draft" }); store.set("rc-drafts", l); } localStorage.removeItem("rc-draft"); } catch (e) { /* ignore */ }
+})();
+const thumbOf = (d) => renderPiece(Object.assign(copy(d), { crush: (d.crush || []).slice(-300) })).replace(/<svg /, '<svg class="cart-svg" ');
 function saveDraft() {
-  try { localStorage.setItem("rc-draft", JSON.stringify({ design, step: ui.step, cat: ui.cat, t: Date.now() })); toast(U("draftSaved")); }
-  catch (e) { toast(U("draftFail")); }
+  const l = store.get("rc-drafts");
+  const d2 = copy(design); delete d2.note;
+  l.unshift({ id: "d" + Date.now(), t: Date.now(), name: shapeName(design.shape) + " – " + lab("style", design.style), design: d2, step: ui.step, cat: ui.cat, thumb: thumbOf(design) });
+  if (l.length > 20) l.length = 20;
+  if (store.set("rc-drafts", l)) toast(U("draftSaved"), U("openSaves"), () => openSaves()); else toast(U("draftFail"));
+  renderSaves();
 }
-function loadDraft() {
-  try { const d = JSON.parse(localStorage.getItem("rc-draft") || "null"); if (!d) return false; design = merge(defaultDesign(), d.design); ui.cat = d.cat || ""; ui.visited = new Set([...Array(d.step + 1).keys()]); go(d.step); return true; } catch (e) { return false; }
+function openDraft(id) {
+  const d = store.get("rc-drafts").find((x) => x.id === id);
+  if (!d) return;
+  design = merge(defaultDesign(), d.design); ui.cat = d.cat || ""; ui.visited = new Set([...Array(d.step + 1).keys()]); closeSaves(); go(d.step); window.scrollTo({ top: 0 });
 }
-const hasDraft = () => { try { return !!localStorage.getItem("rc-draft"); } catch (e) { return false; } };
+const loadDraft = () => openSaves();
+const hasDraft = () => store.get("rc-drafts").length > 0;
+const STYLE_KEYS = ["style", "colors", "picked", "gradient", "ink", "inkDrops", "inkSize", "ocean", "crush", "deco", "edge", "edgeColor", "metal", "hardware", "tassel", "paint"];
+function saveStyle() {
+  const l = store.get("rc-styles");
+  const snap = {}; STYLE_KEYS.forEach((k) => (snap[k] = copy(design[k])));
+  snap.addins = {}; Object.keys(design.addins).forEach((id) => { snap.addins[id] = { amount: design.addins[id].amount, place: design.addins[id].place, color: design.addins[id].color }; });
+  const n = l.reduce((m, s) => Math.max(m, s.n || 0), 0) + 1;
+  l.push({ id: "s" + Date.now(), n, name: U("styleN", { n }), snap, dots: (design.picked || []).slice(0, 3), style: design.style });
+  store.set("rc-styles", l);
+  toast(U("styleSaved", { n }), U("openSaves"), () => openSaves());
+  renderSaves(); renderPanel();
+}
+function applyStyle(id) {
+  const s = store.get("rc-styles").find((x) => x.id === id);
+  if (!s) return;
+  STYLE_KEYS.forEach((k) => { design[k] = copy(s.snap[k]); });
+  design.addins = {}; Object.keys(s.snap.addins).forEach((aid) => { design.addins[aid] = Object.assign({}, s.snap.addins[aid]); });
+  design.paint = [];
+  resetItems(design);
+  closeSaves(); changed();
+  toast(U("styleApplied", { name: s.name }));
+}
+function openFromCode(text) {
+  let s = String(text || "").trim();
+  const m = s.match(/#d=([^\s]+)/); if (m) s = m[1];
+  try {
+    const d = decodeDesign(decodeURIComponent(s));
+    design = merge(defaultDesign(), d); if (!design.picked.length && !isFresh(design)) design.picked = [...new Set(design.colors)];
+    ui.cat = catOf(design.shape); ui.visited = new Set([...Array(LAST + 1).keys()]); closeSaves(); go(LAST); return true;
+  } catch (e) { return false; }
+}
+function renderSaves() {
+  const dr = document.getElementById("saves-drawer");
+  if (!dr) return;
+  const ds = store.get("rc-drafts"), ss = store.get("rc-styles");
+  dr.querySelector(".saves-drafts").innerHTML = ds.length ? ds.map((x) => `<li><span class="cart-thumb">${x.thumb || ""}</span><span class="cart-info"><strong>${esc(x.name)}</strong><small>${new Date(x.t).toLocaleString()}</small></span><button type="button" class="btn btn-ink small" data-sv="open" data-id="${x.id}">${U("open")}</button><button type="button" class="cart-x" data-sv="deldraft" data-id="${x.id}" aria-label="Delete">✕</button></li>`).join("") : `<li class="cart-empty">${U("noDrafts")}</li>`;
+  dr.querySelector(".saves-styles").innerHTML = ss.length ? ss.map((x) => `<li><span class="cart-info"><strong>${esc(x.name)}</strong><small>${esc(lab("style", x.style))} <span class="bs-dots">${(x.dots || []).map((c) => `<i style="background:${c}"></i>`).join("")}</span></small></span><button type="button" class="btn btn-ink small" data-sv="apply" data-id="${x.id}">${U("applyStyle")}</button><button type="button" class="cart-x" data-sv="delstyle" data-id="${x.id}" aria-label="Delete">✕</button></li>`).join("") : `<li class="cart-empty">${U("noStyles")}</li>`;
+}
+function openSaves() { const dr = document.getElementById("saves-drawer"); if (dr) { renderSaves(); dr.classList.add("open"); } }
+function closeSaves() { const dr = document.getElementById("saves-drawer"); if (dr) dr.classList.remove("open"); }
+(function buildSaves() {
+  const dr = document.createElement("aside");
+  dr.id = "saves-drawer"; dr.className = "cart-drawer";
+  dr.innerHTML = `<div class="cart-back" data-sv="close"></div><div class="cart-panel"><div class="cart-head"><h2 data-i18n="ui.mySaves"></h2><button type="button" data-sv="close" aria-label="Close">✕</button></div>
+    <h3 class="sv-h" data-i18n="ui.myDrafts"></h3><ul class="cart-list saves-drafts"></ul>
+    <h3 class="sv-h" data-i18n="ui.myStyles"></h3><ul class="cart-list saves-styles"></ul>
+    <h3 class="sv-h" data-i18n="ui.openCode"></h3><p class="small-note" data-i18n="ui.openCodeNote"></p>
+    <div class="sv-code"><input type="text" id="sv-code" autocomplete="off" data-i18n-ph="ui.codePh"><button type="button" class="btn btn-ink small" data-sv="code" data-i18n="ui.open"></button></div><p class="small-note" id="sv-msg"></p></div>`;
+  document.body.appendChild(dr);
+  applyStaticText();
+  dr.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-sv]"); if (!b) return;
+    const k = b.dataset.sv, id = b.dataset.id;
+    if (k === "close") closeSaves();
+    else if (k === "open") openDraft(id);
+    else if (k === "deldraft") { store.set("rc-drafts", store.get("rc-drafts").filter((x) => x.id !== id)); renderSaves(); }
+    else if (k === "apply") applyStyle(id);
+    else if (k === "delstyle") { store.set("rc-styles", store.get("rc-styles").filter((x) => x.id !== id)); renderSaves(); renderPanel(); }
+    else if (k === "code") { const ok = openFromCode(document.getElementById("sv-code").value); if (!ok) document.getElementById("sv-msg").textContent = U("codeBad"); }
+  });
+})();
+function stylesBar() {
+  const ss = store.get("rc-styles");
+  if (!ss.length || ui.step < 1 || ui.step > 3) return "";
+  return `<div class="styles-bar"><span>${U("myStyles")}:</span>${ss.map((x) => `<button type="button" class="chip" data-sv-apply="${x.id}">${esc(x.name)} <span class="bs-dots">${(x.dots || []).map((c) => `<i style="background:${c}"></i>`).join("")}</span></button>`).join("")}</div>`;
+}
+document.addEventListener("click", (e) => { const b = e.target.closest("[data-sv-apply]"); if (b) applyStyle(b.dataset.svApply); });
 
 const STEP_VIEWS = [
   // 0 Ready-made
@@ -1325,6 +1409,8 @@ const STEP_VIEWS = [
       <button type="button" class="btn btn-line wide" data-action="copylink">${U("copyLink")}</button>
     </div>
     <div class="send-row"><button type="button" class="btn btn-ink wide" data-action="addcart">${U("addCart")}</button><button type="button" class="btn btn-line wide" data-action="draft">${U("saveDraft")}</button></div>
+    <div class="send-row"><button type="button" class="btn btn-line wide" data-action="savestyle">${U("saveStyleBtn")}</button><button type="button" class="btn btn-line wide" data-action="opensaves">${U("mySaves")}</button></div>
+    <p class="small-note">${U("codeShare")}</p><div class="sv-code"><input type="text" readonly value="${esc(shareLink())}" aria-label="${U("designCode")}"><button type="button" class="btn btn-line small" data-action="copycode">${U("copyCode")}</button></div>
     ${field(U("message"), `<textarea class="order-text" readonly id="order-text" aria-label="${U("message")}">${esc(orderText())}</textarea>`, U("messageNote"))}
     <p class="small-note">${U("customOrders")}</p>`;
   },
@@ -1405,7 +1491,7 @@ function renderSteps() {
   if (cur) els.steps.scrollTo({ left: cur.offsetLeft - els.steps.clientWidth / 2 + cur.clientWidth / 2 });
 }
 function renderPanel() {
-  els.panel.innerHTML = secTag() + STEP_VIEWS[ui.step]();
+  els.panel.innerHTML = secTag() + stylesBar() + STEP_VIEWS[ui.step]();
   els.back.hidden = ui.step === 0;
   $("bigview").hidden = ui.step < 3;
   els.next.hidden = ui.step === LAST;
@@ -1442,6 +1528,8 @@ function swing() {
   els.preview.classList.add("swing");
 }
 function changed() {
+  const keepY = window.scrollY;
+  setTimeout(() => { if (Math.abs(window.scrollY - keepY) > 2) window.scrollTo(0, keepY); }, 0);
   applyPicked(design);
   setTimeout(renderBarSummary, 0);
   design.paint = [];
@@ -1458,7 +1546,7 @@ function go(step) {
   step = Math.max(0, Math.min(LAST, step));
   if (step === LETTER_STEP && !isLetter(design.shape) && !isNumber(design.shape)) step += dir;
   if (step === INSIDE_STEP && noInside(design)) step += dir;
-  if (skipStep(step, design)) step += dir;
+  while (skipStep(step, design) && step > 0 && step < LAST) step += dir;
   if (!hasHardware(design.shape) && (step === LAST - 2 || step === LAST - 1)) step = dir > 0 ? LAST : LAST - 3;
   ui.step = Math.max(0, Math.min(LAST, step));
   ui.visited.add(ui.step);
@@ -1567,6 +1655,12 @@ els.panel.addEventListener("click", (e) => {
     const sub = summaryLines(design, "en").slice(0, 3).map(([k, v]) => v).join(" · ");
     const ok = addToCart({ title: shapeName(design.shape, "en") + " – " + lab("style", design.style, "en"), sub, thumb: renderPiece(d2).replace(/<svg /, '<svg class="cart-svg" '), text: orderText().split("\n").slice(1).join("\n") });
     toast(ok ? U("addedCart") : U("cartFail"));
+  } else if (action === "savestyle") {
+    saveStyle();
+  } else if (action === "opensaves") {
+    openSaves();
+  } else if (action === "copycode") {
+    copyText(shareLink()).then(() => toast(U("linkCopied"))).catch(() => toast(U("linkFail")));
   } else if (action === "draft") {
     saveDraft();
   } else if (action === "inkcol") {
@@ -1576,7 +1670,7 @@ els.panel.addEventListener("click", (e) => {
   } else if (action === "inkclear") {
     design.inkDrops = []; renderPanel(); renderPreview();
   } else if (action === "loaddraft") {
-    loadDraft();
+    openSaves();
   } else if (action === "deco") {
     design.deco = el.dataset.id;
     for (const id of Object.keys(design.addins)) { const ad = CONFIG.addins.find((x) => x.id === id); if (!ad || !fits(ad, design)) delete design.addins[id]; }
@@ -1614,7 +1708,6 @@ els.panel.addEventListener("click", (e) => {
     resetItems(design);
     ui.zoom = 1; ui.pan = [0, 0];
     changed();
-    window.scrollTo({ top: 0, behavior: "smooth" });
   } else if (action === "scratch") {
     design = defaultDesign();
     go(1);
@@ -1718,9 +1811,8 @@ els.preview.addEventListener("pointerdown", (e) => {
   if (inking()) {
     if (!insideShape(design.shape, p.x, p.y)) return;
     e.preventDefault();
-    gesture = { type: "ink", lx: p.x, ly: p.y, n: 0 };
     addInk(p.x, p.y);
-    els.preview.setPointerCapture(e.pointerId);
+    renderPanel();
     return;
   }
   if (pouring()) {
@@ -2016,6 +2108,8 @@ els.next.addEventListener("click", () => go(ui.step + 1));
 els.back.addEventListener("click", () => go(ui.step - 1));
 $("startover").addEventListener("click", startOver);
 $("savedraft").addEventListener("click", saveDraft);
+$("mysaves").addEventListener("click", openSaves);
+$("savestyle").addEventListener("click", saveStyle);
 onLangChange(render);
 
 /* ---------- Open a shared design link (…#d=...) ---------- */

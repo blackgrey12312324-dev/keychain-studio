@@ -1185,3 +1185,18 @@ body[data-page="design"], body.designer { background: linear-gradient(180deg, #E
 .ins-sec, .addin { background: #fff; }
 .gl-img img { transform: scale(1.7); filter: brightness(1.42) contrast(0.9) saturate(1.05); }
 .ft-g img { transform: scale(1.7); filter: brightness(1.42) contrast(0.9); }
+
+/* one continuous background: no separate panel behind the piece */
+.stage, .layout .stage { background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
+.stage::after { display: none !important; }
+.stage::before { opacity: 0.6; }
+body[data-page="design"], body.designer { background: linear-gradient(180deg, #E4F2F4 0%, #FFF3E6 55%, #FCE6DA 100%) fixed !important; }
+.stage svg [stroke="#9AA4AB"] { stroke: #6E97A5 !important; }
+
+.sv-h { margin: 18px 0 6px; font-family: var(--serif); font-size: 1.3rem; color: #0E3F57; }
+.sv-code { display: flex; gap: 8px; margin-top: 6px; }
+.sv-code input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; }
+.styles-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 12px; padding: 8px 10px; background: #FFF3E6; border-radius: 12px; font-size: 0.85rem; }
+.styles-bar .chip { padding: 6px 12px; }
+#saves-drawer .cart-list li .btn { flex: none; }
+.cart-drawer { z-index: 400 !important; }

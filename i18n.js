@@ -11,10 +11,11 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      mySaves: "My saves", myDrafts: "My drafts", myStyles: "My styles", openCode: "Open a design", openCodeNote: "Paste a share link or design code someone sent you.", codePh: "Paste a link or code", codeBad: "That link or code could not be opened.", open: "Open", noDrafts: "No drafts yet. Tap Save as draft while you design.", noStyles: "No styles yet. Tap Save style to keep the look of this piece.", styleN: "Style {n}", styleSaved: "Saved as Style {n}. Apply it to any other mold.", styleApplied: "{name} applied.", applyStyle: "Apply", saveStyleBtn: "Save style", openSaves: "Open", codeShare: "Share this link or code. Anyone can paste it into My saves to open your exact design.", copyCode: "Copy link",
       bsShape: "Shape", bsStyle: "Style",
       refSub: "Finished pieces from Anna's studio. Tap a shape above to start your own.",
       waveSize: "How big are the waves?", waveDir: "Which way do the waves go?", oceanNote2: "The sea always has the same water colours. In the next step you can add starfish and little shells. The real piece will look a little different.",
-      inkWarn: "Ink spreads and moves while it cures. Your finished piece will look similar, but it will not be exactly like this preview.", inkFlow: "How should the ink flow?", inkFlowWide: "Spread out more", inkFlowWideP: "Soft, wide clouds that blend into each other.", inkFlowTight: "More concentrated", inkFlowTightP: "Tighter, stronger spots of colour.", inkDrop: "Drop your ink", inkDropNote: "Pick a colour, then tap or drag on the piece to drop ink where you want it.", inkClear: "Clear ink", inkPickFirst: "Pick up to 3 ink colours first.", colours: "Colours", inkHint: "Tap or drag on the piece to drop ink.", inkDrops: "{n} drops",
+      inkWarn: "Ink spreads and moves while it cures. Your finished piece will look similar, but it will not be exactly like this preview.", inkFlow: "How should the ink flow?", inkFlowWide: "Spread out more", inkFlowWideP: "Soft, wide clouds that blend into each other.", inkFlowTight: "More concentrated", inkFlowTightP: "Tighter, stronger spots of colour.", inkDrop: "Drop your ink", inkDropNote: "Pick a colour, then tap the piece to drop one drop of ink. It spreads out from the middle and thins towards the edge.", inkClear: "Clear ink", inkPickFirst: "Pick up to 3 ink colours first.", colours: "Colours", inkHint: "Tap the piece to drop one drop of ink.", inkDrops: "{n} drops",
       addCart: "Add to cart", addedCart: "Added to your cart. Open Cart to order several pieces together.", cartFail: "Could not save the cart on this device.",
       saveDraft: "Save as draft", draftSaved: "Draft saved on this device.", draftFail: "Could not save the draft.", draftContinue: "Continue my draft",
       decoQ: "What kind of decoration?", decoNat: "Natural", decoNatP: "Shells, starfish, pressed flowers, dried plants.", decoCharm: "Charms", decoCharmP: "Small charms, metal charms and the mini frog.", decoHint: "Choose one style first. Natural and charms are not mixed on one piece.", decoChange: "Change style",
@@ -161,6 +162,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      mySaves: "ที่บันทึกไว้", myDrafts: "แบบร่างของฉัน", myStyles: "สไตล์ของฉัน", openCode: "เปิดดีไซน์", openCodeNote: "วางลิงก์แชร์หรือรหัสดีไซน์ที่มีคนส่งมา", codePh: "วางลิงก์หรือรหัส", codeBad: "เปิดลิงก์หรือรหัสนี้ไม่ได้", open: "เปิด", noDrafts: "ยังไม่มีแบบร่าง กดบันทึกแบบร่างขณะออกแบบ", noStyles: "ยังไม่มีสไตล์ กดบันทึกสไตล์เพื่อเก็บลุคของชิ้นนี้", styleN: "สไตล์ {n}", styleSaved: "บันทึกเป็นสไตล์ {n} แล้ว ใช้กับแม่พิมพ์อื่นได้", styleApplied: "ใช้ {name} แล้ว", applyStyle: "ใช้", saveStyleBtn: "บันทึกสไตล์", openSaves: "เปิด", codeShare: "แชร์ลิงก์หรือรหัสนี้ ใครก็วางใน ที่บันทึกไว้ เพื่อเปิดดีไซน์ของคุณได้", copyCode: "คัดลอกลิงก์",
       bsShape: "รูปทรง", bsStyle: "สไตล์",
       refSub: "ผลงานจริงจากสตูดิโอของแอนนา เลือกรูปทรงด้านบนเพื่อเริ่มของคุณเอง",
       waveSize: "คลื่นใหญ่แค่ไหน?", waveDir: "คลื่นไปทางไหน?", oceanNote2: "ทะเลใช้สีน้ำชุดเดียวเสมอ ในขั้นตอนถัดไปเพิ่มปลาดาวและเปลือกหอยเล็กได้ ชิ้นงานจริงจะต่างไปเล็กน้อย",
@@ -292,6 +294,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      mySaves: "Мои сохранения", myDrafts: "Мои черновики", myStyles: "Мои стили", openCode: "Открыть дизайн", openCodeNote: "Вставьте ссылку или код дизайна, который вам прислали.", codePh: "Вставьте ссылку или код", codeBad: "Не удалось открыть эту ссылку или код.", open: "Открыть", noDrafts: "Пока нет черновиков. Нажмите «Сохранить черновик» во время создания.", noStyles: "Пока нет стилей. Нажмите «Сохранить стиль», чтобы запомнить вид изделия.", styleN: "Стиль {n}", styleSaved: "Сохранено как Стиль {n}. Примените к любой другой форме.", styleApplied: "{name} применён.", applyStyle: "Применить", saveStyleBtn: "Сохранить стиль", openSaves: "Открыть", codeShare: "Поделитесь этой ссылкой или кодом. Любой может вставить его в «Мои сохранения» и открыть ваш дизайн.", copyCode: "Скопировать ссылку",
       bsShape: "Форма", bsStyle: "Стиль",
       refSub: "Готовые работы из студии Анны. Выберите форму выше, чтобы начать своё.",
       waveSize: "Какие волны?", waveDir: "Куда идут волны?", oceanNote2: "У моря всегда одни и те же цвета воды. На следующем шаге можно добавить морские звёзды и ракушки. Настоящее изделие будет немного отличаться.",
