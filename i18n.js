@@ -11,6 +11,7 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      noRoom: "There is no room left for that piece on this mold.",
       showNote: "Pieces Anna has made. Pick a section to start your own.",
       look_shellbeach: "Shell beach", look_stormsea: "Stormy sea",
       seeDigital: "Open digital version",
@@ -170,6 +171,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      noRoom: "ไม่มีที่ว่างสำหรับชิ้นนี้บนแม่พิมพ์นี้แล้ว",
       showNote: "ผลงานที่แอนนาทำ เลือกหมวดหมู่เพื่อเริ่มของคุณเอง",
       look_shellbeach: "ชายหาดเปลือกหอย", look_stormsea: "ทะเลคลื่นแรง",
       seeDigital: "เปิดเวอร์ชันดิจิทัล",
@@ -310,6 +312,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      noRoom: "На этой форме нет места для этой детали.",
       showNote: "Работы Анны. Выберите раздел, чтобы начать своё.",
       look_shellbeach: "Ракушечный пляж", look_stormsea: "Штормовое море",
       seeDigital: "Открыть цифровую версию",

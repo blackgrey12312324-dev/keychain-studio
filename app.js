@@ -1161,6 +1161,42 @@ function sprinkle(d, gid, n, seed) {
     d.crush.push([gid, Math.round(x), Math.round(y), Math.floor(R() * 360), Math.round(85 + R() * 40)]); n--;
   }
 }
+/* A piece may only sit where all of it is inside the mold, never even slightly over the edge. */
+function itemRadius(id) { const ad = CONFIG.addins.find((x) => x.id === id); return ((ad && ad.size) || 30) * 0.5 * 0.9; }
+function itemFits(shape, x, y, id) {
+  const r = itemRadius(id);
+  if (!insideShape(shape, x, y)) return false;
+  for (let k = 0; k < 12; k++) { const an = (k / 12) * Math.PI * 2; if (!insideShape(shape, x + Math.cos(an) * r, y + Math.sin(an) * r)) return false; if (!insideShape(shape, x + Math.cos(an) * r * 0.55, y + Math.sin(an) * r * 0.55)) return false; }
+  return true;
+}
+const LAYOUT = [[0.5, 0.28], [0.4, 0.5], [0.62, 0.62], [0.45, 0.8], [0.6, 0.38], [0.36, 0.7]];
+function placeNear(d, id, tx, ty, taken) {
+  const r = itemRadius(id);
+  for (let rad = 0; rad < 150; rad += 4) for (let k = 0; k < 16; k++) {
+    const an = (k / 16) * Math.PI * 2 + rad, x = Math.round(tx + Math.cos(an) * rad), y = Math.round(ty + Math.sin(an) * rad * 1.3);
+    if (!itemFits(d.shape, x, y, id)) continue;
+    if (taken.every(([ox, oy, or]) => Math.hypot(ox - x, oy - y) > (or + r) * 0.9)) return [x, y];
+  }
+  return null;
+}
+// lay out every piece that has no position yet: composed, fully inside, not on top of each other
+function layoutItems(d) {
+  const [T, B] = bounds(d.shape), h = B - T, taken = [];
+  const sandY = d.style === "ocean" && d.ocean.sand !== "none" ? T + h * { low: 0.8, middle: 0.64, high: 0.46 }[d.ocean.sand] : null;
+  let n = 0;
+  for (const id of Object.keys(d.addins)) {
+    const sel = d.addins[id], ad = CONFIG.addins.find((x) => x.id === id);
+    if (!ad || !ad.drag) continue;
+    let tx, ty;
+    if (sandY) { tx = 110 + (n % 3) * 45; ty = sandY + (B - sandY) * (0.45 + 0.2 * (n % 2)); }
+    else { const p = LAYOUT[n % LAYOUT.length]; tx = 40 + p[0] * 220; ty = T + p[1] * h; }
+    const spot = placeNear(d, id, tx, ty, taken);
+    n++;
+    if (!spot) { delete d.addins[id]; continue; }
+    sel.items = [[spot[0], spot[1], id === "frog" ? 0 : (n % 2 ? -12 : 14)]]; sel.moved = true;
+    taken.push([spot[0], spot[1], itemRadius(id)]);
+  }
+}
 const AI = (ids) => { const o = {}; ids.forEach((id) => (o[id] = { amount: "few", place: "anna", color: "#D4AF37" })); return o; };
 function inkDrops(d, cols, spots) { const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = spots.map(([ci, fx, fy, r]) => [ci, Math.round(150 + (fx - 0.5) * 150), Math.round(T + h * fy), r]); }
 function inkLook(d, picked, spots, extra = {}) { d.style = "ink"; d.picked = picked; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "none", cells: false, background: "clear" }, extra); inkDrops(d, picked, spots); d.crush = []; }
@@ -1169,27 +1205,27 @@ const LOOKS = [
   { id: "ocean", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish", "sea-shell-scallop"]); d.crush = []; } },
   { id: "shellbeach", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "high", size: "calm", dir: "flat" }); d.addins = AI(["sea-shell-pink", "sea-shell-spiral"]); d.crush = []; } },
   { id: "stormsea", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "right" }); d.addins = AI(["sea-starfish"]); d.crush = []; } },
-  { id: "seaglass", apply(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .42, .3, 20], [1, .6, .6, 20], [2, .4, .78, 14]]); d.deco = "natural"; d.addins = AI(["dried-blue"]); sprinkle(d, "clear", 70, "sg"); } },
-  { id: "rosegold", apply(d) { gradLook(d, ["#B8693F", "#C9A99A", "#D9959C"], "diagonal"); sprinkle(d, "rosecopper", 130, "rg"); sprinkle(d, "champagne", 90, "rg2"); } },
-  { id: "sunset", apply(d) { gradLook(d, ["#D9742E", "#B04855", "#C89B2E"], "down"); sprinkle(d, "goldleaf", 70, "sg"); } },
-  { id: "goldenhour", apply(d) { gradLook(d, ["#C9A99A", "#C89B2E", "#8A5F3C"], "diagonal"); sprinkle(d, "gold", 110, "gh"); sprinkle(d, "lightgold", 70, "gh2"); } },
-  { id: "forest", apply(d) { gradLook(d, ["#3A5F55", "#4C8A7C", "#E6E0D8"], "center"); sprinkle(d, "goldleaf", 60, "fo"); sprinkle(d, "green", 50, "fo2"); } },
-  { id: "deepsea", apply(d) { gradLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], "down"); sprinkle(d, "cobalt", 80, "ds"); sprinkle(d, "clear", 50, "ds2"); } },
-  { id: "berry", apply(d) { gradLook(d, ["#8E3560", "#6A4B94", "#D9959C"], "right"); sprinkle(d, "plum", 70, "be"); sprinkle(d, "fuchsia", 60, "be2"); } },
-  { id: "blossom", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-pink", "flower-cream", "flower-mauve", "dried-pink"]); d.crush = []; sprinkle(d, "palerose", 130, "bl"); sprinkle(d, "goldleaf", 40, "bl2"); sprinkle(d, "champagne", 40, "bl3"); } },
-  { id: "lavender", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-purple", "flower-mauve", "dried-lavender", "dried-blue"]); d.crush = []; sprinkle(d, "purple", 110, "lv"); sprinkle(d, "clear", 60, "lv2"); sprinkle(d, "palerose", 30, "lv3"); } },
-  { id: "royal", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-crown-gold", "sm-heart-ruby", "sm-crown-rose"]); d.crush = []; sprinkle(d, "gold", 140, "ro"); sprinkle(d, "goldleaf", 90, "ro2"); } },
-  { id: "garden", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-butterfly-teal", "sm-rose-pink", "sm-ladybug", "sm-sunflower"]); d.crush = []; sprinkle(d, "pink", 90, "ga"); sprinkle(d, "green", 50, "ga2"); sprinkle(d, "goldleaf", 40, "ga3"); } },
-  { id: "lucky", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["frog", "charm-coin", "sm-sunflower"]); d.crush = []; sprinkle(d, "goldleaf", 130, "lu"); sprinkle(d, "green", 60, "lu2"); sprinkle(d, "gold", 40, "lu3"); } },
-  { id: "sweet", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-donut", "sm-bow-pink", "sm-heart-yellow", "sm-cookie"]); d.crush = []; sprinkle(d, "champagne", 100, "sw"); sprinkle(d, "pink", 70, "sw2"); sprinkle(d, "palerose", 40, "sw3"); } },
+  { id: "seaglass", apply(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .42, .3, 20], [1, .6, .6, 20], [2, .4, .78, 14]]); d.deco = "natural"; d.addins = AI(["dried-blue"]); sprinkle(d, "aqua", 60, "sg"); sprinkle(d, "clear", 60, "sg2"); } },
+  { id: "rosegold", apply(d) { gradLook(d, ["#B8693F", "#C9A99A", "#D9959C"], "diagonal"); sprinkle(d, "rosecopper", 120, "rg"); sprinkle(d, "pink", 60, "rg2"); sprinkle(d, "champagne", 50, "rg3"); } },
+  { id: "sunset", apply(d) { gradLook(d, ["#D9742E", "#B04855", "#C89B2E"], "down"); sprinkle(d, "red", 40, "su"); sprinkle(d, "copper", 60, "su2"); sprinkle(d, "goldleaf", 50, "su3"); } },
+  { id: "goldenhour", apply(d) { gradLook(d, ["#C9A99A", "#C89B2E", "#8A5F3C"], "diagonal"); sprinkle(d, "gold", 100, "gh"); sprinkle(d, "lightgold", 70, "gh2"); sprinkle(d, "champagne", 40, "gh3"); } },
+  { id: "forest", apply(d) { gradLook(d, ["#3A5F55", "#4C8A7C", "#E6E0D8"], "center"); sprinkle(d, "green", 90, "fo"); sprinkle(d, "olive", 60, "fo2"); sprinkle(d, "aqua", 30, "fo3"); } },
+  { id: "deepsea", apply(d) { gradLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], "down"); sprinkle(d, "aqua", 90, "ds"); sprinkle(d, "clear", 70, "ds2"); sprinkle(d, "cobalt", 25, "ds3"); } },
+  { id: "berry", apply(d) { gradLook(d, ["#8E3560", "#6A4B94", "#D9959C"], "right"); sprinkle(d, "plum", 60, "be"); sprinkle(d, "fuchsia", 70, "be2"); sprinkle(d, "pink", 40, "be3"); } },
+  { id: "blossom", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-pink", "flower-cream", "flower-mauve", "dried-pink"]); d.crush = []; sprinkle(d, "pink", 90, "bl"); sprinkle(d, "palerose", 90, "bl2"); sprinkle(d, "clear", 40, "bl3"); } },
+  { id: "lavender", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = AI(["flower-purple", "flower-mauve", "dried-lavender", "dried-blue"]); d.crush = []; sprinkle(d, "purple", 90, "lv"); sprinkle(d, "palerose", 50, "lv2"); sprinkle(d, "clear", 60, "lv3"); } },
+  { id: "royal", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-crown-gold", "sm-heart-ruby", "sm-crown-rose"]); d.crush = []; sprinkle(d, "gold", 120, "ro"); sprinkle(d, "goldleaf", 80, "ro2"); } },
+  { id: "garden", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-butterfly-teal", "sm-rose-pink", "sm-ladybug", "sm-sunflower"]); d.crush = []; sprinkle(d, "pink", 70, "ga"); sprinkle(d, "green", 50, "ga2"); sprinkle(d, "palerose", 40, "ga3"); } },
+  { id: "lucky", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["frog", "charm-coin", "sm-sunflower"]); d.crush = []; sprinkle(d, "goldleaf", 110, "lu"); sprinkle(d, "green", 60, "lu2"); } },
+  { id: "sweet", apply(d) { d.style = "clear"; d.deco = "charms"; d.addins = AI(["sm-donut", "sm-bow-pink", "sm-heart-yellow", "sm-cookie"]); d.crush = []; sprinkle(d, "pink", 80, "sw"); sprinkle(d, "palerose", 70, "sw2"); sprinkle(d, "champagne", 50, "sw3"); } },
   { id: "goldleaf", apply(d) { d.style = "clear"; d.deco = ""; d.addins = {}; d.crush = []; sprinkle(d, "goldleaf", 190, "gl"); sprinkle(d, "gold", 60, "gl2"); } },
-  { id: "pond", apply(d) { inkLook(d, ["#7FD8B2", "#3A9C5A", "#E6E0D8"], [[0, .36, .78, 20], [1, .45, .68, 15]]); d.addins = AI(["frog", "flower-teal"]); d.deco = ""; sprinkle(d, "green", 50, "po"); } },
-  { id: "midnight", apply(d) { inkLook(d, ["#4A5090", "#6A4B94", "#14151A"], [[0, .45, .28, 20], [1, .62, .56, 22], [2, .4, .8, 18]]); d.addins = {}; sprinkle(d, "gold", 50, "mi"); } },
-  { id: "inkrose", apply(d) { inkLook(d, ["#D9959C", "#C97080", "#E6E0D8"], [[0, .45, .33, 20], [1, .6, .62, 18], [2, .4, .8, 16]]); d.deco = "natural"; d.addins = AI(["flower-pink"]); sprinkle(d, "pink", 40, "ir"); } },
-  { id: "inkocean", apply(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .45, .3, 22], [1, .6, .58, 20], [2, .42, .8, 16]]); d.addins = {}; sprinkle(d, "clear", 50, "io"); } },
-  { id: "inkcopper", apply(d) { inkLook(d, ["#B8693F", "#C89B2E", "#14151A"], [[0, .42, .3, 20], [1, .6, .55, 20], [2, .45, .8, 14]]); d.deco = "charms"; d.addins = AI(["sm-crown-bronze"]); sprinkle(d, "copper", 50, "ic"); } },
+  { id: "pond", apply(d) { inkLook(d, ["#7FD8B2", "#3A9C5A", "#E6E0D8"], [[0, .36, .78, 20], [1, .45, .68, 15]]); d.addins = AI(["frog", "flower-teal"]); d.deco = ""; sprinkle(d, "green", 60, "po"); sprinkle(d, "aqua", 30, "po2"); } },
+  { id: "midnight", apply(d) { inkLook(d, ["#4A5090", "#6A4B94", "#14151A"], [[0, .45, .28, 20], [1, .62, .56, 22], [2, .4, .8, 18]]); d.addins = {}; sprinkle(d, "navy", 50, "mi"); sprinkle(d, "purple", 50, "mi2"); sprinkle(d, "gold", 25, "mi3"); } },
+  { id: "inkrose", apply(d) { inkLook(d, ["#D9959C", "#C97080", "#E6E0D8"], [[0, .45, .33, 20], [1, .6, .62, 18], [2, .4, .8, 16]]); d.deco = "natural"; d.addins = AI(["flower-pink"]); sprinkle(d, "pink", 60, "ir"); sprinkle(d, "palerose", 60, "ir2"); sprinkle(d, "clear", 30, "ir3"); } },
+  { id: "inkocean", apply(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .45, .3, 22], [1, .6, .58, 20], [2, .42, .8, 16]]); d.addins = {}; sprinkle(d, "aqua", 60, "io"); sprinkle(d, "clear", 60, "io2"); sprinkle(d, "cobalt", 20, "io3"); } },
+  { id: "inkcopper", apply(d) { inkLook(d, ["#B8693F", "#C89B2E", "#14151A"], [[0, .42, .3, 20], [1, .6, .55, 20], [2, .45, .8, 14]]); d.deco = "charms"; d.addins = AI(["sm-crown-bronze"]); sprinkle(d, "copper", 60, "ic"); sprinkle(d, "gold", 40, "ic2"); } },
 ];
-function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); return d; }
+function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); layoutItems(d); return d; }
 function inspirationHtml() {
   const ds = LOOKS.map((l) => [l, lookDesign(l)]);
   const groups = ["ocean", "gradient", "ink", "clear"].map((st) => {
@@ -1202,7 +1238,7 @@ function inspirationHtml() {
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-look-id]"); if (!b) return;
   const look = LOOKS.find((l) => l.id === b.dataset.lookId);
-  look.apply(design); resetItems(design); applyPicked(design);
+  look.apply(design); resetItems(design); applyPicked(design); layoutItems(design);
   changed();
 });
 
@@ -1219,7 +1255,7 @@ function presetDesign(p) {
   d.addins = {}; d.crush = []; d.picked = []; d.inkDrops = []; d.deco = "";
   const f = PRESET_RECIPES[p.id];
   if (f) f(d); else if (!d.picked.length && !isFresh(d)) d.picked = [...new Set(d.colors)];
-  normaliseStyle(d); applyPicked(d); resetItems(d);
+  normaliseStyle(d); applyPicked(d); resetItems(d); layoutItems(d);
   return d;
 }
 
@@ -1251,7 +1287,7 @@ const GALLERY_DESIGNS = {
 function galleryDesign(key) {
   const g = GALLERY_DESIGNS[key]; if (!g) return null;
   const d = defaultDesign(); d.shape = g.shape; d.hardware = "none"; d.tassel.type = "none"; d.crush = []; d.addins = {}; d.deco = ""; d.picked = [];
-  g.f(d); normaliseStyle(d); applyPicked(d); resetItems(d);
+  g.f(d); normaliseStyle(d); applyPicked(d); resetItems(d); layoutItems(d);
   if (customShape(d.shape) && customShape(d.shape).wood && d.style !== "ocean") { /* wood stays visible under the resin */ }
   return { d, cat: g.cat };
 }
@@ -1893,10 +1929,11 @@ els.panel.addEventListener("click", (e) => {
     const a = CONFIG.addins.find((x) => x.id === el.dataset.id);
     if (design.addins[a.id]) delete design.addins[a.id];
     else {
-      const [T, B] = bounds(design.shape), cy = (T + B) / 2;
-      let spot = [150, cy];
-      outer: for (let r = 0; r < 140; r += 6) for (let k = 0; k < 12; k++) { const an = (k / 12) * Math.PI * 2, x = 150 + Math.cos(an) * r, y = cy + Math.sin(an) * r * 1.4; if (insideShape(design.shape, x, y, 8)) { spot = [Math.round(x), Math.round(y)]; break outer; } }
-      const n = Object.keys(design.addins).length; spot = [spot[0] + (n % 3 - 1) * 14, spot[1] + (n % 2 ? 16 : -10)];
+      const [T, B] = bounds(design.shape), n = Object.keys(design.addins).length;
+      const taken = Object.keys(design.addins).flatMap((k) => (design.addins[k].items || []).map(([x, y]) => [x, y, itemRadius(k)]));
+      const p = LAYOUT[n % LAYOUT.length];
+      const spot = placeNear(design, a.id, 40 + p[0] * 220, T + p[1] * (B - T), taken) || placeNear(design, a.id, 150, (T + B) / 2, []);
+      if (!spot) { toast(U("noRoom")); return; }
       design.addins[a.id] = { amount: "few", place: "anna", color: a.color, items: [[spot[0], spot[1], 0]], moved: true };
     }
     changed();
@@ -2108,7 +2145,7 @@ function endGesture() {
   if (g.type === "drag") {
     const sel = design.addins[g.id];
     const it = sel.items[g.i];
-    if (!insideShape(design.shape, it[0], it[1])) {
+    if (!itemFits(design.shape, it[0], it[1], g.id)) {
       sel.items.splice(g.i, 1);
       if (!sel.items.length) delete design.addins[g.id];
       toast(U("removed"));
@@ -2200,7 +2237,7 @@ function endTray(e, cancel) {
     changed();
     return;
   }
-  if (!insideShape(design.shape, p.x, p.y)) { toast(U("dropInside")); return; }
+  if (!itemFits(design.shape, p.x, p.y, t0.id)) { toast(U("dropInside")); return; }
   dropAddin(t0.id, Math.round(p.x), Math.round(p.y));
 }
 els.panel.addEventListener("pointerup", (e) => endTray(e, false));
