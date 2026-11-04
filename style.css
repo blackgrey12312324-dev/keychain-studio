@@ -1305,3 +1305,8 @@ body.noprev .cards.cats { grid-template-columns: repeat(auto-fill, minmax(260px,
 .card.cat.photo:hover { transform: translateY(-8px); }
 .card.cat.photo.on::after, .card.cat.photo::before { box-shadow: none; }
 .card.cat.photo .card-art.cat-slides { height: 100% !important; width: 100% !important; aspect-ratio: auto !important; } .card.cat.photo .card-art.cat-slides .slides, .card.cat.photo .cat-slides .slides img { height: 100% !important; }
+
+/* nothing fades or drops in: pieces and photos are simply there */
+.reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+.stage-art.swing svg { animation: none !important; }
+.chip.on, .letter.on { animation: none !important; }

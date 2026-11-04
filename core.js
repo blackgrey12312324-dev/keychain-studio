@@ -296,3 +296,22 @@ document.addEventListener("pointerdown", (e) => {
 });
 window.addEventListener("load", () => { seaAtmosphere(); revealScan(); });
 new MutationObserver(() => { clearTimeout(revealScan.t); revealScan.t = setTimeout(revealScan, 120); }).observe(document.documentElement, { childList: true, subtree: true });
+
+/* Preload every picture in the background so nothing pops in or flickers while you design or scroll */
+(function preloadAll() {
+  if (typeof CONFIG === "undefined") return;
+  const urls = new Set();
+  const add = (u) => { if (u && typeof u === "string") urls.add(u); };
+  (CONFIG.addins || []).forEach((a) => add(a.img));
+  (CONFIG.glitters || []).forEach((g) => add(`images/glitter/${g.id}.png`));
+  (CONFIG.tassels || []).forEach((t) => add(`images/tassels/${t.id}.png`));
+  (CONFIG.presets || []).forEach((p) => add(p.photo));
+  Object.values(CONFIG.references || {}).forEach((arr) => arr.forEach((r) => add(r.img)));
+  (CONFIG.gallery || []).forEach((g) => g.items.forEach((i) => { add(i.img); add(i.poster); }));
+  ["metal"].forEach(() => {});
+  ["gold", "yellow", "copper", "silver", "chrome", "black"].forEach((m) => add(`images/letters/${m}.jpg`));
+  ["images/real/swirl-gray.jpg", "images/sea/starfish-drawn.svg"].forEach(add);
+  const list = [...urls];
+  const run = () => { let i = 0; const next = () => { if (i >= list.length) return; const im = new Image(); im.decoding = "async"; im.onload = im.onerror = next; im.src = list[i++]; }; next(); next(); next(); };
+  if ("requestIdleCallback" in window) requestIdleCallback(run, { timeout: 1500 }); else setTimeout(run, 300);
+})();

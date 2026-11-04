@@ -87,7 +87,7 @@ function renderHome() {
           <h2>${H("reviewsTitle")}</h2>
           <div class="reviews">${REVIEWS.map((r) => `
             <figure class="review">
-              ${r.photo ? `<img src="${esc(r.photo)}" alt="" loading="lazy">` : ""}
+              ${r.photo ? `<img src="${esc(r.photo)}" alt="" decoding="async">` : ""}
               <blockquote>${esc(tr(r, "text"))}</blockquote>
               <figcaption>${esc(r.name)}${r.place ? `, ${esc(r.place)}` : ""}</figcaption>
             </figure>`).join("")}
@@ -114,7 +114,7 @@ function renderHome() {
         </div>
         <p class="signature">${H("heroSign")}</p>
       </div>
-      <div class="hero-strip" aria-hidden="true">${["g-round", "g-bookmark", "g-coaster-sea", "g-canvas", "g-pen-red", "g-domino"].map((n) => `<img src="images/real/${n}.jpg" alt="" loading="lazy">`).join("")}</div>
+      <div class="hero-strip" aria-hidden="true">${["g-round", "g-bookmark", "g-coaster-sea", "g-canvas", "g-pen-red", "g-domino"].map((n) => `<img src="images/real/${n}.jpg" alt="" decoding="async">`).join("")}</div>
     </section>
 
     <section class="section" id="shop">
@@ -124,12 +124,12 @@ function renderHome() {
           <p>${H("readySub")}</p>
         </div>
         <h3 class="theme-h rec-h" style="margin-top:0">Recommended sea designs</h3>
-        <div class="gallery rec">${[["g-fruit-bowl", "Sea fruit bowl"], ["g-tail", "Mermaid tail board"], ["g-canvas", "Sea canvas"], ["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-bookmark", "Sea bookmark with tassel"], ["g-platter", "Sea platter"], ["g-sea-shells", "Sea canvas with shells and starfish"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" loading="lazy"><figcaption><strong>${c}</strong></figcaption>${buyBtns(n, c, "images/real/" + n + ".jpg", "Recommended sea designs")}</figure>`).join("")}</div>
+        <div class="gallery rec">${[["g-fruit-bowl", "Sea fruit bowl"], ["g-tail", "Mermaid tail board"], ["g-canvas", "Sea canvas"], ["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-bookmark", "Sea bookmark with tassel"], ["g-platter", "Sea platter"], ["g-sea-shells", "Sea canvas with shells and starfish"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" decoding="async"><figcaption><strong>${c}</strong></figcaption>${buyBtns(n, c, "images/real/" + n + ".jpg", "Recommended sea designs")}</figure>`).join("")}</div>
         <div class="themes">${CONFIG.gallery.filter((t) => t.items.length).map((t) => `
           <h3 class="theme-h">${esc(t.theme)}</h3>
-          <div class="gallery">${t.theme === "Keychains" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" loading="lazy"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption>${buyBtns(p.id, p.name, p.photo, "preset")}</figure>`).join("") : ""}${t.items.map((it) => it.video
+          <div class="gallery">${t.theme === "Keychains" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" decoding="async"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption>${buyBtns(p.id, p.name, p.photo, "preset")}</figure>`).join("") : ""}${t.items.map((it) => it.video
             ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns((it.img || it.cap).replace(/\W+/g, "-"), it.cap, it.img || it.poster, t.theme)}</figure>`
-            : `<figure><img src="${it.img}" alt="${esc(it.cap)}" loading="lazy"><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns(it.img.replace(/\W+/g, "-"), it.cap, it.img, t.theme)}</figure>`).join("")}</div>`).join("")}
+            : `<figure><img src="${it.img}" alt="${esc(it.cap)}" decoding="async"><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns(it.img.replace(/\W+/g, "-"), it.cap, it.img, t.theme)}</figure>`).join("")}</div>`).join("")}
         </div>
       </div>
     </section>
@@ -149,7 +149,7 @@ function renderHome() {
           ["Any size canvas", "canvas.html?kind=beach", "images/real/g-canvas.jpg|images/real/g-sea-wide.jpg", "#2F5FA8", [["Sea style", "canvas.html?kind=beach"], ["Abstract", "canvas.html?kind=abstract"]]],
           ["Custom gifts", "canvas.html?kind=photo", "images/real/g-collage.jpg|images/real/g-saeed.jpg", "#C45160", [["Your photo, any shape", "canvas.html?kind=photo"], ["Your style, your theme", "canvas.html?kind=photo"]]],
           ["Send us a photo", "idea.html", "images/real/g-saeed.jpg", "#6B7A8F", [["Send a photo, we will tell you if we can make it", "idea.html"], ["Contact us", "idea.html"]]],
-        ].map(([title, href, img, col, subs], n) => `<div class="make" id="sec-${["keychains","accessories","statues","kitchen","cutting","paint","gift","send"][n]}" style="--c:${col}"><a class="make-img" href="${href}"><span class="slides" data-n="${slidesFor(n, img).length}">${slidesFor(n, img).map((im) => `<img src="${im}" alt="" loading="lazy">`).join("")}</span></a><div class="make-body"><h3><a href="${href}">${title}</a></h3><div class="chips-row">${subs.map(([x, hr, hl]) => `<a class="pill${hl ? " pill-hl" : ""}" href="${hr}">${x}</a>`).join("")}</div></div></div>`).join("")}
+        ].map(([title, href, img, col, subs], n) => `<div class="make" id="sec-${["keychains","accessories","statues","kitchen","cutting","paint","gift","send"][n]}" style="--c:${col}"><a class="make-img" href="${href}"><span class="slides" data-n="${slidesFor(n, img).length}">${slidesFor(n, img).map((im) => `<img src="${im}" alt="" decoding="async">`).join("")}</span></a><div class="make-body"><h3><a href="${href}">${title}</a></h3><div class="chips-row">${subs.map(([x, hr, hl]) => `<a class="pill${hl ? " pill-hl" : ""}" href="${hr}">${x}</a>`).join("")}</div></div></div>`).join("")}
       </div>
     </section>
 
@@ -172,7 +172,7 @@ function renderHome() {
         </div>
         <div class="styles styles-3">${[["Colour", "Pick from 28 epoxy colours, glitter and ink swirls.", "images/pink-heartbeat.jpg"], ["Small pieces inside", "Flowers, shells, charms, gold leaf and tiny letters.", "images/golden-hour.jpg"], ["Your photos", "Custom photos set into resin, in any shape.", "images/real/g-collage.jpg"]].map(([n, d, im]) => `
           <a class="style-card" href="design.html?start=1" style="text-decoration:none;color:inherit">
-            <img src="${im}" alt="" loading="lazy">
+            <img src="${im}" alt="" decoding="async">
             <span class="style-cap"><strong>${n}</strong><span>${d}</span></span>
           </a>`).join("")}
         </div>
@@ -190,7 +190,7 @@ function renderHome() {
 
     <section class="section story">
       <div class="wrap story-grid">
-        <img src="images/andaman-bloom.jpg" alt="" loading="lazy">
+        <img src="images/andaman-bloom.jpg" alt="" decoding="async">
         <div>
           <h2>${H("storyTitle")}</h2>
           <p>${H("storyP1")}</p>
@@ -209,7 +209,7 @@ function renderHome() {
           <a class="btn btn-line" href="https://www.instagram.com/${CONFIG.instagram}/" target="_blank" rel="noopener">${H("igCta", { handle: CONFIG.instagram })}</a>
         </div>
         <div class="ig-photos">${presets.slice(0, 4).map((p) =>
-          `<a href="https://www.instagram.com/${CONFIG.instagram}/" target="_blank" rel="noopener"><img src="${p.photo}" alt="" loading="lazy"></a>`).join("")}</div>
+          `<a href="https://www.instagram.com/${CONFIG.instagram}/" target="_blank" rel="noopener"><img src="${p.photo}" alt="" decoding="async"></a>`).join("")}</div>
       </div>
     </section>
 

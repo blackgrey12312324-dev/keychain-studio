@@ -1034,7 +1034,7 @@ const U = (k, v) => t("ui." + k, v);
 function presetArt(p, d) {
   const drawing = renderPiece(d);
   if (!p.photo) return drawing;
-  return `<img src="${esc(p.photo)}" alt="${esc(p.name)}" loading="lazy" onerror="this.parentNode.classList.add('no-photo');this.remove()"><div class="fallback">${drawing}</div>`;
+  return `<img src="${esc(p.photo)}" alt="${esc(p.name)}" decoding="async" onerror="this.parentNode.classList.add('no-photo');this.remove()"><div class="fallback">${drawing}</div>`;
 }
 
 function reviewThumbs(d) {
@@ -1331,7 +1331,7 @@ const STEP_VIEWS = [
         const d = merge(copy(design), { shape: c.shape, hardware: "none" });
         if (c.shape === "A") d.font = "block";
         const imgs = (CONFIG.references[c.id] || []).map((r) => r.img).slice(0, 8);
-        const art = imgs.length ? `<span class="card-art cat-slides"><span class="slides">${imgs.concat(imgs[0]).map((im) => `<img src="${im}" alt="" loading="lazy">`).join("")}</span></span>` : `<span class="card-art">${renderPiece(d)}</span>`;
+        const art = imgs.length ? `<span class="card-art cat-slides"><span class="slides">${imgs.concat(imgs[0]).map((im) => `<img src="${im}" alt="" decoding="async">`).join("")}</span></span>` : `<span class="card-art">${renderPiece(d)}</span>`;
         const inner = `${art}<span class="card-name">${c.name}</span><span class="card-text">${c.text}</span>`;
         const col = { keychains: "#134B63", accessories: "#E8806C", statues: "#8C6BB1", kitchen: "#2E8B8B", cutting: "#B5803E", paint: "#2F5FA8", gift: "#C45160" }[c.id] || "#134B63";
         return c.href ? `<a class="card cat photo" style="--c:${col}" href="${c.href}">${inner}</a>` : `<button type="button" class="card cat photo" style="--c:${col}" data-action="cat" data-id="${c.id}">${inner}</button>`;
@@ -1365,7 +1365,7 @@ const STEP_VIEWS = [
         + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall"]), "boards") + `<p class="small-note">${U("moreSoon")}</p>`;
     }
     const refs = (CONFIG.references && CONFIG.references[ui.cat]) || [];
-    const refHtml = refs.length ? `<section class="example-work"><div class="ex-head"><h3>${U("refTitle")}</h3><p>${U("refSub")}</p></div><div class="refs">${refs.map((r) => { const key = r.img.split("/").pop().replace(/\.\w+$/, ""); const pre = CONFIG.presets.find((p) => p.photo === r.img); const href = GALLERY_DESIGNS[key] ? `design.html?gallery=${key}` : pre ? `design.html?preset=${pre.id}` : ""; const img = `<img src="${r.img}" alt="" loading="lazy">`; return `<figure>${href ? `<a href="${href}" class="ex-link">${img}<span class="ex-open">${U("seeDigital")}</span></a>` : img}<figcaption>${esc(r.cap)}</figcaption></figure>`; }).join("")}</div></section>` : "";
+    const refHtml = refs.length ? `<section class="example-work"><div class="ex-head"><h3>${U("refTitle")}</h3><p>${U("refSub")}</p></div><div class="refs">${refs.map((r) => { const key = r.img.split("/").pop().replace(/\.\w+$/, ""); const pre = CONFIG.presets.find((p) => p.photo === r.img); const href = GALLERY_DESIGNS[key] ? `design.html?gallery=${key}` : pre ? `design.html?preset=${pre.id}` : ""; const img = `<img src="${r.img}" alt="" decoding="async">`; return `<figure>${href ? `<a href="${href}" class="ex-link">${img}<span class="ex-open">${U("seeDigital")}</span></a>` : img}<figcaption>${esc(r.cap)}</figcaption></figure>`; }).join("")}</div></section>` : "";
     return `<button type="button" class="btn btn-line small" data-action="cat" data-id="">${U("catBack")}</button>
       <h2>${U("sMoldH")}</h2><p class="hint">${U("sMoldP")}</p>${body}${refHtml}`;
   },
@@ -1636,7 +1636,7 @@ function showcaseHtml() {
   CONFIG.presets.forEach((p) => { if (!seen.has(p.photo)) { seen.add(p.photo); list.push([p.photo, p.name]); } });
   Object.values(CONFIG.references || {}).forEach((arr) => arr.forEach((r) => { if (r.img && !seen.has(r.img)) { seen.add(r.img); list.push([r.img, r.cap]); } }));
   list.push(list[0]);
-  return `<div class="showcase"><div class="show-track">${list.map(([im, c]) => `<figure><img src="${im}" alt="" loading="lazy"><figcaption>${esc(c)}</figcaption></figure>`).join("")}</div><p class="show-note">${U("showNote")}</p></div>`;
+  return `<div class="showcase"><div class="show-track">${list.map(([im, c]) => `<figure><img src="${im}" alt="" decoding="async"><figcaption>${esc(c)}</figcaption></figure>`).join("")}</div><p class="show-note">${U("showNote")}</p></div>`;
 }
 function startShowcase() {
   clearInterval(showTimer);
@@ -1710,11 +1710,7 @@ function render() {
   renderPanel();
   renderStudioTools();
 }
-function swing() {
-  els.preview.classList.remove("swing");
-  void els.preview.offsetWidth;
-  els.preview.classList.add("swing");
-}
+function swing() { /* no flicker: the piece no longer bounces when it changes */ }
 // Each style keeps only its own settings, so nothing from the previous style stays on the piece.
 function normaliseStyle(d) {
   if (d.ink) { d.ink.shimmer = "none"; d.ink.cells = false; d.ink.background = "clear"; }
