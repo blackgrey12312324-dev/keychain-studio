@@ -101,7 +101,7 @@ function moldRank(shape) {
   const s = c && c.size;
   return s === "big" ? 2 : s === "medium" ? 1 : 0;
 }
-const CHARM_GROUPS = ["small", "seaanimals", "charms"];
+const CHARM_GROUPS = ["small", "seaanimals", "metalsea", "charms"];
 const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1, dried: 1 };
 const INSIDE_STEP = 7;
 const COLOURS_STEP = 4, GLITTER_STEP_NO = 6;
@@ -804,29 +804,47 @@ function itemsLayer(d, pid, interactive) {
   return s;
 }
 
-/* ---------- select a piece, then Delete it ---------- */
+/* ---------- select pieces (click, shift-click or drag a box around them), then Delete ---------- */
+ui.sels = [];
+function validSel(s) { const ad = design.addins[s.id]; return !!(ad && ad.items && ad.items[s.i]); }
 function markSelected() {
   els.preview.querySelectorAll(".item.sel").forEach((n) => n.classList.remove("sel"));
-  const s = ui.sel;
+  ui.sels = ui.sels.filter(validSel);
   let btn = document.getElementById("del-item");
-  if (!s || !design.addins[s.id] || !design.addins[s.id].items || !design.addins[s.id].items[s.i]) { ui.sel = null; if (btn) btn.hidden = true; return; }
-  const n = els.preview.querySelector(`.item[data-id="${s.id}"][data-i="${s.i}"]`);
-  if (n) n.classList.add("sel");
+  if (!ui.sels.length) { if (btn) btn.hidden = true; return; }
+  ui.sels.forEach((s) => { const n = els.preview.querySelector(`.item[data-id="${s.id}"][data-i="${s.i}"]`); if (n) n.classList.add("sel"); });
   if (!btn) {
     btn = document.createElement("button"); btn.type = "button"; btn.id = "del-item"; btn.className = "btn btn-ink small del-item";
     btn.addEventListener("click", deleteSelected);
     els.stage.appendChild(btn);
   }
-  btn.textContent = "🗑 " + U("deleteItem"); btn.hidden = false;
+  btn.textContent = "🗑 " + U("deleteItem") + (ui.sels.length > 1 ? " (" + ui.sels.length + ")" : ""); btn.hidden = false;
 }
 function deleteSelected() {
-  const s = ui.sel; if (!s) return;
-  const sel = design.addins[s.id];
-  if (sel && sel.items) { sel.items.splice(s.i, 1); if (!sel.items.length) delete design.addins[s.id]; }
-  ui.sel = null; render(); markSelected();
+  if (!ui.sels.length) return;
+  const byId = {};
+  ui.sels.forEach((s) => (byId[s.id] = (byId[s.id] || []).concat(s.i)));
+  for (const id in byId) {
+    const sel = design.addins[id]; if (!sel || !sel.items) continue;
+    byId[id].sort((x, y) => y - x).forEach((k) => sel.items.splice(k, 1));
+    if (!sel.items.length) delete design.addins[id];
+  }
+  ui.sels = []; render(); markSelected();
 }
-document.addEventListener("keydown", (e) => { if ((e.key === "Delete" || e.key === "Backspace") && ui.sel && !/INPUT|TEXTAREA/.test((e.target || {}).tagName || "")) { e.preventDefault(); deleteSelected(); } });
-setTimeout(() => els.preview.addEventListener("pointerdown", (e) => { if (!e.target.closest(".item") && ui.sel) { ui.sel = null; markSelected(); } }, true), 0);
+document.addEventListener("keydown", (e) => { if ((e.key === "Delete" || e.key === "Backspace") && ui.sels.length && !/INPUT|TEXTAREA/.test((e.target || {}).tagName || "")) { e.preventDefault(); deleteSelected(); } if (e.key === "Escape" && ui.sels.length) { ui.sels = []; markSelected(); } });
+function marqueeStart(e) {
+  const box = document.createElement("div"); box.className = "marquee"; document.body.appendChild(box);
+  gesture = { type: "marquee", sx: e.clientX, sy: e.clientY, box, add: e.shiftKey, base: e.shiftKey ? ui.sels.slice() : [] };
+  els.preview.setPointerCapture(e.pointerId);
+}
+function marqueeMove(e) {
+  const g = gesture, x0 = Math.min(g.sx, e.clientX), y0 = Math.min(g.sy, e.clientY), x1 = Math.max(g.sx, e.clientX), y1 = Math.max(g.sy, e.clientY);
+  Object.assign(g.box.style, { left: x0 + "px", top: y0 + "px", width: x1 - x0 + "px", height: y1 - y0 + "px" });
+  const picked = g.base.slice();
+  els.preview.querySelectorAll(".item").forEach((n) => { const r = n.getBoundingClientRect(); if (r.right > x0 && r.left < x1 && r.bottom > y0 && r.top < y1) { const s = { id: n.dataset.id, i: Number(n.dataset.i) }; if (!picked.some((q) => q.id === s.id && q.i === s.i)) picked.push(s); } });
+  ui.sels = picked; markSelected();
+}
+setTimeout(() => els.preview.addEventListener("pointerdown", (e) => { if (!e.target.closest(".item") && ui.sels.length && !e.shiftKey) { ui.sels = []; markSelected(); } }, true), 0);
 const BRUSH = { s: 4, m: 9, l: 16 };
 function strokePath(pts) {
   let p = "";
@@ -1523,6 +1541,8 @@ const STEP_VIEWS = [
   rose: { name: "Rose", ids: ["sm-rose-pink", "sm-rose-red", "sm-rose-champagne", "sm-rose-purple", "sm-rose-blue"], cols: ["#E58FA6", "#B5232F", "#E3C9A8", "#7E4FB5", "#8FB6D9"] },
   turtle: { name: "Turtle", ids: ["sm-turtle-pink", "sm-turtle-yellow", "sm-turtle-brown"], cols: ["#E58FA6", "#E8C23A", "#8A5A3A"] },
   crab: { name: "Crab", ids: ["sm-crab-red", "sm-crab-yellow", "sm-crab-green"], cols: ["#C8283A", "#E8C23A", "#4C9A4A"] },
+  metalsea: { name: "Metal seashell (not natural)", thumb: true, ids: ["sm-shell-gold", "sm-shell-blue", "sm-starfish-gold"] },
+  scallop: { name: "Scallop shell", ids: ["sea-shell-scallop", "sea-shell-pink"], cols: ["#F2DCCB", "#EFA9A0"] },
   silver: { name: "Random silver charm", random: true, ids: ["sm-metal-wing", "sm-metal-horn", "sm-metal-moth", "sm-metal-bird"] },
   pressed: { name: "Pressed flower", ids: ["flower-red", "flower-orange", "flower-yellow", "flower-mint", "flower-teal", "flower-blue", "flower-purple", "flower-plum", "flower-magenta", "flower-pink", "flower-mauve", "flower-cream"], cols: ["#B8756F", "#D7A06A", "#DCC47A", "#9DBBA3", "#7FA9A6", "#8398B8", "#8E7CAD", "#8F6A86", "#B5718F", "#D9A3B0", "#A98AA0", "#E9DEC8"] },
   paperflower: { name: "Paper flower", ids: ["pf-blue", "pf-pink", "pf-pink2", "pf-magenta", "pf-magenta2", "pf-purple", "pf-purple2"], cols: ["#5F86D8", "#F4A0BB", "#E8809C", "#C2308A", "#D43A9C", "#7B4BC4", "#A98AD0"] },
@@ -1536,7 +1556,7 @@ const STEP_VIEWS = [
 };
 window.familyOf = (id) => Object.keys(FAMILIES).find((k) => FAMILIES[k].ids.includes(id));
 ui.fam = ui.fam || {};
-const RANK = ["sea", "seaanimals", "small", "charms", "flowers", "dried", "paperflowers", "trees", "nature", "lights"];
+const RANK = ["sea", "metalsea", "seaanimals", "small", "charms", "flowers", "dried", "paperflowers", "trees", "nature", "lights"];
     order.sort((x, y) => (RANK.indexOf(x) < 0 ? 99 : RANK.indexOf(x)) - (RANK.indexOf(y) < 0 ? 99 : RANK.indexOf(y)));
     const RECOMMENDED = ["sea"];
     const sections = order.map((k) => {
@@ -2094,6 +2114,7 @@ els.preview.addEventListener("pointerdown", (e) => {
   }
   const item = e.target.closest(".item");
   if (!item) {
+    if (ui.zoom <= 1 && Object.values(design.addins).some((s) => s.items && s.items.length)) { e.preventDefault(); marqueeStart(e); return; }
     if (ui.zoom > 1) {
       e.preventDefault();
       gesture = { type: "pan", sx: e.clientX, sy: e.clientY, ox: ui.pan[0], oy: ui.pan[1] };
@@ -2104,7 +2125,7 @@ els.preview.addEventListener("pointerdown", (e) => {
   e.preventDefault();
   const id = item.dataset.id, i = Number(item.dataset.i);
   const it = design.addins[id].items[i];
-  ui.sel = { id, i };
+  if (e.shiftKey) { if (!ui.sels.some((q) => q.id === id && q.i === i)) ui.sels.push({ id, i }); } else if (!ui.sels.some((q) => q.id === id && q.i === i)) ui.sels = [{ id, i }];
   markSelected();
   gesture = { type: "drag", id, i, el: item, sx: p.x, sy: p.y, ox: it[0], oy: it[1] };
   item.classList.add("dragging");
@@ -2136,6 +2157,7 @@ els.preview.addEventListener("pointermove", (e) => {
     if (nearShape(design.shape, p.x, p.y)) gesture.n += addStamp(gesture, p.x, p.y);
     return;
   }
+  if (gesture.type === "marquee") { marqueeMove(e); return; }
   if (gesture.type === "pan") {
     const svg = els.preview.querySelector("svg");
     const k = (300 / ui.zoom) / svg.getBoundingClientRect().width;
@@ -2168,6 +2190,7 @@ function endGesture() {
   if (!gesture) return;
   const g = gesture;
   gesture = null;
+  if (g.type === "marquee") { g.box.remove(); return; }
   if (g.type === "pan") return;
   if (g.type === "ltr") { design.letters.moved = true; const box = $("order-text"); if (box) box.value = orderText(); return; }
   if (g.type === "ink") { renderPanel(); const box = $("order-text"); if (box) box.value = orderText(); return; }

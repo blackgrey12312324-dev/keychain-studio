@@ -11,6 +11,7 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
+      metalseaH: "Metal seashells (not natural)", metalseaP: "Artificial shells and a starfish made of metal. They are not real shells.",
       pickKind: "Choose one:",
       pickColour: "Choose the colour:",
       seaanimalsH: "Sea animals", seaanimalsP: "Little resin crabs and turtles for beach and sea pieces.",
@@ -174,6 +175,7 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
+      metalseaH: "เปลือกหอยโลหะ (ไม่ใช่ของธรรมชาติ)", metalseaP: "เปลือกหอยและปลาดาวเทียมทำจากโลหะ ไม่ใช่เปลือกหอยจริง",
       pickKind: "เลือกแบบ:",
       pickColour: "เลือกสี:",
       seaanimalsH: "สัตว์ทะเล", seaanimalsP: "ปูและเต่าเรซินตัวจิ๋วสำหรับงานชายหาดและทะเล",
@@ -318,6 +320,7 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
+      metalseaH: "Металлические ракушки (не натуральные)", metalseaP: "Искусственные ракушки и морская звезда из металла. Это не настоящие ракушки.",
       pickKind: "Выберите вид:",
       pickColour: "Выберите цвет:",
       seaanimalsH: "Морские животные", seaanimalsP: "Маленькие крабики и черепашки из смолы для пляжных и морских работ.",

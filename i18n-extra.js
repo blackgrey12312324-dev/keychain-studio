@@ -1,6 +1,7 @@
 /* Extra translations: every English text on the pages that has no entry in i18n.js. Applied automatically by core.js. */
 const PHRASES = {
 "th": {
+"Metal seashell (not natural)": "เปลือกหอยโลหะ (ไม่ใช่ของธรรมชาติ)",
 "Luxury metal charms": "ชาร์มโลหะหรู",
 "Random silver charm": "ของเงินสุ่ม",
 "Pressed flower": "ดอกไม้อัด",
@@ -421,6 +422,7 @@ const PHRASES = {
 "Bun pin": "ปิ่นปักผม"
 },
 "ru": {
+"Metal seashell (not natural)": "Металлическая ракушка (не натуральная)",
 "Luxury metal charms": "Роскошные металлические подвески",
 "Random silver charm": "Случайная серебряная подвеска",
 "Pressed flower": "Прессованный цветок",

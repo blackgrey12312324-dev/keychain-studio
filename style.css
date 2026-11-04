@@ -1319,3 +1319,6 @@ body.noprev .cards.cats { grid-template-columns: repeat(auto-fill, minmax(260px,
 .fam-dot.thumb { width: 64px !important; height: 64px !important; border-radius: 14px; }
 .fam-dots { padding-left: 14px; }
 .fam-dot.on { box-shadow: 0 0 0 3px #19708A; }
+
+.marquee { position: fixed; z-index: 500; border: 1.5px solid #19708A; background: rgba(25,112,138,0.12); border-radius: 4px; pointer-events: none; }
+#preview { user-select: none; -webkit-user-select: none; }

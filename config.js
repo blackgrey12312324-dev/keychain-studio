@@ -388,7 +388,7 @@ CONFIG.smallItems = [
 ];
 CONFIG.smallItems.forEach((s) => {
   s.img = `images/small/${s.id}.png`;
-  CONFIG.addins.push({ id: `sm-${s.id}`, name: s.name, price: 0, color: "#D4AF37", drag: true, metal: /^(shell|starfish)/.test(s.id), group: /^(shell|starfish)/.test(s.id) ? "sea" : /^(crab|turtle)/.test(s.id) ? "seaanimals" : "small", img: s.img, size: 32, fx: "drop-shadow(0 1px 1.2px rgba(0,0,0,0.35))" });
+  CONFIG.addins.push({ id: `sm-${s.id}`, name: s.name, price: 0, color: "#D4AF37", drag: true, metal: /^(shell|starfish)/.test(s.id), group: /^(shell|starfish)/.test(s.id) ? "metalsea" : /^(crab|turtle)/.test(s.id) ? "seaanimals" : "small", img: s.img, size: 32, fx: "drop-shadow(0 1px 1.2px rgba(0,0,0,0.35))" });
   CONFIG.paperFlowers.push({ id: `sm-${s.id}`, name: s.name, img: s.img });
 });
 
