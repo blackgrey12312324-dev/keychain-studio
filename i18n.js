@@ -79,7 +79,7 @@ const I18N = {
       paperflowersH: "Big paper flowers", paperflowersP: "Real 3D paper flowers and roses. They are bigger, so they suit big molds and canvases.",
       realTassels: "Our real tassels",
       flowersH: "Pressed flowers", flowersP: "Real pressed flowers in twelve colours. They are flat, so they fit almost anywhere.",
-      charmsH: "Metal charms", charmsP: "Tiny gold charms that sit inside the resin. They are small, so they fit almost anywhere.",
+      charmsH: "Luxury metal charms", charmsP: "Tiny gold charms that sit inside the resin. They are small, so they fit almost anywhere.",
       sGlH: "Glitter and sprinkles", sGlP: "Tap a material, then drag over your piece to sprinkle it. Small puts one dot at a time, medium and big sprinkle more.",
       glPick: "Colour", glAmount: "How much each time", glSize: "Brush size", glFill: "Fill the whole piece", glUndo: "Undo", glClear: "Clear glitter",
       glStop: "Stop sprinkling", glHint: "Sprinkling {name}. Drag on the piece. Tap the colour again to stop.",

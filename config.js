@@ -123,7 +123,6 @@ const CONFIG = {
     { id: "tree-green", name: "Green tree", price: 0, color: "#D4AF37", drag: true, single: true, group: "trees", img: "images/trees/green.png", size: 120, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "tree-yellow", name: "Yellow tree", price: 0, color: "#D4AF37", drag: true, single: true, group: "trees", img: "images/trees/yellow.png", size: 120, fx: "drop-shadow(0 2px 2px rgba(0,0,0,0.3))" },
     { id: "charm-pistol", name: "Gold pistol", price: 0, color: "#D4AF37", drag: true, group: "charms", img: "images/charms/pistol.png", size: 52 },
-    { id: "charm-pistol2", name: "Silver pistol", price: 0, color: "#D4AF37", drag: true, group: "charms", img: "images/charms/pistol2.png", size: 52 },
     { id: "charm-ak-long", name: "Long rifle with crystals", price: 0, color: "#D4AF37", drag: true, group: "charms", img: "images/charms/ak-long.png", size: 60 },
     { id: "charm-ak", name: "Rifle with crystals", price: 0, color: "#D4AF37", drag: true, group: "charms", img: "images/charms/ak.png", size: 52 },
     { id: "charm-ak-mini", name: "Mini rifle", price: 0, color: "#D4AF37", drag: true, group: "charms", img: "images/charms/ak-mini.png", size: 44 },
@@ -371,7 +370,6 @@ CONFIG.smallItems = [
   { id: "crown-rose", name: "Rose gold crown" },
   { id: "crown-bronze", name: "Bronze crown" },
   { id: "crown-gold", name: "Gold crown" },
-  { id: "donut", name: "Bear donut" },
   { id: "ladybug", name: "Ladybug" },
   { id: "rose-champagne", name: "Champagne rose" },
   { id: "rose-pink", name: "Pink rose" },
@@ -379,7 +377,6 @@ CONFIG.smallItems = [
   { id: "rose-blue", name: "Blue rose" },
   { id: "rose-purple", name: "Purple rose" },
   { id: "sunflower", name: "Sunflower" },
-  { id: "gummy-bear", name: "Gummy bear" },
   { id: "shell-blue", name: "Blue shell" },
   { id: "shell-gold", name: "Gold shell" },
   { id: "bow-pink", name: "Pink bow" },
@@ -391,7 +388,7 @@ CONFIG.smallItems = [
 ];
 CONFIG.smallItems.forEach((s) => {
   s.img = `images/small/${s.id}.png`;
-  CONFIG.addins.push({ id: `sm-${s.id}`, name: s.name, price: 0, color: "#D4AF37", drag: true, group: /^(crab|turtle)/.test(s.id) ? "seaanimals" : "small", img: s.img, size: 32, fx: "drop-shadow(0 1px 1.2px rgba(0,0,0,0.35))" });
+  CONFIG.addins.push({ id: `sm-${s.id}`, name: s.name, price: 0, color: "#D4AF37", drag: true, metal: /^(shell|starfish)/.test(s.id), group: /^(shell|starfish)/.test(s.id) ? "sea" : /^(crab|turtle)/.test(s.id) ? "seaanimals" : "small", img: s.img, size: 32, fx: "drop-shadow(0 1px 1.2px rgba(0,0,0,0.35))" });
   CONFIG.paperFlowers.push({ id: `sm-${s.id}`, name: s.name, img: s.img });
 });
 

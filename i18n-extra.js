@@ -1,7 +1,8 @@
 /* Extra translations: every English text on the pages that has no entry in i18n.js. Applied automatically by core.js. */
 const PHRASES = {
 "th": {
-"Silver charm": "ของเงิน",
+"Luxury metal charms": "ชาร์มโลหะหรู",
+"Random silver charm": "ของเงินสุ่ม",
 "Pressed flower": "ดอกไม้อัด",
 "Paper flower": "ดอกไม้กระดาษ",
 "Paper rose": "กุหลาบกระดาษ",
@@ -420,7 +421,8 @@ const PHRASES = {
 "Bun pin": "ปิ่นปักผม"
 },
 "ru": {
-"Silver charm": "Серебряная подвеска",
+"Luxury metal charms": "Роскошные металлические подвески",
+"Random silver charm": "Случайная серебряная подвеска",
 "Pressed flower": "Прессованный цветок",
 "Paper flower": "Бумажный цветок",
 "Paper rose": "Бумажная роза",

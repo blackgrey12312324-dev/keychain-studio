@@ -113,7 +113,7 @@ const noInside = (d) => d.style === "gradient";
 const INK_GROUPS = ["small", "seaanimals", "charms", "flowers", "dried"];
 function fits(a, d) {
   if (d.style === "gradient") return false;
-  if (d.style === "ocean") return a.group === "sea";
+  if (d.style === "ocean") return a.group === "sea" && !a.metal;
   if (d.style === "ink" && !INK_GROUPS.includes(a.group)) return false;
   if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
   if (d.deco === "charms" && !CHARM_GROUPS.includes(a.group)) return false;
@@ -1456,9 +1456,10 @@ const STEP_VIEWS = [
     return `
     <h2>${U("sGlH")}</h2>
     <p class="hint">${U("sGlP")}</p>
+    ${field(U("glSize"), `<div class="chips brush-sizes">${["s", "m", "l"].map((v) => `<button type="button" class="chip brush ${ui.pour.size === v ? "on" : ""}" aria-pressed="${ui.pour.size === v}" data-pour="size" data-value="${v}"><span class="brush-dot" style="width:${{ s: 6, m: 16, l: 30 }[v]}px;height:${{ s: 6, m: 16, l: 30 }[v]}px"></span>${U("glSz")[v]}</button>`).join("")}</div>`)}
     <div class="gl-grid">${grid}</div>
     ${cur ? `<p class="gl-hint">${U("glHint", { name: glitterName(cur) })}</p>` : ""}
-    ${field(U("glSize"), `<div class="chips brush-sizes">${["s", "m", "l"].map((v) => `<button type="button" class="chip brush ${ui.pour.size === v ? "on" : ""}" aria-pressed="${ui.pour.size === v}" data-pour="size" data-value="${v}"><span class="brush-dot" style="width:${{ s: 6, m: 16, l: 30 }[v]}px;height:${{ s: 6, m: 16, l: 30 }[v]}px"></span>${U("glSz")[v]}</button>`).join("")}</div>`)}
+    
     <div class="chips">
       <button type="button" class="btn btn-line small" data-action="glfill" ${cur ? "" : "disabled"}>${U("glFill")}</button>
       <button type="button" class="btn btn-line small" data-action="glundo" ${ui.pourHistory.length ? "" : "disabled"}>${U("glUndo")}</button>
@@ -1494,9 +1495,9 @@ const STEP_VIEWS = [
         if (a0.id !== F.ids[0]) return "";
         const cur = F.ids.find((id) => design.addins[id]) || ui.fam[fk] || F.ids[0];
         a = CONFIG.addins.find((x) => x.id === cur) || a0;
-        const dots = F.ids.map((id, i) => `<button type="button" class="fam-dot ${F.thumb ? "thumb" : ""} ${cur === id ? "on" : ""}" style="background:${F.thumb ? `#fff url(${(CONFIG.addins.find((x) => x.id === id) || {}).img}) center/contain no-repeat` : F.cols[i]}" data-action="variant" data-fam="${fk}" data-id="${id}" aria-label="${esc(F.name)} ${i + 1}"></button>`).join("");
+        const dots = F.random ? "" : F.ids.map((id, i) => `<button type="button" class="fam-dot ${F.thumb ? "thumb" : ""} ${cur === id ? "on" : ""}" style="background:${F.thumb ? `#fff url(${(CONFIG.addins.find((x) => x.id === id) || {}).img}) center/contain no-repeat` : F.cols[i]}" data-action="variant" data-fam="${fk}" data-id="${id}" aria-label="${esc(F.name)} ${i + 1}"></button>`).join("");
         const sel0 = design.addins[a.id], on0 = !!sel0;
-        return `<div class="addin ${on0 ? "on" : ""}"><button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on0}"><span class="em" style="background:#E9F1F0 url(${a.img}) center/78% no-repeat"></span><span class="nm">${tr({ name: F.name, name_th: (PHRASES.th || {})[F.name], name_ru: (PHRASES.ru || {})[F.name] }, "name")}</span><span class="tick">${on0 ? U("added") : U("add")}</span></button><div class="fam-dots"><span class="small-note">${F.thumb ? U("pickKind") : U("pickColour")}</span>${dots}</div></div>`;
+        return `<div class="addin ${on0 ? "on" : ""}"><button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on0}"><span class="em" style="background:#E9F1F0 url(${a.img}) center/78% no-repeat"></span><span class="nm">${tr({ name: F.name, name_th: (PHRASES.th || {})[F.name], name_ru: (PHRASES.ru || {})[F.name] }, "name")}</span><span class="tick">${on0 ? U("added") : U("add")}</span></button>${F.random ? "" : `<div class="fam-dots"><span class="small-note">${F.thumb ? U("pickKind") : U("pickColour")}</span>${dots}</div>`}</div>`;
       }
       const sel = design.addins[a.id];
       const reason = blockedReason(a.id, design);
@@ -1522,8 +1523,7 @@ const STEP_VIEWS = [
   rose: { name: "Rose", ids: ["sm-rose-pink", "sm-rose-red", "sm-rose-champagne", "sm-rose-purple", "sm-rose-blue"], cols: ["#E58FA6", "#B5232F", "#E3C9A8", "#7E4FB5", "#8FB6D9"] },
   turtle: { name: "Turtle", ids: ["sm-turtle-pink", "sm-turtle-yellow", "sm-turtle-brown"], cols: ["#E58FA6", "#E8C23A", "#8A5A3A"] },
   crab: { name: "Crab", ids: ["sm-crab-red", "sm-crab-yellow", "sm-crab-green"], cols: ["#C8283A", "#E8C23A", "#4C9A4A"] },
-  shell: { name: "Shell charm", ids: ["sm-shell-gold", "sm-shell-blue"], cols: ["#D4A93C", "#6FA3D9"] },
-  silver: { name: "Silver charm", thumb: true, ids: ["sm-metal-wing", "sm-metal-horn", "sm-metal-moth", "sm-metal-bird"] },
+  silver: { name: "Random silver charm", random: true, ids: ["sm-metal-wing", "sm-metal-horn", "sm-metal-moth", "sm-metal-bird"] },
   pressed: { name: "Pressed flower", ids: ["flower-red", "flower-orange", "flower-yellow", "flower-mint", "flower-teal", "flower-blue", "flower-purple", "flower-plum", "flower-magenta", "flower-pink", "flower-mauve", "flower-cream"], cols: ["#B8756F", "#D7A06A", "#DCC47A", "#9DBBA3", "#7FA9A6", "#8398B8", "#8E7CAD", "#8F6A86", "#B5718F", "#D9A3B0", "#A98AA0", "#E9DEC8"] },
   paperflower: { name: "Paper flower", ids: ["pf-blue", "pf-pink", "pf-pink2", "pf-magenta", "pf-magenta2", "pf-purple", "pf-purple2"], cols: ["#5F86D8", "#F4A0BB", "#E8809C", "#C2308A", "#D43A9C", "#7B4BC4", "#A98AD0"] },
   paperrose: { name: "Paper rose", ids: ["pf-rose", "pf-rose2", "pf-rose3", "pf-whiterose", "pf-whiterose2", "pf-whiterose3"], cols: ["#C8283A", "#F08A78", "#D95870", "#F4F0EA", "#EFE6D4", "#F2E3C8"] },
@@ -1531,7 +1531,6 @@ const STEP_VIEWS = [
   babysbreath: { name: "Baby's breath", ids: ["dried-blue", "dried-pink"], cols: ["#8FB0D8", "#E8A5B8"] },
   tree: { name: "Tree", ids: ["tree-green", "tree-pink", "tree-orange", "tree-yellow"], cols: ["#4C9A4A", "#E58FA6", "#E07A2E", "#E8C23A"] },
   rifle: { name: "Rifle", thumb: true, ids: ["charm-ak", "charm-ak-long", "charm-ak-mini", "charm-m4"] },
-  pistol: { name: "Pistol", thumb: true, ids: ["charm-pistol", "charm-pistol2"] },
   dollar: { name: "Dollar sign", thumb: true, ids: ["charm-dollar", "charm-dollar-stones"] },
   moneybag: { name: "Money bag", thumb: true, ids: ["charm-moneybag", "charm-moneybag-mini"] },
 };
@@ -1963,7 +1962,8 @@ els.panel.addEventListener("click", (e) => {
     else { toast(U("maxColours")); return; }
     changed();
   } else if (action === "addin") {
-    const a = CONFIG.addins.find((x) => x.id === el.dataset.id);
+    let a = CONFIG.addins.find((x) => x.id === el.dataset.id);
+    { const fk0 = familyOf(a.id); if (fk0 && FAMILIES[fk0].random && !FAMILIES[fk0].ids.some((id) => design.addins[id])) { const F0 = FAMILIES[fk0]; a = CONFIG.addins.find((x) => x.id === F0.ids[Math.floor(Math.random() * F0.ids.length)]); } else if (fk0 && FAMILIES[fk0].random) { a = CONFIG.addins.find((x) => x.id === FAMILIES[fk0].ids.find((id) => design.addins[id])); } }
     if (design.addins[a.id]) delete design.addins[a.id];
     else {
       const [T, B] = bounds(design.shape), n = Object.keys(design.addins).length;
