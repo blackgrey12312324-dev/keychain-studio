@@ -1435,8 +1435,7 @@ const STEP_VIEWS = [
         ${field(U("inkFlow"), `<div class="cards flow-cards">${["spread", "tight"].map((v) => `<button type="button" class="card ${k.flow === v ? "on" : ""}" aria-pressed="${k.flow === v}" data-set="ink.flow" data-value="${v}"><span class="card-name">${U(v === "spread" ? "inkFlowWide" : "inkFlowTight")}</span><span class="card-text">${U(v === "spread" ? "inkFlowWideP" : "inkFlowTightP")}</span></button>`).join("")}</div>`)}
         ${design.picked.length ? field(U("inkDrop"), `<div class="slots ink-colours">${design.picked.map((hex, i) => `<button type="button" class="slot ${ui.inkCol === i ? "on" : ""}" data-action="inkcol" data-i="${i}"><span class="blob" style="background:${hex}"></span>${esc(colorName(hex))}</button>`).join("")}</div>
           <div class="chips brush-sizes">${["s", "m", "l"].map((v) => `<button type="button" class="chip brush ${design.inkSize === v ? "on" : ""}" data-set="inkSize" data-value="${v}"><span class="brush-dot" style="width:${{ s: 8, m: 16, l: 28 }[v]}px;height:${{ s: 8, m: 16, l: 28 }[v]}px"></span>${U("glSz")[v]}</button>`).join("")}</div>
-          <div class="chips"><button type="button" class="btn btn-line small" data-action="inkundo" ${design.inkDrops.length ? "" : "disabled"}>${U("glUndo")}</button><button type="button" class="btn btn-line small" data-action="inkclear" ${design.inkDrops.length ? "" : "disabled"}>${U("inkClear")}</button></div>`, U("inkDropNote")) : `<p class="small-note">${U("inkPickFirst")} <button type="button" class="btn btn-line small" data-action="goto" data-step="4">${U("colours")}</button></p>`}
-        ${field(U("shimmer"), chips("ink.shimmer", "shimmer", k.shimmer))}`;
+          <div class="chips"><button type="button" class="btn btn-line small" data-action="inkundo" ${design.inkDrops.length ? "" : "disabled"}>${U("glUndo")}</button><button type="button" class="btn btn-line small" data-action="inkclear" ${design.inkDrops.length ? "" : "disabled"}>${U("inkClear")}</button></div>`, U("inkDropNote")) : `<p class="small-note">${U("inkPickFirst")} <button type="button" class="btn btn-line small" data-action="goto" data-step="4">${U("colours")}</button></p>`}`;
     }
     const o = design.ocean;
     return `<h2>${U("s3oceanH")}</h2><p class="hint">${U("s3oceanP")}</p>
@@ -1718,6 +1717,7 @@ function swing() {
 }
 // Each style keeps only its own settings, so nothing from the previous style stays on the piece.
 function normaliseStyle(d) {
+  if (d.ink) { d.ink.shimmer = "none"; d.ink.cells = false; d.ink.background = "clear"; }
   if (d.style === "ink") { d.ink.cells = false; d.ink.background = "clear"; }
   if (d.style === "ocean") { d.picked = []; d.colors = DEFAULT_COLORS.slice(); d.inkDrops = []; d.crush = []; d.letters.text = ""; d.gradient = { direction: "down", glitter: "none" }; }
   else if (d.style === "clear") { d.picked = []; d.colors = DEFAULT_COLORS.slice(); d.inkDrops = []; }
@@ -1777,7 +1777,7 @@ function surprise() {
   d.colors = d.picked.slice();
   d.gradient = { direction: pick(["down", "right", "diagonal", "center"]), glitter: "none" };
   d.ink = { amount: pick(["light", "medium", "bold"]), background: pick(["clear", "white", "cloudy"]),
-    spread: pick(["all", "all", "top", "bottom", "left", "right"]), cells: Math.random() < 0.6, shimmer: pick(["none", "pearl", "gold"]) };
+    spread: pick(["all", "all", "top", "bottom", "left", "right"]), cells: Math.random() < 0.6, shimmer: "none" };
   d.ocean = { sand: pick(["low", "middle", "middle", "high"]), wave: pick(["top", "middle", "bottom", "diagonal"]),
     foam: pick(["soft", "frothy"]), sandColor: pick(["natural", "natural", "white", "golden", "pink"]) };
   const natural = ["frog", "sea-starfish", "sea-shell-mix1", "sea-shell-mix2", "sea-shell-mix3", "sea-shell-mix4", "sea-shell-scallop", "sea-shell-cone"];
