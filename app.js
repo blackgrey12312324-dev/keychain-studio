@@ -1215,6 +1215,39 @@ function presetDesign(p) {
   return d;
 }
 
+/* ---------- Every finished piece in the shop, rebuilt as a digital design ---------- */
+const GALLERY_DESIGNS = {
+  "g-key-e": { cat: "keychains", shape: "E", f(d) { d.style = "clear"; d.picked = []; sprinkle(d, "goldleaf", 150, "ke"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "gold" }); d.hardware = "ringchain"; } },
+  "g-key-a-star": { cat: "keychains", shape: "A", f(d) { inkLook(d, ["#B8693F", "#8A5F3C", "#D9959C"], [[0, .5, .35, 22], [1, .55, .7, 20], [2, .4, .55, 12]]); sprinkle(d, "copper", 40, "ka"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "orange" }); d.hardware = "ringchain"; } },
+  "g-key-k": { cat: "keychains", shape: "K", f(d) { inkLook(d, ["#1F6BC0", "#7F9CC0", "#E6E0D8"], [[0, .45, .35, 20], [1, .55, .65, 16], [2, .4, .5, 12]]); d.hardware = "none"; } },
+  "g-key-tail": { cat: "keychains", shape: "g-tail", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .5, .35, 20], [1, .55, .62, 18], [2, .45, .8, 14]]); d.hardware = "ringchain"; } },
+  "g-pen-blue": { cat: "accessories", shape: "pen", f(d) { gradLook(d, ["#1F6BC0", "#7F9CC0", "#C9A99A"], "down"); } },
+  "g-pen-ink": { cat: "accessories", shape: "pen", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .5, .3, 12], [1, .5, .6, 12], [2, .5, .85, 9]]); } },
+  "g-pen": { cat: "accessories", shape: "pen", f(d) { d.style = "clear"; d.deco = "natural"; d.picked = []; d.addins = AI(["dried-pink", "flower-red"]); sprinkle(d, "goldleaf", 70, "pn"); } },
+  "g-hairpin": { cat: "accessories", shape: "hairpin", f(d) { d.style = "clear"; d.deco = "charms"; d.picked = []; d.addins = AI(["sm-butterfly-teal"]); sprinkle(d, "clear", 50, "hp"); } },
+  "g-bookmark": { cat: "accessories", shape: "bookmark", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "greyblue" }); d.hardware = "ringchain"; } },
+  "g-paint1": { cat: "kitchen", shape: "tray-rect", f(d) { gradLook(d, ["#1F6BC0", "#7F9CC0", "#C9A99A"], "down"); sprinkle(d, "champagne", 50, "p1"); } },
+  "g-coaster-sea": { cat: "kitchen", shape: "coaster-set", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
+  "g-coaster-ink": { cat: "kitchen", shape: "coaster-set", f(d) { inkLook(d, ["#1F6BC0", "#14151A", "#C89B2E"], [[0, .45, .35, 24], [1, .6, .6, 22], [2, .4, .8, 16]]); sprinkle(d, "goldleaf", 40, "ci"); } },
+  "g-coaster-stone": { cat: "kitchen", shape: "coaster-stone", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#8A5F3C"], "diagonal"); sprinkle(d, "copper", 60, "cs"); } },
+  "g-platter": { cat: "kitchen", shape: "tray-oval", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
+  "g-nuts-dish": { cat: "kitchen", shape: "tray-oval", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .4, .35, 26], [1, .6, .6, 24], [2, .45, .8, 18]]); } },
+  "g-fruit-bowl": { cat: "kitchen", shape: "hexagon", f(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .4, .4, 26], [1, .6, .65, 24], [2, .5, .3, 16]]); sprinkle(d, "clear", 60, "fb"); } },
+  "g-tealight": { cat: "kitchen", shape: "coaster", f(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .5, .4, 24], [1, .55, .65, 20], [2, .4, .55, 12]]); } },
+  "g-tail": { cat: "kitchen", shape: "tray-tall", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
+  "g-woodtray": { cat: "kitchen", shape: "wood-tray", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); } },
+  "g-paddle": { cat: "kitchen", shape: "tray-tall", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); } },
+  "g-tree": { cat: "kitchen", shape: "wood-round", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); } },
+  "g-copper": { cat: "kitchen", shape: "wood-round", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); } },
+};
+function galleryDesign(key) {
+  const g = GALLERY_DESIGNS[key]; if (!g) return null;
+  const d = defaultDesign(); d.shape = g.shape; d.hardware = "none"; d.tassel.type = "none"; d.crush = []; d.addins = {}; d.deco = ""; d.picked = [];
+  g.f(d); normaliseStyle(d); applyPicked(d); resetItems(d);
+  if (customShape(d.shape) && customShape(d.shape).wood && d.style !== "ocean") { /* wood stays visible under the resin */ }
+  return { d, cat: g.cat };
+}
+
 const STEP_VIEWS = [
   // 0 Ready-made
   () => `
@@ -2227,6 +2260,8 @@ function loadFromLink() {
     ui.visited = new Set([0, 1]);
   }
   const params = new URLSearchParams(location.search);
+  const gk = params.get("gallery"), gd = gk && galleryDesign(gk);
+  if (gd) { design = gd.d; ui.cat = gd.cat; ui.step = 3; ui.visited = new Set([0, 1, 2, 3]); }
   if (params.get("cat")) { ui.cat = params.get("cat"); ui.step = 1; ui.visited = new Set([0, 1]); ui.jump = params.get("group") || ""; }
   if (params.has("start")) { ui.step = 1; ui.visited = new Set([0, 1]); ui.cat = ""; }
   const letter = (params.get("letter") || "").toUpperCase();

@@ -48,8 +48,11 @@ function startSlides() {
 new MutationObserver(() => startSlides()).observe(document.documentElement, { childList: true, subtree: true });
 
 /* ---------------- Shop buy buttons ---------------- */
+const DIGITAL = ["g-key-e","g-key-a-star","g-key-k","g-key-tail","g-pen-blue","g-pen-ink","g-pen","g-hairpin","g-bookmark","g-paint1","g-coaster-sea","g-coaster-ink","g-coaster-stone","g-platter","g-nuts-dish","g-fruit-bowl","g-tealight","g-tail","g-woodtray","g-paddle","g-tree","g-copper"];
 function buyBtns(id, name, img, section) {
-  return `<div class="buy"><button type="button" class="btn btn-line small" data-buy="cart" data-name="${esc(name)}" data-img="${esc(img)}" data-id="${esc(id)}" data-sec="${esc(section)}">${t("shop.addCart", null)}</button><button type="button" class="btn btn-ink small" data-buy="now" data-name="${esc(name)}" data-img="${esc(img)}" data-id="${esc(id)}" data-sec="${esc(section)}">${t("shop.buyNow", null)}</button></div>`;
+  const key = (img || "").split("/").pop().replace(/\.\w+$/, "");
+  const dig = DIGITAL.includes(key) && section !== "preset" ? `<a class="dig-link" href="design.html?gallery=${key}">${t("shop.digital", null)}</a>` : "";
+  return `<div class="buy"><button type="button" class="btn btn-line small" data-buy="cart" data-name="${esc(name)}" data-img="${esc(img)}" data-id="${esc(id)}" data-sec="${esc(section)}">${t("shop.addCart", null)}</button><button type="button" class="btn btn-ink small" data-buy="now" data-name="${esc(name)}" data-img="${esc(img)}" data-id="${esc(id)}" data-sec="${esc(section)}">${t("shop.buyNow", null)}</button>${dig}</div>`;
 }
 function buyItem(el) {
   const link = el.dataset.sec === "preset" ? `\nOpen the design: ${location.href.split("#")[0].replace(/[^/]*$/, "")}design.html?preset=${el.dataset.id}` : "";
