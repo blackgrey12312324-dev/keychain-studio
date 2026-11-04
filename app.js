@@ -179,9 +179,7 @@ function styleDetails(d, lang) {
   }
   if (d.style === "ocean") {
     const o = d.ocean;
-    return [t("sum.sand", null, lang) + ": " + low(lab("sand", o.sand, lang)), t("sum.wave", null, lang) + ": " + low(lab("wave", o.wave, lang)),
-      t("sum.foam", null, lang) + ": " + low(lab("foam", o.foam, lang)),
-      o.sand !== "none" ? t("sum.sandColor", null, lang) + ": " + low(lab("sandColor", o.sandColor, lang)) : ""].filter(Boolean).join(", ");
+    return [t("sum.sand", null, lang) + ": " + low(lab("sand", o.sand, lang)), lab("waveSize", o.size || "medium", lang), lab("waveDir", o.dir || "flat", lang)].filter(Boolean).join(", ");
   }
   return "";
 }
@@ -200,7 +198,7 @@ function summaryLines(d, lang = ui.lang) {
   L.push([S("shape"), shapeName(d.shape, lang) + (isLetter(d.shape) || isNumber(d.shape) ? ` (${lab("font", d.font || "block", lang)})` : "")]);
   const det = styleDetails(d, lang);
   L.push([S("style"), lab("style", d.style, lang) + (det ? " (" + det + ")" : "")]);
-  if (d.style !== "clear") L.push([S("colours"), d.colors.map((c) => colorName(c, lang)).join(", ")]);
+  if (d.style !== "clear" && d.style !== "ocean") L.push([S("colours"), d.colors.map((c) => colorName(c, lang)).join(", ")]);
   const ad = activeAddins(d).map((a) => {
     const s = d.addins[a.id];
     const parts = [tr(a, "name", lang)];
@@ -1020,7 +1018,7 @@ function reviewThumbs(d) {
   const bare = (o) => renderPiece(Object.assign(copy(d), { hardware: "none", tassel: Object.assign(copy(d.tassel), { type: "none" }) }, o || {}));
   const th = [];
   th.push([`<span class="rv-art">${renderPiece(d)}</span>`, shapeName(d.shape)]);
-  if (d.style !== "clear" && !isFresh(d)) th.push([`<span class="rv-dots">${d.colors.map((c) => `<span class="dot" style="background:${c}"></span>`).join("")}</span>`, lab("style", d.style)]);
+  if (d.style !== "clear" && d.style !== "ocean" && !isFresh(d)) th.push([`<span class="rv-dots">${d.colors.map((c) => `<span class="dot" style="background:${c}"></span>`).join("")}</span>`, lab("style", d.style)]);
   const gl = [...new Set((d.crush || []).map((c) => c[0]))];
   gl.slice(0, 4).forEach((g) => th.push([`<img src="images/glitter/${g}.png" alt="">`, glitterName(g)]));
   activeAddins(d).forEach((a) => th.push([`<img src="${a.img}" alt="">`, tr(a, "name")]));
@@ -1152,7 +1150,7 @@ const LOOKS = [
   { id: "seaglass", name: "Sea glass", apply(d) { d.style = "ink"; d.deco = "natural"; d.picked = ["#4F8A9C", "#7F9CC0", "#E6E0D8"]; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "pearl" }); const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = [[0, 140, Math.round(T + h * 0.4), 22], [1, 165, Math.round(T + h * 0.68), 20], [2, 125, Math.round(T + h * 0.58), 14]]; d.addins = { "dried-blue": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "clear", 80, "sg2"); } },
   { id: "sunset", name: "Sunset gold", apply(d) { d.style = "gradient"; d.picked = ["#D9742E", "#B04855", "#C89B2E"]; d.gradient = { direction: "down", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "goldleaf", 70, "sg"); } },
 ];
-function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); applyPicked(d); return d; }
+function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); return d; }
 function inspirationHtml() {
   return `<div class="field"><span class="field-label">${U("inspoH")}</span><p class="small-note">${U("inspoP")}</p><div class="looks">${LOOKS.map((l) => `<button type="button" class="look" data-look-id="${l.id}"><span class="look-art">${renderPiece(lookDesign(l))}</span><span class="look-name">${U("look_" + l.id)}</span></button>`).join("")}</div></div>`;
 }
@@ -1555,7 +1553,14 @@ function swing() {
   void els.preview.offsetWidth;
   els.preview.classList.add("swing");
 }
+// Each style keeps only its own settings, so nothing from the previous style stays on the piece.
+function normaliseStyle(d) {
+  if (d.style === "ocean") { d.picked = []; d.colors = DEFAULT_COLORS.slice(); d.inkDrops = []; d.crush = []; d.letters.text = ""; d.gradient = { direction: "down", glitter: "none" }; }
+  else if (d.style === "clear") { d.picked = []; d.colors = DEFAULT_COLORS.slice(); d.inkDrops = []; }
+  else if (d.style === "gradient") { d.inkDrops = []; }
+}
 function changed() {
+  normaliseStyle(design);
   const keepY = window.scrollY;
   setTimeout(() => { if (Math.abs(window.scrollY - keepY) > 2) window.scrollTo(0, keepY); }, 0);
   applyPicked(design);
