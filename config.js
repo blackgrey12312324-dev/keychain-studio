@@ -402,12 +402,11 @@ CONFIG.smallItems.forEach((s) => {
 // Real sea items (starfish and shells from Anna's photos). Recommended for beach and sea pieces.
 CONFIG.seaItems = [
   { id: "starfish", name: "Starfish", size: 42, single: true },
-  { id: "shell-mix1", name: "Shell mix 1", size: 44 },
-  { id: "shell-mix2", name: "Shell mix 2", size: 44 },
-  { id: "shell-mix3", name: "Shell mix 3", size: 44 },
-  { id: "shell-mix4", name: "Shell mix 4", size: 44 },
-  { id: "shell-scallop", name: "Scallop shell", size: 36 },
-  { id: "shell-spiral", name: "Spiral shell", size: 30 },
+  { id: "shell-scallop", name: "Scallop shell", size: 38 },
+  { id: "shell-pink", name: "Pink scallop shell", size: 38 },
+  { id: "shell-spiral", name: "Turret shell", size: 34 },
+  { id: "shell-cone", name: "Cone shell", size: 34 },
+  { id: "shell-snail", name: "Snail shell", size: 34 },
 ];
 CONFIG.seaItems.forEach((s) => {
   s.img = `images/sea/${s.id}.png`;

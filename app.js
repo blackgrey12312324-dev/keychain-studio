@@ -669,8 +669,8 @@ function styleLayer(d, id, R, T, B) {
       // one drop: strongest in the middle, thinning out towards the edge
       let defs = "";
       d.inkDrops.forEach(([ci, x, y, rs], i) => {
-        const col = c[ci] || c[0], r = rs * (wide ? 3.4 : 2.1);
-        defs += `<radialGradient id="${id}-d${i}"><stop offset="0" stop-color="${col}" stop-opacity="0.96"/><stop offset="0.28" stop-color="${col}" stop-opacity="${wide ? 0.78 : 0.9}"/><stop offset="0.65" stop-color="${col}" stop-opacity="${wide ? 0.34 : 0.22}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>`;
+        const col = c[ci] || c[0], r = rs * (wide ? 2.5 : 1.6);
+        defs += `<radialGradient id="${id}-d${i}"><stop offset="0" stop-color="${col}" stop-opacity="0.96"/><stop offset="0.22" stop-color="${col}" stop-opacity="0.95"/><stop offset="0.4" stop-color="${col}" stop-opacity="${wide ? 0.7 : 0.85}"/><stop offset="0.65" stop-color="${col}" stop-opacity="${wide ? 0.34 : 0.22}"/><stop offset="1" stop-color="${col}" stop-opacity="0"/></radialGradient>`;
         over += `<ellipse cx="${x}" cy="${y}" rx="${r.toFixed(0)}" ry="${(r * (0.85 + (i % 3) * 0.08)).toFixed(0)}" fill="url(#${id}-d${i})" transform="rotate(${(i * 47) % 180} ${x} ${y})"/>`;
       });
       s += `<defs>${defs}</defs><g filter="url(#${id}-ink)">${over}</g>`;
@@ -1141,10 +1141,15 @@ function sprinkle(d, gid, n, seed) {
   }
 }
 const LOOKS = [
-  { id: "ocean", name: "Ocean shore", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = { "sea-starfish": { amount: "few", place: "anna", color: "#D4AF37" }, "sea-shell-mix2": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; } },
+  { id: "ocean", name: "Ocean shore", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = { "sea-starfish": { amount: "few", place: "anna", color: "#D4AF37" }, "sea-shell-scallop": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; } },
   { id: "rosegold", name: "Rose gold glitter", apply(d) { d.style = "gradient"; d.picked = ["#B8693F", "#C9A99A", "#D9959C"]; d.gradient = { direction: "diagonal", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "rosecopper", 130, "rg"); sprinkle(d, "champagne", 90, "rg2"); } },
   { id: "blossom", name: "Pink blossom", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = { "flower-pink": { amount: "few", place: "anna", color: "#D4AF37" }, "flower-cream": { amount: "few", place: "anna", color: "#D4AF37" }, "dried-pink": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "palerose", 70, "bl"); } },
   { id: "midnight", name: "Midnight ink", apply(d) { d.style = "ink"; d.picked = ["#4A5090", "#6A4B94", "#14151A"]; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "gold" }); const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = [[0, 130, Math.round(T + h * 0.3), 20], [1, 170, Math.round(T + h * 0.55), 22], [2, 140, Math.round(T + h * 0.78), 18]]; d.addins = {}; d.crush = []; sprinkle(d, "gold", 60, "mi"); } },
+  { id: "lavender", name: "Lavender dream", apply(d) { d.style = "clear"; d.deco = "natural"; d.addins = { "flower-purple": { amount: "few", place: "anna", color: "#D4AF37" }, "flower-mauve": { amount: "few", place: "anna", color: "#D4AF37" }, "dried-lavender": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "purple", 60, "lv"); sprinkle(d, "palerose", 40, "lv2"); } },
+  { id: "inkrose", name: "Rose ink", apply(d) { d.style = "ink"; d.deco = "natural"; d.picked = ["#D9959C", "#C97080", "#E6E0D8"]; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "pearl" }); const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = [[0, 140, Math.round(T + h * 0.35), 20], [1, 165, Math.round(T + h * 0.62), 18], [2, 135, Math.round(T + h * 0.8), 16]]; d.addins = { "flower-pink": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "pink", 40, "ir"); } },
+  { id: "goldenhour", name: "Golden hour", apply(d) { d.style = "gradient"; d.picked = ["#C9A99A", "#C89B2E", "#8A5F3C"]; d.gradient = { direction: "diagonal", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "gold", 110, "gh"); sprinkle(d, "lightgold", 70, "gh2"); } },
+  { id: "forest", name: "Forest", apply(d) { d.style = "gradient"; d.picked = ["#3A5F55", "#4C8A7C", "#E6E0D8"]; d.gradient = { direction: "center", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "goldleaf", 60, "fo"); sprinkle(d, "green", 50, "fo2"); } },
+  { id: "seaglass", name: "Sea glass", apply(d) { d.style = "ink"; d.deco = "natural"; d.picked = ["#4F8A9C", "#7F9CC0", "#E6E0D8"]; d.ink = Object.assign({}, d.ink, { flow: "spread", legacy: false, shimmer: "pearl" }); const [T, B] = bounds(d.shape), h = B - T; d.inkDrops = [[0, 140, Math.round(T + h * 0.4), 22], [1, 165, Math.round(T + h * 0.68), 20], [2, 125, Math.round(T + h * 0.58), 14]]; d.addins = { "dried-blue": { amount: "few", place: "anna", color: "#D4AF37" } }; d.crush = []; sprinkle(d, "clear", 80, "sg2"); } },
   { id: "sunset", name: "Sunset gold", apply(d) { d.style = "gradient"; d.picked = ["#D9742E", "#B04855", "#C89B2E"]; d.gradient = { direction: "down", glitter: "none" }; d.addins = {}; d.crush = []; sprinkle(d, "goldleaf", 70, "sg"); } },
 ];
 function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); applyPicked(d); return d; }
@@ -1355,13 +1360,7 @@ const STEP_VIEWS = [
       const sel = design.addins[a.id];
       const reason = blockedReason(a.id, design);
       const on = !!sel && !reason;
-      const body = on ? `<div class="addin-body">
-          <div><span class="field-label">${U("where")}</span>${chips(`addins.${a.id}.place`, "place", sel.place)}</div>
-          <div class="chips">
-            <button type="button" class="chip" data-action="shuffle" data-id="${a.id}">${U("shuffle")}</button>
-            ${a.single ? "" : `<button type="button" class="chip" data-action="onemore" data-id="${a.id}">${U("oneMore")}</button>`}
-          </div>
-        </div>` : "";
+      const body = "";
       return `<div class="addin ${on ? "on" : ""} ${reason ? "off" : ""}">
         <button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on}" ${reason ? "disabled" : ""}>
           <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:#E9F1F0 url(${a.img}) center/78% no-repeat"></span>
@@ -1391,7 +1390,7 @@ const STEP_VIEWS = [
     const lettersOpen = ui.open.has("letters"), photoOpen = ui.open.has("photo");
     return `
     <h2>${U("s5h")}</h2>
-    <p class="hint">${U("s5p")} ${design.style === "ocean" ? "" : `<button type="button" class="btn btn-line small" data-action="deco" data-id="">${U("decoChange")}</button>`}</p>
+    <p class="hint">${U("dragPlace")} ${design.style === "ocean" ? "" : `<button type="button" class="btn btn-line small" data-action="deco" data-id="">${U("decoChange")}</button>`}</p>
     ${design.deco === "charms" && design.style !== "ocean" ? `<details class="ins-sec" data-key="letters" ${lettersOpen ? "open" : ""}><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>` : ""}
     ${sections.join("")}
     ${moldRank(design.shape) === 2 && design.style !== "ocean" ? `<details class="ins-sec" data-key="photo" ${photoOpen ? "open" : ""}><summary><span class="ins-title">${U("photoH")}</span><span class="ins-count">${design.photo.on ? U("added") : ""}</span></summary><div class="ins-body">${photoBlock}</div></details>` : ""}`;
@@ -1757,7 +1756,13 @@ els.panel.addEventListener("click", (e) => {
   } else if (action === "addin") {
     const a = CONFIG.addins.find((x) => x.id === el.dataset.id);
     if (design.addins[a.id]) delete design.addins[a.id];
-    else design.addins[a.id] = { amount: a.img ? "few" : "some", place: "anna", color: a.color };
+    else {
+      const [T, B] = bounds(design.shape), cy = (T + B) / 2;
+      let spot = [150, cy];
+      outer: for (let r = 0; r < 140; r += 6) for (let k = 0; k < 12; k++) { const an = (k / 12) * Math.PI * 2, x = 150 + Math.cos(an) * r, y = cy + Math.sin(an) * r * 1.4; if (insideShape(design.shape, x, y, 8)) { spot = [Math.round(x), Math.round(y)]; break outer; } }
+      const n = Object.keys(design.addins).length; spot = [spot[0] + (n % 3 - 1) * 14, spot[1] + (n % 2 ? 16 : -10)];
+      design.addins[a.id] = { amount: "few", place: "anna", color: a.color, items: [[spot[0], spot[1], 0]], moved: true };
+    }
     changed();
   } else if (action === "shuffle") {
     const a = CONFIG.addins.find((x) => x.id === el.dataset.id);

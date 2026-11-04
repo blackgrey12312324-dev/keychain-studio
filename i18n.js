@@ -11,7 +11,8 @@ const I18N = {
   en: {
     steps: ["Ready-made", "Mold", "Letter", "Style", "Colours", "Details", "Glitter", "Inside", "Chain", "Tassel", "Review"],
     ui: {
-      inspoH: "Need inspiration?", inspoP: "Five finished looks on your mold. Tap one to start from it, then change anything.", look_ocean: "Ocean shore", look_rosegold: "Rose gold glitter", look_blossom: "Pink blossom", look_midnight: "Midnight ink", look_sunset: "Sunset gold",
+      dragPlace: "Tap Add, then drag the piece to where you want it. If it leaves the shape it is removed.", look_lavender: "Lavender dream", look_inkrose: "Rose ink", look_goldenhour: "Golden hour", look_forest: "Forest", look_seaglass: "Sea glass",
+      inspoH: "Need inspiration?", inspoP: "Ten finished looks on your mold. Tap one to start from it, then change anything.", look_ocean: "Ocean shore", look_rosegold: "Rose gold glitter", look_blossom: "Pink blossom", look_midnight: "Midnight ink", look_sunset: "Sunset gold",
       mySaves: "My saves", myDrafts: "My drafts", myStyles: "My styles", openCode: "Open a design", openCodeNote: "Paste a share link or design code someone sent you.", codePh: "Paste a link or code", codeBad: "That link or code could not be opened.", open: "Open", noDrafts: "No drafts yet. Tap Save as draft while you design.", noStyles: "No styles yet. Tap Save style to keep the look of this piece.", styleN: "Style {n}", styleSaved: "Saved as Style {n}. Apply it to any other mold.", styleApplied: "{name} applied.", applyStyle: "Apply", saveStyleBtn: "Save style", openSaves: "Open", codeShare: "Share this link or code. Anyone can paste it into My saves to open your exact design.", copyCode: "Copy link",
       bsShape: "Shape", bsStyle: "Style",
       refSub: "Finished pieces from Anna's studio. Tap a shape above to start your own.",
@@ -163,7 +164,8 @@ const I18N = {
   th: {
     steps: ["แบบสำเร็จรูป", "แม่พิมพ์", "ตัวอักษร", "สไตล์", "สี", "รายละเอียด", "กากเพชร", "ของข้างใน", "โซ่", "พู่", "ตรวจสอบ"],
     ui: {
-      inspoH: "อยากได้แรงบันดาลใจไหม?", inspoP: "ห้าลุคสำเร็จบนแม่พิมพ์ของคุณ แตะเพื่อเริ่มจากลุคนั้น แล้วแก้ได้ทุกอย่าง", look_ocean: "ชายฝั่งทะเล", look_rosegold: "กากเพชรโรสโกลด์", look_blossom: "ดอกไม้สีชมพู", look_midnight: "หมึกเที่ยงคืน", look_sunset: "พระอาทิตย์ตกสีทอง",
+      dragPlace: "แตะเพิ่ม แล้วลากชิ้นไปวางตำแหน่งที่ต้องการ ถ้าลากออกนอกรูปทรง ชิ้นนั้นจะถูกลบ", look_lavender: "ลาเวนเดอร์ดรีม", look_inkrose: "หมึกชมพูกุหลาบ", look_goldenhour: "โกลเดนอาวร์", look_forest: "ป่า", look_seaglass: "แก้วทะเล",
+      inspoH: "อยากได้แรงบันดาลใจไหม?", inspoP: "สิบลุคสำเร็จบนแม่พิมพ์ของคุณ แตะเพื่อเริ่มจากลุคนั้น แล้วแก้ได้ทุกอย่าง", look_ocean: "ชายฝั่งทะเล", look_rosegold: "กากเพชรโรสโกลด์", look_blossom: "ดอกไม้สีชมพู", look_midnight: "หมึกเที่ยงคืน", look_sunset: "พระอาทิตย์ตกสีทอง",
       mySaves: "ที่บันทึกไว้", myDrafts: "แบบร่างของฉัน", myStyles: "สไตล์ของฉัน", openCode: "เปิดดีไซน์", openCodeNote: "วางลิงก์แชร์หรือรหัสดีไซน์ที่มีคนส่งมา", codePh: "วางลิงก์หรือรหัส", codeBad: "เปิดลิงก์หรือรหัสนี้ไม่ได้", open: "เปิด", noDrafts: "ยังไม่มีแบบร่าง กดบันทึกแบบร่างขณะออกแบบ", noStyles: "ยังไม่มีสไตล์ กดบันทึกสไตล์เพื่อเก็บลุคของชิ้นนี้", styleN: "สไตล์ {n}", styleSaved: "บันทึกเป็นสไตล์ {n} แล้ว ใช้กับแม่พิมพ์อื่นได้", styleApplied: "ใช้ {name} แล้ว", applyStyle: "ใช้", saveStyleBtn: "บันทึกสไตล์", openSaves: "เปิด", codeShare: "แชร์ลิงก์หรือรหัสนี้ ใครก็วางใน ที่บันทึกไว้ เพื่อเปิดดีไซน์ของคุณได้", copyCode: "คัดลอกลิงก์",
       bsShape: "รูปทรง", bsStyle: "สไตล์",
       refSub: "ผลงานจริงจากสตูดิโอของแอนนา เลือกรูปทรงด้านบนเพื่อเริ่มของคุณเอง",
@@ -296,7 +298,8 @@ const I18N = {
   ru: {
     steps: ["Готовые", "Форма", "Буква", "Стиль", "Цвета", "Настройки", "Блёстки", "Внутри", "Цепочка", "Кисточка", "Итог"],
     ui: {
-      inspoH: "Нужно вдохновение?", inspoP: "Пять готовых образов на вашей форме. Нажмите, чтобы начать с него, и меняйте что угодно.", look_ocean: "Морской берег", look_rosegold: "Блёстки розовое золото", look_blossom: "Розовое цветение", look_midnight: "Полночные чернила", look_sunset: "Золотой закат",
+      dragPlace: "Нажмите «Добавить», затем перетащите деталь, куда хотите. Если она выйдет за форму, она удалится.", look_lavender: "Лавандовая мечта", look_inkrose: "Розовые чернила", look_goldenhour: "Золотой час", look_forest: "Лес", look_seaglass: "Морское стекло",
+      inspoH: "Нужно вдохновение?", inspoP: "Десять готовых образов на вашей форме. Нажмите, чтобы начать с него, и меняйте что угодно.", look_ocean: "Морской берег", look_rosegold: "Блёстки розовое золото", look_blossom: "Розовое цветение", look_midnight: "Полночные чернила", look_sunset: "Золотой закат",
       mySaves: "Мои сохранения", myDrafts: "Мои черновики", myStyles: "Мои стили", openCode: "Открыть дизайн", openCodeNote: "Вставьте ссылку или код дизайна, который вам прислали.", codePh: "Вставьте ссылку или код", codeBad: "Не удалось открыть эту ссылку или код.", open: "Открыть", noDrafts: "Пока нет черновиков. Нажмите «Сохранить черновик» во время создания.", noStyles: "Пока нет стилей. Нажмите «Сохранить стиль», чтобы запомнить вид изделия.", styleN: "Стиль {n}", styleSaved: "Сохранено как Стиль {n}. Примените к любой другой форме.", styleApplied: "{name} применён.", applyStyle: "Применить", saveStyleBtn: "Сохранить стиль", openSaves: "Открыть", codeShare: "Поделитесь этой ссылкой или кодом. Любой может вставить его в «Мои сохранения» и открыть ваш дизайн.", copyCode: "Скопировать ссылку",
       bsShape: "Форма", bsStyle: "Стиль",
       refSub: "Готовые работы из студии Анны. Выберите форму выше, чтобы начать своё.",

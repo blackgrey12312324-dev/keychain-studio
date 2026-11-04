@@ -1,6 +1,10 @@
 /* Extra translations: every English text on the pages that has no entry in i18n.js. Applied automatically by core.js. */
 const PHRASES = {
 "th": {
+"Pink scallop shell": "หอยเชลล์สีชมพู",
+"Turret shell": "หอยเกลียวแหลม",
+"Cone shell": "หอยโข่งกรวย",
+"Snail shell": "หอยทาก",
 "Cart": "ตะกร้า",
 "Your cart": "ตะกร้าของคุณ",
 "Your cart is empty. Design a piece and tap Add to cart.": "ตะกร้าว่าง ออกแบบชิ้นงานแล้วกดเพิ่มลงตะกร้า",
@@ -398,6 +402,10 @@ const PHRASES = {
 "Bun pin": "ปิ่นปักผม"
 },
 "ru": {
+"Pink scallop shell": "Розовый гребешок",
+"Turret shell": "Башенная ракушка",
+"Cone shell": "Ракушка-конус",
+"Snail shell": "Ракушка-улитка",
 "Cart": "Корзина",
 "Your cart": "Ваша корзина",
 "Your cart is empty. Design a piece and tap Add to cart.": "Корзина пуста. Создайте изделие и нажмите «В корзину».",
