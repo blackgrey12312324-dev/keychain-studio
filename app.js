@@ -117,7 +117,7 @@ function fits(a, d) {
   if (d.style === "ink" && !INK_GROUPS.includes(a.group)) return false;
   if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
   if (d.deco === "charms" && !CHARM_GROUPS.includes(a.group)) return false;
-  const need = a.id === "tree-small" ? 1 : NEED[a.group] || 0;
+  const need = a.id === "tree-small" || a.id.startsWith("sm-crown") ? 1 : NEED[a.group] || 0;   // crowns are thick: medium and big molds only
   return need <= moldRank(d.shape);
 }
 function activeAddins(d) {
