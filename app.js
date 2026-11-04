@@ -102,7 +102,7 @@ function moldRank(shape) {
   return s === "big" ? 2 : s === "medium" ? 1 : 0;
 }
 const CHARM_GROUPS = ["small", "charms"];
-const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1 };
+const NEED = { paperflowers: 2, trees: 2, nature: 1, lights: 1, dried: 1 };
 const INSIDE_STEP = 7;
 const COLOURS_STEP = 4, GLITTER_STEP_NO = 6;
 const SEA_WATER = ["#0F3D8C", "#2373C4", "#5BB6C8"];   // deep navy to royal blue to turquoise, like Anna's sea pours   // the sea style always uses the same water colours
@@ -1187,6 +1187,7 @@ function layoutItems(d) {
   for (const id of Object.keys(d.addins)) {
     const sel = d.addins[id], ad = CONFIG.addins.find((x) => x.id === id);
     if (!ad || !ad.drag) continue;
+    if (!fits(ad, d)) { delete d.addins[id]; continue; }
     let tx, ty;
     if (sandY) { tx = 110 + (n % 3) * 45; ty = sandY + (B - sandY) * (0.45 + 0.2 * (n % 2)); }
     else { const p = LAYOUT[n % LAYOUT.length]; tx = 40 + p[0] * 220; ty = T + p[1] * h; }
@@ -1203,7 +1204,7 @@ function inkLook(d, picked, spots, extra = {}) { d.style = "ink"; d.picked = pic
 function gradLook(d, picked, dir) { d.style = "gradient"; d.picked = picked; d.gradient = { direction: dir, glitter: "none" }; d.addins = {}; d.crush = []; }
 const LOOKS = [
   { id: "ocean", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish", "sea-shell-scallop"]); d.crush = []; } },
-  { id: "shellbeach", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "high", size: "calm", dir: "flat" }); d.addins = AI(["sea-shell-pink", "sea-shell-spiral"]); d.crush = []; } },
+  { id: "shellbeach", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "high", size: "calm", dir: "flat" }); d.addins = AI(["sea-shell-pink", "sea-shell-cone"]); d.crush = []; } },
   { id: "stormsea", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "right" }); d.addins = AI(["sea-starfish"]); d.crush = []; } },
   { id: "seaglass", apply(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .42, .3, 20], [1, .6, .6, 20], [2, .4, .78, 14]]); d.deco = "natural"; d.addins = AI(["dried-blue"]); sprinkle(d, "aqua", 60, "sg"); sprinkle(d, "clear", 60, "sg2"); } },
   { id: "rosegold", apply(d) { gradLook(d, ["#B8693F", "#C9A99A", "#D9959C"], "diagonal"); sprinkle(d, "rosecopper", 120, "rg"); sprinkle(d, "pink", 60, "rg2"); sprinkle(d, "champagne", 50, "rg3"); } },
@@ -1778,7 +1779,7 @@ function surprise() {
     spread: pick(["all", "all", "top", "bottom", "left", "right"]), cells: Math.random() < 0.6, shimmer: pick(["none", "pearl", "gold"]) };
   d.ocean = { sand: pick(["low", "middle", "middle", "high"]), wave: pick(["top", "middle", "bottom", "diagonal"]),
     foam: pick(["soft", "frothy"]), sandColor: pick(["natural", "natural", "white", "golden", "pink"]) };
-  const natural = ["frog", "sea-starfish", "sea-shell-mix1", "sea-shell-mix2", "sea-shell-mix3", "sea-shell-mix4", "sea-shell-scallop", "sea-shell-spiral"];
+  const natural = ["frog", "sea-starfish", "sea-shell-mix1", "sea-shell-mix2", "sea-shell-mix3", "sea-shell-mix4", "sea-shell-scallop", "sea-shell-cone"];
   let pool = CONFIG.addins.filter((a) => a.group !== "charms" && !blockedReason(a.id, d)).sort(() => Math.random() - 0.5);
   
   pool.slice(0, 1 + Math.floor(Math.random() * 3)).forEach((a) => {
