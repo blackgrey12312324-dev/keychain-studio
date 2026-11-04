@@ -1232,3 +1232,15 @@ body[data-page="design"], body.designer { background: linear-gradient(180deg, #E
 .inspo[open] .inspo-arrow { transform: rotate(180deg); }
 .inspo .looks { max-height: 56vh; overflow-y: auto; padding: 4px 2px 12px; }
 .dig-link { flex: 1 0 100%; text-align: center; font-size: 0.82rem; font-weight: 600; color: #19708A; padding: 6px 0 2px; text-decoration: underline; text-underline-offset: 3px; }
+
+.looks-h { font-family: var(--serif); font-size: 1.3rem; color: #0E3F57; margin: 14px 2px 6px; display: flex; align-items: center; gap: 10px; }
+.looks-h::after { content: ""; flex: 1; height: 2px; background: repeating-linear-gradient(90deg, #F2C9AE 0 10px, transparent 10px 16px); }
+.inspo .looks { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; max-height: none !important; overflow: visible !important; gap: 14px !important; }
+.inspo { max-height: 70vh; overflow-y: auto; }
+.look-art { height: 230px !important; }
+.look-name { font-size: 1.15rem !important; }
+@media (max-width: 700px) { .inspo .looks { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } .look-art { height: 190px !important; } }
+.ex-link { position: relative; display: block; text-decoration: none; }
+.ex-open { position: absolute; left: 8px; right: 8px; bottom: 8px; background: rgba(14,63,87,0.9); color: #fff; font-size: 0.75rem; font-weight: 600; text-align: center; padding: 6px; border-radius: 999px; opacity: 0; transform: translateY(6px); transition: .25s; }
+.ex-link:hover .ex-open { opacity: 1; transform: none; }
+@media (hover: none) { .ex-open { opacity: 1; transform: none; } }

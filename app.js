@@ -1167,6 +1167,8 @@ function inkLook(d, picked, spots, extra = {}) { d.style = "ink"; d.picked = pic
 function gradLook(d, picked, dir) { d.style = "gradient"; d.picked = picked; d.gradient = { direction: dir, glitter: "none" }; d.addins = {}; d.crush = []; }
 const LOOKS = [
   { id: "ocean", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish", "sea-shell-scallop"]); d.crush = []; } },
+  { id: "shellbeach", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "high", size: "calm", dir: "flat" }); d.addins = AI(["sea-shell-pink", "sea-shell-spiral"]); d.crush = []; } },
+  { id: "stormsea", apply(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "right" }); d.addins = AI(["sea-starfish"]); d.crush = []; } },
   { id: "seaglass", apply(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .42, .3, 20], [1, .6, .6, 20], [2, .4, .78, 14]]); d.deco = "natural"; d.addins = AI(["dried-blue"]); sprinkle(d, "clear", 70, "sg"); } },
   { id: "rosegold", apply(d) { gradLook(d, ["#B8693F", "#C9A99A", "#D9959C"], "diagonal"); sprinkle(d, "rosecopper", 130, "rg"); sprinkle(d, "champagne", 90, "rg2"); } },
   { id: "sunset", apply(d) { gradLook(d, ["#D9742E", "#B04855", "#C89B2E"], "down"); sprinkle(d, "goldleaf", 70, "sg"); } },
@@ -1189,7 +1191,13 @@ const LOOKS = [
 ];
 function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); return d; }
 function inspirationHtml() {
-  return `<details class="inspo" ${ui.open.has("inspo") ? "open" : ""} data-key="inspo"><summary><span>${U("inspoH")}</span><span class="inspo-arrow" aria-hidden="true">⌄</span></summary><p class="small-note">${U("inspoP")}</p><div class="looks">${LOOKS.map((l) => `<button type="button" class="look" data-look-id="${l.id}"><span class="look-art">${renderPiece(lookDesign(l))}</span><span class="look-name">${U("look_" + l.id)} <small>(${esc(lab("style", lookDesign(l).style))})</small></span></button>`).join("")}</div></details>`;
+  const ds = LOOKS.map((l) => [l, lookDesign(l)]);
+  const groups = ["ocean", "gradient", "ink", "clear"].map((st) => {
+    const items = ds.filter(([, d]) => d.style === st);
+    if (!items.length) return "";
+    return `<h4 class="looks-h">${esc(lab("style", st))}</h4><div class="looks">${items.map(([l, d]) => `<button type="button" class="look" data-look-id="${l.id}"><span class="look-art">${renderPiece(d)}</span><span class="look-name">${U("look_" + l.id)}</span></button>`).join("")}</div>`;
+  }).join("");
+  return `<details class="inspo" ${ui.open.has("inspo") ? "open" : ""} data-key="inspo"><summary><span>${U("inspoH")}</span><span class="inspo-arrow" aria-hidden="true">⌄</span></summary><p class="small-note">${U("inspoP")}</p>${groups}</details>`;
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-look-id]"); if (!b) return;
@@ -1317,7 +1325,7 @@ const STEP_VIEWS = [
         + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall"]), "boards") + `<p class="small-note">${U("moreSoon")}</p>`;
     }
     const refs = (CONFIG.references && CONFIG.references[ui.cat]) || [];
-    const refHtml = refs.length ? `<section class="example-work"><div class="ex-head"><h3>${U("refTitle")}</h3><p>${U("refSub")}</p></div><div class="refs">${refs.map((r) => `<figure><img src="${r.img}" alt="" loading="lazy"><figcaption>${esc(r.cap)}</figcaption></figure>`).join("")}</div></section>` : "";
+    const refHtml = refs.length ? `<section class="example-work"><div class="ex-head"><h3>${U("refTitle")}</h3><p>${U("refSub")}</p></div><div class="refs">${refs.map((r) => { const key = r.img.split("/").pop().replace(/\.\w+$/, ""); const pre = CONFIG.presets.find((p) => p.photo === r.img); const href = GALLERY_DESIGNS[key] ? `design.html?gallery=${key}` : pre ? `design.html?preset=${pre.id}` : ""; const img = `<img src="${r.img}" alt="" loading="lazy">`; return `<figure>${href ? `<a href="${href}" class="ex-link">${img}<span class="ex-open">${U("seeDigital")}</span></a>` : img}<figcaption>${esc(r.cap)}</figcaption></figure>`; }).join("")}</div></section>` : "";
     return `<button type="button" class="btn btn-line small" data-action="cat" data-id="">${U("catBack")}</button>
       <h2>${U("sMoldH")}</h2><p class="hint">${U("sMoldP")}</p>${body}${refHtml}`;
   },
