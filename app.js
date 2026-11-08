@@ -998,6 +998,7 @@ function renderPiece(d, side = "front", opts = {}) {
     <linearGradient id="${id}-sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.38"/><stop offset="0.28" stop-color="#fff" stop-opacity="0.08"/><stop offset="0.6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity="0.16"/></linearGradient>
     <filter id="${id}-softink" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="7"/></filter>
     <filter id="${id}-glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="${id}-bev" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="1.1"/></filter>
     <filter id="${id}-shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000000" flood-opacity="0.16"/></filter>
   </defs>`;
 
@@ -1005,7 +1006,7 @@ function renderPiece(d, side = "front", opts = {}) {
   const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
-  const rim = `fill="none" stroke="#9AA4AB" stroke-width="2.6" stroke-linejoin="round"`;
+  const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linejoin="round"`;
 
   const flip = side === "back" ? `transform="matrix(-1 0 0 1 300 0)"` : "";
   const label = `${shapeName(d.shape)}, ${lab("style", d.style)}`;
@@ -1017,6 +1018,7 @@ function renderPiece(d, side = "front", opts = {}) {
     ${d.hardware === "none" || d.hardware === "ringchain" ? "" : `<line x1="150" y1="110" x2="150" y2="${pinTop(d.shape)}" stroke="${METALS[d.metal][1]}" stroke-width="3"/>`}
     ${hardwareSvg(d, id)}` : ""}
     <g filter="url(#${id}-shadow)" ${flip}>
+      <g transform="translate(0 3.2)" opacity="0.5">${shapeMarkup(d.shape, `fill="rgba(70,120,140,0.55)" pointer-events="none" filter="url(#${id}-bev)"`)}</g>
       ${glow ? `<g filter="url(#${id}-glow)" opacity="0.65">${shapeMarkup(d.shape, `fill="${d.addins.glow.color}"`)}</g>` : ""}
       <g clip-path="url(#${id}-clip)" class="resin">
         ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(176,214,226,0.55)"/>`}
@@ -1025,6 +1027,8 @@ function renderPiece(d, side = "front", opts = {}) {
         <rect x="0" y="100" width="300" height="340" fill="url(#${id}-sheen)" pointer-events="none"/>
         ${shapeMarkup(d.shape, `fill="none" stroke="#fff" stroke-width="7" opacity="0.5" filter="url(#${id}-soft2)" pointer-events="none"`)}
         ${shapeMarkup(d.shape, `fill="none" stroke="rgba(14,63,87,0.22)" stroke-width="9" filter="url(#${id}-soft2)" pointer-events="none"`)}
+        <g transform="translate(1.6 1.6)">${shapeMarkup(d.shape, `fill="none" stroke="#fff" stroke-width="3" opacity="0.7" filter="url(#${id}-bev)" pointer-events="none"`)}</g>
+        <g transform="translate(-1.6 -1.8)">${shapeMarkup(d.shape, `fill="none" stroke="rgba(20,50,70,0.22)" stroke-width="3" filter="url(#${id}-bev)" pointer-events="none"`)}</g>
       </g>
       ${shapeMarkup(d.shape, rim + ' pointer-events="none"')}
     </g>
