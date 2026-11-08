@@ -2417,8 +2417,8 @@ els.steps.addEventListener("click", (e) => {
   const b = e.target.closest("[data-step]");
   if (b) go(Number(b.dataset.step));
 });
-// Clear resin: things inside come before glitter and sprinkles.
-const stepOrder = () => (design.style === "clear" ? [0, 1, 2, 3, 7, 6, 8, 9, 10] : null);
+// Clear resin and ink dye: things inside (charms, flowers) come before glitter and sprinkles.
+const stepOrder = () => (design.style === "clear" ? [0, 1, 2, 3, 7, 6, 8, 9, 10] : design.style === "ink" ? [0, 1, 2, 3, 4, 5, 7, 6, 8, 9, 10] : null);
 function neighbour(dir) {
   const o = stepOrder();
   if (!o) return ui.step + dir;
