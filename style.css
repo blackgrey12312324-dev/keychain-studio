@@ -1322,3 +1322,6 @@ body.noprev .cards.cats { grid-template-columns: repeat(auto-fill, minmax(260px,
 
 .marquee { position: fixed; z-index: 500; border: 1.5px solid #19708A; background: rgba(25,112,138,0.12); border-radius: 4px; pointer-events: none; }
 #preview { user-select: none; -webkit-user-select: none; }
+
+.example-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 14px;padding:10px 14px;border-radius:16px;background:rgba(255,255,255,.7);font-size:.9rem}
+.example-bar span{flex:1 1 180px}

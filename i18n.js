@@ -43,7 +43,7 @@ const I18N = {
       shuffle: "Shuffle", oneMore: "Add one more", letter: "Letter", number: "Number",
 
       s0h: "Pick a ready-made design", s0p: "Too lazy to customise? Choose one and send it. You can still change everything.",
-      orderThis: "Order this one", changeIt: "Change it", fromScratch: "Start from scratch",
+      orderThis: "Order this one", changeIt: "Continue editing this one", keepEditing: "Continue editing this one", exampleNote: "This is an example. Order it as it is, or make it yours.", buyNow: "Buy now", fromScratch: "Start from scratch",
 
       catKey: "Keychains", catKeyP: "Letter keychains, tags, heart sets and sea shapes.", catStat: "Games & decor", catStatP: "Big pieces: hearts, hexagons, stands, word molds and games.", catKit: "Dining & restaurant", catKitP: "Cup stands, serving boards and trays for the dining table or your restaurant.", catPaint: "Canvas", catPaintP: "Canvases of any size: sea style or abstract.", catGift: "Custom gifts", catGiftP: "Your photo on a canvas, or in a circle or any shape.", grpBoards: "Boards, trays and wooden bases",
       catCut: "Wooden cutting boards", catCutP: "Any size, any shape. Give us the size or send a picture of the shape.", refTitle: "Example work", backHome: "← Back to home", pntSea: "Sea style", pntAbs: "Abstract", pntWood: "Resin on wood", pntPhoto: "Photo canvas", pntNote: "Every painting can be any size and any shape. Type the size or send a picture of the shape you want.", catH: "What are you making?", catP: "Pick a section. You will choose the exact mold next.", catAcc: "Accessories", catAccP: "Bookmarks, hair combs, a bun pin and pens.", catMed: "Medium pieces", catMedP: "Boards, coasters, word molds, games and wooden slices.", catBig: "Big trays and boards", catBigP: "Trays, platters, frames, hexagon and heart trays.", catBack: "← Back to sections", grpLetters: "Letter keychains", grpKeychains: "Keychains", grpPendants: "Shapes and tags", grpGroovy: "Groovy mold: sea shapes (keychains)", grpBookmarks: "Bookmarks (animals, plain and feather)", grpTexBm: "Textured bookmarks (separate mold)", grpCombs: "Hair combs and bun pin", grpPens: "Pens", grpCups: "Stands for cups", cupsNote: "Cup stands come as a set of four with a holder, or as one single stand. No ring or chain. Choose sea, ink or colour styles and add flowers or small figures.", fontBlock: "Block letters", fontGroovy: "Groovy letters", moreSoon: "More molds are being added here soon.",
@@ -209,7 +209,7 @@ const I18N = {
       shuffle: "สุ่มตำแหน่ง", oneMore: "เพิ่มอีกชิ้น", letter: "ตัวอักษร", number: "ตัวเลข",
 
       s0h: "เลือกแบบสำเร็จรูป", s0p: "ไม่อยากออกแบบเอง? เลือกแบบที่ชอบแล้วส่งได้เลย ยังแก้ไขได้ทุกอย่าง",
-      orderThis: "สั่งแบบนี้", changeIt: "แก้ไขแบบนี้", fromScratch: "เริ่มจากศูนย์",
+      orderThis: "สั่งแบบนี้", changeIt: "แก้ไขต่อ", keepEditing: "แก้ไขต่อ", exampleNote: "นี่คือตัวอย่าง สั่งตามนี้ หรือปรับเป็นแบบของคุณ", buyNow: "ซื้อเลย", fromScratch: "เริ่มจากศูนย์",
 
       sMoldH: "เลือกแม่พิมพ์", sMoldP: "เลือกรูปทรงก่อน แล้วค่อยเลือกตัวอักษร", moldMedium: "แม่พิมพ์กลาง", moldBig: "แม่พิมพ์ใหญ่", moldThin: "แม่พิมพ์เรียว", moldSmall: "แม่พิมพ์เล็ก", moldLetters: "ตัวอักษร", moldNumbers: "ตัวเลข", moldNoLetter: "แม่พิมพ์นี้ไม่มีตัวอักษร ไปขั้นตอนสไตล์ได้เลย",
       s1h: "เลือกตัวอักษร", s1p: "แตะตัวอักษร พวงกุญแจจะเปลี่ยนทันที", shapes: "รูปทรง", second: "พวงกุญแจคู่",
@@ -355,7 +355,7 @@ const I18N = {
       shuffle: "Перемешать", oneMore: "Ещё одну", letter: "Буква", number: "Цифра",
 
       s0h: "Выбери готовый дизайн", s0p: "Лень придумывать? Выбери готовый и отправь. Всё можно изменить.",
-      orderThis: "Заказать этот", changeIt: "Изменить", fromScratch: "Начать с нуля",
+      orderThis: "Заказать этот", changeIt: "Продолжить редактирование", keepEditing: "Продолжить редактирование", exampleNote: "Это пример. Закажите как есть или измените под себя.", buyNow: "Купить сейчас", fromScratch: "Начать с нуля",
 
       sMoldH: "Выбери форму", sMoldP: "Сначала выбери форму, потом букву.", moldMedium: "Средняя форма", moldBig: "Большая форма", moldThin: "Тонкая форма", moldSmall: "Маленькая форма", moldLetters: "Буквы", moldNumbers: "Цифры", moldNoLetter: "В этой форме нет буквы — переходи к стилю.",
       s1h: "Выбери букву", s1p: "Нажми на букву — брелок изменится сразу.", shapes: "Формы", second: "Парный брелок",

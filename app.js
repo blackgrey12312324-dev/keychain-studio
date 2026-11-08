@@ -1077,6 +1077,10 @@ function reviewThumbs(d) {
 
 const SEC_COL = { keychains: "#134B63", accessories: "#E8806C", statues: "#8C6BB1", kitchen: "#2E8B8B", paint: "#2F5FA8" };
 const SEC_NAME = { keychains: "catKey", accessories: "catAcc", statues: "catStat", kitchen: "catKit", paint: "catPaint" };
+function exampleBar() {
+  if (!ui.example || ui.step === 0 || ui.step === LAST) return "";
+  return `<div class="example-bar"><span>${U("exampleNote")}</span><button type="button" class="btn btn-ink small" data-action="exorder">${U("orderThis")}</button><button type="button" class="btn btn-line small" data-action="exedit">${U("keepEditing")}</button></div>`;
+}
 function secTag() {
   const k = ui.cat || (design.shape ? catOf(design.shape) : "");
   if (!k || ui.step === 0 || !SEC_NAME[k]) return "";
@@ -1303,7 +1307,7 @@ function presetDesign(p) {
 
 /* ---------- Every finished piece in the shop, rebuilt as a digital design ---------- */
 const GALLERY_DESIGNS = {
-  "g-key-e": { cat: "keychains", shape: "E", f(d) { d.style = "clear"; d.picked = []; sprinkle(d, "goldleaf", 150, "ke"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "gold" }); d.hardware = "ringchain"; } },
+  "g-key-e": { cat: "keychains", shape: "E", f(d) { d.style = "clear"; d.picked = []; sprinkle(d, "goldleaf", 260, "ke"); sprinkle(d, "gold", 70, "ke2"); sprinkle(d, "rosecopper", 24, "ke3"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "gold" }); d.hardware = "ringchain"; } },
   "g-key-a-star": { cat: "keychains", shape: "A", f(d) { inkLook(d, ["#B8693F", "#8A5F3C", "#D9959C"], [[0, .5, .35, 22], [1, .55, .7, 20], [2, .4, .55, 12]]); sprinkle(d, "copper", 40, "ka"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "orange" }); d.hardware = "ringchain"; } },
   "g-key-k": { cat: "keychains", shape: "K", f(d) { inkLook(d, ["#1F6BC0", "#7F9CC0", "#E6E0D8"], [[0, .45, .35, 20], [1, .55, .65, 16], [2, .4, .5, 12]]); d.hardware = "none"; } },
   "g-key-tail": { cat: "keychains", shape: "g-tail", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .5, .35, 20], [1, .55, .62, 18], [2, .45, .8, 14]]); d.hardware = "ringchain"; } },
@@ -1567,7 +1571,7 @@ const STEP_VIEWS = [
   metalsea: { name: "Metal seashell (not natural)", thumb: true, ids: ["sm-shell-gold", "sm-shell-blue", "sm-starfish-gold"] },
   scallop: { name: "Scallop shell", ids: ["sea-shell-scallop", "sea-shell-pink"], cols: ["#F2DCCB", "#EFA9A0"] },
   silver: { name: "Random silver charm", random: true, ids: ["sm-metal-wing", "sm-metal-horn", "sm-metal-moth", "sm-metal-bird"] },
-  pressed: { name: "Pressed flower", ids: ["flower-red", "flower-orange", "flower-yellow", "flower-mint", "flower-teal", "flower-blue", "flower-purple", "flower-plum", "flower-magenta", "flower-pink", "flower-mauve", "flower-cream"], cols: ["#9C2F2F", "#C8601F", "#B48F1E", "#9DB5A5", "#2F7F78", "#1F3F86", "#4A2F5E", "#5E2F5A", "#8E2F68", "#C98078", "#8E5A70", "#CFC49A"] },
+  pressed: { name: "Pressed flower", ids: ["flower-red", "flower-orange", "flower-yellow", "flower-mint", "flower-teal", "flower-blue", "flower-purple", "flower-plum", "flower-magenta", "flower-pink", "flower-mauve", "flower-cream"], cols: ["#9C2F2F", "#B8683A", "#A8903A", "#5FA58E", "#2F8F8A", "#233F8F", "#6A3FA0", "#8A3A8A", "#A83A78", "#C07A8A", "#B07A9A", "#E8E0C8"] },
   paperflower: { name: "Paper flower", ids: ["pf-blue", "pf-pink", "pf-pink2", "pf-magenta", "pf-magenta2", "pf-purple", "pf-purple2"], cols: ["#5F86D8", "#F4A0BB", "#E8809C", "#C2308A", "#D43A9C", "#7B4BC4", "#A98AD0"] },
   paperrose: { name: "Paper rose", ids: ["pf-rose", "pf-rose2", "pf-rose3", "pf-whiterose", "pf-whiterose2", "pf-whiterose3"], cols: ["#C8283A", "#F08A78", "#D95870", "#F4F0EA", "#EFE6D4", "#F2E3C8"] },
   silkflower: { name: "Silk flower", ids: ["silk-yellow", "silk-lime"], cols: ["#E8C23A", "#A8D060"] },
@@ -1753,11 +1757,13 @@ function renderSteps() {
   if (cur) els.steps.scrollTo({ left: cur.offsetLeft - els.steps.clientWidth / 2 + cur.clientWidth / 2 });
 }
 function renderPanel() {
-  els.panel.innerHTML = secTag() + stylesBar() + STEP_VIEWS[ui.step]();
+  els.panel.innerHTML = exampleBar() + secTag() + stylesBar() + STEP_VIEWS[ui.step]();
   startCatSlides();
   els.back.hidden = ui.step === 0;
   $("bigview").hidden = ui.step < 3;
   els.next.hidden = ui.step === LAST;
+  const bc = $("bar-cart"), bb = $("bar-buy");
+  if (bc) { bc.hidden = bb.hidden = ui.step !== LAST; bc.textContent = U("addCart"); bb.textContent = U("buyNow"); }
   els.next.textContent = ui.step === 0 ? U("startDesigning") : ui.step === LAST - 1 ? U("toReview") : U("next");
   els.back.textContent = U("back");
   renderBarSummary();
@@ -1884,6 +1890,14 @@ function startOver() {
 }
 
 /* ---------- Panel events ---------- */
+function addDesignToCart() {
+  const d2 = copy(design); if (d2.crush.length > 500) d2.crush = d2.crush.slice(-500);
+  const sub = summaryLines(design, "en").slice(0, 3).map(([k, v]) => v).join(" · ");
+  const ok = addToCart({ title: shapeName(design.shape, "en") + " – " + lab("style", design.style, "en"), sub, thumb: renderPiece(d2).replace(/<svg /, '<svg class="cart-svg" '), text: orderText().split("\n").slice(1).join("\n") });
+  toast(ok ? U("addedCart") : U("cartFail"));
+}
+$("bar-cart").addEventListener("click", addDesignToCart);
+$("bar-buy").addEventListener("click", () => { copyText(orderText()).catch(() => {}); window.open(igLink(), "_blank", "noopener"); });
 els.panel.addEventListener("click", (e) => {
   const gl = e.target.closest("[data-glitter]");
   if (gl) {
@@ -1925,10 +1939,11 @@ els.panel.addEventListener("click", (e) => {
     if (design.tassel.photo && design.hardware === "none") design.hardware = "ringchain";
     changed();
   } else if (action === "addcart") {
-    const d2 = copy(design); if (d2.crush.length > 500) d2.crush = d2.crush.slice(-500);
-    const sub = summaryLines(design, "en").slice(0, 3).map(([k, v]) => v).join(" · ");
-    const ok = addToCart({ title: shapeName(design.shape, "en") + " – " + lab("style", design.style, "en"), sub, thumb: renderPiece(d2).replace(/<svg /, '<svg class="cart-svg" '), text: orderText().split("\n").slice(1).join("\n") });
-    toast(ok ? U("addedCart") : U("cartFail"));
+    addDesignToCart();
+  } else if (action === "exorder") {
+    ui.example = false; go(LAST);
+  } else if (action === "exedit") {
+    ui.example = false; renderPanel();
   } else if (action === "savestyle") {
     saveStyle();
   } else if (action === "opensaves") {
@@ -2419,13 +2434,13 @@ function loadFromLink() {
   const preset = new URLSearchParams(location.search).get("preset");
   const p = CONFIG.presets.find((x) => x.id === preset);
   if (p) {
-    design = presetDesign(p);
+    design = presetDesign(p); ui.example = true;
     ui.step = 1;
     ui.visited = new Set([0, 1]);
   }
   const params = new URLSearchParams(location.search);
   const gk = params.get("gallery"), gd = gk && galleryDesign(gk);
-  if (gd) { design = gd.d; ui.cat = gd.cat; ui.step = 3; ui.visited = new Set([0, 1, 2, 3]); }
+  if (gd) { ui.example = true; design = gd.d; ui.cat = gd.cat; ui.step = 3; ui.visited = new Set([0, 1, 2, 3]); }
   if (params.get("cat")) { ui.cat = params.get("cat"); ui.step = 1; ui.visited = new Set([0, 1]); ui.jump = params.get("group") || ""; }
   if (params.has("start")) { ui.step = 1; ui.visited = new Set([0, 1]); ui.cat = ""; }
   const letter = (params.get("letter") || "").toUpperCase();
