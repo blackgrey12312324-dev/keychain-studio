@@ -1350,3 +1350,18 @@ body[data-page="home"] .faq details, body[data-page="home"] .faq .q { border-rad
 body[data-page="home"] .way { border-radius: 22px !important; }
 body[data-page="home"] .faq .wrap { max-width: 820px; background: rgba(255,255,255,0.72); border-radius: 26px; padding: 28px 34px; box-shadow: 0 12px 34px rgba(14,63,87,0.16), inset 0 0 0 1px rgba(127,185,188,0.4); }
 body[data-page="home"] .faq details, body[data-page="home"] .faq .q { border-radius: 14px; }
+
+/* ---- Designer: same sea-foam look as the home page (colours and shapes only, no layout or function changes) ---- */
+body.designer { background: var(--foam-oval) center / cover fixed no-repeat, #D5E8E4 !important; }
+body.designer .layout::before, body.designer .layout::after { display: none !important; }
+body.designer .site-header { background: rgba(244,240,230,0.88) !important; border-bottom: 0 !important; box-shadow: 0 6px 22px rgba(14,63,87,0.12); }
+@media (min-width: 900px) {
+  body.designer .layout { max-width: 1280px; margin: 22px auto 110px !important; background: rgba(244,240,230,0.80); border-radius: 30px; box-shadow: 0 18px 46px rgba(14,63,87,0.22), inset 0 0 0 1px rgba(255,255,255,0.7); }
+  body.designer .layout .stage:not(.full) { background: transparent !important; box-shadow: none !important; border-radius: 30px 0 0 30px !important; }
+}
+body.designer footer.bar { background: rgba(244,240,230,0.92) !important; box-shadow: 0 -4px 22px rgba(14,63,87,0.16) !important; border-radius: 26px 26px 0 0; }
+body.designer .tool, body.designer .btn-line, body.designer .chip { box-shadow: 0 3px 10px rgba(14,63,87,0.10), inset 0 1px 0 #fff; }
+body.designer .btn-ink { box-shadow: 0 6px 18px rgba(25,112,138,0.35), inset 0 1px 0 rgba(255,255,255,0.25); }
+body.designer .card, body.designer .opt, body.designer .swatch, body.designer .glit { border-radius: 18px; }
+body.designer .card { background: rgba(255,255,255,0.78); box-shadow: 0 8px 22px rgba(14,63,87,0.12), inset 0 0 0 1px rgba(127,185,188,0.3); }
+body.designer .stage.full .wordmark { color: #0E3F57 !important; }
