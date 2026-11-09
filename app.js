@@ -29,6 +29,7 @@ function applyPicked(d) {
 function defaultDesign() {
   return {
     shape: "A",
+    cm: { w: 30, h: 40 },
     second: "",
     style: "gradient",
     colors: DEFAULT_COLORS.slice(),
@@ -75,6 +76,7 @@ function catOf(shape) {
   if (PENDANTS.includes(shape) || c.mold === "groovy") return "keychains";
   if (["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "comb", "comb-moon", "hairpin", "pen", "blade"].includes(shape) || c.tex === "glass" || /^bm-/.test(shape)) return "accessories";
   if (shape === "frame-oval") return "gift";
+  if (["board", "wood-round", "wood-slice", "wood-tray", "board-rect", "board-whale", "board-whale-tail"].includes(shape)) return "cutting";
   if (["heart-tray", "hexagon", "love", "game-ttt", "game-chess"].includes(shape)) return "statues";
   return "kitchen";
 }
@@ -110,10 +112,10 @@ const SEA_WATER = ["#0F3D8C", "#2373C4", "#5BB6C8"];   // deep navy to royal blu
 // Clear resin has no colour or details step (it is decorated with glitter and things inside); the sea style has fixed colours and no glitter.
 const skipStep = (i, d) => (d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO)) || (d.style === "clear" && (i === COLOURS_STEP || i === 5));
 // gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
-const noInside = (d) => d.style === "gradient";
+const noInside = (d) => d.style === "gradient" || catOf(d.shape) === "cutting";
 const INK_GROUPS = ["small", "seaanimals", "charms", "flowers", "dried"];
 function fits(a, d) {
-  if (d.style === "gradient") return false;
+  if (d.style === "gradient" || catOf(d.shape) === "cutting") return false;
   if (d.style === "ocean") return a.group === "sea" && !a.metal;
   if (d.style === "ink" && !INK_GROUPS.includes(a.group)) return false;
   if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
@@ -197,6 +199,7 @@ function summaryLines(d, lang = ui.lang) {
   const S = (k, v) => t("sum." + k, v, lang);
   const L = [];
   L.push([S("shape"), shapeName(d.shape, lang) + (isLetter(d.shape) || isNumber(d.shape) ? ` (${lab("font", d.font || "block", lang)})` : "")]);
+  if (d.shape === "board-rect" && d.cm) L.push([lang === "en" ? "Size" : t("ui.cmTitle", null, lang), `${d.cm.w} × ${d.cm.h} cm`]);
   const det = styleDetails(d, lang);
   L.push([S("style"), lab("style", d.style, lang) + (det ? " (" + det + ")" : "")]);
   if (d.style !== "clear" && d.style !== "ocean") L.push([S("colours"), d.colors.map((c) => colorName(c, lang)).join(", ")]);
@@ -301,6 +304,16 @@ function applyDefaults(d) {
   if (isLetter(d.shape) || isNumber(d.shape) || (c && c.mold === "groovy")) { d.hardware = "none"; d.tassel.type = "none"; }
   else if (PENDANTS.includes(d.shape)) { d.hardware = "none"; d.tassel.type = "none"; }
   else { d.hardware = "none"; d.tassel.type = "none"; }
+}
+
+/* The normal wooden board: any size in centimetres, drawn in proportion */
+function syncBoard(d) {
+  if (!d || d.shape !== "board-rect") return;
+  const cm = d.cm || { w: 30, h: 40 }, sh = CONFIG.shapes.find((x) => x.id === "board-rect");
+  const s = Math.min(240 / cm.w, 280 / cm.h), w = cm.w * s, h = cm.h * s, x0 = 150 - w / 2, y0 = 270 - h / 2, x1 = x0 + w, y1 = y0 + h, r = Math.min(6, w / 6, h / 6);
+  sh.d = `M${(x0 + r).toFixed(1)} ${y0.toFixed(1)} H${(x1 - r).toFixed(1)} Q${x1.toFixed(1)} ${y0.toFixed(1)} ${x1.toFixed(1)} ${(y0 + r).toFixed(1)} V${(y1 - r).toFixed(1)} Q${x1.toFixed(1)} ${y1.toFixed(1)} ${(x1 - r).toFixed(1)} ${y1.toFixed(1)} H${(x0 + r).toFixed(1)} Q${x0.toFixed(1)} ${y1.toFixed(1)} ${x0.toFixed(1)} ${(y1 - r).toFixed(1)} V${(y0 + r).toFixed(1)} Q${x0.toFixed(1)} ${y0.toFixed(1)} ${(x0 + r).toFixed(1)} ${y0.toFixed(1)} Z`;
+  sh.t = Math.round(y0); sh.b = Math.round(y1); sh.pin = sh.t;
+  maskCache = {};
 }
 function customShape(shape) { return CONFIG.shapes.find((x) => x.id === shape && x.d); }
 function bounds(shape) {
@@ -990,6 +1003,7 @@ function penRefill(d) {
   </g>`;
 }
 function renderPiece(d, side = "front", opts = {}) {
+  syncBoard(d);
   if (isFresh(d)) d = Object.assign({}, d, { style: "clear" });
   ensureItems(d);
   const id = "k" + ++uid;
@@ -1340,16 +1354,16 @@ const GALLERY_DESIGNS = {
   "g-paint1": { cat: "kitchen", shape: "tray-rect", f(d) { gradLook(d, ["#1F6BC0", "#7F9CC0", "#C9A99A"], "down"); sprinkle(d, "champagne", 50, "p1"); } },
   "g-coaster-sea": { cat: "kitchen", shape: "coaster-set", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
   "g-coaster-ink": { cat: "kitchen", shape: "coaster-set", f(d) { inkLook(d, ["#1F6BC0", "#14151A", "#C89B2E"], [[0, .45, .35, 24], [1, .6, .6, 22], [2, .4, .8, 16]]); sprinkle(d, "goldleaf", 40, "ci"); } },
-  "g-coaster-stone": { cat: "kitchen", shape: "coaster-stone", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#8A5F3C"], "diagonal"); sprinkle(d, "copper", 60, "cs"); } },
+  "g-coaster-stone": { cat: "kitchen", shape: "coaster", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#8A5F3C"], "diagonal"); sprinkle(d, "copper", 60, "cs"); } },
   "g-platter": { cat: "kitchen", shape: "tray-oval", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
   "g-nuts-dish": { cat: "kitchen", shape: "tray-oval", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .4, .35, 26], [1, .6, .6, 24], [2, .45, .8, 18]]); } },
   "g-fruit-bowl": { cat: "kitchen", shape: "hexagon", f(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .4, .4, 26], [1, .6, .65, 24], [2, .5, .3, 16]]); sprinkle(d, "clear", 60, "fb"); } },
   "g-tealight": { cat: "kitchen", shape: "coaster", f(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .5, .4, 24], [1, .55, .65, 20], [2, .4, .55, 12]]); } },
   "g-tail": { cat: "kitchen", shape: "tray-tall", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
-  "g-woodtray": { cat: "kitchen", shape: "wood-tray", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); } },
-  "g-paddle": { cat: "kitchen", shape: "tray-tall", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); } },
-  "g-tree": { cat: "kitchen", shape: "wood-round", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); } },
-  "g-copper": { cat: "kitchen", shape: "wood-round", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); } },
+  "g-woodtray": { cat: "cutting", shape: "wood-tray", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); } },
+  "g-paddle": { cat: "cutting", shape: "board", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); } },
+  "g-tree": { cat: "cutting", shape: "wood-round", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); } },
+  "g-copper": { cat: "cutting", shape: "wood-round", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); } },
 };
 function galleryDesign(key) {
   const g = GALLERY_DESIGNS[key]; if (!g) return null;
@@ -1363,8 +1377,7 @@ function galleryDesign(key) {
 function readyView() {
   const cat = ui.cat;
   if (!cat || cat === "keychains") return "";
-  const woodKeys = ["g-woodtray", "g-paddle", "g-tree", "g-copper"];
-  const keys = Object.keys(GALLERY_DESIGNS).filter((k) => (cat === "cutting" ? woodKeys.includes(k) : GALLERY_DESIGNS[k].cat === cat));
+    const keys = Object.keys(GALLERY_DESIGNS).filter((k) => GALLERY_DESIGNS[k].cat === cat);
   const caps = {};
   CONFIG.gallery.forEach((t) => t.items.forEach((it) => { if (it.img) caps[it.img.split("/").pop().replace(/\.\w+$/, "")] = it.cap; }));
   const head = `<h2>${U("s0h")}</h2>`;
@@ -1406,7 +1419,7 @@ const STEP_VIEWS = [
       { id: "accessories", name: U("catAcc"), text: U("catAccP"), shape: "bookmark" },
       { id: "statues", name: U("catStat"), text: U("catStatP"), shape: "hexagon" },
       { id: "kitchen", name: U("catKit"), text: U("catKitP"), shape: "coaster-set" },
-      { id: "cutting", name: U("catCut"), text: U("catCutP"), href: "canvas.html?kind=board", shape: "board" },
+      { id: "cutting", name: U("catCut"), text: U("catCutP"), shape: "board" },
       { id: "paint", name: U("catPaint"), text: U("catPaintP"), shape: "tray-tall" },
       { id: "gift", name: U("catGift"), text: U("catGiftP"), shape: "circle" },
     ];
@@ -1441,15 +1454,28 @@ const STEP_VIEWS = [
         + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]), "bookmarks")
         + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]), "textured");
     } else if (ui.cat === "paint") {
-      const L = [["canvas.html?kind=beach", "images/real/canvas-beach.jpg", U("pntSea")], ["canvas.html?kind=abstract", "images/real/abs-purple.jpg", U("pntAbs")], ["canvas.html?kind=board", "images/real/g-woodtray.jpg", U("pntWood")], ["canvas.html?kind=photo", "images/real/g-collage.jpg", U("pntPhoto")]];
+      const L = [["canvas.html?kind=beach", "images/real/canvas-beach.jpg", U("pntSea")], ["canvas.html?kind=abstract", "images/real/abs-purple.jpg", U("pntAbs")], ["canvas.html?kind=photo", "images/real/g-collage.jpg", U("pntPhoto")]];
       body = `<h3 class="mold-group" id="grp-paintings">${U("catPaint")}</h3><div class="cards molds">${L.map(([h, im, n]) => `<a class="card" href="${h}"><span class="card-art has-photo"><img src="${im}" alt=""></span><span class="card-name">${n}</span></a>`).join("")}</div><p class="small-note">${U("pntNote")}</p>`;
     } else if (ui.cat === "statues") {
       body = group(U("grpGames"), byIds(["game-ttt", "game-chess"]), "games") + group(U("grpDecor"), byIds(["heart-tray", "hexagon", "love"]), "decor") + `<p class="small-note">${U("moreSoon")}</p>`;
+    } else if (ui.cat === "cutting") {
+      const cm = design.cm || { w: 30, h: 40 }, isRect = design.shape === "board-rect";
+      const num = (k, v) => `<label class="cm-field"><span>${U(k === "w" ? "cmWidth" : "cmHeight")}</span><input type="number" inputmode="decimal" min="10" max="200" step="1" data-cm="${k}" value="${v}"><b>cm</b></label><input type="range" min="10" max="200" step="1" data-cm="${k}" value="${v}" aria-label="${U(k === "w" ? "cmWidth" : "cmHeight")}">`;
+      const rec = [[30, 20], [40, 25], [50, 30], [60, 40]].map(([w, h]) => `<button type="button" class="chip" data-cm-set="${w}x${h}">${w} × ${h}</button>`).join("");
+      body = `<div class="field size-box">
+          ${group(U("grpBoardsMain"), byIds(["board-rect"]), "boards")}
+          ${isRect ? `<span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div><p class="small-note">${U("cmNote")}</p>` : ""}
+        </div>`
+        + group(U("grpWhale"), byIds(["board-whale-tail", "board-whale"]), "whales")
+        + group(U("grpMyBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray"]), "mine")
+        + `<a class="card" href="idea.html"><span class="card-art has-photo"><img src="images/real/g-saeed.jpg" alt=""></span><span class="card-name">${U("customShapeCard")}</span></a><p class="small-note">${U("customShapeNote")}</p>`;
     } else if (ui.cat === "gift") {
       body = group(U("grpPhoto"), byIds(["frame-oval"]) + `<a class="card" href="canvas.html?kind=photo"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("pntPhoto")}</span></a>`, "photo") + `<p class="small-note">${U("photoNote")}</p>`;
     } else {
-      body = group(U("grpCups"), byIds(["coaster", "coaster-set", "coaster-stone"]), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
-        + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall"]), "boards") + `<p class="small-note">${U("moreSoon")}</p>`;
+      body = group(U("grpCups"), byIds(["coaster-set", "coaster", "coaster-pair", "coaster-trio", "wood-coaster"]), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
+        + group(U("grpTrays"), byIds(["tray-round", "tray-oval", "tray-rect", "tray-tall"]), "trays") + `<p class="small-note">${U("traysNote")}</p>`
+        + group(U("grpBowls"), byIds(["bowl", "bowl-big"]), "bowls") + `<p class="small-note">${U("bowlNote")}</p>`
+        + group(U("grpSoapLight"), byIds(["soap", "light-holder"]), "soap");
     }
     const refs = (CONFIG.references && CONFIG.references[ui.cat]) || [];
     const refHtml = refs.length ? `<section class="example-work"><div class="ex-head"><h3>${U("refTitle")}</h3><p>${U("refSub")}</p></div><div class="refs">${refs.map((r) => { const key = r.img.split("/").pop().replace(/\.\w+$/, ""); const pre = CONFIG.presets.find((p) => p.photo === r.img); const href = GALLERY_DESIGNS[key] ? `design.html?gallery=${key}` : pre ? `design.html?preset=${pre.id}` : ""; const img = `<img src="${r.img}" alt="" decoding="async">`; return `<figure>${href ? `<a href="${href}" class="ex-link">${img}<span class="ex-open">${U("seeDigital")}</span></a>` : img}<figcaption>${esc(r.cap)}</figcaption></figure>`; }).join("")}</div></section>` : "";
@@ -1776,6 +1802,7 @@ function startCatSlides() {
 }
 const showingShowcase = () => (ui.step === 0 || (ui.step === 1 && !ui.chosen)) && !ui.full;
 function renderPreview() {
+  syncBoard(design);
   document.body.classList.toggle("noprev", showingShowcase());
   if (showingShowcase()) { els.preview.innerHTML = ""; els.stage.classList.add("showing"); return; }
   els.stage.classList.remove("showing");
@@ -1799,6 +1826,7 @@ function renderSteps() {
   if (cur) els.steps.scrollTo({ left: cur.offsetLeft - els.steps.clientWidth / 2 + cur.clientWidth / 2 });
 }
 function renderPanel() {
+  syncBoard(design);
   els.panel.innerHTML = exampleBar() + secTag() + stylesBar() + STEP_VIEWS[ui.step]();
   startCatSlides();
   els.back.hidden = ui.step === 0;
@@ -2036,7 +2064,11 @@ els.panel.addEventListener("click", (e) => {
     changed();
   } else if (action === "cat") {
     ui.cat = el.dataset.id;
-    renderPanel();
+    if (ui.cat === "cutting" && catOf(design.shape) !== "cutting") {
+      design.shape = "board-rect"; applyDefaults(design); design.style = "clear"; design.addins = {}; design.crush = []; resetItems(design); ui.chosen = true; ui.zoom = 1; ui.pan = [0, 0];
+      changed();
+    } else renderPanel();
+    window.scrollTo({ top: 0, behavior: "auto" });
     return;
   } else if (action === "mold") {
     ui.chosen = true;
@@ -2487,6 +2519,7 @@ function loadFromLink() {
   const gk = params.get("gallery"), gd = gk && galleryDesign(gk);
   if (gd) { ui.example = true; design = gd.d; ui.cat = gd.cat; ui.step = 3; ui.visited = new Set([0, 1, 2, 3]); }
   if (params.get("cat")) { ui.cat = params.get("cat"); ui.step = 1; ui.visited = new Set([0, 1]); ui.jump = params.get("group") || ""; }
+  if (ui.cat === "cutting" && catOf(design.shape) !== "cutting") { design.shape = "board-rect"; design.style = "clear"; design.addins = {}; design.crush = []; ui.chosen = true; }
   if (params.has("start")) { ui.step = 1; ui.visited = new Set([0, 1]); ui.cat = ""; }
   const letter = (params.get("letter") || "").toUpperCase();
   if (letter) ui.cat = "keychains";
@@ -2514,3 +2547,23 @@ if (document.fonts && document.fonts.load) {
 if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(() => { maskCache = {}; render(); });
 }
+
+/* board size: type or drag */
+els.panel.addEventListener("input", (e) => {
+  const el = e.target.closest("[data-cm]");
+  if (!el) return;
+  const k = el.dataset.cm, v = Math.max(10, Math.min(200, Math.round(Number(el.value) || 0)));
+  if (!design.cm) design.cm = { w: 30, h: 40 };
+  if (el.type === "number" && (el.value === "" || Number(el.value) < 10)) return;   // let the person finish typing
+  design.cm[k] = v;
+  els.panel.querySelectorAll(`[data-cm="${k}"]`).forEach((x) => { if (x !== el) x.value = v; });
+  renderPreview(); renderBarSummary();
+  const box = $("order-text"); if (box) box.value = orderText();
+});
+els.panel.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-cm-set]");
+  if (!b) return;
+  const [w, h] = b.dataset.cmSet.split("x").map(Number);
+  design.cm = { w, h };
+  renderPanel(); renderPreview(); renderBarSummary();
+});

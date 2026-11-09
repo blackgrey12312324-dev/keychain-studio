@@ -1368,3 +1368,10 @@ body.designer .stage.full .wordmark { color: #0E3F57 !important; }
 body.noprev .cards.presets { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; max-width: 980px; margin-left: auto; margin-right: auto; }
 body.noprev .panel > h2, body.noprev .panel > .hint { text-align: center; max-width: 980px; margin-left: auto; margin-right: auto; }
 body.noprev .panel > .field { text-align: center; }
+.cm-row { display: flex; align-items: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
+.cm-field { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; min-width: 190px; }
+.cm-field input[type=number] { width: 84px; padding: 8px 10px; border-radius: 12px; border: 1px solid #C9D6D8; font: inherit; }
+.cm-row input[type=range] { flex: 1 1 200px; accent-color: #19708A; }
+.example-work .refs figure img { max-height: 210px; object-fit: cover; }
+.example-work { transform-origin: top; }
+body.designer .example-work .refs { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important; }
