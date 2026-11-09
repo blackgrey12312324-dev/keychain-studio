@@ -74,7 +74,8 @@ function catOf(shape) {
   if (!c) return "keychains";
   if (PENDANTS.includes(shape) || c.mold === "groovy") return "keychains";
   if (["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "comb", "comb-moon", "hairpin", "pen", "blade"].includes(shape) || c.tex === "glass" || /^bm-/.test(shape)) return "accessories";
-  if (["heart-tray", "hexagon", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"].includes(shape)) return "statues";
+  if (shape === "frame-oval") return "gift";
+  if (["heart-tray", "hexagon", "love", "game-ttt", "game-chess"].includes(shape)) return "statues";
   return "kitchen";
 }
 const SHOW_PRICES = !!CONFIG.showPrices;
@@ -1407,7 +1408,7 @@ const STEP_VIEWS = [
       { id: "kitchen", name: U("catKit"), text: U("catKitP"), shape: "coaster-set" },
       { id: "cutting", name: U("catCut"), text: U("catCutP"), href: "canvas.html?kind=board", shape: "board" },
       { id: "paint", name: U("catPaint"), text: U("catPaintP"), shape: "tray-tall" },
-      { id: "gift", name: U("catGift"), text: U("catGiftP"), href: "canvas.html?kind=photo", shape: "circle" },
+      { id: "gift", name: U("catGift"), text: U("catGiftP"), shape: "circle" },
     ];
     if (!ui.cat) {
       return `<a class="btn btn-line small" href="index.html">${U("backHome")}</a>${hasDraft() ? `<button type="button" class="btn btn-ink small" data-action="loaddraft">${U("draftContinue")}</button>` : ""}<h2>${U("catH")}</h2><p class="hint">${U("catP")}</p>
@@ -1443,7 +1444,9 @@ const STEP_VIEWS = [
       const L = [["canvas.html?kind=beach", "images/real/canvas-beach.jpg", U("pntSea")], ["canvas.html?kind=abstract", "images/real/abs-purple.jpg", U("pntAbs")], ["canvas.html?kind=board", "images/real/g-woodtray.jpg", U("pntWood")], ["canvas.html?kind=photo", "images/real/g-collage.jpg", U("pntPhoto")]];
       body = `<h3 class="mold-group" id="grp-paintings">${U("catPaint")}</h3><div class="cards molds">${L.map(([h, im, n]) => `<a class="card" href="${h}"><span class="card-art has-photo"><img src="${im}" alt=""></span><span class="card-name">${n}</span></a>`).join("")}</div><p class="small-note">${U("pntNote")}</p>`;
     } else if (ui.cat === "statues") {
-      body = group(U("catStat"), byIds(["heart-tray", "hexagon", "frame-oval", "love", "heart-stand", "game-ttt", "game-chess"]), "statues") + `<p class="small-note">${U("moreSoon")}</p>`;
+      body = group(U("grpGames"), byIds(["game-ttt", "game-chess"]), "games") + group(U("grpDecor"), byIds(["heart-tray", "hexagon", "love"]), "decor") + `<p class="small-note">${U("moreSoon")}</p>`;
+    } else if (ui.cat === "gift") {
+      body = group(U("grpPhoto"), byIds(["frame-oval"]) + `<a class="card" href="canvas.html?kind=photo"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("pntPhoto")}</span></a>`, "photo") + `<p class="small-note">${U("photoNote")}</p>`;
     } else {
       body = group(U("grpCups"), byIds(["coaster", "coaster-set", "coaster-stone"]), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
         + group(U("grpBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray", "tray-oval", "tray-rect", "tray-tall"]), "boards") + `<p class="small-note">${U("moreSoon")}</p>`;
