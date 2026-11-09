@@ -122,7 +122,20 @@ function fits(a, d) {
   if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
   if (d.deco === "charms" && !CHARM_GROUPS.includes(a.group)) return false;
   const need = a.id === "tree-small" || a.id.startsWith("sm-crown") ? 1 : NEED[a.group] || 0;   // crowns are thick: medium and big molds only
-  return need <= moldRank(d.shape);
+  if (need > moldRank(d.shape)) return false;
+  return canHold(d.shape, a.id);
+}
+// does the piece physically fit inside the mold (an empty mold, anywhere)? Cached per mold and piece.
+const _hold = {};
+function canHold(shape, id) {
+  const k = shape + "|" + id + "|" + (CONFIG.shapes.find((x) => x.id === shape) || {}).d;
+  if (k in _hold) return _hold[k];
+  let ok = false;
+  try {
+    const [T, B] = bounds(shape);
+    outer: for (let y = T; y <= B; y += 6) for (let x = 40; x <= 260; x += 6) if (itemFits(shape, x, y, id)) { ok = true; break outer; }
+  } catch (e) { ok = true; }
+  return (_hold[k] = ok);
 }
 function activeAddins(d) {
   return CONFIG.addins.filter((a) => d.addins[a.id] && !blockedReason(a.id, d) && fits(a, d));
