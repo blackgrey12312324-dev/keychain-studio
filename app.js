@@ -972,6 +972,22 @@ function zoomBox(z, pan = [0, 0]) {
   return `${x.toFixed(1)} ${y.toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)}`;
 }
 
+
+/* The writing part of a pen (refill, spring and tip) sits inside the resin: clear shows it, ink dye shows it where there is no dye, gradient covers it. */
+function penRefill(d) {
+  if (d.shape !== "pen" && d.shape !== "blade") return "";
+  const blade = d.shape === "blade";
+  const y0 = blade ? 124 : 128, y1 = blade ? 300 : 310, y2 = blade ? 392 : 388, tip = blade ? 410 : 402;
+  return `<g class="refill" pointer-events="none" opacity="0.9">
+    <rect x="${blade ? 146.5 : 145.5}" y="${y0 - 8}" width="${blade ? 7 : 9}" height="12" rx="3" fill="#8D969C"/>
+    <rect x="148.6" y="${y0 + 4}" width="2.8" height="${y1 - y0 - 4}" fill="#A9B2B7"/>
+    <path d="M147.4 ${y0 + 8} h5.2 M147.4 ${y0 + 16} h5.2 M147.4 ${y0 + 24} h5.2 M147.4 ${y0 + 32} h5.2 M147.4 ${y0 + 40} h5.2 M147.4 ${y0 + 48} h5.2" stroke="#7F888E" stroke-width="1" fill="none"/>
+    <rect x="146" y="${y1}" width="8" height="${y2 - y1}" rx="3.5" fill="rgba(52,58,66,0.62)"/>
+    <rect x="147.4" y="${y1 + 3}" width="1.6" height="${y2 - y1 - 8}" rx="0.8" fill="rgba(255,255,255,0.55)"/>
+    <path d="M146 ${y2 - 2} L150 ${tip} L154 ${y2 - 2} Z" fill="#6B7279"/>
+    <circle cx="150" cy="${tip - 0.5}" r="1.3" fill="#1d2b3a"/>
+  </g>`;
+}
 function renderPiece(d, side = "front", opts = {}) {
   if (isFresh(d)) d = Object.assign({}, d, { style: "clear" });
   ensureItems(d);
@@ -1022,7 +1038,7 @@ function renderPiece(d, side = "front", opts = {}) {
       ${glow ? `<g filter="url(#${id}-glow)" opacity="0.65">${shapeMarkup(d.shape, `fill="${d.addins.glow.color}"`)}</g>` : ""}
       <g clip-path="url(#${id}-clip)" class="resin">
         ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(176,214,226,0.55)"/>`}
-        ${fill}
+        ${plainBack ? "" : penRefill(d)}${fill}
         ${CONFIG.showTexture ? gridLines(d.shape) + textureLayer(d.shape) : ""}
         <rect x="0" y="100" width="300" height="340" fill="url(#${id}-sheen)" pointer-events="none"/>
         ${shapeMarkup(d.shape, `fill="none" stroke="#fff" stroke-width="7" opacity="0.5" filter="url(#${id}-soft2)" pointer-events="none"`)}
@@ -2033,7 +2049,7 @@ els.panel.addEventListener("click", (e) => {
       const [T, B] = bounds(design.shape), n = Object.keys(design.addins).length;
       const taken = Object.keys(design.addins).flatMap((k) => (design.addins[k].items || []).map(([x, y]) => [x, y, itemRadius(k)]));
       const p = LAYOUT[n % LAYOUT.length];
-      const spot = placeNear(design, a.id, 40 + p[0] * 220, T + p[1] * (B - T), taken) || placeNear(design, a.id, 150, (T + B) / 2, []);
+      const spot = placeNear(design, a.id, 40 + p[0] * 220, T + p[1] * (B - T), taken) || placeNear(design, a.id, 150, (T + B) / 2, taken);
       if (!spot) { toast(U("noRoom")); return; }
       design.addins[a.id] = { amount: "few", place: "anna", color: a.color, items: [[spot[0], spot[1], 0]], moved: true };
     }
