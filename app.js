@@ -78,7 +78,7 @@ function catOf(shape) {
   if (["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "comb", "comb-moon", "hairpin", "pen", "blade"].includes(shape) || c.tex === "glass" || /^bm-/.test(shape)) return "accessories";
   if (shape === "frame-oval") return "gift";
   if (["board", "wood-round", "wood-slice", "wood-tray", "board-rect", "board-whale", "board-whale-tail"].includes(shape)) return "cutting";
-  if (["heart-tray", "hexagon", "love", "game-ttt", "game-chess"].includes(shape)) return "statues";
+  if (["heart-tray", "hexagon", "love", "game-ttt", "game-chess", "domino-set", "soap"].includes(shape)) return "statues";
   return "kitchen";
 }
 const SHOW_PRICES = !!CONFIG.showPrices;
@@ -111,12 +111,13 @@ const INSIDE_STEP = 7;
 const COLOURS_STEP = 4, GLITTER_STEP_NO = 6;
 const SEA_WATER = ["#0F3D8C", "#2373C4", "#5BB6C8"];   // deep navy to royal blue to turquoise, like Anna's sea pours   // the sea style always uses the same water colours
 // Clear resin has no colour or details step (it is decorated with glitter and things inside); the sea style has fixed colours and no glitter.
-const skipStep = (i, d) => (d.shape === "game-chess" && (i === 3 || i === 5)) || (d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO)) || (d.style === "clear" && (i === COLOURS_STEP || i === 5));
+const skipStep = (i, d) => (isGame(d.shape) && (i === 3 || i === 5)) || (d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO)) || (d.style === "clear" && (i === COLOURS_STEP || i === 5));
 // gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
-const noInside = (d) => d.style === "gradient" || catOf(d.shape) === "cutting" || d.shape === "game-chess";
+const isGame = (sh) => sh === "game-chess" || sh === "game-ttt";
+const noInside = (d) => d.style === "gradient" || catOf(d.shape) === "cutting" || isGame(d.shape);
 const INK_GROUPS = ["small", "seaanimals", "charms", "flowers", "dried"];
 function fits(a, d) {
-  if (d.style === "gradient" || catOf(d.shape) === "cutting" || d.shape === "game-chess") return false;
+  if (d.style === "gradient" || catOf(d.shape) === "cutting" || isGame(d.shape)) return false;
   if (d.style === "ocean") return a.group === "sea" && !a.metal;
   if (d.style === "ink" && !INK_GROUPS.includes(a.group)) return false;
   if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
@@ -213,7 +214,7 @@ function summaryLines(d, lang = ui.lang) {
   const S = (k, v) => t("sum." + k, v, lang);
   const L = [];
   L.push([S("shape"), shapeName(d.shape, lang) + (isLetter(d.shape) || isNumber(d.shape) ? ` (${lab("font", d.font || "block", lang)})` : "")]);
-  if (d.shape === "game-chess" && d.chess) {
+  if (isGame(d.shape) && d.chess) {
     const nm = (h) => (h ? colorName(h, lang) : "transparent");
     for (const [k, lbl] of [["a", "Light squares"], ["b", "Dark squares"]]) { const c = d.chess[k]; L.push([lbl, [nm(c.c1), c.c2 ? nm(c.c2) : ""].filter(Boolean).join(" + ") + (c.foil ? ", gold foil" : "")]); }
   }
@@ -655,7 +656,7 @@ function inkExtras(d, id, R, T, B, x0, x1, y0, y1, skipBg) {
 
 /* Chess board: two sections (light and dark squares). Each has one or two colours (or clear) and optional gold foil. */
 function chessLayer(d, id) {
-  const g = (customShape("game-chess") || {}).grid; if (!g) return "";
+  const g = (customShape(d.shape) || {}).grid; if (!g) return "";
   const ch = d.chess || { a: { c1: "", c2: "", foil: false }, b: { c1: "", c2: "", foil: false } };
   const w = (g.x1 - g.x0) / g.n, h = (g.y1 - g.y0) / g.n;
   let defs = "", out = "";
@@ -1092,7 +1093,7 @@ function renderPiece(d, side = "front", opts = {}) {
   </defs>`;
 
   const plainBack = side === "back" && d.back === "plain";
-  const fill = plainBack ? "" : (d.shape === "game-chess" ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
+  const fill = plainBack ? "" : (isGame(d.shape) ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linejoin="round"`;
@@ -1516,7 +1517,7 @@ const STEP_VIEWS = [
       const L = [["canvas.html?kind=beach", "images/real/canvas-beach.jpg", U("pntSea")], ["canvas.html?kind=abstract", "images/real/abs-purple.jpg", U("pntAbs")], ["canvas.html?kind=photo", "images/real/g-collage.jpg", U("pntPhoto")]];
       body = `<h3 class="mold-group" id="grp-paintings">${U("catPaint")}</h3><div class="cards molds">${L.map(([h, im, n]) => `<a class="card" href="${h}"><span class="card-art has-photo"><img src="${im}" alt=""></span><span class="card-name">${n}</span></a>`).join("")}</div><p class="small-note">${U("pntNote")}</p>`;
     } else if (ui.cat === "statues") {
-      body = group(U("grpGames"), byIds(["game-ttt", "game-chess"]), "games") + group(U("grpDecor"), byIds(["heart-tray", "hexagon", "love"]), "decor") + `<p class="small-note">${U("moreSoon")}</p>`;
+      body = group(U("grpGames"), byIds(["game-ttt", "game-chess", "domino-set"]), "games") + group(U("grpDecor"), byIds(["heart-tray", "hexagon", "love", "soap"]), "decor") + `<p class="small-note">${U("moreSoon")}</p>`;
     } else if (ui.cat === "cutting") {
       const cm = design.cm || { w: 30, h: 40 }, isRect = design.shape === "board-rect";
       const num = (k, v) => `<label class="cm-field"><span>${U(k === "w" ? "cmWidth" : "cmHeight")}</span><input type="number" inputmode="decimal" min="10" max="200" step="1" data-cm="${k}" value="${v}"><b>cm</b></label><input type="range" min="10" max="200" step="1" data-cm="${k}" value="${v}" aria-label="${U(k === "w" ? "cmWidth" : "cmHeight")}">`;
@@ -1529,7 +1530,7 @@ const STEP_VIEWS = [
         + group(U("grpMyBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray"]), "mine")
         + `<a class="card" href="idea.html"><span class="card-art has-photo"><img src="images/real/g-saeed.jpg" alt=""></span><span class="card-name">${U("customShapeCard")}</span></a><p class="small-note">${U("customShapeNote")}</p>`;
     } else if (ui.cat === "gift") {
-      body = group(U("grpPhoto"), byIds(["frame-oval"]) + `<a class="card" href="canvas.html?kind=photo"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("pntPhoto")}</span></a>`, "photo") + `<p class="small-note">${U("photoNote")}</p>`;
+      body = group(U("grpPhoto"), `<a class="card" href="collage.html"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("uploadPhotos")}</span></a>` + byIds(["frame-oval"]), "photo") + `<p class="small-note">${U("photoNote")}</p>`;
     } else {
       body = group(U("grpCups"), byIds(["coaster-set", "coaster", "coaster-pair", "coaster-trio", "wood-coaster"]), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
         + group(U("grpTrays"), byIds(["tray-round", "tray-oval", "tray-rect", "tray-tall"]), "trays") + `<p class="small-note">${U("traysNote")}</p>`
@@ -1574,7 +1575,7 @@ const STEP_VIEWS = [
 
   // 4 Colours (comes before the style details)
   () => {
-    if (design.shape === "game-chess") return chessPanel();
+    if (isGame(design.shape)) return chessPanel();
     if (design.style === "clear") {
       return `<h2>${U("s4h")}</h2><p class="hint">${U("s4clearP")}</p>
         <button type="button" class="btn btn-line" data-action="goto" data-step="3">${U("changeStyle")}</button>
@@ -2136,7 +2137,7 @@ els.panel.addEventListener("click", (e) => {
     if (el.dataset.extra) Object.assign(design, JSON.parse(el.dataset.extra));
     applyDefaults(design);
     if (customShape(design.shape) && customShape(design.shape).wood) design.style = "clear";
-    if (design.shape === "game-chess") design.style = "gradient";
+    if (isGame(design.shape)) design.style = "gradient";
     design.letters.moved = false;
     [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
     resetItems(design);
