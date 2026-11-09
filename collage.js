@@ -36,7 +36,7 @@ function svg() {
     const hs = Math.max(S.w, S.h) * 0.018;
     sel = `<rect x="${x}" y="${y}" width="${it.w}" height="${it.h}" fill="none" stroke="#19708A" stroke-width="${hs / 4}" stroke-dasharray="${hs} ${hs / 2}" pointer-events="none"/><rect class="grip" x="${x + it.w - hs}" y="${y + it.h - hs}" width="${hs * 2}" height="${hs * 2}" rx="${hs / 3}" fill="#19708A" stroke="#fff" stroke-width="${hs / 5}" style="cursor:nwse-resize"/>`;
   }
-  return `<svg id="cs" viewBox="0 0 ${S.w} ${S.h}" width="${S.w * PX}" height="${S.h * PX}" style="max-width:100%;height:auto;touch-action:none;background:${S.bg};box-shadow:0 12px 34px rgba(14,63,87,.22);border-radius:4px"><defs>${defs}</defs>${body}${sel}${S.items.length ? "" : `<text x="${S.w / 2}" y="${S.h / 2}" text-anchor="middle" font-size="${S.w / 20}" fill="#9AA">${esc2(L("empty"))}</text>`}</svg>`;
+  return `<div class="sz-wrap"><span class="sz-label">${Math.round(S.w)} × ${Math.round(S.h)} cm</span><i class="sz-grip r" data-grip="r"></i><i class="sz-grip b" data-grip="b"></i><i class="sz-grip c" data-grip="c"></i><svg id="cs" viewBox="0 0 ${S.w} ${S.h}" style="width:100%;max-width:${S.w * PX}px;height:auto;touch-action:none;background:${S.bg};box-shadow:0 12px 34px rgba(14,63,87,.22);border-radius:4px"><defs>${defs}</defs>${body}${sel}${S.items.length ? "" : `<text x="${S.w / 2}" y="${S.h / 2}" text-anchor="middle" font-size="${S.w / 32}" fill="#9AA">${esc2(L("empty"))}</text>`}</svg></div>`;
 }
 function chip(on, attr, label) { return `<button type="button" class="chip ${on ? "on" : ""}" aria-pressed="${on}" ${attr}>${label}</button>`; }
 function render() {
@@ -47,7 +47,7 @@ function render() {
     <div class="cl-stage" id="cl-stage">${svg()}</div>
     <div class="cl-panel">
       <div class="field"><span class="field-label">${L("size")}</span>
-        <div class="cm-row"><label class="cm-field"><span>${L("w")}</span><input type="number" min="5" max="300" data-s="w" value="${S.w}"></label><label class="cm-field"><span>${L("h")}</span><input type="number" min="5" max="300" data-s="h" value="${S.h}"></label></div>
+        <div class="cm-row"><label class="cm-field"><span>${L("w")}</span><input type="number" min="5" max="300" data-s="w" step="1" value="${S.w}"></label><label class="cm-field"><span>${L("h")}</span><input type="number" min="5" max="300" data-s="h" step="1" value="${S.h}"></label></div>
         <div class="chips">${[[20, 20], [30, 40], [40, 50], [50, 70], [60, 90]].map(([w, h]) => chip(S.w === w && S.h === h, `data-size="${w}x${h}"`, `${w} × ${h}`)).join("")}</div>
         <div class="chips">${chip(S.bg === "#FFFFFF", 'data-bg="#FFFFFF"', L("white"))}${chip(S.bg === "#F3E7D3", 'data-bg="#F3E7D3"', L("sand"))}</div></div>
       <div class="field"><span class="field-label">${L("add")}</span><input type="file" accept="image/*" multiple id="cl-file"><p class="small-note">${L("addHint")} (${S.items.length} ${L("count")})</p></div>
@@ -89,7 +89,7 @@ root.addEventListener("change", (e) => {
 });
 root.addEventListener("input", (e) => {
   const t = e.target, it = S.items[S.sel];
-  if (t.dataset.s) { const v = Math.max(5, Math.min(300, Number(t.value) || 0)); if (Number(t.value) >= 5) { S[t.dataset.s] = v; redrawStage(); } }
+  if (t.dataset.s) { const v = Math.max(5, Math.min(300, Math.round(Number(t.value) || 0))); if (Number(t.value) >= 5) { S[t.dataset.s] = v; redrawStage(); } }
   else if (t.dataset.psize && it) { const r = it.h / it.w; it.w = Number(t.value); it.h = it.shape === "circle" || it.shape === "heart" ? it.w : it.w * r; redrawStage(); }
   else if (t.dataset.pzoom && it) { it.z = Number(t.value); redrawStage(); }
   else if (t.id === "cl-name") S.name = t.value;
@@ -133,3 +133,22 @@ window.addEventListener("pointerup", () => { drag = null; });
 onLangChange && onLangChange(render);
 renderChrome();
 render();
+
+/* drag the canvas edges to resize; whole centimetres only */
+let szDrag = null;
+root.addEventListener("pointerdown", (e) => {
+  const g = e.target.closest("[data-grip]"); if (!g) return;
+  const r = document.getElementById("cs").getBoundingClientRect();
+  szDrag = { m: g.dataset.grip, x: e.clientX, y: e.clientY, w: S.w, h: S.h, cmx: S.w / r.width, cmy: S.h / r.height };
+  e.preventDefault(); e.stopPropagation();
+}, true);
+window.addEventListener("pointermove", (e) => {
+  if (!szDrag) return;
+  const clamp = (v) => Math.max(5, Math.min(300, Math.round(v)));
+  if (szDrag.m !== "b") S.w = clamp(szDrag.w + (e.clientX - szDrag.x) * szDrag.cmx);
+  if (szDrag.m !== "r") S.h = clamp(szDrag.h + (e.clientY - szDrag.y) * szDrag.cmy);
+  const w = document.querySelector("[data-s=w]"), h = document.querySelector("[data-s=h]");
+  if (w) w.value = S.w; if (h) h.value = S.h;
+  redrawStage();
+});
+window.addEventListener("pointerup", () => { if (szDrag) { szDrag = null; render(); } });

@@ -107,14 +107,14 @@ function renderStage() {
     inner = `<rect width="${W}" height="${H}" fill="#E7EEF0"/><text x="${W / 2}" y="${H / 2}" text-anchor="middle" font-size="14" fill="#6B7780" font-family="Jost, sans-serif">${esc(C("empty"))}</text>`;
   }
   const dec = cv.decor.map((f, i) => `<image class="decor ${i === cv.sel ? "sel" : ""}" data-i="${i}" href="${CONFIG.paperFlowers.find((x) => x.id === f.id).img || "images/paperflowers/" + f.id + ".png"}" x="${f.x - f.s / 2}" y="${f.y - f.s / 2}" width="${f.s}" height="${f.s}" style="filter:drop-shadow(0 2px 2px rgba(0,0,0,0.35));cursor:move"/>`).join("");
-  document.getElementById("cv-stage").innerHTML = `
+  document.getElementById("cv-stage").innerHTML = `<div class="sz-wrap" id="sz-wrap"><span class="sz-label">${Math.round(cv.w)} × ${Math.round(cv.h)} cm</span><i class="sz-grip r" data-grip="r"></i><i class="sz-grip b" data-grip="b"></i><i class="sz-grip c" data-grip="c"></i>
     <svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(C("title"))}">
       <defs><clipPath id="cv-clip"><path d="${path}"/></clipPath></defs>
       <rect width="${W}" height="${H}" fill="${cv.kind === "board" ? "#C8975C" : "#fff"}"/>
       <g clip-path="url(#cv-clip)">${inner}</g>
       <path d="${path}" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>
       ${dec}
-    </svg>`;
+    </svg></div>`;
 }
 
 // update the photo in place (rebuilding the SVG would drop the drag)
@@ -155,8 +155,8 @@ function renderCanvas() {
           ${cv.kind === "beach" ? `<p class="small-note">${C("beachNote")}</p>` : ""}${cv.kind === "abstract" ? `<p class="small-note">${C("abstractNote")}</p>` : ""}</div>
         <div class="field"><span class="field-label">${C("size")}</span>
           <div class="cv-size">
-            <label>${C("width")} <input type="number" min="5" max="200" id="cv-w" value="${cv.w}"></label> ×
-            <label>${C("height")} <input type="number" min="5" max="200" id="cv-h" value="${cv.h}"></label>
+            <label>${C("width")} <input type="number" min="5" max="200" step="1" id="cv-w" value="${cv.w}"></label> ×
+            <label>${C("height")} <input type="number" min="5" max="200" step="1" id="cv-h" value="${cv.h}"></label>
           </div>
           <div class="chips" style="margin-top:10px">${SIZES.map(([w, h]) => chip(cv.w === w && cv.h === h, `data-size="${w}x${h}"`, `${w}×${h}`)).join("")}</div></div>
         ${cv.kind === "beach" || cv.kind === "abstract" ? `<div class="field"><span class="field-label">${C("lookLabel")}</span>
@@ -213,7 +213,7 @@ document.addEventListener("input", (e) => {
   const id = e.target.id;
   if (id === "cv-w" || id === "cv-h") {
     const v = Math.max(5, Math.min(200, Number(e.target.value) || 0));
-    if (v >= 5) { cv[id === "cv-w" ? "w" : "h"] = v; renderStage(); }
+    if (v >= 5) { cv[id === "cv-w" ? "w" : "h"] = Math.round(v); renderStage(); }
   } else if (id === "cv-fsize") { cv.decor[cv.sel].s = Number(e.target.value); renderStage(); }
   else if (id === "cv-zoom") { cv.zoom = Number(e.target.value); moveImage(); }
   else if (id === "cv-note") cv.note = e.target.value;
@@ -277,3 +277,22 @@ document.addEventListener("wheel", (e) => {
 onLangChange(renderCanvas);
 renderChrome();
 renderCanvas();
+
+/* drag the edges of the canvas to change its size; centimetres are always whole numbers */
+let szDrag = null;
+document.addEventListener("pointerdown", (e) => {
+  const g = e.target.closest("[data-grip]"); if (!g) return;
+  const r = document.querySelector("#sz-wrap svg").getBoundingClientRect();
+  szDrag = { m: g.dataset.grip, x: e.clientX, y: e.clientY, w: cv.w, h: cv.h, cmx: cv.w / r.width, cmy: cv.h / r.height };
+  e.preventDefault(); e.stopPropagation();
+}, true);
+window.addEventListener("pointermove", (e) => {
+  if (!szDrag) return;
+  const clamp = (v) => Math.max(5, Math.min(200, Math.round(v)));
+  if (szDrag.m !== "b") cv.w = clamp(szDrag.w + (e.clientX - szDrag.x) * szDrag.cmx);
+  if (szDrag.m !== "r") cv.h = clamp(szDrag.h + (e.clientY - szDrag.y) * szDrag.cmy);
+  const w = document.getElementById("cv-w"), h = document.getElementById("cv-h");
+  if (w) w.value = cv.w; if (h) h.value = cv.h;
+  renderStage();
+});
+window.addEventListener("pointerup", () => { if (szDrag) { szDrag = null; renderCanvas(); } });
