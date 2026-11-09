@@ -1365,3 +1365,6 @@ body.designer .btn-ink { box-shadow: 0 6px 18px rgba(25,112,138,0.35), inset 0 1
 body.designer .card, body.designer .opt, body.designer .swatch, body.designer .glit { border-radius: 18px; }
 body.designer .card { background: rgba(255,255,255,0.78); box-shadow: 0 8px 22px rgba(14,63,87,0.12), inset 0 0 0 1px rgba(127,185,188,0.3); }
 body.designer .stage.full .wordmark { color: #0E3F57 !important; }
+body.noprev .cards.presets { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; max-width: 980px; margin-left: auto; margin-right: auto; }
+body.noprev .panel > h2, body.noprev .panel > .hint { text-align: center; max-width: 980px; margin-left: auto; margin-right: auto; }
+body.noprev .panel > .field { text-align: center; }
