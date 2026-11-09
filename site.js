@@ -358,3 +358,80 @@ renderHome();
 renderIdea();
 bindIdea();
 onLangChange(() => { renderHome(); renderIdea(); });
+
+/* ---------------- Shop photos: slide through angles, full screen with zoom ----------------
+   To add more angles of a product, upload them next to the first photo with -2, -3 ... in the name,
+   e.g. g-tail.jpg, g-tail-2.jpg, g-tail-3.jpg (jpg, jpeg, png or webp). They appear as a slider by themselves. */
+(function () {
+  const EXT = ["jpg", "jpeg", "png", "webp"], MAX = 8, cache = {};
+  const probe = (url) => cache[url] || (cache[url] = new Promise((res) => { const im = new Image(); im.onload = () => res(true); im.onerror = () => res(false); im.src = url; }));
+  async function anglesOf(src) {
+    const m = src.match(/^(.*?)(?:-\d+)?\.(\w+)$/); if (!m) return [src];
+    const out = [src];
+    for (let n = 2; n <= MAX; n++) {
+      let found = "";
+      for (const x of EXT) { const u = `${m[1]}-${n}.${x}`; if (u !== src && await probe(u)) { found = u; break; } }
+      if (!found) break; out.push(found);
+    }
+    return out;
+  }
+  function build(fig, imgs) {
+    const first = fig.querySelector(":scope > img"); if (!first) return;
+    const alt = first.alt || "";
+    const view = document.createElement("div"); view.className = "ph-view";
+    view.innerHTML = `<div class="ph-track">${imgs.map((u) => `<img src="${u}" alt="${alt}" decoding="async" loading="lazy">`).join("")}</div>` +
+      (imgs.length > 1 ? `<button type="button" class="ph-arrow prev" aria-label="Previous photo">‹</button><button type="button" class="ph-arrow next" aria-label="Next photo">›</button><div class="ph-dots">${imgs.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("")}</div>` : "") +
+      `<span class="ph-zoomhint" aria-hidden="true">⌕</span>`;
+    first.replaceWith(view);
+    let k = 0;
+    const track = view.querySelector(".ph-track");
+    const go = (n) => { k = (n + imgs.length) % imgs.length; track.style.transform = `translateX(-${k * 100}%)`; view.querySelectorAll(".ph-dots i").forEach((d, i) => d.classList.toggle("on", i === k)); };
+    view._go = go; view._k = () => k; view._imgs = imgs;
+    view.addEventListener("click", (e) => {
+      if (e.target.closest(".ph-arrow")) { go(k + (e.target.closest(".next") ? 1 : -1)); e.stopPropagation(); return; }
+      openBox(imgs, k, alt);
+    });
+  }
+  async function enhance() {
+    const figs = [...document.querySelectorAll("#shop .gallery figure:not(.ready):not([data-ph])")];
+    for (const fig of figs) {
+      fig.dataset.ph = "1";
+      const img = fig.querySelector(":scope > img"); if (!img) continue;
+      const src = img.getAttribute("src");
+      build(fig, [src]);                                   // instantly clickable
+      anglesOf(src).then((imgs) => { if (imgs.length > 1) { const old = fig.querySelector(".ph-view"); const tmp = document.createElement("img"); tmp.src = src; tmp.alt = img.alt; old.replaceWith(tmp); build(fig, imgs); } });
+    }
+  }
+  /* full screen viewer */
+  let box = null;
+  function openBox(imgs, start, alt) {
+    closeBox();
+    let k = start, z = 1;
+    box = document.createElement("div"); box.className = "ph-box"; box.setAttribute("role", "dialog"); box.setAttribute("aria-label", alt || "Photo");
+    box.innerHTML = `<button type="button" class="ph-x" aria-label="Close">×</button>
+      ${imgs.length > 1 ? `<button type="button" class="ph-arrow prev" aria-label="Previous photo">‹</button><button type="button" class="ph-arrow next" aria-label="Next photo">›</button>` : ""}
+      <div class="ph-stage"><img alt="${alt || ""}"></div>
+      <div class="ph-bar"><button type="button" data-z="-1" aria-label="Zoom out">−</button><input type="range" min="1" max="5" step="0.1" value="1" aria-label="Zoom"><button type="button" data-z="1" aria-label="Zoom in">+</button><span class="ph-count"></span></div>`;
+    document.body.appendChild(box); document.body.classList.add("ph-open");
+    const im = box.querySelector(".ph-stage img"), rng = box.querySelector("input"), cnt = box.querySelector(".ph-count");
+    const apply = () => { im.style.transform = `scale(${z})`; rng.value = z; im.parentNode.classList.toggle("zoomed", z > 1); };
+    const show = (n) => { k = (n + imgs.length) % imgs.length; im.src = imgs[k]; z = 1; im.style.transformOrigin = "50% 50%"; apply(); cnt.textContent = imgs.length > 1 ? `${k + 1} / ${imgs.length}` : ""; };
+    const origin = (cx, cy) => { const r = im.getBoundingClientRect(), base = im.parentNode.getBoundingClientRect(); const x = Math.max(0, Math.min(100, ((cx - base.left) / base.width) * 100)), y = Math.max(0, Math.min(100, ((cy - base.top) / base.height) * 100)); im.style.transformOrigin = `${x}% ${y}%`; };
+    show(k);
+    box.addEventListener("click", (e) => {
+      if (e.target.closest(".ph-x") || e.target === box) return closeBox();
+      if (e.target.closest(".ph-arrow")) return show(k + (e.target.closest(".next") ? 1 : -1));
+      const zb = e.target.closest("[data-z]"); if (zb) { z = Math.max(1, Math.min(5, z + Number(zb.dataset.z) * 0.5)); return apply(); }
+      if (e.target === im) { origin(e.clientX, e.clientY); z = z > 1 ? 1 : 2.6; apply(); }
+    });
+    box.addEventListener("mousemove", (e) => { if (z > 1 && e.target === im) origin(e.clientX, e.clientY); });
+    box.addEventListener("touchmove", (e) => { if (z > 1 && e.touches[0]) { origin(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); } }, { passive: false });
+    rng.addEventListener("input", () => { z = Number(rng.value); apply(); });
+    box.addEventListener("wheel", (e) => { e.preventDefault(); origin(e.clientX, e.clientY); z = Math.max(1, Math.min(5, z + (e.deltaY < 0 ? 0.25 : -0.25))); apply(); }, { passive: false });
+    box._key = (e) => { if (e.key === "Escape") closeBox(); else if (e.key === "ArrowRight") show(k + 1); else if (e.key === "ArrowLeft") show(k - 1); };
+    document.addEventListener("keydown", box._key);
+  }
+  function closeBox() { if (!box) return; document.removeEventListener("keydown", box._key); box.remove(); box = null; document.body.classList.remove("ph-open"); }
+  new MutationObserver(() => enhance()).observe(document.documentElement, { childList: true, subtree: true });
+  enhance();
+})();
