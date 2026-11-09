@@ -30,6 +30,7 @@ function defaultDesign() {
   return {
     shape: "A",
     cm: { w: 30, h: 40 },
+    chess: { a: { c1: "", c2: "#E6E0D8", foil: true }, b: { c1: "#14151A", c2: "", foil: true } },
     second: "",
     style: "gradient",
     colors: DEFAULT_COLORS.slice(),
@@ -110,12 +111,12 @@ const INSIDE_STEP = 7;
 const COLOURS_STEP = 4, GLITTER_STEP_NO = 6;
 const SEA_WATER = ["#0F3D8C", "#2373C4", "#5BB6C8"];   // deep navy to royal blue to turquoise, like Anna's sea pours   // the sea style always uses the same water colours
 // Clear resin has no colour or details step (it is decorated with glitter and things inside); the sea style has fixed colours and no glitter.
-const skipStep = (i, d) => (d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO)) || (d.style === "clear" && (i === COLOURS_STEP || i === 5));
+const skipStep = (i, d) => (d.shape === "game-chess" && (i === 3 || i === 5)) || (d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO)) || (d.style === "clear" && (i === COLOURS_STEP || i === 5));
 // gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
-const noInside = (d) => d.style === "gradient" || catOf(d.shape) === "cutting";
+const noInside = (d) => d.style === "gradient" || catOf(d.shape) === "cutting" || d.shape === "game-chess";
 const INK_GROUPS = ["small", "seaanimals", "charms", "flowers", "dried"];
 function fits(a, d) {
-  if (d.style === "gradient" || catOf(d.shape) === "cutting") return false;
+  if (d.style === "gradient" || catOf(d.shape) === "cutting" || d.shape === "game-chess") return false;
   if (d.style === "ocean") return a.group === "sea" && !a.metal;
   if (d.style === "ink" && !INK_GROUPS.includes(a.group)) return false;
   if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
@@ -199,6 +200,10 @@ function summaryLines(d, lang = ui.lang) {
   const S = (k, v) => t("sum." + k, v, lang);
   const L = [];
   L.push([S("shape"), shapeName(d.shape, lang) + (isLetter(d.shape) || isNumber(d.shape) ? ` (${lab("font", d.font || "block", lang)})` : "")]);
+  if (d.shape === "game-chess" && d.chess) {
+    const nm = (h) => (h ? colorName(h, lang) : "transparent");
+    for (const [k, lbl] of [["a", "Light squares"], ["b", "Dark squares"]]) { const c = d.chess[k]; L.push([lbl, [nm(c.c1), c.c2 ? nm(c.c2) : ""].filter(Boolean).join(" + ") + (c.foil ? ", gold foil" : "")]); }
+  }
   if (d.shape === "board-rect" && d.cm) L.push([lang === "en" ? "Size" : t("ui.cmTitle", null, lang), `${d.cm.w} × ${d.cm.h} cm`]);
   const det = styleDetails(d, lang);
   L.push([S("style"), lab("style", d.style, lang) + (det ? " (" + det + ")" : "")]);
@@ -634,6 +639,46 @@ function inkExtras(d, id, R, T, B, x0, x1, y0, y1, skipBg) {
   return s;
 }
 
+
+/* Chess board: two sections (light and dark squares). Each has one or two colours (or clear) and optional gold foil. */
+function chessLayer(d, id) {
+  const g = (customShape("game-chess") || {}).grid; if (!g) return "";
+  const ch = d.chess || { a: { c1: "", c2: "", foil: false }, b: { c1: "", c2: "", foil: false } };
+  const w = (g.x1 - g.x0) / g.n, h = (g.y1 - g.y0) / g.n;
+  let defs = "", out = "";
+  ["a", "b"].forEach((k) => { const c = ch[k]; if (c.c1 && c.c2) defs += `<linearGradient id="${id}-ch${k}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c.c1}"/><stop offset="1" stop-color="${c.c2}"/></linearGradient>`; });
+  let seed = 11; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+  for (let j = 0; j < g.n; j++) for (let i = 0; i < g.n; i++) {
+    const k = (i + j) % 2 ? "b" : "a", c = ch[k], x = g.x0 + i * w, y = g.y0 + j * h;
+    const col = c.c1 && c.c2 ? `url(#${id}-ch${k})` : c.c1 || c.c2;
+    if (col) out += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${col}" opacity="0.94"/>`;
+    if (c.foil) for (let n = 0; n < 7; n++) {
+      const fx = x + 2 + rnd() * (w - 4), fy = y + 2 + rnd() * (h - 4), r = 0.8 + rnd() * 1.6, a = rnd() * 6;
+      out += `<polygon points="${[0, 1, 2, 3].map((q) => `${(fx + Math.cos(a + q * 1.7) * r * (1 + (q % 2) * 0.6)).toFixed(1)},${(fy + Math.sin(a + q * 1.7) * r).toFixed(1)}`).join(" ")}" fill="${n % 2 ? "#E5C15A" : "#C89B2E"}" opacity="0.95"/>`;
+    }
+  }
+  return `<defs>${defs}</defs><g pointer-events="none">${out}</g>`;
+}
+function chessPanel() {
+  const ch = design.chess;
+  const sw = (sec, key, cur, withNone) => {
+    const list = [["", withNone ? U("chessNone") : U("chessClear")]].concat(CONFIG.colors.map((c) => [c.hex, c.name]));
+    return `<div class="swatches">${list.map(([hex, nm]) => `<button type="button" class="swatch ${cur === hex ? "on" : ""} ${hex ? "" : "clear"}" data-chess="${sec}.${key}" data-v="${hex}" title="${esc(nm)}" aria-pressed="${cur === hex}" ${hex ? `style="background:${hex}"` : ""}></button>`).join("")}</div>`;
+  };
+  const sec = (k, title) => {
+    const c = ch[k];
+    return `<div class="field chess-sec"><span class="field-label">${title}</span>
+      <p class="small-note">${U("chessC1")}</p>${sw(k, "c1", c.c1, false)}
+      <p class="small-note">${U("chessC2")}</p>${sw(k, "c2", c.c2, true)}
+      <div class="chips"><button type="button" class="chip ${c.foil ? "on" : ""}" data-chess="${k}.foil" data-v="${c.foil ? "" : "1"}" aria-pressed="${!!c.foil}">${U("chessFoil")}</button></div></div>`;
+  };
+  const tone = (c) => c.c1 || c.c2 || "rgba(190,205,210,0.7)";
+  const glyphs = ["♚", "♛", "♝", "♞", "♜", "♟"], names = ["King", "Queen", "Bishop", "Knight", "Rook", "Pawn"];
+  const row = (c) => `<div class="chess-pieces">${glyphs.map((g, i) => `<span title="${names[i]}" style="color:${tone(c)}">${g}</span>`).join("")}</div>`;
+  return `<h2>${U("chessTitle")}</h2><p class="hint">${U("chessNote")}</p>
+    ${sec("a", U("chessLight"))}${sec("b", U("chessDark"))}
+    <div class="field"><span class="field-label">${U("chessPieces")}</span>${row(ch.a)}${row(ch.b)}<p class="small-note">${U("chessPiecesNote")}</p></div>`;
+}
 function styleLayer(d, id, R, T, B) {
   const c = d.colors;
   const h = B - T;
@@ -1034,7 +1079,7 @@ function renderPiece(d, side = "front", opts = {}) {
   </defs>`;
 
   const plainBack = side === "back" && d.back === "plain";
-  const fill = plainBack ? "" : styleLayer(d, id, R, T, B) + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
+  const fill = plainBack ? "" : (d.shape === "game-chess" ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linejoin="round"`;
@@ -1515,6 +1560,7 @@ const STEP_VIEWS = [
 
   // 4 Colours (comes before the style details)
   () => {
+    if (design.shape === "game-chess") return chessPanel();
     if (design.style === "clear") {
       return `<h2>${U("s4h")}</h2><p class="hint">${U("s4clearP")}</p>
         <button type="button" class="btn btn-line" data-action="goto" data-step="3">${U("changeStyle")}</button>
@@ -2076,6 +2122,7 @@ els.panel.addEventListener("click", (e) => {
     if (el.dataset.extra) Object.assign(design, JSON.parse(el.dataset.extra));
     applyDefaults(design);
     if (customShape(design.shape) && customShape(design.shape).wood) design.style = "clear";
+    if (design.shape === "game-chess") design.style = "gradient";
     design.letters.moved = false;
     [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
     resetItems(design);
@@ -2566,4 +2613,14 @@ els.panel.addEventListener("click", (e) => {
   const [w, h] = b.dataset.cmSet.split("x").map(Number);
   design.cm = { w, h };
   renderPanel(); renderPreview(); renderBarSummary();
+});
+
+els.panel.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-chess]");
+  if (!b) return;
+  const [sec, key] = b.dataset.chess.split(".");
+  if (!design.chess) design.chess = defaultDesign().chess;
+  design.chess[sec][key] = key === "foil" ? !!b.dataset.v : b.dataset.v;
+  renderPanel(); renderPreview(); renderBarSummary();
+  const box = $("order-text"); if (box) box.value = orderText();
 });
