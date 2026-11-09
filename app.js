@@ -1358,9 +1358,28 @@ function galleryDesign(key) {
   return { d, cat: g.cat };
 }
 
+/* Ready-made step for sections other than keychains: pieces Anna already made in that section, rebuilt as digital designs */
+function readyView() {
+  const cat = ui.cat;
+  if (!cat || cat === "keychains") return "";
+  const woodKeys = ["g-woodtray", "g-paddle", "g-tree", "g-copper"];
+  const keys = Object.keys(GALLERY_DESIGNS).filter((k) => (cat === "cutting" ? woodKeys.includes(k) : GALLERY_DESIGNS[k].cat === cat));
+  const caps = {};
+  CONFIG.gallery.forEach((t) => t.items.forEach((it) => { if (it.img) caps[it.img.split("/").pop().replace(/\.\w+$/, "")] = it.cap; }));
+  const head = `<h2>${U("s0h")}</h2>`;
+  if (!keys.length) return `${head}<p class="hint">${U("noReady")}</p><div class="field"><button type="button" class="btn btn-ink" data-action="scratch">${U("fromScratch")}</button></div>`;
+  return `${head}<p class="hint">${U("s0p")}</p><div class="cards presets">${keys.map((k) => `<div class="card">
+      <div class="card-art has-photo"><img src="images/real/${k}.jpg" alt="${esc(caps[k] || k)}" decoding="async"></div>
+      <span class="card-name">${esc(caps[k] || k)}</span>
+      <div class="card-actions">
+        <button type="button" class="btn btn-ink small" data-action="gallery" data-id="${k}" data-go="review">${U("orderThis")}</button>
+        <button type="button" class="btn btn-line small" data-action="gallery" data-id="${k}" data-go="edit">${U("changeIt")}</button>
+      </div></div>`).join("")}</div>
+    <div class="field"><button type="button" class="btn btn-line" data-action="scratch">${U("fromScratch")}</button></div>`;
+}
 const STEP_VIEWS = [
   // 0 Ready-made
-  () => `
+  () => readyView() || `
     <h2>${U("s0h")}</h2>
     <p class="hint">${U("s0p")}</p>
     <div class="cards presets">${CONFIG.presets.map((p) => {
@@ -1953,6 +1972,9 @@ els.panel.addEventListener("click", (e) => {
     ui.side = "front";
     go(el.dataset.go === "review" ? LAST : 1);
     swing();
+  } else if (action === "gallery") {
+    const gd = galleryDesign(el.dataset.id);
+    if (gd) { design = gd.d; ui.side = "front"; ui.visited = new Set([0, 1, 2, 3]); ui.chosen = true; go(el.dataset.go === "review" ? LAST : 3); swing(); }
   } else if (action === "tassel") {
     design.tassel.photo = design.tassel.photo === el.dataset.id ? "" : el.dataset.id;
     if (design.tassel.photo && design.tassel.type === "none") design.tassel.type = "silk";

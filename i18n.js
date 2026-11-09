@@ -42,7 +42,7 @@ const I18N = {
       yes: "Yes", no: "No", free: "Free", included: "Included", add: "Add", added: "Added",
       shuffle: "Shuffle", oneMore: "Add one more", letter: "Letter", number: "Number",
 
-      s0h: "Pick a ready-made design", s0p: "Too lazy to customise? Choose one and send it. You can still change everything.",
+      noReady: "No ready-made designs in this section yet. Start from scratch, or send us your idea.", s0h: "Pick a ready-made design", s0p: "Too lazy to customise? Choose one and send it. You can still change everything.",
       orderThis: "Order this one", changeIt: "Continue editing this one", keepEditing: "Continue editing this one", exampleNote: "This is an example. Order it as it is, or make it yours.", buyNow: "Buy now", fromScratch: "Start from scratch",
 
       catKey: "Keychains", catKeyP: "Letter keychains, tags, heart sets and sea shapes.", catStat: "Games & decor", catStatP: "Big pieces: hearts, hexagons, stands, word molds and games.", catKit: "Dining & restaurant", catKitP: "Cup stands, serving boards and trays for the dining table or your restaurant.", catPaint: "Canvas", catPaintP: "Canvases of any size: sea style or abstract.", catGift: "Custom gifts", catGiftP: "Your photo on a canvas, or in a circle or any shape.", grpBoards: "Boards, trays and wooden bases",
@@ -208,7 +208,7 @@ const I18N = {
       yes: "ใช่", no: "ไม่", free: "ฟรี", included: "รวมแล้ว", add: "เพิ่ม", added: "เพิ่มแล้ว",
       shuffle: "สุ่มตำแหน่ง", oneMore: "เพิ่มอีกชิ้น", letter: "ตัวอักษร", number: "ตัวเลข",
 
-      s0h: "เลือกแบบสำเร็จรูป", s0p: "ไม่อยากออกแบบเอง? เลือกแบบที่ชอบแล้วส่งได้เลย ยังแก้ไขได้ทุกอย่าง",
+      noReady: "ยังไม่มีแบบสำเร็จรูปในหมวดนี้ เริ่มออกแบบเอง หรือส่งไอเดียมาได้เลย", s0h: "เลือกแบบสำเร็จรูป", s0p: "ไม่อยากออกแบบเอง? เลือกแบบที่ชอบแล้วส่งได้เลย ยังแก้ไขได้ทุกอย่าง",
       orderThis: "สั่งแบบนี้", changeIt: "แก้ไขต่อ", keepEditing: "แก้ไขต่อ", exampleNote: "นี่คือตัวอย่าง สั่งตามนี้ หรือปรับเป็นแบบของคุณ", buyNow: "ซื้อเลย", fromScratch: "เริ่มจากศูนย์",
 
       sMoldH: "เลือกแม่พิมพ์", sMoldP: "เลือกรูปทรงก่อน แล้วค่อยเลือกตัวอักษร", moldMedium: "แม่พิมพ์กลาง", moldBig: "แม่พิมพ์ใหญ่", moldThin: "แม่พิมพ์เรียว", moldSmall: "แม่พิมพ์เล็ก", moldLetters: "ตัวอักษร", moldNumbers: "ตัวเลข", moldNoLetter: "แม่พิมพ์นี้ไม่มีตัวอักษร ไปขั้นตอนสไตล์ได้เลย",
@@ -354,7 +354,7 @@ const I18N = {
       yes: "Да", no: "Нет", free: "Бесплатно", included: "Включено", add: "Добавить", added: "Добавлено",
       shuffle: "Перемешать", oneMore: "Ещё одну", letter: "Буква", number: "Цифра",
 
-      s0h: "Выбери готовый дизайн", s0p: "Лень придумывать? Выбери готовый и отправь. Всё можно изменить.",
+      noReady: "В этом разделе пока нет готовых дизайнов. Начни с нуля или пришли свою идею.", s0h: "Выбери готовый дизайн", s0p: "Лень придумывать? Выбери готовый и отправь. Всё можно изменить.",
       orderThis: "Заказать этот", changeIt: "Продолжить редактирование", keepEditing: "Продолжить редактирование", exampleNote: "Это пример. Закажите как есть или измените под себя.", buyNow: "Купить сейчас", fromScratch: "Начать с нуля",
 
       sMoldH: "Выбери форму", sMoldP: "Сначала выбери форму, потом букву.", moldMedium: "Средняя форма", moldBig: "Большая форма", moldThin: "Тонкая форма", moldSmall: "Маленькая форма", moldLetters: "Буквы", moldNumbers: "Цифры", moldNoLetter: "В этой форме нет буквы — переходи к стилю.",
