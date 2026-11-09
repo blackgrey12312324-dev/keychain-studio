@@ -1436,10 +1436,10 @@ const STEP_VIEWS = [
       body = group(U("grpLetters"), card(U("fontBlock"), isL ? design.shape : "A", isL && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isL ? design.shape : "A", isL && design.font === "groovy", '{"font":"groovy"}'), "letters")
         + group(U("grpPendants"), byIds(PENDANTS.concat(SEA_KEYCHAINS)), "pendants");
     } else if (ui.cat === "accessories") {
-      body = group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]), "bookmarks")
-        + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]), "textured")
+      body = group(U("grpPens"), byIds(["pen", "blade"]), "pens")
         + group(U("grpCombs"), byIds(["comb", "comb-moon", "hairpin"]), "combs")
-        + group(U("grpPens"), byIds(["pen", "blade"]), "pens");
+        + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]), "bookmarks")
+        + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]), "textured");
     } else if (ui.cat === "paint") {
       const L = [["canvas.html?kind=beach", "images/real/canvas-beach.jpg", U("pntSea")], ["canvas.html?kind=abstract", "images/real/abs-purple.jpg", U("pntAbs")], ["canvas.html?kind=board", "images/real/g-woodtray.jpg", U("pntWood")], ["canvas.html?kind=photo", "images/real/g-collage.jpg", U("pntPhoto")]];
       body = `<h3 class="mold-group" id="grp-paintings">${U("catPaint")}</h3><div class="cards molds">${L.map(([h, im, n]) => `<a class="card" href="${h}"><span class="card-art has-photo"><img src="${im}" alt=""></span><span class="card-name">${n}</span></a>`).join("")}</div><p class="small-note">${U("pntNote")}</p>`;
