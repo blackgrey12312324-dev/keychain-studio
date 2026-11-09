@@ -1113,6 +1113,7 @@ function renderPiece(d, side = "front", opts = {}) {
         ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(176,214,226,0.55)"/>`}
         ${plainBack ? "" : penRefill(d)}${fill}
         ${CONFIG.showTexture ? gridLines(d.shape) + textureLayer(d.shape) : ""}
+        ${(customShape(d.shape) || {}).texImg ? `<image href="images/textures/bm-${customShape(d.shape).texImg}.jpg" x="124" y="${customShape(d.shape).t}" width="52" height="${customShape(d.shape).b - customShape(d.shape).t}" preserveAspectRatio="xMidYMid slice" style="mix-blend-mode:hard-light" opacity="0.6" pointer-events="none"/>` : ""}
         <rect x="0" y="100" width="300" height="340" fill="url(#${id}-sheen)" pointer-events="none"/>
         ${shapeMarkup(d.shape, `fill="none" stroke="#fff" stroke-width="7" opacity="0.5" filter="url(#${id}-soft2)" pointer-events="none"`)}
         ${shapeMarkup(d.shape, `fill="none" stroke="rgba(14,63,87,0.22)" stroke-width="9" filter="url(#${id}-soft2)" pointer-events="none"`)}
