@@ -1533,9 +1533,10 @@ const STEP_VIEWS = [
       body = group(U("grpPhoto"), `<a class="card" href="collage.html"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("uploadPhotos")}</span></a>` + byIds(["frame-oval"]), "photo") + `<p class="small-note">${U("photoNote")}</p>`;
     } else {
       body = group(U("grpCups"), byIds(["coaster-set", "coaster", "coaster-pair", "coaster-trio", "wood-coaster"]), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
-        + group(U("grpTrays"), byIds(["tray-round", "tray-oval", "tray-rect", "tray-tall"]), "trays") + `<p class="small-note">${U("traysNote")}</p>`
+        + group(U("grpSoap"), byIds(["soap"]), "soap")
         + group(U("grpBowls"), byIds(["bowl", "bowl-big"]), "bowls") + `<p class="small-note">${U("bowlNote")}</p>`
-        + group(U("grpSoapLight"), byIds(["soap", "light-holder"]), "soap");
+        + group(U("grpTrays"), byIds(["tray-round", "tray-oval", "tray-rect", "tray-tall"]), "trays") + `<p class="small-note">${U("traysNote")}</p>`
+        + group(U("grpLight"), byIds(["light-holder"]), "light");
     }
     const refs = (CONFIG.references && CONFIG.references[ui.cat]) || [];
     const refHtml = refs.length ? `<section class="example-work"><div class="ex-head"><h3>${U("refTitle")}</h3><p>${U("refSub")}</p></div><div class="refs">${refs.map((r) => { const key = r.img.split("/").pop().replace(/\.\w+$/, ""); const pre = CONFIG.presets.find((p) => p.photo === r.img); const href = GALLERY_DESIGNS[key] ? `design.html?gallery=${key}` : pre ? `design.html?preset=${pre.id}` : ""; const img = `<img src="${r.img}" alt="" decoding="async">`; return `<figure>${href ? `<a href="${href}" class="ex-link">${img}<span class="ex-open">${U("seeDigital")}</span></a>` : img}<figcaption>${esc(r.cap)}</figcaption></figure>`; }).join("")}</div></section>` : "";
