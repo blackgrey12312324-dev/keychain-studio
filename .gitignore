@@ -1,3 +1,6 @@
 .DS_Store
 canva-export/resincraftcode-website-source.zip
 canva-export/resincraftcode-website-FULL.zip
+.agents/
+.claude/skills/
+skills-lock.json
