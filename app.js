@@ -1501,7 +1501,7 @@ const GALLERY_DESIGNS = {
   "g-bookmark": { cat: "accessories", shape: "bookmark", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "greyblue" }); d.hardware = "ringchain"; } },
   "g-paint1": { cat: "kitchen", shape: "tray-rect", f(d) { gradLook(d, ["#1F6BC0", "#7F9CC0", "#C9A99A"], "down"); sprinkle(d, "champagne", 50, "p1"); } },
   "g-coaster-sea": { cat: "kitchen", shape: "coaster-set", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
-  "g-coaster-ink": { cat: "kitchen", shape: "coaster-set", f(d) { inkLook(d, ["#1F6BC0", "#14151A", "#C89B2E"], [[0, .45, .35, 24], [1, .6, .6, 22], [2, .4, .8, 16]]); sprinkle(d, "goldleaf", 40, "ci"); } },
+  "g-coaster-ink": { cat: "kitchen", shape: "coaster-set", f(d) { inkLook(d, ["#1F6BC0", "#6A4B94", "#E6E0D8"], [[0, .45, .35, 24], [1, .6, .6, 22], [2, .4, .8, 16]]); sprinkle(d, "goldleaf", 60, "ci"); } },
   "g-coaster-stone": { cat: "kitchen", shape: "coaster", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#8A5F3C"], "diagonal"); sprinkle(d, "copper", 60, "cs"); } },
   "g-platter": { cat: "kitchen", shape: "tray-oval", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
   "g-nuts-dish": { cat: "kitchen", shape: "tray-oval", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .4, .35, 26], [1, .6, .6, 24], [2, .45, .8, 18]]); } },
