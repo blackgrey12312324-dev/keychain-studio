@@ -1499,7 +1499,7 @@ const GALLERY_DESIGNS = {
   "g-pen": { cat: "accessories", shape: "pen", f(d) { d.style = "clear"; d.deco = "natural"; d.picked = []; d.addins = AI(["dried-pink", "flower-red"]); sprinkle(d, "goldleaf", 70, "pn"); } },
   "g-hairpin": { cat: "accessories", shape: "hairpin", f(d) { d.style = "clear"; d.deco = "charms"; d.picked = []; d.addins = AI(["sm-butterfly-teal"]); sprinkle(d, "clear", 50, "hp"); } },
   "g-bookmark": { cat: "accessories", shape: "bookmark", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "greyblue" }); d.hardware = "ringchain"; } },
-  "g-paint1": { cat: "kitchen", shape: "tray-rect", f(d) { gradLook(d, ["#1F6BC0", "#7F9CC0", "#C9A99A"], "down"); sprinkle(d, "champagne", 50, "p1"); } },
+  "g-paint1": { cat: "kitchen", shape: "soap", f(d) { gradLook(d, ["#1F6BC0", "#7F9CC0", "#C9A99A"], "down"); sprinkle(d, "champagne", 50, "p1"); } },
   "g-coaster-sea": { cat: "kitchen", shape: "coaster-set", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
   "g-coaster-ink": { cat: "kitchen", shape: "coaster-set", f(d) { inkLook(d, ["#1F6BC0", "#6A4B94", "#E6E0D8"], [[0, .45, .35, 24], [1, .6, .6, 22], [2, .4, .8, 16]]); sprinkle(d, "goldleaf", 60, "ci"); } },
   "g-coaster-stone": { cat: "kitchen", shape: "coaster", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#8A5F3C"], "diagonal"); sprinkle(d, "copper", 60, "cs"); } },
@@ -1621,7 +1621,7 @@ const STEP_VIEWS = [
       body = group(U("grpCups"), cupCards(), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
         + group(U("grpSoap"), byIds(["soap"]), "soap")
         + group(U("grpBowls"), byIds(["bowl", "bowl-big"]), "bowls") + `<p class="small-note">${U("bowlNote")}</p>`
-        + group(U("grpTrays"), byIds(["tray-round", "tray-oval", "tray-rect", "tray-tall"]), "trays") + `<p class="small-note">${U("traysNote")}</p>`
+        + group(U("grpTrays"), byIds(["tray-round", "tray-oval", "tray-tall"]), "trays") + `<p class="small-note">${U("traysNote")}</p>`
         + group(U("grpLight"), byIds(["light-holder"]), "light");
     }
     const refs = (CONFIG.references && CONFIG.references[ui.cat]) || [];
