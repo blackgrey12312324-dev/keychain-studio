@@ -1540,7 +1540,7 @@ const STEP_VIEWS = [
       { id: "accessories", name: U("catAcc"), text: U("catAccP"), shape: "bookmark" },
       { id: "statues", name: U("catStat"), text: U("catStatP"), shape: "game-chess" },
       { id: "kitchen", name: U("catKit"), text: U("catKitP"), shape: "coaster-set" },
-      { id: "cutting", name: U("catCut"), text: U("catCutP"), shape: "board" },
+      { id: "cutting", name: U("catCut"), text: U("catCutP"), shape: "board-rect" },
       { id: "paint", name: U("catPaint"), text: U("catPaintP"), shape: "tray-tall" },
       { id: "gift", name: U("catGift"), text: U("catGiftP"), shape: "circle" },
     ];
@@ -1592,16 +1592,13 @@ const STEP_VIEWS = [
     } else if (ui.cat === "statues") {
       body = group(U("grpGames"), byIds(["game-ttt", "game-chess", "domino-set"]), "games")+ `<p class="small-note">${U("moreSoon")}</p>`;
     } else if (ui.cat === "cutting") {
-      const cm = design.cm || { w: 30, h: 40 }, isRect = design.shape === "board-rect";
+      const cm = design.cm || { w: 30, h: 40 };
       const num = (k, v) => `<label class="cm-field"><span>${U(k === "w" ? "cmWidth" : "cmHeight")}</span><input type="number" inputmode="decimal" min="10" max="200" step="1" data-cm="${k}" value="${v}"><b>cm</b></label><input type="range" min="10" max="200" step="1" data-cm="${k}" value="${v}" aria-label="${U(k === "w" ? "cmWidth" : "cmHeight")}">`;
       const rec = [[30, 20], [40, 25], [50, 30], [60, 40]].map(([w, h]) => `<button type="button" class="chip" data-cm-set="${w}x${h}">${w} × ${h}</button>`).join("");
       body = `<div class="field size-box">
           ${group(U("grpBoardsMain"), byIds(["board-rect"]), "boards")}
-          ${isRect ? `<span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div><p class="small-note">${U("cmNote")}</p>` : ""}
-        </div>`
-        + group(U("grpWhale"), byIds(["board-whale-tail", "board-whale"]), "whales")
-        + group(U("grpMyBoards"), byIds(["board", "wood-round", "wood-slice", "wood-tray"]), "mine")
-        + `<a class="card" href="idea.html"><span class="card-art has-photo"><img src="images/real/g-saeed.jpg" alt=""></span><span class="card-name">${U("customShapeCard")}</span></a><p class="small-note">${U("customShapeNote")}</p>`;
+          <span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div><p class="small-note">${U("cmNote")}</p>
+        </div><p class="small-note"><a href="idea.html">${U("customShapeCard")}</a>. ${U("customShapeNote")}</p>`;
     } else if (ui.cat === "gift") {
       body = group(U("grpPhoto"), `<a class="card" href="collage.html"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("uploadPhotos")}</span></a>` + byIds(["frame-oval"]), "photo") + `<p class="small-note">${U("photoNote")}</p>`;
     } else {
