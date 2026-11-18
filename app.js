@@ -1572,7 +1572,7 @@ const STEP_VIEWS = [
       const cm = design.cm || { w: 30, h: 40 };
       const num = (k, v) => `<label class="cm-field"><span>${U(k === "w" ? "cmWidth" : "cmHeight")}</span><input type="number" inputmode="decimal" min="10" max="200" step="1" data-cm="${k}" value="${v}"><b>cm</b></label><input type="range" min="10" max="200" step="1" data-cm="${k}" value="${v}" aria-label="${U(k === "w" ? "cmWidth" : "cmHeight")}">`;
       const rec = [[20, 20], [30, 40], [40, 50], [50, 70], [60, 90]].map(([w, h]) => `<button type="button" class="chip" data-cm-set="${w}x${h}">${w} × ${h}</button>`).join("");
-      return `<div class="field size-box"><div class="size-prev" id="size-prev"><div class="size-rect" id="size-rect" style="aspect-ratio:${cm.w} / ${cm.h}"><b>${cm.w} × ${cm.h} cm</b></div></div>${group(title, byIds(ids), key)}<span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div>${extra}</div>`;
+      return `<div class="field size-box"><div class="size-prev" id="size-prev"><div class="size-rect" id="size-rect" style="aspect-ratio:${cm.w} / ${cm.h}"><b>${cm.w} × ${cm.h} cm</b></div></div><span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div>${extra}</div>`;
     };
     const cupCards = () => {
       const one = (id, label) => {
@@ -1602,7 +1602,6 @@ const STEP_VIEWS = [
       const num = (k, v) => `<label class="cm-field"><span>${U(k === "w" ? "cmWidth" : "cmHeight")}</span><input type="number" inputmode="decimal" min="10" max="200" step="1" data-cm="${k}" value="${v}"><b>cm</b></label><input type="range" min="10" max="200" step="1" data-cm="${k}" value="${v}" aria-label="${U(k === "w" ? "cmWidth" : "cmHeight")}">`;
       const rec = [[30, 20], [40, 25], [50, 30], [60, 40]].map(([w, h]) => `<button type="button" class="chip" data-cm-set="${w}x${h}">${w} × ${h}</button>`).join("");
       body = `<div class="field size-box">
-          ${group(U("grpBoardsMain"), byIds(["board-rect"]), "boards")}
           <span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div><p class="small-note">${U("cmNote")}</p>
         </div>${field(U("customShapeCard"), `<input type="file" accept="image/*" id="shape-photo">${ui.photo ? `<img class="ref-photo" src="${ui.photo}" alt="">` : ""}`, U("customShapeNote2"))}`;
     } else if (ui.cat === "gift") {
@@ -2205,11 +2204,11 @@ els.panel.addEventListener("click", (e) => {
     changed();
   } else if (action === "cat") {
     ui.cat = el.dataset.id; ui.chosen = catOf(design.shape) === ui.cat && ui.cat !== "cutting" && ui.cat !== "paint" ? ui.chosen : false;
-    if (ui.step === 0) { ui.pickReady = false; go(1); window.scrollTo({ top: 0 }); return; }
+    const from0 = ui.step === 0; if (from0) ui.pickReady = false;
     if ((ui.cat === "cutting" || ui.cat === "paint") && catOf(design.shape) !== ui.cat) {
       design.shape = ui.cat === "paint" ? "canvas-rect" : "board-rect"; applyDefaults(design); design.style = ui.cat === "paint" ? "gradient" : "clear"; design.addins = {}; design.crush = []; resetItems(design); ui.chosen = true; ui.zoom = 1; ui.pan = [0, 0];
-      changed();
-    } else renderPanel();
+      if (from0) go(1); else changed();
+    } else if (from0) go(1); else renderPanel();
     window.scrollTo({ top: 0, behavior: "auto" });
     return;
   } else if (action === "mold") {
