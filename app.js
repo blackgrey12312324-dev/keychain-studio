@@ -78,7 +78,7 @@ function catOf(shape) {
   if (["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "comb", "comb-moon", "hairpin", "pen", "blade"].includes(shape) || c.tex === "glass" || /^bm-/.test(shape)) return "accessories";
   if (shape === "frame-oval") return "gift";
   if (["board", "wood-round", "wood-slice", "wood-tray", "board-rect", "board-whale", "board-whale-tail"].includes(shape)) return "cutting";
-  if (["heart-tray", "hexagon", "love", "game-ttt", "game-chess", "domino-set", "soap"].includes(shape)) return "statues";
+  if (["game-ttt", "game-chess", "domino-set"].includes(shape)) return "statues";
   return "kitchen";
 }
 const SHOW_PRICES = !!CONFIG.showPrices;
@@ -658,6 +658,33 @@ function inkExtras(d, id, R, T, B, x0, x1, y0, y1, skipBg) {
 
 
 /* Chess board: two sections (light and dark squares). Each has one or two colours (or clear) and optional gold foil. */
+function tttLayer(d, id) {
+  const g = (customShape("game-ttt") || {}).grid; if (!g) return "";
+  const ch = d.chess || {}, A = ch.a || {}, B = ch.b || {};
+  const w = (g.x1 - g.x0) / 3, h = (g.y1 - g.y0) / 3;
+  const colA = A.c1 && A.c2 ? `url(#${id}-tta)` : A.c1 || A.c2, colB = B.c1 || B.c2 || "#14151A";
+  let o = `<defs>${A.c1 && A.c2 ? `<linearGradient id="${id}-tta" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${A.c1}"/><stop offset="1" stop-color="${A.c2}"/></linearGradient>` : ""}</defs>`;
+  if (colA) o += `<rect x="${g.x0}" y="${g.y0}" width="${g.x1 - g.x0}" height="${g.y1 - g.y0}" fill="${colA}" opacity="0.9"/>`;
+  // the # dividers (raised ridges in the mold)
+  for (let i = 1; i < 3; i++) o += `<rect x="${(g.x0 + w * i - 3.5).toFixed(1)}" y="${g.y0}" width="7" height="${g.y1 - g.y0}" rx="3" fill="${colB}" opacity="0.9"/><rect x="${g.x0}" y="${(g.y0 + h * i - 3.5).toFixed(1)}" width="${g.x1 - g.x0}" height="7" rx="3" fill="${colB}" opacity="0.9"/>`;
+  const X = (cx, cy) => `<path d="M${cx - 13} ${cy - 13} L${cx + 13} ${cy + 13} M${cx + 13} ${cy - 13} L${cx - 13} ${cy + 13}" stroke="${colB}" stroke-width="7" stroke-linecap="round" fill="none"/>`;
+  const O = (cx, cy) => `<circle cx="${cx}" cy="${cy}" r="14" fill="none" stroke="${colB}" stroke-width="7"/>`;
+  const C = (i, j) => [g.x0 + w * (i + 0.5), g.y0 + h * (j + 0.5)];
+  o += X(...C(0, 0)) + O(...C(1, 0)) + O(...C(0, 1)) + X(...C(1, 1)) + X(...C(2, 2)) + O(...C(2, 1));
+  if (A.foil || B.foil) { let seed = 5; const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647); for (let n = 0; n < 40; n++) { const fx = g.x0 + rnd() * (g.x1 - g.x0), fy = g.y0 + rnd() * (g.y1 - g.y0), r = 1 + rnd() * 1.8, a = rnd() * 6; o += `<polygon points="${[0, 1, 2, 3].map((q) => `${(fx + Math.cos(a + q * 1.7) * r * (1 + (q % 2) * 0.6)).toFixed(1)},${(fy + Math.sin(a + q * 1.7) * r).toFixed(1)}`).join(" ")}" fill="${n % 2 ? "#E5C15A" : "#C89B2E"}" opacity="0.95"/>`; } }
+  return `<g pointer-events="none">${o}</g>`;
+}
+function dominoLayer(d) {
+  const tiles = [[40, 150, 0], [162, 150, 1], [40, 282, 2], [162, 282, 3]];
+  const P = { 0: [], 1: [[.5, .5]], 2: [[.3, .3], [.7, .7]], 3: [[.3, .3], [.5, .5], [.7, .7]], 4: [[.3, .3], [.7, .3], [.3, .7], [.7, .7]], 5: [[.3, .3], [.7, .3], [.5, .5], [.3, .7], [.7, .7]], 6: [[.3, .25], [.7, .25], [.3, .5], [.7, .5], [.3, .75], [.7, .75]] };
+  const vals = [[6, 4], [3, 5], [2, 1], [5, 0]];
+  let o = "";
+  tiles.forEach(([x, y, k]) => {
+    o += `<rect x="${x + 8}" y="${y + 58}" width="82" height="3.5" rx="1.7" fill="rgba(20,30,40,.55)"/>`;
+    [0, 1].forEach((half) => (P[vals[k][half]] || []).forEach(([px, py]) => { o += `<circle cx="${(x + 10 + px * 78).toFixed(1)}" cy="${(y + 6 + half * 56 + py * 52).toFixed(1)}" r="5.4" fill="rgba(255,255,255,.92)" stroke="rgba(20,30,40,.35)" stroke-width="1"/>`; }));
+  });
+  return `<g pointer-events="none">${o}</g>`;
+}
 function chessLayer(d, id) {
   const g = (customShape(d.shape) || {}).grid; if (!g) return "";
   const ch = d.chess || { a: { c1: "", c2: "", foil: false }, b: { c1: "", c2: "", foil: false } };
@@ -678,6 +705,7 @@ function chessLayer(d, id) {
 }
 function chessPanel() {
   const ch = design.chess;
+  const ttt = design.shape === "game-ttt";
   const sw = (sec, key, cur, withNone) => {
     const list = [["", withNone ? U("chessNone") : U("chessClear")]].concat(CONFIG.colors.map((c) => [c.hex, c.name]));
     return `<div class="swatches">${list.map(([hex, nm]) => `<button type="button" class="swatch ${cur === hex ? "on" : ""} ${hex ? "" : "clear"}" data-chess="${sec}.${key}" data-v="${hex}" title="${esc(nm)}" aria-pressed="${cur === hex}" ${hex ? `style="background:${hex}"` : ""}></button>`).join("")}</div>`;
@@ -693,8 +721,8 @@ function chessPanel() {
   const glyphs = ["♚", "♛", "♝", "♞", "♜", "♟"], names = ["King", "Queen", "Bishop", "Knight", "Rook", "Pawn"];
   const row = (c) => `<div class="chess-pieces">${glyphs.map((g, i) => `<span title="${names[i]}" style="color:${tone(c)}">${g}</span>`).join("")}</div>`;
   return `<h2>${U("chessTitle")}</h2><p class="hint">${U("chessNote")}</p>
-    ${sec("a", U("chessLight"))}${sec("b", U("chessDark"))}
-    <div class="field"><span class="field-label">${U("chessPieces")}</span>${row(ch.a)}${row(ch.b)}<p class="small-note">${U("chessPiecesNote")}</p></div>`;
+    ${sec("a", ttt ? U("tttBoard") : U("chessLight"))}${sec("b", ttt ? U("tttMarks") : U("chessDark"))}
+    ${ttt ? "" : `<div class="field"><span class="field-label">${U("chessPieces")}</span>${row(ch.a)}${row(ch.b)}<p class="small-note">${U("chessPiecesNote")}</p></div>`}`;
 }
 function styleLayer(d, id, R, T, B) {
   const c = d.colors;
@@ -1096,7 +1124,7 @@ function renderPiece(d, side = "front", opts = {}) {
   </defs>`;
 
   const plainBack = side === "back" && d.back === "plain";
-  const fill = plainBack ? "" : (isGame(d.shape) ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
+  const fill = plainBack ? "" : (d.shape === "game-ttt" ? tttLayer(d, id) : d.shape === "game-chess" ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + (d.shape === "domino-set" ? dominoLayer(d) : "") + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linejoin="round"`;
@@ -1424,7 +1452,7 @@ const GALLERY_DESIGNS = {
   "g-coaster-stone": { cat: "kitchen", shape: "coaster", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#8A5F3C"], "diagonal"); sprinkle(d, "copper", 60, "cs"); } },
   "g-platter": { cat: "kitchen", shape: "tray-oval", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
   "g-nuts-dish": { cat: "kitchen", shape: "tray-oval", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .4, .35, 26], [1, .6, .6, 24], [2, .45, .8, 18]]); } },
-  "g-fruit-bowl": { cat: "kitchen", shape: "hexagon", f(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .4, .4, 26], [1, .6, .65, 24], [2, .5, .3, 16]]); sprinkle(d, "clear", 60, "fb"); } },
+  "g-fruit-bowl": { cat: "kitchen", shape: "bowl", f(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .4, .4, 26], [1, .6, .65, 24], [2, .5, .3, 16]]); sprinkle(d, "clear", 60, "fb"); } },
   "g-tealight": { cat: "kitchen", shape: "coaster", f(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .5, .4, 24], [1, .55, .65, 20], [2, .4, .55, 12]]); } },
   "g-tail": { cat: "kitchen", shape: "tray-tall", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
   "g-woodtray": { cat: "cutting", shape: "wood-tray", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); } },
@@ -1484,7 +1512,7 @@ const STEP_VIEWS = [
     const CATS = [
       { id: "keychains", name: U("catKey"), text: U("catKeyP"), shape: "A" },
       { id: "accessories", name: U("catAcc"), text: U("catAccP"), shape: "bookmark" },
-      { id: "statues", name: U("catStat"), text: U("catStatP"), shape: "hexagon" },
+      { id: "statues", name: U("catStat"), text: U("catStatP"), shape: "game-chess" },
       { id: "kitchen", name: U("catKit"), text: U("catKitP"), shape: "coaster-set" },
       { id: "cutting", name: U("catCut"), text: U("catCutP"), shape: "board" },
       { id: "paint", name: U("catPaint"), text: U("catPaintP"), shape: "tray-tall" },
@@ -1528,7 +1556,7 @@ const STEP_VIEWS = [
       const L = [["canvas.html?kind=beach", "images/real/canvas-beach.jpg", U("pntSea")], ["canvas.html?kind=abstract", "images/real/abs-purple.jpg", U("pntAbs")], ["canvas.html?kind=photo", "images/real/g-collage.jpg", U("pntPhoto")]];
       body = `<h3 class="mold-group" id="grp-paintings">${U("catPaint")}</h3><div class="cards molds">${L.map(([h, im, n]) => `<a class="card" href="${h}"><span class="card-art has-photo"><img src="${im}" alt=""></span><span class="card-name">${n}</span></a>`).join("")}</div><p class="small-note">${U("pntNote")}</p>`;
     } else if (ui.cat === "statues") {
-      body = group(U("grpGames"), byIds(["game-ttt", "game-chess", "domino-set"]), "games") + group(U("grpDecor"), byIds(["heart-tray", "hexagon", "love", "soap"]), "decor") + `<p class="small-note">${U("moreSoon")}</p>`;
+      body = group(U("grpGames"), byIds(["game-ttt", "game-chess", "domino-set"]), "games")+ `<p class="small-note">${U("moreSoon")}</p>`;
     } else if (ui.cat === "cutting") {
       const cm = design.cm || { w: 30, h: 40 }, isRect = design.shape === "board-rect";
       const num = (k, v) => `<label class="cm-field"><span>${U(k === "w" ? "cmWidth" : "cmHeight")}</span><input type="number" inputmode="decimal" min="10" max="200" step="1" data-cm="${k}" value="${v}"><b>cm</b></label><input type="range" min="10" max="200" step="1" data-cm="${k}" value="${v}" aria-label="${U(k === "w" ? "cmWidth" : "cmHeight")}">`;
