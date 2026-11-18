@@ -1453,3 +1453,9 @@ body.ph-open { overflow: hidden; }
 .qty button { width: 48px; height: 48px; border: 0; background: transparent; font-size: 1.6rem; color: #0E3F57; cursor: pointer; }
 .qty button:disabled { opacity: .3; cursor: default; }
 .qty b { min-width: 56px; text-align: center; font: 600 1.4rem Jost, sans-serif; color: #0E3F57; }
+
+.cupcard { padding: 0 !important; display: grid; overflow: hidden; }
+.cupcard .cup-art { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font: inherit; color: inherit; display: block; width: 100%; }
+.cupcard .qty.sm { margin: 0 8px 10px; justify-self: center; }
+.cupcard .qty.sm button { width: 38px; height: 38px; font-size: 1.3rem; }
+.cupcard .qty.sm b { min-width: 40px; font-size: 1.15rem; }

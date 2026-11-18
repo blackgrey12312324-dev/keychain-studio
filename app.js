@@ -114,7 +114,9 @@ const SEA_WATER = ["#0F3D8C", "#2373C4", "#5BB6C8"];   // deep navy to royal blu
 // Clear resin has no colour or details step (it is decorated with glitter and things inside); the sea style has fixed colours and no glitter.
 const skipStep = (i, d) => (isGame(d.shape) && (i === 3 || i === 5)) || (d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO)) || (d.style === "clear" && (i === COLOURS_STEP || i === 5));
 // gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
-const CUP_SHAPES = ["coaster", "coaster-set", "wood-coaster"];
+const CUP_SHAPES = ["coaster", "wood-coaster"];
+const ALL_CUPS = ["coaster", "coaster-set", "wood-coaster", "coaster-stone"];
+const isCup = (sh) => ALL_CUPS.includes(sh);
 function qtyBlock() {
   if (!CUP_SHAPES.includes(design.shape)) return "";
   const n = design.qty || 1;
@@ -131,6 +133,7 @@ function fits(a, d) {
   if (d.deco === "charms" && !CHARM_GROUPS.includes(a.group)) return false;
   const need = a.id === "tree-small" || a.id.startsWith("sm-crown") ? 1 : NEED[a.group] || 0;   // crowns are thick: medium and big molds only
   if (need > moldRank(d.shape)) return false;
+  if (isCup(d.shape) && (CHARM_GROUPS.includes(a.group) || a.id === "frog")) return false;
   // thick 3D pieces (crowns, little roses, metal charms) cannot go in thin molds such as bookmarks, pens and combs
   const sc = CONFIG.shapes.find((x) => x.id === d.shape);
   if (sc && sc.size === "thin" && (a.group === "charms" || a.group === "metalsea" || /^sm-(crown|rose|turtle|crab)/.test(a.id))) return false;
@@ -345,7 +348,7 @@ function syncBoard(d) {
   sh.t = Math.round(y0); sh.b = Math.round(y1); sh.pin = sh.t;
   maskCache = {};
 }
-function customShape(shape) { return CONFIG.shapes.find((x) => x.id === shape && x.d); }
+function customShape(shape) { const id = shape === "coaster-set" ? "coaster" : shape; return CONFIG.shapes.find((x) => x.id === id && x.d); }
 function bounds(shape) {
   const cs = customShape(shape);
   if (cs) return [cs.t, cs.b];
@@ -1100,7 +1103,21 @@ function penRefill(d) {
     <circle cx="150" cy="${tip - 0.5}" r="1.3" fill="#1d2b3a"/>
   </g>`;
 }
+function setPiece(d, side, opts) {
+  const d2 = copy(d); d2.shape = "coaster"; d2.hardware = "none"; d2.tassel = Object.assign({}, d2.tassel, { type: "none" });
+  const one = renderPiece(d2, side, { edit: true });
+  const cups = [[92, 212], [208, 212], [92, 330], [208, 330]].map(([cx, cy]) => one.replace(/<svg viewBox="[^"]*"/, `<svg viewBox="46 158 208 208" x="${cx - 54}" y="${cy - 54}" width="108" height="108" overflow="hidden"`)).join("");
+  return `<svg viewBox="${zoomBox(opts.zoom, opts.pan)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(shapeName(d.shape))}">
+    <defs><clipPath id="hold-clip"><rect x="28" y="148" width="244" height="246" rx="22"/></clipPath><filter id="hold-sh" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#3a2410" flood-opacity="0.28"/></filter></defs>
+    <g filter="url(#hold-sh)"><rect x="28" y="148" width="244" height="246" rx="22" fill="#C99A5E"/></g>
+    <image href="images/wood/bamboo.jpg" x="28" y="148" width="244" height="246" preserveAspectRatio="xMidYMid slice" clip-path="url(#hold-clip)" opacity="0.9"/>
+    <rect x="28" y="148" width="244" height="246" rx="22" fill="none" stroke="rgba(90,55,20,.45)" stroke-width="2"/>
+    ${[[92, 212], [208, 212], [92, 330], [208, 330]].map(([cx, cy]) => `<circle cx="${cx}" cy="${cy}" r="56" fill="rgba(70,40,15,.28)"/>`).join("")}
+    ${cups}
+  </svg>`;
+}
 function renderPiece(d, side = "front", opts = {}) {
+  if (d.shape === "coaster-set" && !opts.edit) return setPiece(d, side, opts);
   syncBoard(d);
   if (isFresh(d)) d = Object.assign({}, d, { style: "clear" });
   ensureItems(d);
@@ -1411,6 +1428,7 @@ const LOOKS = [
 ];
 function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); layoutItems(d); delete d.cluster; return d; }
 function inspirationHtml() {
+  if (!ui.open.has("inspo")) return `<details class="inspo" data-key="inspo"><summary><span>${U("inspoH")}</span><span class="inspo-arrow" aria-hidden="true">⌄</span></summary></details>`;
   const ds = LOOKS.map((l) => [l, lookDesign(l)]);
   const groups = ["ocean", "gradient", "ink", "clear"].map((st) => {
     const items = ds.filter(([, d]) => d.style === st);
@@ -1549,6 +1567,14 @@ const STEP_VIEWS = [
     const icon = (id) => { const i = ICON[id]; return i ? `<i class="mold-ico">${i === "COMB" ? COMB : i === "MOON" ? MOON : i}</i>` : ""; };
     const byIds = (ids) => ids.map((id) => CONFIG.shapes.find((x) => x.id === id)).filter(Boolean)
       .map((sh) => card(icon(sh.id) + tr(sh, "name"), sh.id, design.shape === sh.id)).join("");
+    const cupCards = () => {
+      const one = (id, label) => {
+        const sh = CONFIG.shapes.find((x) => x.id === id); if (!sh) return "";
+        const on = design.shape === id, d = merge(copy(design), { shape: id, hardware: "none" }), n = on ? design.qty || 1 : 1;
+        return `<div class="card cupcard ${on ? "on" : ""}"><button type="button" class="cup-art" aria-pressed="${on}" data-action="mold" data-shape="${id}"><span class="card-art">${renderPiece(d)}</span><span class="card-name">${label}</span></button><div class="qty sm"><button type="button" data-qty="-1" aria-label="-" ${n <= 1 ? "disabled" : ""}>−</button><b>${n}</b><button type="button" data-qty="1" aria-label="+" ${n >= 50 ? "disabled" : ""}>+</button></div></div>`;
+      };
+      return one("coaster", tr(CONFIG.shapes.find((x) => x.id === "coaster"), "name")) + one("wood-coaster", tr(CONFIG.shapes.find((x) => x.id === "wood-coaster") || {}, "name")) + byIds(["coaster-set"]);
+    };
     const group = (title, html, key = "") => `<h3 class="mold-group" ${key ? `id="grp-${key}"` : ""}>${title}</h3><div class="cards molds">${html}</div>`;
     const isL = isLetter(design.shape) || isNumber(design.shape);
     let body = "";
@@ -1579,7 +1605,7 @@ const STEP_VIEWS = [
     } else if (ui.cat === "gift") {
       body = group(U("grpPhoto"), `<a class="card" href="collage.html"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("uploadPhotos")}</span></a>` + byIds(["frame-oval"]), "photo") + `<p class="small-note">${U("photoNote")}</p>`;
     } else {
-      body = group(U("grpCups"), byIds(["coaster", "coaster-set", "wood-coaster"]), "cups") + qtyBlock() + `<p class="small-note">${U("cupsNote")}</p>`
+      body = group(U("grpCups"), cupCards(), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
         + group(U("grpSoap"), byIds(["soap"]), "soap")
         + group(U("grpBowls"), byIds(["bowl", "bowl-big"]), "bowls") + `<p class="small-note">${U("bowlNote")}</p>`
         + group(U("grpTrays"), byIds(["tray-round", "tray-oval", "tray-rect", "tray-tall"]), "trays") + `<p class="small-note">${U("traysNote")}</p>`
@@ -1611,7 +1637,7 @@ const STEP_VIEWS = [
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
     ${inspirationHtml()}
-    <div class="cards">${Object.keys(I18N.en.labels.style).map((st) => {
+    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => !(isCup(design.shape) && st === "clear")).map((st) => {
       const d = merge(copy(design), { style: st, picked: design.picked.length ? design.picked : DEFAULT_COLORS.slice(), ink: Object.assign({}, design.ink, { legacy: true }) });
       applyPicked(d);
       return `<button type="button" class="card ${design.style === st ? "on" : ""}" aria-pressed="${design.style === st}" data-set="style" data-value="${st}">
@@ -1707,7 +1733,8 @@ const STEP_VIEWS = [
     const decoPick = `<div class="field"><span class="field-label">${U("decoQ")}</span><div class="cards deco-cards">
       <button type="button" class="card deco ${design.deco === "natural" ? "on" : ""}" data-action="deco" data-id="natural"><span class="deco-pics charms-pics"><i><img src="images/sea/starfish.png" alt=""></i><i><img src="images/sea/shell-scallop.png" alt=""></i><i><img src="images/flowers/pink.png" alt=""></i><i><img src="images/dried/lavender.png" alt=""></i></span><span class="card-name">${U("decoNat")}</span><span class="card-text">${U("decoNatP")}</span></button>
       <button type="button" class="card deco ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="deco-pics charms-pics"><i><img src="images/small/frog-green.png" alt=""></i><i><img src="images/small/crown-gold.png" alt=""></i><i><img src="images/small/butterfly-teal.png" alt=""></i><i><img src="images/small/rose-pink.png" alt=""></i></span><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
-    if (!design.deco && design.style !== "ocean") return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick}`;
+    const decoPick2 = isCup(design.shape) ? decoPick.replace(/<button type="button" class="card deco[^"]*" data-action="deco" data-id="charms">[\s\S]*?<\/button>/, "") : decoPick;
+    if (!design.deco && design.style !== "ocean") return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick2}`;
     const list = CONFIG.addins.filter((a) => fits(a, design));
     const itemHtml = (a0) => {
       const fk = familyOf(a0.id);
@@ -1916,7 +1943,7 @@ function renderPreview() {
   document.body.classList.toggle("noprev", showingShowcase());
   if (showingShowcase()) { els.preview.innerHTML = ""; els.stage.classList.add("showing"); return; }
   els.stage.classList.remove("showing");
-  els.preview.innerHTML = renderPiece(design, ui.side, { interactive: true, zoom: ui.zoom, pan: ui.pan });
+  els.preview.innerHTML = renderPiece(design, ui.side, { interactive: true, edit: ui.step > 1 && ui.step !== LAST, zoom: ui.zoom, pan: ui.pan });
   els.preview.classList.toggle("painting", false && ui.side === "front");
   renderHint();
   if (typeof markSelected === "function") markSelected();
@@ -2188,6 +2215,7 @@ els.panel.addEventListener("click", (e) => {
     applyDefaults(design);
     if (customShape(design.shape) && customShape(design.shape).wood) design.style = "clear";
     if (isGame(design.shape)) design.style = "gradient";
+    if (isCup(design.shape)) { if (design.style === "clear") design.style = "gradient"; design.deco = "natural"; design.addins = {}; }
     design.letters.moved = false;
     [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
     resetItems(design);
@@ -2278,6 +2306,7 @@ els.panel.addEventListener("toggle", (e) => {
   const d = e.target;
   if (!d.classList || !(d.classList.contains("ins-sec") || d.classList.contains("inspo"))) return;
   if (d.open) ui.open.add(d.dataset.key); else ui.open.delete(d.dataset.key);
+  if (d.dataset.key === "inspo" && d.open && !d.querySelector(".looks")) { const y = window.scrollY; renderPanel(); window.scrollTo(0, y); }
 }, true);
 els.panel.addEventListener("change", (e) => {
   if (e.target.type === "color") renderPanel();
@@ -2704,6 +2733,8 @@ els.panel.addEventListener("click", (e) => {
 
 els.panel.addEventListener("click", (e) => {
   const b = e.target.closest("[data-qty]"); if (!b) return;
+  const cc = b.closest(".cupcard");
+  if (cc) { const m = cc.querySelector("[data-action=mold]"); if (m && design.shape !== m.dataset.shape) { design.qty = 1; m.click(); } }
   design.qty = Math.max(1, Math.min(50, (design.qty || 1) + Number(b.dataset.qty)));
   renderPanel(); renderBarSummary();
   const box = $("order-text"); if (box) box.value = orderText();
