@@ -1465,6 +1465,26 @@ function presetDesign(p) {
 
 /* ---------- Every finished piece in the shop, rebuilt as a digital design ---------- */
 const GALLERY_DESIGNS = {
+  "g-key-w": { cat: "keychains", shape: "W", f(d) { d.style = "clear"; d.picked = []; d.deco = "charms"; d.addins = AI(["sm-butterfly-teal"]); sprinkle(d, "clear", 80, "kw"); d.hardware = "ringchain"; } },
+  "g-round-pendant": { cat: "keychains", shape: "circle", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.hardware = "ringchain"; } },
+  "g-key-es": { cat: "keychains", shape: "E", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.hardware = "ringchain"; } },
+  "g-feather": { cat: "accessories", shape: "feather", f(d) { d.style = "clear"; d.picked = []; sprinkle(d, "goldleaf", 160, "gf"); sprinkle(d, "gold", 40, "gf2"); } },
+  "g-chess-sand": { cat: "statues", shape: "game-chess", f(d) { d.style = "gradient"; d.chess = { a: { c1: "#E6E0D8", c2: "", foil: true }, b: { c1: "#4F8A9C", c2: "#1F6BC0", foil: true } }; } },
+  "g-domino": { cat: "statues", shape: "domino-set", f(d) { gradLook(d, ["#14151A", "#C89B2E", "#C9A99A"], "diagonal"); sprinkle(d, "goldleaf", 40, "dm"); } },
+  "g-ruffle-bowl": { cat: "kitchen", shape: "bowl", f(d) { d.style = "clear"; d.picked = []; d.deco = "natural"; d.addins = AI(["dried-pink", "flower-cream"]); sprinkle(d, "goldleaf", 90, "rb"); } },
+  "g-lychee-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#D9959C", "#C97080", "#E6E0D8"], "down"); sprinkle(d, "pink", 50, "lb"); } },
+  "g-pinkboard": { cat: "cutting", shape: "board-rect", f(d) { d.cm = { w: 40, h: 25 }; gradLook(d, ["#D9742E", "#B04855", "#D9959C"], "down"); sprinkle(d, "gold", 60, "pb"); } },
+  "g-coffee-art": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 30 }; inkLook(d, ["#8A5F3C", "#E6E0D8", "#B8693F"], [[0, .45, .3, 26], [1, .55, .55, 22], [2, .42, .78, 16]]); } },
+  "g-beach-lounger": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 40 }; d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-shell-scallop"]); } },
+  "g-feather-canvas": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 40, h: 50 }; gradLook(d, ["#3A5F55", "#4C8A7C", "#C89B2E"], "diagonal"); sprinkle(d, "goldleaf", 40, "fc"); } },
+  "g-purple-plate": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 30 }; gradLook(d, ["#6A4B94", "#C97080", "#C9A99A"], "diagonal"); sprinkle(d, "rosecopper", 60, "pp"); } },
+  "g-sea-wide": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 60, h: 40 }; d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
+  "g-sea-shells": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 40 }; d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish", "sea-shell-scallop"]); } },
+  "g-round": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 30 }; d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "calm", dir: "flat" }); } },
+  "g-paint3": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 40, h: 50 }; inkLook(d, ["#6A4B94", "#C89B2E", "#E6E0D8"], [[0, .45, .3, 26], [1, .55, .55, 22], [2, .42, .78, 16]]); } },
+  "g-paint4": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 40, h: 50 }; inkLook(d, ["#3A5F55", "#C89B2E", "#E6E0D8"], [[0, .45, .3, 26], [1, .55, .55, 22], [2, .42, .78, 16]]); } },
+  "g-canvas": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 40, h: 50 }; d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
+  "g-plum": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 40, h: 50 }; inkLook(d, ["#8E3560", "#6A4B94", "#E6E0D8"], [[0, .45, .3, 26], [1, .55, .55, 22], [2, .42, .78, 16]]); } },
   "g-key-e": { cat: "keychains", shape: "E", f(d) { d.style = "clear"; d.picked = []; sprinkle(d, "goldleaf", 260, "ke"); sprinkle(d, "gold", 70, "ke2"); sprinkle(d, "rosecopper", 24, "ke3"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "gold" }); d.hardware = "ringchain"; } },
   "g-key-a-star": { cat: "keychains", shape: "A", f(d) { inkLook(d, ["#B8693F", "#8A5F3C", "#D9959C"], [[0, .5, .35, 22], [1, .55, .7, 20], [2, .4, .55, 12]]); sprinkle(d, "copper", 40, "ka"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "orange" }); d.hardware = "ringchain"; } },
   "g-key-k": { cat: "keychains", shape: "K", f(d) { inkLook(d, ["#1F6BC0", "#7F9CC0", "#E6E0D8"], [[0, .45, .35, 20], [1, .55, .65, 16], [2, .4, .5, 12]]); d.hardware = "none"; } },
@@ -1482,11 +1502,11 @@ const GALLERY_DESIGNS = {
   "g-nuts-dish": { cat: "kitchen", shape: "tray-oval", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .4, .35, 26], [1, .6, .6, 24], [2, .45, .8, 18]]); } },
   "g-fruit-bowl": { cat: "kitchen", shape: "bowl", f(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .4, .4, 26], [1, .6, .65, 24], [2, .5, .3, 16]]); sprinkle(d, "clear", 60, "fb"); } },
   "g-tealight": { cat: "kitchen", shape: "coaster", f(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .5, .4, 24], [1, .55, .65, 20], [2, .4, .55, 12]]); } },
-  "g-tail": { cat: "kitchen", shape: "tray-tall", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
-  "g-woodtray": { cat: "cutting", shape: "wood-tray", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); } },
-  "g-paddle": { cat: "cutting", shape: "board", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); } },
-  "g-tree": { cat: "cutting", shape: "wood-round", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); } },
-  "g-copper": { cat: "cutting", shape: "wood-round", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); } },
+  "g-tail": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
+  "g-woodtray": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); } },
+  "g-paddle": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); } },
+  "g-tree": { cat: "cutting", shape: "board-rect", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); } },
+  "g-copper": { cat: "cutting", shape: "board-rect", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); } },
 };
 function galleryDesign(key) {
   const g = GALLERY_DESIGNS[key]; if (!g) return null;
@@ -1499,41 +1519,24 @@ function galleryDesign(key) {
 /* Ready-made step for sections other than keychains: pieces Anna already made in that section, rebuilt as digital designs */
 function readyView() {
   const cat = ui.cat;
-  if (!cat || cat === "keychains") return "";
-    const keys = Object.keys(GALLERY_DESIGNS).filter((k) => GALLERY_DESIGNS[k].cat === cat);
+  const order = ["keychains", "accessories", "statues", "kitchen", "cutting", "paint"];
+  const names = { keychains: U("catKey"), accessories: U("catAcc"), statues: U("catStat"), kitchen: U("catKit"), cutting: U("catCut"), paint: U("catPaint") };
   const caps = {};
   CONFIG.gallery.forEach((t) => t.items.forEach((it) => { if (it.img) caps[it.img.split("/").pop().replace(/\.\w+$/, "")] = it.cap; }));
-  const head = `<h2>${U("s0h")}</h2>`;
-  if (!keys.length) return `${head}<p class="hint">${U("noReady")}</p><div class="field"><button type="button" class="btn btn-ink" data-action="scratch">${U("fromScratch")}</button></div>`;
-  return `${head}<p class="hint">${U("s0p")}</p><div class="cards presets">${keys.map((k) => `<div class="card">
-      <div class="card-art has-photo"><img src="images/real/${k}.jpg" alt="${esc(caps[k] || k)}" decoding="async"></div>
-      <span class="card-name">${esc(caps[k] || k)}</span>
-      <div class="card-actions">
-        <button type="button" class="btn btn-ink small" data-action="gallery" data-id="${k}" data-go="review">${U("orderThis")}</button>
-        <button type="button" class="btn btn-line small" data-action="gallery" data-id="${k}" data-go="edit">${U("changeIt")}</button>
-      </div></div>`).join("")}</div>
-    <div class="field"><button type="button" class="btn btn-line" data-action="scratch">${U("fromScratch")}</button></div>`;
+  const card = (k) => { const gd = galleryDesign(k); if (!gd) return ""; return `<div class="card"><div class="card-art rl-pair"><figure><img src="images/real/${k}.jpg" alt="" loading="lazy" decoding="async"><figcaption>${U("realLife")}</figcaption></figure><figure><span class="rl-svg">${renderPiece(gd.d)}</span><figcaption>${U("designLbl")}</figcaption></figure></div><span class="card-name">${esc(caps[k] || k)}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="gallery" data-id="${k}" data-go="review">${U("orderThis")}</button><button type="button" class="btn btn-line small" data-action="gallery" data-id="${k}" data-go="edit">${U("changeIt")}</button></div></div>`; };
+  const presetCards = (cat && cat !== "keychains") ? "" : CONFIG.presets.filter((p) => p.id !== "phuket-shoreline").map((p) => { const d = presetDesign(p); return `<div class="card"><div class="card-art rl-pair">${p.photo ? `<figure><img src="${esc(p.photo)}" alt="" loading="lazy" decoding="async"><figcaption>${U("realLife")}</figcaption></figure>` : ""}<figure><span class="rl-svg">${renderPiece(d)}</span><figcaption>${U("designLbl")}</figcaption></figure></div><span class="card-name">${p.name}</span><span class="card-text">${tr(p, "blurb")}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="preset" data-id="${p.id}" data-go="review">${U("orderThis")}</button><button type="button" class="btn btn-line small" data-action="preset" data-id="${p.id}" data-go="edit">${U("changeIt")}</button></div></div>`; }).join("");
+  const secs = (cat ? [cat] : order).map((c) => {
+    const keys = Object.keys(GALLERY_DESIGNS).filter((k) => GALLERY_DESIGNS[k].cat === c);
+    const html = (c === "keychains" ? presetCards : "") + keys.map(card).join("");
+    return html ? `<h3 class="mold-group">${names[c] || c}</h3><div class="cards presets">${html}</div>` : "";
+  }).join("");
+  if (!secs) return `<h2>${U("s0h")}</h2><p class="hint">${U("noReady")}</p><div class="field"><button type="button" class="btn btn-ink" data-action="scratch">${U("fromScratch")}</button></div>`;
+  return `<h2>${U("s0h")}</h2><p class="hint">${U("s0p")}</p>${secs}<div class="field"><button type="button" class="btn btn-line" data-action="scratch">${U("fromScratch")}</button></div>`;
 }
+
 const STEP_VIEWS = [
   // 0 Ready-made
-  () => (!ui.cat && !ui.pickReady) ? `<div class="start-bar"><div><b>${U("choiceH")}</b><span>${U("choiceP")}</span></div><div class="start-btns"><button type="button" class="btn start-btn" data-action="pickready">${U("choiceReady")}</button><button type="button" class="btn start-btn on" data-action="designown">${U("choiceOwn")}</button></div></div>` + STEP_VIEWS[1]() : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + (readyView() || `
-    <h2>${U("s0h")}</h2>
-    <p class="hint">${U("s0p")}</p>
-    <div class="cards presets">${CONFIG.presets.map((p) => {
-      const d = presetDesign(p);
-      return `<div class="card">
-        <div class="card-art rl-pair">${p.photo ? `<figure><img src="${esc(p.photo)}" alt="" decoding="async"><figcaption>${U("realLife")}</figcaption></figure>` : ""}<figure><span class="rl-svg">${renderPiece(d)}</span><figcaption>${U("designLbl")}</figcaption></figure></div>
-        <span class="card-name">${p.name}</span>
-        <span class="card-text">${tr(p, "blurb")}</span>
-        ${SHOW_PRICES ? `<span class="card-price">${money(priceOf(d).total)}</span>` : ""}
-        <div class="card-actions">
-          <button type="button" class="btn btn-ink small" data-action="preset" data-id="${p.id}" data-go="review">${U("orderThis")}</button>
-          <button type="button" class="btn btn-line small" data-action="preset" data-id="${p.id}" data-go="edit">${U("changeIt")}</button>
-        </div>
-      </div>`;
-    }).join("")}</div>
-    <div class="field"><button type="button" class="btn btn-line" data-action="scratch">${U("fromScratch")}</button></div>
-    <p class="small-note">${U("handmade")}</p>`),
+  () => (!ui.cat && !ui.pickReady) ? `<div class="start-bar"><div><b>${U("choiceH")}</b><span>${U("choiceP")}</span></div><div class="start-btns"><button type="button" class="btn start-btn" data-action="pickready">${U("choiceReady")}</button><button type="button" class="btn start-btn on" data-action="designown">${U("choiceOwn")}</button></div></div>` + STEP_VIEWS[1]() : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + readyView(),
 
   // 1 Mold (category first)
   () => {
@@ -2147,7 +2150,7 @@ els.panel.addEventListener("click", (e) => {
     swing();
   } else if (action === "gallery") {
     const gd = galleryDesign(el.dataset.id);
-    if (gd) { design = gd.d; ui.side = "front"; ui.visited = new Set([0, 1, 2, 3]); ui.chosen = true; go(el.dataset.go === "review" ? LAST : 3); swing(); }
+    if (gd) { design = gd.d; ui.cat = gd.cat; ui.side = "front"; ui.visited = new Set([0, 1, 2, 3]); ui.chosen = true; go(el.dataset.go === "review" ? LAST : 3); swing(); }
   } else if (action === "tassel") {
     design.tassel.photo = design.tassel.photo === el.dataset.id ? "" : el.dataset.id;
     if (design.tassel.photo && design.tassel.type === "none") design.tassel.type = "silk";
