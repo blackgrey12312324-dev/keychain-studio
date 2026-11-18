@@ -5,7 +5,7 @@ const TXT = {
   ru: { title: "Фото на холсте", sub: "Загрузи фото и расположи их на белом холсте, как в Canva. Любой размер холста, двигай и меняй размер каждого фото, вырезай сердцем, кругом или квадратом.", size: "Размер холста", w: "Ширина (см)", h: "Высота (см)", add: "Загрузить фото", addHint: "Можно добавить сколько угодно.", shape: "Вырезать фото как", square: "Квадрат", rounded: "Скруглённый", circle: "Круг", heart: "Сердце", zoom: "Масштаб внутри", size2: "Размер фото", front: "На передний план", del: "Удалить фото", empty: "Загрузи фото, потом перетащи их на холст.", name: "Твоё имя", note: "Пожелания", send: "Отправить в DM", copied: "Скопировано! Вставь в DM и приложи фото.", sel: "Выбранное фото", none: "Нажми на фото на холсте, чтобы изменить.", bg: "Цвет холста", white: "Белый", sand: "Песок", count: "фото" },
 };
 const L = (k) => (TXT[ui.lang] || TXT.en)[k] || TXT.en[k];
-const S = { w: 40, h: 50, bg: "#FFFFFF", bg2: "#C9DDD4", mode: "solid", glit: "", items: [], sel: -1, name: "", note: "" };
+const S = { w: 40, h: 50, bg: "#FFFFFF", bg2: "#C9DDD4", mode: "solid", glit: "", text: "", items: [], sel: -1, name: "", note: "" };
 const GL = { gold: ["#E6C463", "#C89B2E", "#FFF1C4"], silver: ["#E9EDF0", "#B9C2C8", "#FFFFFF"], pink: ["#F2B6C6", "#D97A97", "#FFE3EA"], blue: ["#9CC3F0", "#4F7FD0", "#E3F0FF"], copper: ["#E8A27C", "#B8693F", "#FFE0CC"] };
 const DECOR = ["flower-red", "flower-orange", "flower-yellow", "flower-mint", "flower-teal", "flower-blue", "flower-purple", "flower-plum", "flower-pink", "flower-cream", "dried-lavender", "dried-pink", "dried-wheat", "sm-butterfly-teal", "sm-butterfly-pink", "sm-butterfly-amber", "sm-heart-ruby", "sm-heart-blue", "sm-rose-pink", "sm-rose-red", "sm-sunflower", "sm-ladybug", "sm-bow-pink", "sm-crown-gold", "sm-turtle-pink", "sm-crab-red", "frog", "sea-starfish", "sea-shell-scallop"];
 const GRADS = [["#F2B6C6", "#C89B2E"], ["#C9DDD4", "#4F8A9C"], ["#6A4B94", "#D9959C"], ["#1F6BC0", "#E6E0D8"], ["#D9742E", "#B04855"], ["#14151A", "#C89B2E"]];
@@ -33,6 +33,8 @@ function svg() {
   const defs = S.items.map((it, i) => it.charm ? "" : clipFor(it, "c" + i)).join("") + `<linearGradient id="cbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${S.bg}"/><stop offset="1" stop-color="${S.bg2}"/></linearGradient>`;
   const glit = S.glit ? (() => { let seed = 9, o = ""; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647), cols = GL[S.glit], n = Math.round(S.w * S.h / 6); for (let k = 0; k < n; k++) { const x = r() * S.w, y = r() * S.h, q = 0.12 + r() * 0.28, a = r() * 6; o += `<polygon points="${[0, 1, 2, 3].map((j) => `${(x + Math.cos(a + j * 1.7) * q * (1 + (j % 2) * 0.6)).toFixed(2)},${(y + Math.sin(a + j * 1.7) * q).toFixed(2)}`).join(" ")}" fill="${cols[k % 3]}" opacity=".85"/>`; } return `<g pointer-events="none">${o}</g>`; })() : "";
   const body = S.items.map((it, i) => { if (it.charm) return `<image class="ph" data-i="${i}" href="${it.url}" x="${it.x - it.w / 2}" y="${it.y - it.h / 2}" width="${it.w}" height="${it.h}" preserveAspectRatio="xMidYMid meet" style="cursor:move;filter:drop-shadow(0 .4px .6px rgba(0,0,0,.35))"/>`; const [ix, iy, iw, ih] = cover(it); return `<g class="ph" data-i="${i}" clip-path="url(#c${i})" style="cursor:move"><image href="${it.url}" x="${ix}" y="${iy}" width="${iw}" height="${ih}" preserveAspectRatio="none"/></g>`; }).join("");
+  const maxN = Math.max(1, Math.floor(S.w / 3)), tx = (S.text || "").slice(0, maxN);
+  const txt = tx ? `<text x="${S.w / 2}" y="${S.h / 2}" text-anchor="middle" dominant-baseline="central" font-family="Jost, sans-serif" font-weight="600" font-size="5" textLength="${Math.min(S.w - 2, tx.length * 3)}" lengthAdjust="spacingAndGlyphs" fill="#D4AF37" stroke="rgba(0,0,0,.25)" stroke-width=".1" pointer-events="none">${esc2(tx)}</text>` : "";
   let sel = "";
   const it = S.items[S.sel];
   if (it) {
@@ -40,7 +42,7 @@ function svg() {
     const hs = Math.max(S.w, S.h) * 0.018;
     sel = `<rect x="${x}" y="${y}" width="${it.w}" height="${it.h}" fill="none" stroke="#19708A" stroke-width="${hs / 4}" stroke-dasharray="${hs} ${hs / 2}" pointer-events="none"/><rect class="grip" x="${x + it.w - hs}" y="${y + it.h - hs}" width="${hs * 2}" height="${hs * 2}" rx="${hs / 3}" fill="#19708A" stroke="#fff" stroke-width="${hs / 5}" style="cursor:nwse-resize"/>`;
   }
-  return `<div class="sz-wrap"><span class="sz-label">${Math.round(S.w)} × ${Math.round(S.h)} cm</span><i class="sz-grip r" data-grip="r"></i><i class="sz-grip b" data-grip="b"></i><i class="sz-grip c" data-grip="c"></i><svg id="cs" viewBox="0 0 ${S.w} ${S.h}" style="width:100%;max-width:${S.w * PX}px;height:auto;touch-action:none;background:${S.mode === 'gradient' ? 'transparent' : S.bg};box-shadow:0 12px 34px rgba(14,63,87,.22);border-radius:4px"><defs>${defs}</defs>${S.mode === "gradient" ? `<rect width="${S.w}" height="${S.h}" fill="url(#cbg)"/>` : ""}${glit}${body}${sel}${S.items.length ? "" : `<text x="${S.w / 2}" y="${S.h / 2}" text-anchor="middle" font-size="${S.w / 32}" fill="#9AA">${esc2(L("empty"))}</text>`}</svg></div>`;
+  return `<div class="sz-wrap"><span class="sz-label">${Math.round(S.w)} × ${Math.round(S.h)} cm</span><i class="sz-grip r" data-grip="r"></i><i class="sz-grip b" data-grip="b"></i><i class="sz-grip c" data-grip="c"></i><svg id="cs" viewBox="0 0 ${S.w} ${S.h}" style="width:100%;max-width:${S.w * PX}px;height:auto;touch-action:none;background:${S.mode === 'gradient' ? 'transparent' : S.bg};box-shadow:0 12px 34px rgba(14,63,87,.22);border-radius:4px"><defs>${defs}</defs>${S.mode === "gradient" ? `<rect width="${S.w}" height="${S.h}" fill="url(#cbg)"/>` : ""}${glit}${body}${txt}${sel}${S.items.length ? "" : `<text x="${S.w / 2}" y="${S.h / 2}" text-anchor="middle" font-size="${S.w / 32}" fill="#9AA">${esc2(L("empty"))}</text>`}</svg></div>`;
 }
 const T3 = (en, th, ru) => ({ th, ru }[ui.lang] || en);
 function chip(on, attr, label) { return `<button type="button" class="chip ${on ? "on" : ""}" aria-pressed="${on}" ${attr}>${label}</button>`; }
@@ -59,6 +61,7 @@ function render() {
         <div class="chips">${chip(S.mode === "solid", 'data-mode="solid"', T3("One colour", "สีเดียว", "Один цвет"))}${chip(S.mode === "gradient", 'data-mode="gradient"', T3("Gradient", "ไล่สี", "Градиент"))}</div>
         <div class="swatches">${["#FFFFFF", "#F3E7D3"].concat(CONFIG.colors.map((c) => c.hex)).map((h) => `<button type="button" class="swatch ${S.bg.toLowerCase() === h.toLowerCase() ? "on" : ""}" data-bgc="1.${h}" style="background:${h}"></button>`).join("")}</div>
         ${S.mode === "gradient" ? `<p class="small-note">${T3("Beautiful combinations", "ชุดสีสวยๆ", "Красивые сочетания")}</p><div class="chips">${GRADS.map(([a, b], i) => `<button type="button" class="chip" data-grad="${i}"><span class="dot" style="background:linear-gradient(135deg,${a},${b});width:46px;height:18px;border-radius:9px;display:inline-block"></span></button>`).join("")}</div><p class="small-note">${T3("Second colour", "สีที่สอง", "Второй цвет")}</p><div class="swatches">${["#FFFFFF", "#F3E7D3"].concat(CONFIG.colors.map((c) => c.hex)).map((h) => `<button type="button" class="swatch ${S.bg2.toLowerCase() === h.toLowerCase() ? "on" : ""}" data-bgc="2.${h}" style="background:${h}"></button>`).join("")}</div>` : ""}</div>
+      <div class="field"><span class="field-label">${T3("Text in the middle", "ข้อความตรงกลาง", "Текст посередине")}</span><input type="text" id="cl-text" maxlength="${Math.max(1, Math.floor(S.w / 3))}" value="${esc2((S.text || "").slice(0, Math.max(1, Math.floor(S.w / 3))))}" autocomplete="off"><p class="small-note" id="cl-textn">${T3("One letter is about 3 cm wide, so this canvas fits up to", "ตัวอักษรหนึ่งตัวกว้างประมาณ 3 ซม. ผ้าใบนี้ใส่ได้สูงสุด", "Одна буква около 3 см, на этом холсте поместится до")} ${Math.max(1, Math.floor(S.w / 3))} ${T3("letters.", "ตัวอักษร", "букв.")}</p></div>
       <div class="field"><span class="field-label">${T3("Glitter", "กากเพชร", "Блёстки")}</span><div class="chips">${chip(!S.glit, 'data-glit=""', T3("None", "ไม่มี", "Нет"))}${Object.keys(GL).map((k) => chip(S.glit === k, `data-glit="${k}"`, k[0].toUpperCase() + k.slice(1))).join("")}</div></div>
       <div class="field"><span class="field-label">${T3("Charms and flowers", "ชาร์มและดอกไม้", "Шармы и цветы")}</span><div class="gl-grid">${DECOR.map((id) => { const a = CONFIG.addins.find((x) => x.id === id); return a ? `<button type="button" class="gl" data-charm="${id}" title="${esc2(a.name)}"><span class="gl-img" style="padding:6px;box-sizing:border-box"><img src="${a.img}" alt="" style="object-fit:contain;width:100%;height:100%"></span></button>` : ""; }).join("")}</div><p class="small-note">${T3("They are 3D pieces, so they stand up from the canvas and are not flat.", "เป็นชิ้นงาน 3 มิติ ไม่แบน", "Они объёмные, не плоские.")}</p></div>
       <div class="field"><span class="field-label">${L("add")}</span><input type="file" accept="image/*" multiple id="cl-file"><p class="small-note">${L("addHint")} (${S.items.length} ${L("count")})</p></div>
@@ -78,6 +81,7 @@ function orderText() {
   S.items.forEach((it, i) => lines.push(`#${i + 1} ${it.name}${it.charm ? " (3D charm)" : ""}: ${it.charm ? "" : it.shape + ", "}${it.w.toFixed(1)} cm wide, at ${(it.x / S.w * 100).toFixed(0)}% across and ${(it.y / S.h * 100).toFixed(0)}% down`));
   lines.push(`Background: ${S.mode === "gradient" ? "gradient " + S.bg + " to " + S.bg2 : S.bg}`);
   if (S.glit) lines.push("Glitter: " + S.glit);
+  if (S.text) lines.push("Text in the middle: " + S.text);
   if (S.name.trim()) lines.push("Name: " + S.name.trim());
   if (S.note.trim()) lines.push("Notes: " + S.note.trim());
   lines.push("(I'll attach my photos in this chat 📷)");
@@ -102,9 +106,10 @@ root.addEventListener("change", (e) => {
 });
 root.addEventListener("input", (e) => {
   const t = e.target, it = S.items[S.sel];
-  if (t.dataset.s) { const v = Math.max(5, Math.min(300, Math.round(Number(t.value) || 0))); if (Number(t.value) >= 5) { S[t.dataset.s] = v; redrawStage(); } }
+  if (t.dataset.s) { const v = Math.max(5, Math.min(300, Math.round(Number(t.value) || 0))); if (Number(t.value) >= 5) { S[t.dataset.s] = v; if (S.text) S.text = S.text.slice(0, Math.max(1, Math.floor(S.w / 3))); const ti = document.getElementById('cl-text'); if (ti) { ti.maxLength = Math.max(1, Math.floor(S.w / 3)); ti.value = S.text || ''; } redrawStage(); } }
   else if (t.dataset.psize && it) { const r = it.h / it.w; it.w = Number(t.value); it.h = it.shape === "circle" || it.shape === "heart" ? it.w : it.w * r; redrawStage(); }
   else if (t.dataset.pzoom && it) { it.z = Number(t.value); redrawStage(); }
+  else if (t.id === "cl-text") { S.text = t.value; redrawStage(); }
   else if (t.id === "cl-name") S.name = t.value;
   else if (t.id === "cl-note") S.note = t.value;
 });
