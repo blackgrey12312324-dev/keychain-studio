@@ -1111,10 +1111,6 @@ function setPiece(d, side, opts) {
   const cups = [[92, 212], [208, 212], [92, 330], [208, 330]].map(([cx, cy]) => one.replace(/<svg viewBox="[^"]*"/, `<svg viewBox="46 158 208 208" x="${cx - 54}" y="${cy - 54}" width="108" height="108" overflow="hidden"`)).join("");
   return `<svg viewBox="${zoomBox(opts.zoom, opts.pan)}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(shapeName(d.shape))}">
     <defs><clipPath id="hold-clip"><rect x="28" y="148" width="244" height="246" rx="22"/></clipPath><filter id="hold-sh" x="-10%" y="-10%" width="120%" height="125%"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#3a2410" flood-opacity="0.28"/></filter></defs>
-    <g filter="url(#hold-sh)"><rect x="28" y="148" width="244" height="246" rx="22" fill="#C99A5E"/></g>
-    <image href="images/wood/bamboo.jpg" x="28" y="148" width="244" height="246" preserveAspectRatio="xMidYMid slice" clip-path="url(#hold-clip)" opacity="0.9"/>
-    <rect x="28" y="148" width="244" height="246" rx="22" fill="none" stroke="rgba(90,55,20,.45)" stroke-width="2"/>
-    ${[[92, 212], [208, 212], [92, 330], [208, 330]].map(([cx, cy]) => `<circle cx="${cx}" cy="${cy}" r="56" fill="rgba(70,40,15,.28)"/>`).join("")}
     ${cups}
   </svg>`;
 }
