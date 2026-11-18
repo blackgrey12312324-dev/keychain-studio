@@ -1900,7 +1900,7 @@ function renderPanel() {
   startCatSlides();
   els.back.hidden = ui.step === 0;
   $("bigview").hidden = ui.step < 3;
-  els.next.hidden = ui.step === LAST;
+  els.next.hidden = ui.step === LAST || ui.step === 0 || (ui.step === 1 && !ui.chosen);
   const bc = $("bar-cart"), bb = $("bar-buy");
   if (bc) { bc.hidden = bb.hidden = ui.step !== LAST; bc.textContent = U("addCart"); bb.textContent = U("buyNow"); }
   els.next.textContent = ui.step === 0 ? U("startDesigning") : ui.step === LAST - 1 ? U("toReview") : U("next");
@@ -2132,7 +2132,7 @@ els.panel.addEventListener("click", (e) => {
     ui.pourHistory = [];
     changed();
   } else if (action === "cat") {
-    ui.cat = el.dataset.id;
+    ui.cat = el.dataset.id; ui.chosen = false;
     if (ui.step === 0) { ui.pickReady = false; go(1); window.scrollTo({ top: 0 }); return; }
     if (ui.cat === "cutting" && catOf(design.shape) !== "cutting") {
       design.shape = "board-rect"; applyDefaults(design); design.style = "clear"; design.addins = {}; design.crush = []; resetItems(design); ui.chosen = true; ui.zoom = 1; ui.pan = [0, 0];
