@@ -125,10 +125,10 @@ function qtyBlock() {
   return `<div class="field qty-field"><span class="field-label">${U("qtyH")}</span><div class="qty"><button type="button" data-qty="-1" aria-label="-" ${n <= 1 ? "disabled" : ""}>−</button><b>${n}</b><button type="button" data-qty="1" aria-label="+" ${n >= 50 ? "disabled" : ""}>+</button></div><p class="small-note">${U("qtyNote")}</p></div>`;
 }
 const isGame = (sh) => sh === "game-chess" || sh === "game-ttt";
-const noInside = (d) => d.style === "gradient" || catOf(d.shape) === "cutting" || isGame(d.shape);
+const noInside = (d) => (d.style === "gradient" && d.shape !== "frame-oval") || catOf(d.shape) === "cutting" || isGame(d.shape);
 const INK_GROUPS = ["small", "seaanimals", "charms", "flowers", "dried"];
 function fits(a, d) {
-  if (d.style === "gradient" || catOf(d.shape) === "cutting" || isGame(d.shape)) return false;
+  if ((d.style === "gradient" && d.shape !== "frame-oval") || catOf(d.shape) === "cutting" || isGame(d.shape)) return false;
   if (d.style === "ocean") return a.group === "sea" && !a.metal;
   if (d.style === "ink" && !INK_GROUPS.includes(a.group)) return false;
   if (d.deco === "natural" && CHARM_GROUPS.includes(a.group)) return false;
@@ -1573,7 +1573,7 @@ const STEP_VIEWS = [
       const cm = design.cm || { w: 30, h: 40 };
       const num = (k, v) => `<label class="cm-field"><span>${U(k === "w" ? "cmWidth" : "cmHeight")}</span><input type="number" inputmode="decimal" min="10" max="200" step="1" data-cm="${k}" value="${v}"><b>cm</b></label><input type="range" min="10" max="200" step="1" data-cm="${k}" value="${v}" aria-label="${U(k === "w" ? "cmWidth" : "cmHeight")}">`;
       const rec = [[20, 20], [30, 40], [40, 50], [50, 70], [60, 90]].map(([w, h]) => `<button type="button" class="chip" data-cm-set="${w}x${h}">${w} × ${h}</button>`).join("");
-      return `<div class="field size-box">${group(title, byIds(ids), key)}<span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div>${extra}</div>`;
+      return `<div class="field size-box"><div class="size-prev" id="size-prev"><div class="size-rect" id="size-rect" style="aspect-ratio:${cm.w} / ${cm.h}"><b>${cm.w} × ${cm.h} cm</b></div></div>${group(title, byIds(ids), key)}<span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div>${extra}</div>`;
     };
     const cupCards = () => {
       const one = (id, label) => {
@@ -1739,6 +1739,7 @@ const STEP_VIEWS = [
       <button type="button" class="card deco ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="deco-pics charms-pics"><i><img src="images/small/frog-green.png" alt=""></i><i><img src="images/small/crown-gold.png" alt=""></i><i><img src="images/small/butterfly-teal.png" alt=""></i><i><img src="images/small/rose-pink.png" alt=""></i></span><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
     const decoPick2 = isCup(design.shape) ? decoPick.replace(/<button type="button" class="card deco[^"]*" data-action="deco" data-id="charms">[\s\S]*?<\/button>/, "") : decoPick;
     if (!design.deco && design.style !== "ocean") return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")} ${U("note3d")}</p>${decoPick2}`;
+    if (design.shape === "frame-oval") design.deco = design.deco || "charms";
     const list = CONFIG.addins.filter((a) => fits(a, design));
     const itemHtml = (a0) => {
       const fk = familyOf(a0.id);
@@ -2219,6 +2220,7 @@ els.panel.addEventListener("click", (e) => {
     applyDefaults(design);
     if (customShape(design.shape) && customShape(design.shape).wood) design.style = "clear";
     if (isGame(design.shape)) design.style = "gradient";
+    if (design.shape === "frame-oval") { design.style = "gradient"; design.deco = "charms"; }
     if (design.shape === "canvas-rect" && design.style === "clear") design.style = "gradient";
     if (isCup(design.shape)) { if (design.style === "clear") design.style = "gradient"; design.deco = "natural"; design.addins = {}; }
     design.letters.moved = false;
@@ -2644,7 +2646,7 @@ els.steps.addEventListener("click", (e) => {
   if (b) go(Number(b.dataset.step));
 });
 // Clear resin and ink dye: things inside (charms, flowers) come before glitter and sprinkles.
-const stepOrder = () => (design.style === "clear" ? [0, 1, 2, 3, 7, 6, 8, 9, 10] : design.style === "ink" ? [0, 1, 2, 3, 4, 5, 7, 6, 8, 9, 10] : null);
+const stepOrder = () => (design.shape === "frame-oval" ? [0, 1, INSIDE_STEP, COLOURS_STEP, GLITTER_STEP_NO, LAST] : design.style === "clear" ? [0, 1, 2, 3, 7, 6, 8, 9, 10] : design.style === "ink" ? [0, 1, 2, 3, 4, 5, 7, 6, 8, 9, 10] : null);
 function neighbour(dir) {
   const o = stepOrder();
   if (!o) return ui.step + dir;
@@ -2715,6 +2717,7 @@ els.panel.addEventListener("input", (e) => {
   if (el.type === "number" && (el.value === "" || Number(el.value) < 10)) return;   // let the person finish typing
   design.cm[k] = v;
   els.panel.querySelectorAll(`[data-cm="${k}"]`).forEach((x) => { if (x !== el) x.value = v; });
+  const sr = $("size-rect"); if (sr) { sr.style.aspectRatio = `${design.cm.w} / ${design.cm.h}`; sr.querySelector("b").textContent = `${design.cm.w} × ${design.cm.h} cm`; }
   renderPreview(); renderBarSummary();
   const box = $("order-text"); if (box) box.value = orderText();
 });

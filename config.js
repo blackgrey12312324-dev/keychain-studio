@@ -58,6 +58,12 @@ const CONFIG = {
   ],
 
   palettes: [
+    { name: "Pink sunset", name_th: "พระอาทิตย์ตกสีชมพู", name_ru: "Розовый закат", colors: ["#D9959C", "#D9742E", "#C89B2E"] },
+    { name: "Lavender dream", name_th: "ลาเวนเดอร์", name_ru: "Лавандовая мечта", colors: ["#6A4B94", "#D9959C", "#E6E0D8"] },
+    { name: "Mint and pearl", name_th: "มิ้นต์และมุก", name_ru: "Мята и жемчуг", colors: ["#4C8A7C", "#7F9CC0", "#E6E0D8"] },
+    { name: "Ocean to sand", name_th: "ทะเลสู่ทราย", name_ru: "Океан и песок", colors: ["#1F6BC0", "#4F8A9C", "#C9A99A"] },
+    { name: "Rose and gold", name_th: "กุหลาบและทอง", name_ru: "Роза и золото", colors: ["#B04855", "#C9A99A", "#C89B2E"] },
+    { name: "Midnight gold", name_th: "เที่ยงคืนทอง", name_ru: "Полночь и золото", colors: ["#14151A", "#4A5090", "#C89B2E"] },
     { name: "Deep sea", name_th: "ทะเลลึก", name_ru: "Глубокое море", colors: ["#1F6BC0", "#4F8A9C", "#E6E0D8"] },
     { name: "Lagoon", name_th: "ลากูน", name_ru: "Лагуна", colors: ["#4C8A7C", "#4F8A9C", "#E6E0D8"] },
     { name: "Sky", name_th: "ท้องฟ้า", name_ru: "Небо", colors: ["#7F9CC0", "#9A9A92", "#E6E0D8"] },
