@@ -1459,3 +1459,5 @@ body.ph-open { overflow: hidden; }
 .cupcard .qty.sm { margin: 0 8px 10px; justify-self: center; }
 .cupcard .qty.sm button { width: 38px; height: 38px; font-size: 1.3rem; }
 .cupcard .qty.sm b { min-width: 40px; font-size: 1.15rem; }
+
+.abs-row { margin: 6px 0; }

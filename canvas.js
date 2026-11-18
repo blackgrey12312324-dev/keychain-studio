@@ -24,10 +24,56 @@ Object.assign(I18N.en, {
   },
 });
 const C = (k, v) => t("canvas." + k, v);
+const TT = (en, th, ru) => ({ th, ru }[ui.lang] || en);
+const SEA_EXAMPLES = [
+  { img: "g-sea-wide", en: "Wide sea with a boat", th: "ทะเลกว้างพร้อมเรือ", ru: "Широкое море с лодкой", w: 60, h: 40, sea: { water: "deep", waves: 3, sand: "low", star: true, shell: true, boat: true } },
+  { img: "g-sea-shells", en: "Sea with shells and starfish", th: "ทะเลกับเปลือกหอยและดาวทะเล", ru: "Море с ракушками и морской звездой", w: 30, h: 40, sea: { water: "deep", waves: 2, sand: "mid", star: true, shell: true, boat: false } },
+  { img: "g-canvas", en: "Light, calm sea", th: "ทะเลสีอ่อนเงียบสงบ", ru: "Светлое спокойное море", w: 40, h: 50, sea: { water: "light", waves: 1, sand: "low", star: false, shell: true, boat: false } },
+];
+const ABS_EXAMPLES = [["abs-purple", ["#6A4B94", "#C97080", "#C89B2E"]], ["abs-green", ["#3A5F55", "#4C8A7C", "#C89B2E"]], ["abs-plum", ["#8E3560", "#6A4B94", "#E6E0D8"]], ["abs-copper", ["#B8693F", "#C9A99A", "#E6E0D8"]]];
+function absSvg(W, H) {
+  const [c1, c2, c3] = cv.abs, R = rnd(cv.seed * 5 + 1), id = "abs" + cv.seed;
+  let s = `<defs><linearGradient id="${id}-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset=".55" stop-color="${c2}"/><stop offset="1" stop-color="${c3}"/></linearGradient>
+    <filter id="${id}-b"><feGaussianBlur stdDeviation="${(W / 60).toFixed(1)}"/></filter>
+    <filter id="${id}-m" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.012" numOctaves="3" seed="${cv.seed}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="${(W * 0.35).toFixed(0)}"/></filter></defs>
+    <rect width="${W}" height="${H}" fill="${c1}"/>
+    <g filter="url(#${id}-m)"><rect x="${-W * 0.2}" y="${-H * 0.2}" width="${W * 1.4}" height="${H * 1.4}" fill="url(#${id}-g)"/>`;
+  [c1, c2, c3, "#fff", c2, c3].forEach((c, i) => { s += `<ellipse cx="${(R() * W).toFixed(0)}" cy="${(R() * H).toFixed(0)}" rx="${(W * (0.15 + R() * 0.3)).toFixed(0)}" ry="${(H * (0.08 + R() * 0.2)).toFixed(0)}" fill="${c}" opacity="${c === "#fff" ? 0.45 : 0.75}" transform="rotate(${(R() * 180).toFixed(0)} ${(W / 2).toFixed(0)} ${(H / 2).toFixed(0)})" filter="url(#${id}-b)"/>`; });
+  for (let i = 0; i < 5; i++) s += `<path d="M${(R() * W).toFixed(0)} ${(R() * H).toFixed(0)} q ${(W * 0.3).toFixed(0)} ${(-H * 0.2).toFixed(0)} ${(W * 0.5).toFixed(0)} ${(H * 0.05).toFixed(0)} t ${(W * 0.4).toFixed(0)} ${(H * 0.1).toFixed(0)}" fill="none" stroke="#fff" stroke-width="${(1.5 + R() * 4).toFixed(1)}" opacity=".6" stroke-linecap="round"/>`;
+  return s + "</g>";
+}
+function seaSvg(W, H) {
+  const o = cv.sea, R = rnd(cv.seed * 7 + 3), id = "sea" + cv.seed;
+  const pal = o.water === "light" ? ["#9ADCEB", "#5FB8DD", "#2F8FC4"] : ["#5BB6C8", "#2373C4", "#0F3D8C"];
+  const sandH = { none: 0, low: 0.2, mid: 0.34 }[o.sand] * H, edge = H - sandH;
+  let s = `<defs><linearGradient id="${id}-w" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="${pal[0]}"/><stop offset=".5" stop-color="${pal[1]}"/><stop offset="1" stop-color="${pal[2]}"/></linearGradient>
+    <linearGradient id="${id}-s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9A06A"/><stop offset="1" stop-color="#8E6438"/></linearGradient>
+    <filter id="${id}-b"><feGaussianBlur stdDeviation="${(W / 140).toFixed(1)}"/></filter>
+    <filter id="${id}-t" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="4" seed="${cv.seed}"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 1.6 -.7"/></filter></defs>
+    <rect width="${W}" height="${H}" fill="url(#${id}-w)"/>
+    <rect width="${W}" height="${H}" filter="url(#${id}-t)" opacity=".35"/>`;
+  const nWaves = o.waves * 3 + 1;
+  for (let i = 0; i < nWaves; i++) {   // white wave streaks, more of them when "many"
+    const y0 = (0.05 + R() * 0.8) * edge, len = W * (0.25 + R() * 0.45), x0 = R() * (W - len) * 0.9, amp = H * (0.015 + R() * 0.03);
+    s += `<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} q ${(len * 0.25).toFixed(1)} ${(-amp * 2).toFixed(1)} ${(len * 0.5).toFixed(1)} 0 t ${(len * 0.5).toFixed(1)} 0" fill="none" stroke="#fff" stroke-width="${(W / 90 + R() * W / 60).toFixed(1)}" stroke-linecap="round" opacity="${(0.25 + R() * 0.4).toFixed(2)}" filter="url(#${id}-b)"/>`;
+  }
+  if (sandH) {
+    const pts = []; for (let k = 0; k <= 14; k++) { const x = (W * k) / 14; pts.push(`${x.toFixed(1)} ${(edge + Math.sin(x / W * 7 + cv.seed) * H * 0.02 + (R() - 0.5) * H * 0.015).toFixed(1)}`); }
+    const wave = "M" + pts.join(" L");
+    s += `<path d="${wave}" fill="none" stroke="#fff" stroke-width="${(H * 0.045).toFixed(1)}" opacity=".85" filter="url(#${id}-b)"/>
+      <path d="${wave} L${W} ${H} L0 ${H} Z" fill="url(#${id}-s)"/>`;
+    for (let i = 0; i < 90; i++) s += `<circle cx="${(R() * W).toFixed(1)}" cy="${(edge + H * 0.03 + R() * (sandH - H * 0.03)).toFixed(1)}" r="${(0.5 + R() * 1.1).toFixed(1)}" fill="rgba(255,240,210,${(0.2 + R() * 0.4).toFixed(2)})"/>`;
+    const sz = Math.min(W, H) * 0.1, put = (img, fx, fy, k = 1, rot = 0) => `<image href="images/sea/${img}.png" x="${(W * fx - sz * k / 2).toFixed(1)}" y="${(edge + sandH * fy - sz * k / 2).toFixed(1)}" width="${(sz * k).toFixed(1)}" height="${(sz * k).toFixed(1)}" transform="rotate(${rot} ${(W * fx).toFixed(1)} ${(edge + sandH * fy).toFixed(1)})"/>`;
+    if (o.star) s += put("starfish", 0.78, 0.5, 1, 12) + put("starfish", 0.6, 0.72, 0.6, -20);
+    if (o.shell) s += put("shell-scallop", 0.14, 0.62, 0.9, -10) + put("shell-scallop", 0.45, 0.42, 0.55, 15);
+    if (o.boat) { const bx = W * 0.3, by = edge + sandH * 0.3, k = Math.min(W, H) / 400; s += `<g transform="translate(${bx.toFixed(1)} ${by.toFixed(1)}) scale(${k.toFixed(2)})"><path d="M-34 0 L34 0 L24 18 L-24 18 Z" fill="#3FA7A8"/><path d="M-3 -2 L-3 -58 L30 -4 Z" fill="#D9D3C6"/><path d="M-6 -2 L-6 -46 L-30 -4 Z" fill="#BFB8A8"/><rect x="-4" y="-60" width="2" height="60" fill="#8A7458"/></g>`; }
+  } else if (o.boat) { const k = Math.min(W, H) / 400; s += `<g transform="translate(${(W * 0.5).toFixed(1)} ${(H * 0.55).toFixed(1)}) scale(${(k * 1.2).toFixed(2)})"><path d="M-34 0 L34 0 L24 18 L-24 18 Z" fill="#8A6B4A"/><path d="M-3 -2 L-3 -58 L30 -4 Z" fill="#E8E2D4"/><rect x="-4" y="-60" width="2" height="60" fill="#6E563C"/></g>`; }
+  return s;
+}
 
 const SIZES = [[20, 20], [20, 30], [30, 30], [30, 40], [40, 50], [50, 70]];
 const SHAPE_IDS = ["circle", "rect", "rounded", "oval", "heart", "arch", "star"];
-const cv = { kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "", decor: [], sel: -1, shapePhoto: "", seed: 3, look: 0 };
+const cv = { abs: ["#6A4B94", "#C97080", "#C89B2E"], kind: "photo", w: 30, h: 40, shape: "rounded", photo: "", img: null, x: 0, y: 0, zoom: 1, note: "", name: "", decor: [], sel: -1, shapePhoto: "", seed: 3, look: 0, sea: { water: "deep", waves: 2, sand: "low", star: true, shell: true, boat: false } };
 const q = new URLSearchParams(location.search);
 if (["beach", "abstract", "photo", "board"].includes(q.get("kind"))) cv.kind = q.get("kind");
 const OCCASION = (q.get("occasion") || "").slice(0, 40);
@@ -51,6 +97,29 @@ function artSvg(W, H) {
 }
 
 /* path of the cut-out inside a W x H canvas (with a margin) */
+function absPanel() {
+  const chip = (on, attr, label) => `<button type="button" class="chip ${on ? "on" : ""}" aria-pressed="${on}" ${attr}>${label}</button>`;
+  return `<div class="field"><span class="field-label">${TT("Colour swirls", "สีที่หมุนวน", "Цветные разводы")}</span>
+      ${[0, 1, 2].map((i) => `<div class="abs-row"><span class="small-note">${TT("Colour", "สี", "Цвет")} ${i + 1}</span><div class="swatches">${CONFIG.colors.map((c) => `<button type="button" class="swatch ${cv.abs[i].toLowerCase() === c.hex.toLowerCase() ? "on" : ""}" data-abscol="${i}.${c.hex}" title="${esc(c.name)}" style="background:${c.hex}"></button>`).join("")}</div></div>`).join("")}
+      <button type="button" class="btn btn-line small" style="margin-top:10px" data-shuffle="1">${C("shuffle")}</button></div>
+    <div class="field"><span class="field-label">${TT("Example works", "ตัวอย่างงาน", "Примеры работ")}</span>
+      <div class="gl-grid">${ABS_EXAMPLES.map(([id, cols], i) => `<button type="button" class="gl" data-absex="${i}"><span class="gl-img"><img src="images/real/${id}.jpg" alt="" style="object-fit:cover"></span></button>`).join("")}</div>
+      <p class="small-note">${TT("Tap an example to borrow its colours.", "แตะตัวอย่างเพื่อใช้สีของมัน", "Нажми на пример, чтобы взять его цвета.")}</p></div>
+    <div class="field"><span class="field-label">${TT("Upload an image of something similar you want it to look like", "อัปโหลดรูปที่คล้ายกับแบบที่อยากได้", "Загрузи изображение похожего, на что хочешь, чтобы это было похоже")}</span><input type="file" accept="image/*" id="cv-shape">${cv.shapePhoto ? `<img src="${cv.shapePhoto}" alt="" style="max-height:120px;margin-top:8px">` : ""}<p class="small-note">${TT("Attach the same picture in the Instagram chat.", "แนบรูปเดียวกันในแชท Instagram", "Приложи эту же картинку в чате Instagram.")}</p></div>`;
+}
+function seaPanel() {
+  const o = cv.sea, ch = (on, attr, label) => `<button type="button" class="chip ${on ? "on" : ""}" aria-pressed="${on}" ${attr}>${label}</button>`;
+  const portrait = cv.h >= cv.w;
+  return `<div class="field"><span class="field-label">${TT("Examples from my studio", "ตัวอย่างจากสตูดิโอ", "Примеры из студии")}</span>
+      <div class="gl-grid">${SEA_EXAMPLES.map((x, i) => `<button type="button" class="gl" data-seaex="${i}"><span class="gl-img"><img src="images/real/${x.img}.jpg" alt="" style="object-fit:cover"></span><span class="gl-name">${TT(x.en, x.th, x.ru)}</span></button>`).join("")}</div>
+      <p class="small-note">${TT("Tap an example to start from it, then change anything below.", "แตะตัวอย่างเพื่อเริ่มจากแบบนั้น แล้วปรับได้ด้านล่าง", "Нажми на пример, чтобы начать с него, потом меняй всё ниже.")}</p></div>
+    <div class="field"><span class="field-label">${TT("Direction", "แนวผ้าใบ", "Ориентация")}</span><div class="chips">${ch(portrait, 'data-orient="p"', TT("Portrait", "แนวตั้ง", "Вертикально"))}${ch(!portrait, 'data-orient="l"', TT("Horizontal", "แนวนอน", "Горизонтально"))}</div></div>
+    <div class="field"><span class="field-label">${TT("Waves", "คลื่น", "Волны")}</span><div class="chips">${[[1, TT("Calm", "สงบ", "Спокойно")], [2, TT("Some waves", "คลื่นปานกลาง", "Немного волн")], [3, TT("Lots of waves", "คลื่นเยอะ", "Много волн")]].map(([n, l]) => ch(o.waves === n, `data-seaw="${n}"`, l)).join("")}</div></div>
+    <div class="field"><span class="field-label">${TT("Water colour", "สีน้ำ", "Цвет воды")}</span><div class="chips">${ch(o.water === "deep", 'data-seawater="deep"', TT("Deeper blue", "น้ำเงินเข้ม", "Глубокий синий"))}${ch(o.water === "light", 'data-seawater="light"', TT("Lighter blue", "ฟ้าอ่อน", "Светло-голубой"))}</div></div>
+    <div class="field"><span class="field-label">${TT("Sand", "ทราย", "Песок")}</span><div class="chips">${[["none", TT("No sand", "ไม่มีทราย", "Без песка")], ["low", TT("A little", "นิดหน่อย", "Немного")], ["mid", TT("More sand", "ทรายมากขึ้น", "Больше песка")]].map(([k, l]) => ch(o.sand === k, `data-seasand="${k}"`, l)).join("")}</div></div>
+    <div class="field"><span class="field-label">${TT("On the sand", "บนทราย", "На песке")}</span><div class="chips">${ch(o.star, 'data-seatog="star"', TT("Starfish", "ดาวทะเล", "Морская звезда"))}${ch(o.shell, 'data-seatog="shell"', TT("Shells", "เปลือกหอย", "Ракушки"))}${ch(o.boat, 'data-seatog="boat"', TT("Little boat", "เรือเล็ก", "Лодочка"))}</div>
+      <button type="button" class="btn btn-line small" style="margin-top:10px" data-shuffle="1">${C("shuffle")}</button></div>`;
+}
 function framePath(shape, W, H) {
   const m = Math.min(W, H) * 0.08;
   const x = m, y = m, w = W - 2 * m, h = H - 2 * m, cx = W / 2, cy = H / 2;
@@ -97,9 +166,10 @@ function photoBox(W, H) {
 
 function renderStage() {
   const [W, H] = dims();
-  const path = framePath(cv.shape, W, H);
+  const path = cv.kind === "beach" || cv.kind === "abstract" ? `M0 0H${W}V${H}H0Z` : framePath(cv.shape, W, H);
   let inner;
-  if (cv.kind === "beach" || cv.kind === "abstract") inner = artSvg(W, H);
+  if (cv.kind === "beach") inner = seaSvg(W, H);
+  else if (cv.kind === "abstract") inner = absSvg(W, H);
   else if (cv.img) {
     const b = photoBox(W, H);
     inner = `<image href="${esc(cv.photo)}" x="${b.x.toFixed(1)}" y="${b.y.toFixed(1)}" width="${b.pw.toFixed(1)}" height="${b.ph.toFixed(1)}" preserveAspectRatio="none"/>`;
@@ -131,7 +201,8 @@ function cvText() {
   const lines = ["Hi Anna! I'd like a canvas.", "", `Kind: ${{ abstract: "Abstract", beach: "Sea style", photo: "Custom gift (my photo)", board: "Wooden cutting board" }[cv.kind]}`, `Size: ${cv.w} x ${cv.h} cm`];
   if (OCCASION) lines.splice(3, 0, `Occasion: ${OCCASION}`);
   if (cv.shapePhoto) lines.push("(I'll attach a picture of the shape I want)");
-  if (cv.kind === "beach" || cv.kind === "abstract") lines.push("Look: " + look()[1] + " (like the photo in the app)");
+  if (cv.kind === "beach") { const o = cv.sea; lines.push(`Direction: ${cv.h >= cv.w ? "portrait" : "horizontal"}`, `Waves: ${["", "calm", "some waves", "lots of waves"][o.waves]}`, `Water: ${o.water === "deep" ? "deeper blue" : "lighter blue"}`, `Sand: ${{ none: "no sand", low: "a little", mid: "more sand" }[o.sand]}`, `On the sand: ${[o.star && "starfish", o.shell && "shells", o.boat && "little boat"].filter(Boolean).join(", ") || "nothing"}`); }
+  if (cv.kind === "abstract") lines.push("Colours: " + cv.abs.join(", "), cv.shapePhoto ? "(I'll attach a picture of what I want it to look like)" : "");
   if (cv.kind === "photo") lines.push(`Cut-out shape: ${t("canvas.shapes." + cv.shape, null, "en")}`, cv.photo ? "(I'll attach my photo in this chat)" : "(photo to follow)");
   if (cv.decor.length) lines.push("Paper flowers: " + cv.decor.map((f) => CONFIG.paperFlowers.find((x) => x.id === f.id).name).join(", "));
   if (cv.note.trim()) lines.push("Note: " + cv.note.trim());
@@ -159,21 +230,23 @@ function renderCanvas() {
             <label>${C("height")} <input type="number" min="5" max="200" step="1" id="cv-h" value="${cv.h}"></label>
           </div>
           <div class="chips" style="margin-top:10px">${SIZES.map(([w, h]) => chip(cv.w === w && cv.h === h, `data-size="${w}x${h}"`, `${w}×${h}`)).join("")}</div></div>
-        ${cv.kind === "beach" || cv.kind === "abstract" ? `<div class="field"><span class="field-label">${C("lookLabel")}</span>
+        ${cv.kind === "beach" ? seaPanel() : ""}
+        ${cv.kind === "abstract" ? absPanel() : ""}
+        ${false ? `<div class="field"><span class="field-label">${C("lookLabel")}</span>
           <div class="gl-grid">${LOOKS[cv.kind].map(([id, nm], i) => `<button type="button" class="gl ${cv.look === i ? "on" : ""}" data-look="${i}"><span class="gl-img"><img src="images/real/${id}.jpg" alt="" style="object-fit:cover"></span><span class="gl-name">${nm}</span></button>`).join("")}</div>
           <button type="button" class="btn btn-line small" style="margin-top:10px" data-shuffle="1">${C("shuffle")}</button>
           <p class="small-note">${C("lookNote")}</p></div>` : ""}
-        ${cv.kind !== "photo" ? `<div class="field"><span class="field-label">${C("shapePhoto")}</span><input type="file" accept="image/*" id="cv-shape">${cv.shapePhoto ? `<img src="${cv.shapePhoto}" alt="" style="max-height:120px;margin-top:8px">` : ""}<p class="small-note">${C("shapeNote")}</p></div>` : ""}
+        ${cv.kind === "board" ? `<div class="field"><span class="field-label">${C("shapePhoto")}</span><input type="file" accept="image/*" id="cv-shape">${cv.shapePhoto ? `<img src="${cv.shapePhoto}" alt="" style="max-height:120px;margin-top:8px">` : ""}<p class="small-note">${C("shapeNote")}</p></div>` : ""}
         ${cv.kind === "photo" ? `
         <div class="field"><span class="field-label">${C("shape")}</span><div class="chips">
           ${SHAPE_IDS.map((s) => chip(cv.shape === s, `data-shape="${s}"`, C("shapes." + s))).join("")}</div></div>
         <div class="field"><span class="field-label">${C("photoLabel")}</span>
           <input type="file" accept="image/*" id="cv-file">
           ${cv.img ? `<div class="cv-zoom" style="margin-top:12px"><span>${C("zoom")}</span><input type="range" min="1" max="4" step="0.05" value="${cv.zoom}" id="cv-zoom" aria-label="${C("zoom")}"></div><p class="small-note">${C("dragHint")}</p>` : ""}</div>` : ""}
-        <div class="field"><span class="field-label">${C("decor")}</span>
+        ${cv.kind === "photo" || cv.kind === "board" ? `<div class="field"><span class="field-label">${C("decor")}</span>
           <div class="gl-grid">${CONFIG.paperFlowers.map((f) => `<button type="button" class="gl" data-addflower="${f.id}" title="${esc(f.name)}"><span class="gl-img"><img src="${f.img || "images/paperflowers/" + f.id + ".png"}" alt=""></span><span class="gl-name">${f.name.replace(" paper", "")}</span></button>`).join("")}</div>
           <p class="small-note">${C("decorHint")}</p>
-          ${cv.sel >= 0 && cv.decor[cv.sel] ? `<div class="cv-zoom"><span>${C("flSize")}</span><input type="range" min="30" max="260" step="2" value="${cv.decor[cv.sel].s}" id="cv-fsize" aria-label="${C("flSize")}"><button type="button" class="btn btn-line small" data-delflower="1">${C("flRemove")}</button></div>` : ""}</div>
+          ${cv.sel >= 0 && cv.decor[cv.sel] ? `<div class="cv-zoom"><span>${C("flSize")}</span><input type="range" min="30" max="260" step="2" value="${cv.decor[cv.sel].s}" id="cv-fsize" aria-label="${C("flSize")}"><button type="button" class="btn btn-line small" data-delflower="1">${C("flRemove")}</button></div>` : ""}</div>` : ""}
         <div class="field"><span class="field-label">${C("name")}</span><input type="text" class="text-input" style="width:100%;font-size:1rem;text-transform:none" id="cv-name" value="${esc(cv.name)}"></div>
         <div class="field"><span class="field-label">${C("note")}</span><textarea id="cv-note" placeholder="${esc(C("notePh"))}">${esc(cv.note)}</textarea></div>
         <div class="field"><a class="btn btn-ink wide" id="cv-send" href="${igLink()}" target="_blank" rel="noopener">${C("send")}</a></div>
@@ -190,6 +263,18 @@ const cvToast = (msg) => {
 };
 
 document.addEventListener("click", (e) => {
+  const ac = e.target.closest("[data-abscol]");
+  if (ac) { const [i, hex] = ac.dataset.abscol.split("."); const idx = Number(i); cv.abs[idx] = hex; renderCanvas(); return; }
+  const ae = e.target.closest("[data-absex]");
+  if (ae) { cv.abs = ABS_EXAMPLES[Number(ae.dataset.absex)][1].slice(); renderCanvas(); return; }
+  const ex = e.target.closest("[data-seaex]");
+  if (ex) { const x = SEA_EXAMPLES[Number(ex.dataset.seaex)]; cv.w = x.w; cv.h = x.h; cv.sea = Object.assign({}, x.sea); renderCanvas(); return; }
+  const orient = e.target.closest("[data-orient]");
+  if (orient) { const wantP = orient.dataset.orient === "p"; if ((cv.h >= cv.w) !== wantP) [cv.w, cv.h] = [cv.h, cv.w]; renderCanvas(); return; }
+  const sw = e.target.closest("[data-seaw]"); if (sw) { cv.sea.waves = Number(sw.dataset.seaw); renderCanvas(); return; }
+  const swt = e.target.closest("[data-seawater]"); if (swt) { cv.sea.water = swt.dataset.seawater; renderCanvas(); return; }
+  const ssd = e.target.closest("[data-seasand]"); if (ssd) { cv.sea.sand = ssd.dataset.seasand; renderCanvas(); return; }
+  const stg = e.target.closest("[data-seatog]"); if (stg) { cv.sea[stg.dataset.seatog] = !cv.sea[stg.dataset.seatog]; renderCanvas(); return; }
   const sl = e.target.closest("[data-slot]");
   if (sl) { cv.slot = Number(sl.dataset.slot); renderCanvas(); return; }
   const lk = e.target.closest("[data-look]");

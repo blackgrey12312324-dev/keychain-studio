@@ -78,6 +78,7 @@ function catOf(shape) {
   if (PENDANTS.includes(shape) || c.mold === "groovy") return "keychains";
   if (["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather", "comb", "comb-moon", "hairpin", "pen", "blade"].includes(shape) || c.tex === "glass" || /^bm-/.test(shape)) return "accessories";
   if (shape === "frame-oval") return "gift";
+  if (shape === "canvas-rect") return "paint";
   if (["board", "wood-round", "wood-slice", "wood-tray", "board-rect", "board-whale", "board-whale-tail"].includes(shape)) return "cutting";
   if (["game-ttt", "game-chess", "domino-set"].includes(shape)) return "statues";
   return "kitchen";
@@ -117,6 +118,7 @@ const skipStep = (i, d) => (isGame(d.shape) && (i === 3 || i === 5)) || (d.style
 const CUP_SHAPES = ["coaster", "wood-coaster"];
 const ALL_CUPS = ["coaster", "coaster-set", "wood-coaster", "coaster-stone"];
 const isCup = (sh) => ALL_CUPS.includes(sh);
+const noClear = (sh) => isCup(sh) || sh === "canvas-rect";
 function qtyBlock() {
   if (!CUP_SHAPES.includes(design.shape)) return "";
   const n = design.qty || 1;
@@ -232,7 +234,7 @@ function summaryLines(d, lang = ui.lang) {
     for (const [k, lbl] of [["a", "Light squares"], ["b", "Dark squares"]]) { const c = d.chess[k]; L.push([lbl, [nm(c.c1), c.c2 ? nm(c.c2) : ""].filter(Boolean).join(" + ") + (c.foil ? ", gold foil" : "")]); }
   }
   if (CUP_SHAPES.includes(d.shape) && (d.qty || 1) > 1) L.push([lang === "en" ? "Quantity" : t("ui.qtyH", null, lang), `${d.qty} identical`]);
-  if (d.shape === "board-rect" && d.cm) L.push([lang === "en" ? "Size" : t("ui.cmTitle", null, lang), `${d.cm.w} × ${d.cm.h} cm`]);
+  if ((d.shape === "board-rect" || d.shape === "canvas-rect") && d.cm) L.push([lang === "en" ? "Size" : t("ui.cmTitle", null, lang), `${d.cm.w} × ${d.cm.h} cm`]);
   const det = styleDetails(d, lang);
   L.push([S("style"), lab("style", d.style, lang) + (det ? " (" + det + ")" : "")]);
   if (d.style !== "clear" && d.style !== "ocean") L.push([S("colours"), d.colors.map((c) => colorName(c, lang)).join(", ")]);
@@ -341,8 +343,8 @@ function applyDefaults(d) {
 
 /* The normal wooden board: any size in centimetres, drawn in proportion */
 function syncBoard(d) {
-  if (!d || d.shape !== "board-rect") return;
-  const cm = d.cm || { w: 30, h: 40 }, sh = CONFIG.shapes.find((x) => x.id === "board-rect");
+  if (!d || (d.shape !== "board-rect" && d.shape !== "canvas-rect")) return;
+  const cm = d.cm || { w: 30, h: 40 }, sh = CONFIG.shapes.find((x) => x.id === d.shape);
   const s = Math.min(240 / cm.w, 280 / cm.h), w = cm.w * s, h = cm.h * s, x0 = 150 - w / 2, y0 = 270 - h / 2, x1 = x0 + w, y1 = y0 + h, r = Math.min(6, w / 6, h / 6);
   sh.d = `M${(x0 + r).toFixed(1)} ${y0.toFixed(1)} H${(x1 - r).toFixed(1)} Q${x1.toFixed(1)} ${y0.toFixed(1)} ${x1.toFixed(1)} ${(y0 + r).toFixed(1)} V${(y1 - r).toFixed(1)} Q${x1.toFixed(1)} ${y1.toFixed(1)} ${(x1 - r).toFixed(1)} ${y1.toFixed(1)} H${(x0 + r).toFixed(1)} Q${x0.toFixed(1)} ${y1.toFixed(1)} ${x0.toFixed(1)} ${(y1 - r).toFixed(1)} V${(y0 + r).toFixed(1)} Q${x0.toFixed(1)} ${y0.toFixed(1)} ${(x0 + r).toFixed(1)} ${y0.toFixed(1)} Z`;
   sh.t = Math.round(y0); sh.b = Math.round(y1); sh.pin = sh.t;
@@ -1541,7 +1543,7 @@ const STEP_VIEWS = [
       { id: "statues", name: U("catStat"), text: U("catStatP"), shape: "game-chess" },
       { id: "kitchen", name: U("catKit"), text: U("catKitP"), shape: "coaster-set" },
       { id: "cutting", name: U("catCut"), text: U("catCutP"), shape: "board-rect" },
-      { id: "paint", name: U("catPaint"), text: U("catPaintP"), shape: "tray-tall" },
+      { id: "paint", name: U("catPaint"), text: U("catPaintP"), shape: "canvas-rect" },
       { id: "gift", name: U("catGift"), text: U("catGiftP"), shape: "circle" },
     ];
     if (!ui.cat) {
@@ -1567,6 +1569,12 @@ const STEP_VIEWS = [
     const icon = (id) => { const i = ICON[id]; return i ? `<i class="mold-ico">${i === "COMB" ? COMB : i === "MOON" ? MOON : i}</i>` : ""; };
     const byIds = (ids) => ids.map((id) => CONFIG.shapes.find((x) => x.id === id)).filter(Boolean)
       .map((sh) => card(icon(sh.id) + tr(sh, "name"), sh.id, design.shape === sh.id)).join("");
+    const sizeEditor = (title, ids, key, extra = "") => {
+      const cm = design.cm || { w: 30, h: 40 };
+      const num = (k, v) => `<label class="cm-field"><span>${U(k === "w" ? "cmWidth" : "cmHeight")}</span><input type="number" inputmode="decimal" min="10" max="200" step="1" data-cm="${k}" value="${v}"><b>cm</b></label><input type="range" min="10" max="200" step="1" data-cm="${k}" value="${v}" aria-label="${U(k === "w" ? "cmWidth" : "cmHeight")}">`;
+      const rec = [[20, 20], [30, 40], [40, 50], [50, 70], [60, 90]].map(([w, h]) => `<button type="button" class="chip" data-cm-set="${w}x${h}">${w} × ${h}</button>`).join("");
+      return `<div class="field size-box">${group(title, byIds(ids), key)}<span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div>${extra}</div>`;
+    };
     const cupCards = () => {
       const one = (id, label) => {
         const sh = CONFIG.shapes.find((x) => x.id === id); if (!sh) return "";
@@ -1587,8 +1595,7 @@ const STEP_VIEWS = [
         + group(U("grpCombs"), byIds(["comb", "comb-moon", "hairpin"]), "combs")
         + `<h3 class="mold-group" id="grp-bookmarks">${U("grpBookmarksAll")}</h3>` + sub(U("bmPlain"), ["bookmark"]) + sub(U("bmAnimals"), ["bm-paw", "bm-bunny", "bm-cat"]) + sub(U("bmNature"), ["feather"]) + sub(U("bmTextured"), ["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]);
     } else if (ui.cat === "paint") {
-      const L = [["canvas.html?kind=beach", "images/real/canvas-beach.jpg", U("pntSea")], ["canvas.html?kind=abstract", "images/real/abs-purple.jpg", U("pntAbs")], ["canvas.html?kind=photo", "images/real/g-collage.jpg", U("pntPhoto")]];
-      body = `<h3 class="mold-group" id="grp-paintings">${U("catPaint")}</h3><div class="cards molds">${L.map(([h, im, n]) => `<a class="card" href="${h}"><span class="card-art has-photo"><img src="${im}" alt=""></span><span class="card-name">${n}</span></a>`).join("")}</div><p class="small-note">${U("pntNote")}</p>`;
+      body = sizeEditor(U("catPaint"), ["canvas-rect"], "paintings", `<p class="small-note">${U("canvasNote")}</p>`);
     } else if (ui.cat === "statues") {
       body = group(U("grpGames"), byIds(["game-ttt", "game-chess", "domino-set"]), "games")+ `<p class="small-note">${U("moreSoon")}</p>`;
     } else if (ui.cat === "cutting") {
@@ -1634,7 +1641,7 @@ const STEP_VIEWS = [
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
     ${inspirationHtml()}
-    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => !(isCup(design.shape) && st === "clear")).map((st) => {
+    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => !(noClear(design.shape) && st === "clear")).map((st) => {
       const d = merge(copy(design), { style: st, picked: design.picked.length ? design.picked : DEFAULT_COLORS.slice(), ink: Object.assign({}, design.ink, { legacy: true }) });
       applyPicked(d);
       return `<button type="button" class="card ${design.style === st ? "on" : ""}" aria-pressed="${design.style === st}" data-set="style" data-value="${st}">
@@ -1731,7 +1738,7 @@ const STEP_VIEWS = [
       <button type="button" class="card deco ${design.deco === "natural" ? "on" : ""}" data-action="deco" data-id="natural"><span class="deco-pics charms-pics"><i><img src="images/sea/starfish.png" alt=""></i><i><img src="images/sea/shell-scallop.png" alt=""></i><i><img src="images/flowers/pink.png" alt=""></i><i><img src="images/dried/lavender.png" alt=""></i></span><span class="card-name">${U("decoNat")}</span><span class="card-text">${U("decoNatP")}</span></button>
       <button type="button" class="card deco ${design.deco === "charms" ? "on" : ""}" data-action="deco" data-id="charms"><span class="deco-pics charms-pics"><i><img src="images/small/frog-green.png" alt=""></i><i><img src="images/small/crown-gold.png" alt=""></i><i><img src="images/small/butterfly-teal.png" alt=""></i><i><img src="images/small/rose-pink.png" alt=""></i></span><span class="card-name">${U("decoCharm")}</span><span class="card-text">${U("decoCharmP")}</span></button></div></div>`;
     const decoPick2 = isCup(design.shape) ? decoPick.replace(/<button type="button" class="card deco[^"]*" data-action="deco" data-id="charms">[\s\S]*?<\/button>/, "") : decoPick;
-    if (!design.deco && design.style !== "ocean") return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")}</p>${decoPick2}`;
+    if (!design.deco && design.style !== "ocean") return `<h2>${U("s5h")}</h2><p class="hint">${U("decoHint")} ${U("note3d")}</p>${decoPick2}`;
     const list = CONFIG.addins.filter((a) => fits(a, design));
     const itemHtml = (a0) => {
       const fk = familyOf(a0.id);
@@ -2197,10 +2204,10 @@ els.panel.addEventListener("click", (e) => {
     ui.pourHistory = [];
     changed();
   } else if (action === "cat") {
-    ui.cat = el.dataset.id; ui.chosen = catOf(design.shape) === ui.cat && ui.cat !== "cutting" ? ui.chosen : false;
+    ui.cat = el.dataset.id; ui.chosen = catOf(design.shape) === ui.cat && ui.cat !== "cutting" && ui.cat !== "paint" ? ui.chosen : false;
     if (ui.step === 0) { ui.pickReady = false; go(1); window.scrollTo({ top: 0 }); return; }
-    if (ui.cat === "cutting" && catOf(design.shape) !== "cutting") {
-      design.shape = "board-rect"; applyDefaults(design); design.style = "clear"; design.addins = {}; design.crush = []; resetItems(design); ui.chosen = true; ui.zoom = 1; ui.pan = [0, 0];
+    if ((ui.cat === "cutting" || ui.cat === "paint") && catOf(design.shape) !== ui.cat) {
+      design.shape = ui.cat === "paint" ? "canvas-rect" : "board-rect"; applyDefaults(design); design.style = ui.cat === "paint" ? "gradient" : "clear"; design.addins = {}; design.crush = []; resetItems(design); ui.chosen = true; ui.zoom = 1; ui.pan = [0, 0];
       changed();
     } else renderPanel();
     window.scrollTo({ top: 0, behavior: "auto" });
@@ -2212,6 +2219,7 @@ els.panel.addEventListener("click", (e) => {
     applyDefaults(design);
     if (customShape(design.shape) && customShape(design.shape).wood) design.style = "clear";
     if (isGame(design.shape)) design.style = "gradient";
+    if (design.shape === "canvas-rect" && design.style === "clear") design.style = "gradient";
     if (isCup(design.shape)) { if (design.style === "clear") design.style = "gradient"; design.deco = "natural"; design.addins = {}; }
     design.letters.moved = false;
     [design.letters.x, design.letters.y] = bestTextSpot(design.shape);
@@ -2669,7 +2677,7 @@ function loadFromLink() {
   const gk = params.get("gallery"), gd = gk && galleryDesign(gk);
   if (gd) { ui.example = true; design = gd.d; ui.cat = gd.cat; ui.step = 3; ui.visited = new Set([0, 1, 2, 3]); }
   if (params.get("cat")) { ui.cat = params.get("cat"); ui.step = 1; ui.visited = new Set([0, 1]); ui.jump = params.get("group") || ""; }
-  if (ui.cat === "cutting" && catOf(design.shape) !== "cutting") { design.shape = "board-rect"; design.style = "clear"; design.addins = {}; design.crush = []; ui.chosen = true; }
+  if ((ui.cat === "cutting" || ui.cat === "paint") && catOf(design.shape) !== ui.cat) { design.shape = ui.cat === "paint" ? "canvas-rect" : "board-rect"; design.style = ui.cat === "paint" ? "gradient" : "clear"; design.addins = {}; design.crush = []; ui.chosen = true; }
   if (params.has("start")) { ui.step = 0; ui.visited = new Set([0]); ui.cat = ""; ui.pickReady = false; }
   const letter = (params.get("letter") || "").toUpperCase();
   if (letter) ui.cat = "keychains";
