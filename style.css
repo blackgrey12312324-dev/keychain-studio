@@ -1445,3 +1445,6 @@ body.ph-open { overflow: hidden; }
 .start-btns { display: flex; flex-wrap: wrap; gap: 10px; }
 .start-btn { background: rgba(255,255,255,.14) !important; color: #fff !important; border: 1.5px solid rgba(255,255,255,.7) !important; border-radius: 999px; }
 .start-btn.on { background: #fff !important; color: #0E3F57 !important; }
+
+.home-link { border-color: transparent !important; background: transparent !important; box-shadow: none !important; text-decoration: underline; font-size: .85rem; padding-left: 8px !important; padding-right: 8px !important; }
+@media (max-width: 600px) { .home-link { display: none !important; } }
