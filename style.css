@@ -1438,3 +1438,10 @@ body.ph-open { overflow: hidden; }
 .choice-card b { font: 600 1.35rem "Cormorant Garamond", serif; color: #0E3F57; }
 .choice-card small { color: #5a6770; }
 .mold-ico { font-style: normal; display: inline-flex; align-items: center; margin-right: 6px; font-size: 1.1rem; vertical-align: middle; }
+
+.start-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; background: linear-gradient(135deg, #0E3F57, #19708A); color: #fff; border-radius: 22px; padding: 18px 22px; margin: 0 0 22px; box-shadow: 0 12px 28px rgba(14,63,87,.25); }
+.start-bar b { display: block; font: 600 1.4rem "Cormorant Garamond", serif; }
+.start-bar span { opacity: .85; font-size: .9rem; }
+.start-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.start-btn { background: rgba(255,255,255,.14) !important; color: #fff !important; border: 1.5px solid rgba(255,255,255,.7) !important; border-radius: 999px; }
+.start-btn.on { background: #fff !important; color: #0E3F57 !important; }

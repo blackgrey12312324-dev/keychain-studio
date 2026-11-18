@@ -1456,9 +1456,7 @@ function readyView() {
 }
 const STEP_VIEWS = [
   // 0 Ready-made
-  () => (!ui.cat && !ui.pickReady) ? `<h2>${U("choiceH")}</h2><p class="hint">${U("choiceP")}</p>
-    <div class="choice-cards"><button type="button" class="choice-card" data-action="pickready"><span class="choice-art"><img src="images/real/g-key-e.jpg" alt=""></span><b>${U("choiceReady")}</b><small>${U("choiceReadyP")}</small></button>
-    <button type="button" class="choice-card" data-action="designown"><span class="choice-art"><img src="images/real/g-round.jpg" alt=""></span><b>${U("choiceOwn")}</b><small>${U("choiceOwnP")}</small></button></div>` : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + (readyView() || `
+  () => (!ui.cat && !ui.pickReady) ? `<div class="start-bar"><div><b>${U("choiceH")}</b><span>${U("choiceP")}</span></div><div class="start-btns"><button type="button" class="btn start-btn" data-action="pickready">${U("choiceReady")}</button><button type="button" class="btn start-btn on" data-action="designown">${U("choiceOwn")}</button></div></div>` + STEP_VIEWS[1]() : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + (readyView() || `
     <h2>${U("s0h")}</h2>
     <p class="hint">${U("s0p")}</p>
     <div class="cards presets">${CONFIG.presets.map((p) => {
@@ -2135,6 +2133,7 @@ els.panel.addEventListener("click", (e) => {
     changed();
   } else if (action === "cat") {
     ui.cat = el.dataset.id;
+    if (ui.step === 0) { ui.pickReady = false; go(1); window.scrollTo({ top: 0 }); return; }
     if (ui.cat === "cutting" && catOf(design.shape) !== "cutting") {
       design.shape = "board-rect"; applyDefaults(design); design.style = "clear"; design.addins = {}; design.crush = []; resetItems(design); ui.chosen = true; ui.zoom = 1; ui.pan = [0, 0];
       changed();
@@ -2158,7 +2157,7 @@ els.panel.addEventListener("click", (e) => {
   } else if (action === "choiceback") {
     ui.pickReady = false; renderPanel(); window.scrollTo({ top: 0 }); return;
   } else if (action === "designown") {
-    ui.cat = ""; ui.pickReady = false; ui.chosen = false; go(1);
+    const g = document.querySelector(".cards.cats"); if (g) g.scrollIntoView({ behavior: "smooth", block: "start" }); return;
   } else if (action === "scratch") {
     ui.pickReady = false;
     design = defaultDesign();
