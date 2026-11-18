@@ -1461,3 +1461,13 @@ body.ph-open { overflow: hidden; }
 .cupcard .qty.sm b { min-width: 40px; font-size: 1.15rem; }
 
 .abs-row { margin: 6px 0; }
+.addin .em { background-origin: content-box !important; padding: 5px; box-sizing: border-box; }
+
+.addin-head .em { width: 46px !important; height: 46px !important; background-size: contain !important; cursor: grab; }
+
+.big-cards .cards.molds { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important; gap: 22px; }
+.big-cards .card { padding: 14px; }
+.big-cards .card-art { height: 300px !important; aspect-ratio: auto; }
+.big-cards .card-art img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; }
+.big-cards .card-art svg { height: 100%; }
+.big-cards .card-name { font-size: 1.35rem; }

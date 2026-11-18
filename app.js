@@ -1607,7 +1607,7 @@ const STEP_VIEWS = [
           <span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div><p class="small-note">${U("cmNote")}</p>
         </div>${field(U("customShapeCard"), `<input type="file" accept="image/*" id="shape-photo">${ui.photo ? `<img class="ref-photo" src="${ui.photo}" alt="">` : ""}`, U("customShapeNote2"))}`;
     } else if (ui.cat === "gift") {
-      body = group(U("grpPhoto"), `<a class="card" href="collage.html"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("uploadPhotos")}</span></a>` + byIds(["frame-oval"]), "photo") + `<p class="small-note">${U("photoNote")}</p>`;
+      body = `<div class="big-cards">` + group(U("grpPhoto"), `<a class="card" href="collage.html"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("uploadPhotos")}</span></a>` + byIds(["frame-oval"]), "photo") + `</div><p class="small-note">${U("photoNote")}</p>`;
     } else {
       body = group(U("grpCups"), cupCards(), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
         + group(U("grpSoap"), byIds(["soap"]), "soap")
@@ -1750,7 +1750,7 @@ const STEP_VIEWS = [
         a = CONFIG.addins.find((x) => x.id === cur) || a0;
         const dots = F.random ? "" : F.ids.map((id, i) => `<button type="button" class="fam-dot ${F.thumb ? "thumb" : ""} ${cur === id ? "on" : ""}" style="background:${F.thumb ? `#fff url(${(CONFIG.addins.find((x) => x.id === id) || {}).img}) center/contain no-repeat` : F.cols[i]}" data-action="variant" data-fam="${fk}" data-id="${id}" aria-label="${esc(F.name)} ${i + 1}"></button>`).join("");
         const sel0 = design.addins[a.id], on0 = !!sel0;
-        return `<div class="addin ${on0 ? "on" : ""}"><button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on0}"><span class="em" style="background:#E9F1F0 url(${a.img}) center/78% no-repeat"></span><span class="nm">${tr({ name: F.name, name_th: (PHRASES.th || {})[F.name], name_ru: (PHRASES.ru || {})[F.name] }, "name")}</span><span class="tick">${on0 ? U("added") : U("add")}</span></button>${F.random ? "" : `<div class="fam-dots"><span class="small-note">${F.thumb ? U("pickKind") : U("pickColour")}</span>${dots}</div>`}</div>`;
+        return `<div class="addin ${on0 ? "on" : ""}"><button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on0}"><span class="em" style="background:#E9F1F0 url(${a.img}) center/contain no-repeat"></span><span class="nm">${tr({ name: F.name, name_th: (PHRASES.th || {})[F.name], name_ru: (PHRASES.ru || {})[F.name] }, "name")}</span><span class="tick">${on0 ? U("added") : U("add")}</span></button>${F.random ? "" : `<div class="fam-dots"><span class="small-note">${F.thumb ? U("pickKind") : U("pickColour")}</span>${dots}</div>`}</div>`;
       }
       const sel = design.addins[a.id];
       const reason = blockedReason(a.id, design);
@@ -1758,7 +1758,7 @@ const STEP_VIEWS = [
       const body = "";
       return `<div class="addin ${on ? "on" : ""} ${reason ? "off" : ""}">
         <button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on}" ${reason ? "disabled" : ""}>
-          <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:#E9F1F0 url(${a.img}) center/78% no-repeat"></span>
+          <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:#E9F1F0 url(${a.img}) center/contain no-repeat"></span>
           <span class="nm">${tr(a, "name")}</span>
           <span class="tick">${on ? U("added") : U("add")}</span>
         </button>
