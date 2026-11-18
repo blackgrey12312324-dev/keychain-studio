@@ -30,6 +30,7 @@ function defaultDesign() {
   return {
     shape: "A",
     cm: { w: 30, h: 40 },
+    qty: 1,
     chess: { a: { c1: "", c2: "#E6E0D8", foil: true }, b: { c1: "#14151A", c2: "", foil: true } },
     second: "",
     style: "gradient",
@@ -113,6 +114,12 @@ const SEA_WATER = ["#0F3D8C", "#2373C4", "#5BB6C8"];   // deep navy to royal blu
 // Clear resin has no colour or details step (it is decorated with glitter and things inside); the sea style has fixed colours and no glitter.
 const skipStep = (i, d) => (isGame(d.shape) && (i === 3 || i === 5)) || (d.style === "ocean" && (i === COLOURS_STEP || i === GLITTER_STEP_NO)) || (d.style === "clear" && (i === COLOURS_STEP || i === 5));
 // gradient is only coloured resin + glitter: nothing goes inside. Ink takes charms and dried/pressed flowers.
+const CUP_SHAPES = ["coaster", "coaster-set", "wood-coaster"];
+function qtyBlock() {
+  if (!CUP_SHAPES.includes(design.shape)) return "";
+  const n = design.qty || 1;
+  return `<div class="field qty-field"><span class="field-label">${U("qtyH")}</span><div class="qty"><button type="button" data-qty="-1" aria-label="-" ${n <= 1 ? "disabled" : ""}>−</button><b>${n}</b><button type="button" data-qty="1" aria-label="+" ${n >= 50 ? "disabled" : ""}>+</button></div><p class="small-note">${U("qtyNote")}</p></div>`;
+}
 const isGame = (sh) => sh === "game-chess" || sh === "game-ttt";
 const noInside = (d) => d.style === "gradient" || catOf(d.shape) === "cutting" || isGame(d.shape);
 const INK_GROUPS = ["small", "seaanimals", "charms", "flowers", "dried"];
@@ -221,6 +228,7 @@ function summaryLines(d, lang = ui.lang) {
     const nm = (h) => (h ? colorName(h, lang) : "transparent");
     for (const [k, lbl] of [["a", "Light squares"], ["b", "Dark squares"]]) { const c = d.chess[k]; L.push([lbl, [nm(c.c1), c.c2 ? nm(c.c2) : ""].filter(Boolean).join(" + ") + (c.foil ? ", gold foil" : "")]); }
   }
+  if (CUP_SHAPES.includes(d.shape) && (d.qty || 1) > 1) L.push([lang === "en" ? "Quantity" : t("ui.qtyH", null, lang), `${d.qty} identical`]);
   if (d.shape === "board-rect" && d.cm) L.push([lang === "en" ? "Size" : t("ui.cmTitle", null, lang), `${d.cm.w} × ${d.cm.h} cm`]);
   const det = styleDetails(d, lang);
   L.push([S("style"), lab("style", d.style, lang) + (det ? " (" + det + ")" : "")]);
@@ -1571,7 +1579,7 @@ const STEP_VIEWS = [
     } else if (ui.cat === "gift") {
       body = group(U("grpPhoto"), `<a class="card" href="collage.html"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("uploadPhotos")}</span></a>` + byIds(["frame-oval"]), "photo") + `<p class="small-note">${U("photoNote")}</p>`;
     } else {
-      body = group(U("grpCups"), byIds(["coaster-set", "coaster", "coaster-pair", "coaster-trio", "wood-coaster"]), "cups") + `<p class="small-note">${U("cupsNote")}</p>`
+      body = group(U("grpCups"), byIds(["coaster", "coaster-set", "wood-coaster"]), "cups") + qtyBlock() + `<p class="small-note">${U("cupsNote")}</p>`
         + group(U("grpSoap"), byIds(["soap"]), "soap")
         + group(U("grpBowls"), byIds(["bowl", "bowl-big"]), "bowls") + `<p class="small-note">${U("bowlNote")}</p>`
         + group(U("grpTrays"), byIds(["tray-round", "tray-oval", "tray-rect", "tray-tall"]), "trays") + `<p class="small-note">${U("traysNote")}</p>`
@@ -1805,6 +1813,7 @@ const RANK = ["sea", "metalsea", "seaanimals", "small", "charms", "flowers", "dr
     <div class="rev-thumbs">${reviewThumbs(design)}</div>
     <p>${U("designCode")}: <span class="code">${designCode(design)}</span></p>
     <ul class="summary">${summaryLines(design).map(([k, v]) => `<li><b>${esc(k)}</b><span>${esc(v)}</span></li>`).join("")}</ul>
+    ${qtyBlock()}
     ${SHOW_PRICES ? field(U("price"), `<ul class="prices">${pr.lines.map(([k, v]) => `<li><span>${esc(k)}</span><span>${money(v)}</span></li>`).join("")}
       <li class="sum"><span>${U("total")}</span><span>${money(pr.total)}</span></li></ul>`,
       U("readyIn", { time: tr(CONFIG, "readyTime") }) + " " + U("handmade")) : `<p class="small-note">${U("readyIn", { time: tr(CONFIG, "readyTime") })} ${U("handmade")}</p>`}
@@ -2064,7 +2073,7 @@ function startOver() {
 function addDesignToCart() {
   const d2 = copy(design); if (d2.crush.length > 500) d2.crush = d2.crush.slice(-500);
   const sub = summaryLines(design, "en").slice(0, 3).map(([k, v]) => v).join(" · ");
-  const ok = addToCart({ title: shapeName(design.shape, "en") + " – " + lab("style", design.style, "en"), sub, thumb: renderPiece(d2).replace(/<svg /, '<svg class="cart-svg" '), text: orderText().split("\n").slice(1).join("\n") });
+  const ok = addToCart({ title: shapeName(design.shape, "en") + ((design.qty || 1) > 1 && CUP_SHAPES.includes(design.shape) ? " ×" + design.qty : "") + " – " + lab("style", design.style, "en"), sub, thumb: renderPiece(d2).replace(/<svg /, '<svg class="cart-svg" '), text: orderText().split("\n").slice(1).join("\n") });
   toast(ok ? U("addedCart") : U("cartFail"));
 }
 $("bar-cart").addEventListener("click", addDesignToCart);
@@ -2690,5 +2699,12 @@ els.panel.addEventListener("click", (e) => {
   if (!design.chess) design.chess = defaultDesign().chess;
   design.chess[sec][key] = key === "foil" ? !!b.dataset.v : b.dataset.v;
   renderPanel(); renderPreview(); renderBarSummary();
+  const box = $("order-text"); if (box) box.value = orderText();
+});
+
+els.panel.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-qty]"); if (!b) return;
+  design.qty = Math.max(1, Math.min(50, (design.qty || 1) + Number(b.dataset.qty)));
+  renderPanel(); renderBarSummary();
   const box = $("order-text"); if (box) box.value = orderText();
 });

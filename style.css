@@ -1448,3 +1448,8 @@ body.ph-open { overflow: hidden; }
 
 .home-link { border-color: transparent !important; background: transparent !important; box-shadow: none !important; text-decoration: underline; font-size: .85rem; padding-left: 8px !important; padding-right: 8px !important; }
 @media (max-width: 600px) { .home-link { display: none !important; } }
+
+.qty { display: inline-flex; align-items: center; gap: 0; background: #fff; border-radius: 999px; box-shadow: 0 4px 14px rgba(14,63,87,.14); overflow: hidden; }
+.qty button { width: 48px; height: 48px; border: 0; background: transparent; font-size: 1.6rem; color: #0E3F57; cursor: pointer; }
+.qty button:disabled { opacity: .3; cursor: default; }
+.qty b { min-width: 56px; text-align: center; font: 600 1.4rem Jost, sans-serif; color: #0E3F57; }
