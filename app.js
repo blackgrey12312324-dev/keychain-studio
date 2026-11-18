@@ -7,7 +7,7 @@
 Object.assign(ui, {
   cat: "", step: 0, visited: new Set([0]), side: "front", slot: 0, photo: "",
   full: false, mode: "move", zoom: 1, pan: [0, 0],
-  chosen: false, open: new Set(["sea"]), inkCol: 0, pour: { id: "", amount: "m", size: "s" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
+  chosen: false, open: new Set(), inkCol: 0, pour: { id: "", amount: "m", size: "s" }, pourHistory: [], brush: { tool: "ink", color: "", size: "m" },
 });
 const STEP_COUNT = I18N.en.steps.length;
 const LAST = STEP_COUNT - 1;
@@ -1459,7 +1459,7 @@ const STEP_VIEWS = [
     <div class="cards presets">${CONFIG.presets.map((p) => {
       const d = presetDesign(p);
       return `<div class="card">
-        <div class="card-art ${p.photo ? "has-photo" : ""}">${presetArt(p, d)}</div>
+        <div class="card-art rl-pair">${p.photo ? `<figure><img src="${esc(p.photo)}" alt="" decoding="async"><figcaption>${U("realLife")}</figcaption></figure>` : ""}<figure><span class="rl-svg">${renderPiece(d)}</span><figcaption>${U("designLbl")}</figcaption></figure></div>
         <span class="card-name">${p.name}</span>
         <span class="card-text">${tr(p, "blurb")}</span>
         ${SHOW_PRICES ? `<span class="card-price">${money(priceOf(d).total)}</span>` : ""}
@@ -1579,7 +1579,7 @@ const STEP_VIEWS = [
     if (isGame(design.shape)) return chessPanel();
     if (design.style === "clear") {
       return `<h2>${U("s4h")}</h2><p class="hint">${U("s4clearP")}</p>
-        <button type="button" class="btn btn-line" data-action="goto" data-step="3">${U("changeStyle")}</button>
+        <button type="button" class="btn btn-ink" data-action="goto" data-step="3">${U("changeStyle")}</button>
         `;
     }
     const picked = design.picked;
@@ -1723,13 +1723,13 @@ const RANK = ["sea", "metalsea", "seaanimals", "small", "charms", "flowers", "dr
       const note = k === "frog" ? "" : `<p class="small-note">${U(k + "P")}</p>`;
       const open = ui.open.has(k);
       return `<details class="ins-sec" data-key="${k}" ${open ? "open" : ""}>
-        <summary><span class="ins-title">${title}</span>${RECOMMENDED.includes(k) ? `<span class="rec-tag">${U("recommended")}</span>` : ""}<span class="ins-count">${n ? U("nAdded", { n }) : ""}</span></summary>
+        <summary><span class="ins-pics">${items.slice(0, 3).map((a) => `<i style="background:#F3EEE6 url(${a.img}) center/contain no-repeat"></i>`).join("")}</span><span class="ins-title">${title}</span>${RECOMMENDED.includes(k) ? `<span class="rec-tag">${U("recommended")}</span>` : ""}<span class="ins-count">${n ? U("nAdded", { n }) : `<b class="see-all">${U("seeAll")} ↓</b>`}</span></summary>
         <div class="ins-body">${note}${items.map(itemHtml).join("")}</div></details>`;
     });
     const lettersOpen = ui.open.has("letters"), photoOpen = ui.open.has("photo");
     return `
     <h2>${U("s5h")}</h2>
-    <p class="hint">${U("dragPlace")} ${design.style === "ocean" ? "" : `<button type="button" class="btn btn-line small" data-action="deco" data-id="">${U("decoChange")}</button>`}</p>
+    <p class="hint">${U("dragPlace")} ${design.style === "ocean" ? "" : `<button type="button" class="btn btn-ink small" data-action="deco" data-id="">${U("decoChange")}</button>`}</p>
     ${design.deco === "charms" && design.style !== "ocean" ? `<details class="ins-sec" data-key="letters" ${lettersOpen ? "open" : ""}><summary><span class="ins-title">${U("sLtH")}</span><span class="ins-count">${L.text ? esc(L.text) : ""}</span></summary><div class="ins-body">${lettersBlock}</div></details>` : ""}
     ${sections.join("")}
     ${moldRank(design.shape) === 2 && design.style !== "ocean" ? `<details class="ins-sec" data-key="photo" ${photoOpen ? "open" : ""}><summary><span class="ins-title">${U("photoH")}</span><span class="ins-count">${design.photo.on ? U("added") : ""}</span></summary><div class="ins-body">${photoBlock}</div></details>` : ""}`;
