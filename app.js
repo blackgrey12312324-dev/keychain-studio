@@ -1367,6 +1367,10 @@ const LOOKS = [
   { id: "midnight", apply(d) {inkLook(d, ["#4A5090", "#6A4B94", "#14151A"], [[0, .45, .22, 22], [1, .62, .42, 24], [2, .4, .62, 20], [0, .55, .82, 18]]); d.addins = {}; } },
   { id: "inkrose", apply(d) {inkLook(d, ["#D9959C", "#C97080", "#E6E0D8"], [[0, .45, .22, 22], [1, .6, .38, 20], [0, .4, .5, 20], [1, .58, .65, 22], [2, .45, .8, 16], [0, .6, .85, 14]]); d.deco = "natural"; d.addins = AI(["flower-pink"]); d.cluster = true; sprinkle(d, "pink", 30, "ir"); } },
   { id: "inkocean", apply(d) {inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .45, .24, 24], [1, .6, .48, 22], [0, .42, .68, 20], [2, .55, .84, 14]]); d.addins = {}; } },
+  { id: "inkbutterfly", apply(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .42, .28, 22], [1, .6, .5, 22], [2, .45, .75, 16]]); d.deco = "charms"; d.addins = AI(["sm-butterfly-teal"]); sprinkle(d, "aqua", 25, "ib"); } },
+  { id: "inkheart", apply(d) { inkLook(d, ["#C97080", "#D9959C", "#E6E0D8"], [[0, .45, .3, 22], [1, .58, .52, 22], [2, .42, .76, 16]]); d.deco = "charms"; d.addins = AI(["sm-heart-ruby", "sm-bow-pink"]); sprinkle(d, "pink", 25, "ih"); } },
+  { id: "inkgoldcrown", apply(d) { inkLook(d, ["#14151A", "#C89B2E", "#E6E0D8"], [[0, .45, .28, 22], [1, .6, .5, 20], [2, .42, .78, 14]]); d.deco = "charms"; d.addins = AI(["sm-sunflower", "sm-butterfly-amber"]); sprinkle(d, "gold", 30, "ig"); } },
+  { id: "inkturtle", apply(d) { inkLook(d, ["#4C8A7C", "#4F8A9C", "#E6E0D8"], [[0, .42, .3, 22], [1, .6, .52, 22], [2, .45, .78, 16]]); d.deco = "charms"; d.addins = AI(["sm-turtle-yellow", "sm-ladybug"]); sprinkle(d, "green", 25, "it"); } },
   { id: "inkcopper", apply(d) { inkLook(d, ["#B8693F", "#C89B2E", "#14151A"], [[0, .42, .3, 20], [1, .6, .55, 20], [2, .45, .8, 14]]); d.deco = "charms"; d.addins = AI(["sm-crown-bronze"]); sprinkle(d, "copper", 25, "ic"); } },
 ];
 function lookDesign(look) { const d = copy(design); d.hardware = "none"; d.tassel.type = "none"; look.apply(d); normaliseStyle(d); applyPicked(d); layoutItems(d); delete d.cluster; return d; }
