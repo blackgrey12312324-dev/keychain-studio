@@ -1539,6 +1539,8 @@ function readyView() {
   return `<h2>${U("s0h")}</h2><p class="hint">${U("s0p")}</p>${secs}<div class="field"><button type="button" class="btn btn-line" data-action="scratch">${U("fromScratch")}</button></div>`;
 }
 
+// the style is already chosen when a finished piece is opened, so go straight on to editing it
+function afterStyle(d) { if (isGame(d.shape)) return 4; return d.style === "clear" ? INSIDE_STEP : d.style === "ocean" ? 5 : 4; }
 const STEP_VIEWS = [
   // 0 Ready-made
   () => (!ui.cat && !ui.pickReady) ? `<div class="start-bar"><div><b>${U("choiceH")}</b><span>${U("choiceP")}</span></div><div class="start-btns"><button type="button" class="btn start-btn" data-action="pickready">${U("choiceReady")}</button><button type="button" class="btn start-btn on" data-action="designown">${U("choiceOwn")}</button></div></div>` + STEP_VIEWS[1]() : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + readyView(),
@@ -2154,7 +2156,7 @@ els.panel.addEventListener("click", (e) => {
     swing();
   } else if (action === "gallery") {
     const gd = galleryDesign(el.dataset.id);
-    if (gd) { design = gd.d; ui.cat = gd.cat; ui.side = "front"; ui.visited = new Set([0, 1, 2, 3]); ui.chosen = true; go(el.dataset.go === "review" ? LAST : 3); swing(); }
+    if (gd) { design = gd.d; ui.cat = gd.cat; ui.side = "front"; ui.visited = new Set([0, 1, 2, 3]); ui.chosen = true; go(el.dataset.go === "review" ? LAST : afterStyle(design)); swing(); }
   } else if (action === "tassel") {
     design.tassel.photo = design.tassel.photo === el.dataset.id ? "" : el.dataset.id;
     if (design.tassel.photo && design.tassel.type === "none") design.tassel.type = "silk";
@@ -2685,7 +2687,7 @@ function loadFromLink() {
   }
   const params = new URLSearchParams(location.search);
   const gk = params.get("gallery"), gd = gk && galleryDesign(gk);
-  if (gd) { ui.example = true; design = gd.d; ui.cat = gd.cat; ui.step = 3; ui.visited = new Set([0, 1, 2, 3]); }
+  if (gd) { ui.example = true; design = gd.d; ui.cat = gd.cat; ui.step = afterStyle(design); ui.visited = new Set([0, 1, 2, 3, ui.step]); }
   if (params.get("cat")) { ui.cat = params.get("cat"); ui.step = 1; ui.visited = new Set([0, 1]); ui.jump = params.get("group") || ""; }
   if ((ui.cat === "cutting" || ui.cat === "paint") && catOf(design.shape) !== ui.cat) { design.shape = ui.cat === "paint" ? "canvas-rect" : "board-rect"; design.style = ui.cat === "paint" ? "gradient" : "clear"; design.addins = {}; design.crush = []; ui.chosen = true; }
   if (params.has("start")) { ui.step = 0; ui.visited = new Set([0]); ui.cat = ""; ui.pickReady = false; }
