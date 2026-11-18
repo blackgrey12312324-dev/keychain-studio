@@ -124,6 +124,9 @@ function fits(a, d) {
   if (d.deco === "charms" && !CHARM_GROUPS.includes(a.group)) return false;
   const need = a.id === "tree-small" || a.id.startsWith("sm-crown") ? 1 : NEED[a.group] || 0;   // crowns are thick: medium and big molds only
   if (need > moldRank(d.shape)) return false;
+  // thick 3D pieces (crowns, little roses, metal charms) cannot go in thin molds such as bookmarks, pens and combs
+  const sc = CONFIG.shapes.find((x) => x.id === d.shape);
+  if (sc && sc.size === "thin" && (a.group === "charms" || a.group === "metalsea" || /^sm-(crown|rose|turtle|crab)/.test(a.id))) return false;
   return canHold(d.shape, a.id);
 }
 // does the piece physically fit inside the mold (an empty mold, anywhere)? Cached per mold and piece.
@@ -1453,7 +1456,9 @@ function readyView() {
 }
 const STEP_VIEWS = [
   // 0 Ready-made
-  () => readyView() || `
+  () => (!ui.cat && !ui.pickReady) ? `<h2>${U("choiceH")}</h2><p class="hint">${U("choiceP")}</p>
+    <div class="choice-cards"><button type="button" class="choice-card" data-action="pickready"><span class="choice-art"><img src="images/real/g-key-e.jpg" alt=""></span><b>${U("choiceReady")}</b><small>${U("choiceReadyP")}</small></button>
+    <button type="button" class="choice-card" data-action="designown"><span class="choice-art"><img src="images/real/g-round.jpg" alt=""></span><b>${U("choiceOwn")}</b><small>${U("choiceOwnP")}</small></button></div>` : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + (readyView() || `
     <h2>${U("s0h")}</h2>
     <p class="hint">${U("s0p")}</p>
     <div class="cards presets">${CONFIG.presets.map((p) => {
@@ -1470,7 +1475,7 @@ const STEP_VIEWS = [
       </div>`;
     }).join("")}</div>
     <div class="field"><button type="button" class="btn btn-line" data-action="scratch">${U("fromScratch")}</button></div>
-    <p class="small-note">${U("handmade")}</p>`,
+    <p class="small-note">${U("handmade")}</p>`),
 
   // 1 Mold (category first)
   () => {
@@ -1500,8 +1505,12 @@ const STEP_VIEWS = [
       if (extra) Object.assign(d, JSON.parse(extra));
       return `<button type="button" class="card ${on ? "on" : ""}" aria-pressed="${on}" data-action="mold" data-shape="${shape}" ${extra ? `data-extra='${extra}'` : ""}><span class="card-art">${renderPiece(d)}</span><span class="card-name">${label}</span></button>`;
     };
+    const ICON = { bookmark: "🔖", "bm-paw": "🐾", "bm-bunny": "🐰", "bm-cat": "🐱", feather: "🪶", comb: "COMB", "comb-moon": "MOON", hairpin: "🦋", pen: "✒️", blade: "🖊️", "bm-glass1": "💎", "bm-glass2": "💎", "bm-pebbles": "🪨", "bm-hearts": "💗", "bm-paws": "🐾" };
+    const COMB = '<svg viewBox="0 0 40 24" width="30" height="22"><path d="M3 4h34v6H3z" fill="#C9A47A"/><path d="M5 10v11M10 10v11M15 10v11M20 10v11M25 10v11M30 10v11M35 10v11" stroke="#8A6A45" stroke-width="2.4" stroke-linecap="round"/></svg>';
+    const MOON = '<svg viewBox="0 0 40 24" width="30" height="22"><path d="M3 20C3 9 11 3 20 3s17 6 17 17z" fill="#C9A47A"/><path d="M8 20v-4M13 20v-5M18 20v-5M23 20v-5M28 20v-5M33 20v-4" stroke="#8A6A45" stroke-width="2.4" stroke-linecap="round"/></svg>';
+    const icon = (id) => { const i = ICON[id]; return i ? `<i class="mold-ico">${i === "COMB" ? COMB : i === "MOON" ? MOON : i}</i>` : ""; };
     const byIds = (ids) => ids.map((id) => CONFIG.shapes.find((x) => x.id === id)).filter(Boolean)
-      .map((sh) => card(tr(sh, "name"), sh.id, design.shape === sh.id)).join("");
+      .map((sh) => card(icon(sh.id) + tr(sh, "name"), sh.id, design.shape === sh.id)).join("");
     const group = (title, html, key = "") => `<h3 class="mold-group" ${key ? `id="grp-${key}"` : ""}>${title}</h3><div class="cards molds">${html}</div>`;
     const isL = isLetter(design.shape) || isNumber(design.shape);
     let body = "";
@@ -1509,10 +1518,10 @@ const STEP_VIEWS = [
       body = group(U("grpLetters"), card(U("fontBlock"), isL ? design.shape : "A", isL && design.font !== "groovy", '{"font":"block"}') + card(U("fontGroovy"), isL ? design.shape : "A", isL && design.font === "groovy", '{"font":"groovy"}'), "letters")
         + group(U("grpPendants"), byIds(PENDANTS.concat(SEA_KEYCHAINS)), "pendants");
     } else if (ui.cat === "accessories") {
+      const sub = (t, ids) => `<h4 class="looks-h">${t}</h4><div class="cards molds">${byIds(ids)}</div>`;
       body = group(U("grpPens"), byIds(["pen", "blade"]), "pens")
         + group(U("grpCombs"), byIds(["comb", "comb-moon", "hairpin"]), "combs")
-        + group(U("grpBookmarks"), byIds(["bookmark", "bm-paw", "bm-bunny", "bm-cat", "feather"]), "bookmarks")
-        + group(U("grpTexBm"), byIds(["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]), "textured");
+        + `<h3 class="mold-group" id="grp-bookmarks">${U("grpBookmarksAll")}</h3>` + sub(U("bmPlain"), ["bookmark"]) + sub(U("bmAnimals"), ["bm-paw", "bm-bunny", "bm-cat"]) + sub(U("bmNature"), ["feather"]) + sub(U("bmTextured"), ["bm-glass1", "bm-glass2", "bm-pebbles", "bm-hearts", "bm-paws"]);
     } else if (ui.cat === "paint") {
       const L = [["canvas.html?kind=beach", "images/real/canvas-beach.jpg", U("pntSea")], ["canvas.html?kind=abstract", "images/real/abs-purple.jpg", U("pntAbs")], ["canvas.html?kind=photo", "images/real/g-collage.jpg", U("pntPhoto")]];
       body = `<h3 class="mold-group" id="grp-paintings">${U("catPaint")}</h3><div class="cards molds">${L.map(([h, im, n]) => `<a class="card" href="${h}"><span class="card-art has-photo"><img src="${im}" alt=""></span><span class="card-name">${n}</span></a>`).join("")}</div><p class="small-note">${U("pntNote")}</p>`;
@@ -2144,7 +2153,14 @@ els.panel.addEventListener("click", (e) => {
     resetItems(design);
     ui.zoom = 1; ui.pan = [0, 0];
     changed();
+  } else if (action === "pickready") {
+    ui.pickReady = true; renderPanel(); window.scrollTo({ top: 0 }); return;
+  } else if (action === "choiceback") {
+    ui.pickReady = false; renderPanel(); window.scrollTo({ top: 0 }); return;
+  } else if (action === "designown") {
+    ui.cat = ""; ui.pickReady = false; ui.chosen = false; go(1);
   } else if (action === "scratch") {
+    ui.pickReady = false;
     design = defaultDesign();
     go(1);
   } else if (action === "goto") {
@@ -2561,8 +2577,13 @@ function neighbour(dir) {
   const k = o.indexOf(ui.step);
   return k < 0 ? ui.step + dir : o[Math.max(0, Math.min(o.length - 1, k + dir))];
 }
-els.next.addEventListener("click", () => go(neighbour(1)));
-els.back.addEventListener("click", () => go(neighbour(-1)));
+els.next.addEventListener("click", () => { if (ui.step === 0) { ui.pickReady = false; ui.cat = ""; } go(neighbour(1)); });
+els.back.addEventListener("click", () => {
+  if (ui.step === 1 && ui.cat) { ui.cat = ""; ui.chosen = false; renderPanel(); renderPreview(); window.scrollTo({ top: 0 }); return; }
+  if (ui.step === 0 && ui.pickReady) { ui.pickReady = false; renderPanel(); return; }
+  if (ui.step === 1) { ui.cat = ""; ui.pickReady = false; }
+  go(neighbour(-1));
+});
 $("startover").addEventListener("click", startOver);
 $("savedraft").addEventListener("click", saveDraft);
 $("mysaves").addEventListener("click", openSaves);
@@ -2583,7 +2604,7 @@ function loadFromLink() {
   if (gd) { ui.example = true; design = gd.d; ui.cat = gd.cat; ui.step = 3; ui.visited = new Set([0, 1, 2, 3]); }
   if (params.get("cat")) { ui.cat = params.get("cat"); ui.step = 1; ui.visited = new Set([0, 1]); ui.jump = params.get("group") || ""; }
   if (ui.cat === "cutting" && catOf(design.shape) !== "cutting") { design.shape = "board-rect"; design.style = "clear"; design.addins = {}; design.crush = []; ui.chosen = true; }
-  if (params.has("start")) { ui.step = 1; ui.visited = new Set([0, 1]); ui.cat = ""; }
+  if (params.has("start")) { ui.step = 0; ui.visited = new Set([0]); ui.cat = ""; ui.pickReady = false; }
   const letter = (params.get("letter") || "").toUpperCase();
   if (letter) ui.cat = "keychains";
   if (/^[A-Z0-9]$/.test(letter)) { design.shape = letter; resetItems(design); ui.step = 2; ui.visited = new Set([0, 1, 2]); }

@@ -1430,3 +1430,11 @@ body.ph-open { overflow: hidden; }
 .rl-pair .rl-svg svg { width: 100%; height: 100%; }
 .rl-pair figcaption { font: 600 .72rem Jost, sans-serif; color: #19708A; margin-top: 4px; text-transform: uppercase; letter-spacing: .06em; }
 .rl-pair figcaption{position:static!important;display:block;padding-top:4px}
+
+.choice-cards { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); max-width: 760px; margin: 22px auto; }
+.choice-card { text-align: left; background: rgba(255,255,255,.85); border: 0; border-radius: 24px; padding: 14px; box-shadow: 0 12px 30px rgba(14,63,87,.16); cursor: pointer; display: grid; gap: 6px; transition: transform .2s; font: inherit; }
+.choice-card:hover { transform: translateY(-4px); }
+.choice-art img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 16px; display: block; }
+.choice-card b { font: 600 1.35rem "Cormorant Garamond", serif; color: #0E3F57; }
+.choice-card small { color: #5a6770; }
+.mold-ico { font-style: normal; display: inline-flex; align-items: center; margin-right: 6px; font-size: 1.1rem; vertical-align: middle; }
