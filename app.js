@@ -288,7 +288,7 @@ function orderText() {
   if (SHOW_PRICES) lines.push("", "Estimated price: " + money(priceOf(design, "en").total));
   if (design.style === "ink") lines.push("Ink note: the ink spreads while it cures, so the finished piece will not look exactly like the preview.");
   if (design.note.trim()) lines.push("Note: " + design.note.trim());
-  if (ui.photo) lines.push("(I'll send my reference photo in this chat 📷)");
+  if (ui.photo) lines.push(catOf(design.shape) === "cutting" ? "(I'll send a photo of the custom shape I want in this chat 📷)" : "(I'll send my reference photo in this chat 📷)");
   if (design.crush.length > 150) lines.push("(I'll send a screenshot of where my glitter goes 📷)");
   if (ui.lang !== "en") lines.push("Language: " + { th: "Thai", ru: "Russian" }[ui.lang]);
   lines.push("", "Open my exact design: " + shareLink());
@@ -1598,7 +1598,7 @@ const STEP_VIEWS = [
       body = `<div class="field size-box">
           ${group(U("grpBoardsMain"), byIds(["board-rect"]), "boards")}
           <span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div><p class="small-note">${U("cmNote")}</p>
-        </div><p class="small-note"><a href="idea.html">${U("customShapeCard")}</a>. ${U("customShapeNote")}</p>`;
+        </div>${field(U("customShapeCard"), `<input type="file" accept="image/*" id="shape-photo">${ui.photo ? `<img class="ref-photo" src="${ui.photo}" alt="">` : ""}`, U("customShapeNote2"))}`;
     } else if (ui.cat === "gift") {
       body = group(U("grpPhoto"), `<a class="card" href="collage.html"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("uploadPhotos")}</span></a>` + byIds(["frame-oval"]), "photo") + `<p class="small-note">${U("photoNote")}</p>`;
     } else {
@@ -2314,7 +2314,7 @@ els.panel.addEventListener("change", (e) => {
     im.src = url;
     return;
   }
-  if (e.target.id === "photo-input" && e.target.files[0]) {
+  if ((e.target.id === "photo-input" || e.target.id === "shape-photo") && e.target.files[0]) {
     if (ui.photo) URL.revokeObjectURL(ui.photo);
     ui.photo = URL.createObjectURL(e.target.files[0]);
     renderPanel();
