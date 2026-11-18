@@ -871,7 +871,7 @@ function scatterLayer(d, T, B) {
 function drawItem(id, col, R, pid) {
   const ch = CONFIG.addins.find((x) => x.id === id);
   if (ch && ch.img) {
-    const s = ch.size;
+    const s = ch.size * pokeScale(ch);
     return `<image href="${ch.img}" x="${-s / 2}" y="${-s / 2}" width="${s}" height="${s}" preserveAspectRatio="xMidYMid meet" style="filter:${ch.fx || "brightness(1.35) saturate(1.25) contrast(1.05) drop-shadow(0 1px 1.2px rgba(0,0,0,0.35))"}"/>`;
   }
   switch (id) {
@@ -1355,7 +1355,16 @@ function sprinkle(d, gid, n, seed) {
   }
 }
 /* A piece may only sit where all of it is inside the mold, never even slightly over the edge. */
-function itemRadius(id) { const ad = CONFIG.addins.find((x) => x.id === id); return ((ad && ad.size) || 30) * 0.5 * 0.9; }
+// 3D pieces (charms, little roses, butterflies, pressed flowers) are drawn bigger on small molds such as letters and tags, so they fill the space and poke out
+const POKE_GROUPS = ["small", "seaanimals", "metalsea", "charms", "flowers"];
+function pokeScale(ad, shape) {
+  if (!ad || !POKE_GROUPS.includes(ad.group)) return 1;
+  const sh = shape || (typeof design !== "undefined" ? design.shape : "");
+  const c = CONFIG.shapes.find((x) => x.id === sh);
+  if (c && c.size === "thin") return 1.15;
+  return !c || !c.size || c.size === "small" ? 1.6 : c.size === "medium" ? 1.25 : 1;
+}
+function itemRadius(id) { const ad = CONFIG.addins.find((x) => x.id === id); return ((ad && ad.size) || 30) * pokeScale(ad) * 0.5 * 0.9; }
 function itemFits(shape, x, y, id) {
   const r = itemRadius(id);
   if (!insideShape(shape, x, y)) return false;
@@ -1758,7 +1767,7 @@ const STEP_VIEWS = [
       return `<div class="addin ${on ? "on" : ""} ${reason ? "off" : ""}">
         <button type="button" class="addin-head" data-action="addin" data-id="${a.id}" aria-pressed="${on}" ${reason ? "disabled" : ""}>
           <span class="em" data-drag="${a.id}" title="${esc(U("dropHint"))}" style="background:#E9F1F0 url(${a.img}) center/contain no-repeat"></span>
-          <span class="nm">${tr(a, "name")}</span>
+          <span class="nm">${tr(a, "name")}${POKE_GROUPS.includes(a.group) ? `<small class="poke">${U("poke3d")}</small>` : ""}</span>
           <span class="tick">${on ? U("added") : U("add")}</span>
         </button>
         ${reason ? `<p class="why">${reason}</p>` : ""}
@@ -2254,6 +2263,7 @@ els.panel.addEventListener("click", (e) => {
     let a = CONFIG.addins.find((x) => x.id === el.dataset.id);
     { const fk0 = familyOf(a.id); if (fk0 && FAMILIES[fk0].random && !FAMILIES[fk0].ids.some((id) => design.addins[id])) { const F0 = FAMILIES[fk0]; a = CONFIG.addins.find((x) => x.id === F0.ids[Math.floor(Math.random() * F0.ids.length)]); } else if (fk0 && FAMILIES[fk0].random) { a = CONFIG.addins.find((x) => x.id === FAMILIES[fk0].ids.find((id) => design.addins[id])); } }
     if (design.addins[a.id]) delete design.addins[a.id];
+    else if (POKE_GROUPS.includes(a.group) && moldRank(design.shape) === 0 && Object.keys(design.addins).filter((k) => { const x = CONFIG.addins.find((y) => y.id === k); return x && POKE_GROUPS.includes(x.group); }).length >= 3) { toast(U("maxCharms")); return; }
     else {
       const [T, B] = bounds(design.shape), n = Object.keys(design.addins).length;
       const taken = Object.keys(design.addins).flatMap((k) => (design.addins[k].items || []).map(([x, y]) => [x, y, itemRadius(k)]));

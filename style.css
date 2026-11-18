@@ -1479,3 +1479,5 @@ body.ph-open { overflow: hidden; }
 .gl-img img { transform: none !important; object-fit: contain !important; padding: 6px; box-sizing: border-box; filter: none !important; }
 .gl-img.tas-img img { padding: 0; }
 .dec-h { font: 600 .8rem Jost, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: #19708A; margin: 14px 0 6px; }
+
+.poke { display: block; font: 500 .72rem Jost, sans-serif; color: #19708A; margin-top: 2px; }
