@@ -1481,3 +1481,19 @@ body.ph-open { overflow: hidden; }
 .dec-h { font: 600 .8rem Jost, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: #19708A; margin: 14px 0 6px; }
 
 .poke { display: block; font: 500 .72rem Jost, sans-serif; color: #19708A; margin-top: 2px; }
+
+/* ---- Speed and polish (from feedback) ---- */
+html { scroll-behavior: smooth; }
+.hero-text h1 { font-size: clamp(3.2rem, 8.5vw, 6.4rem) !important; }
+.hero-text .lead { font-size: 1.3rem !important; }
+.hero-strip img { width: clamp(130px, 18vw, 230px) !important; border-width: 6px !important; }
+/* playful: little tilt and bounce on photos */
+.gallery figure, .product, .make { transition: transform .25s cubic-bezier(.3,1.4,.5,1), box-shadow .25s; }
+.gallery figure:hover { transform: translateY(-4px) rotate(-.6deg); }
+.gallery figure:nth-child(even):hover { transform: translateY(-4px) rotate(.6deg); }
+/* fewer expensive effects */
+body[data-page="home"] .way, body[data-page="home"] .btn-line { backdrop-filter: none !important; }
+.bubbles { display: none !important; }
+body[data-page="home"] main > section:not(.hero) { content-visibility: auto; contain-intrinsic-size: 1px 900px; }
+img { image-rendering: auto; }
+@media (prefers-reduced-motion: no-preference) { .hero .wave { animation-duration: 40s !important; } }

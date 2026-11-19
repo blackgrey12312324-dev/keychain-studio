@@ -300,19 +300,28 @@ new MutationObserver(() => { clearTimeout(revealScan.t); revealScan.t = setTimeo
 
 /* Preload every picture in the background so nothing pops in or flickers while you design or scroll */
 (function preloadAll() {
-  if (typeof CONFIG === "undefined") return;
+  if (typeof CONFIG === "undefined" || document.body.dataset.page !== "design") return;   // the home page only loads what you scroll to
   const urls = new Set();
   const add = (u) => { if (u && typeof u === "string") urls.add(u); };
   (CONFIG.addins || []).forEach((a) => add(a.img));
   (CONFIG.glitters || []).forEach((g) => add(`images/glitter/${g.id}.png`));
   (CONFIG.tassels || []).forEach((t) => add(`images/tassels/${t.id}.png`));
-  (CONFIG.presets || []).forEach((p) => add(p.photo));
-  Object.values(CONFIG.references || {}).forEach((arr) => arr.forEach((r) => add(r.img)));
-  (CONFIG.gallery || []).forEach((g) => g.items.forEach((i) => { add(i.img); add(i.poster); }));
   ["metal"].forEach(() => {});
   ["gold", "yellow", "copper", "silver", "chrome", "black"].forEach((m) => add(`images/letters/${m}.jpg`));
   ["images/real/swirl-gray.jpg", "images/sea/starfish-drawn.svg"].forEach(add);
   const list = [...urls];
   const run = () => { let i = 0; const next = () => { if (i >= list.length) return; const im = new Image(); im.decoding = "async"; im.onload = im.onerror = next; im.src = list[i++]; }; next(); next(); next(); };
-  if ("requestIdleCallback" in window) requestIdleCallback(run, { timeout: 1500 }); else setTimeout(run, 300);
+  if ("requestIdleCallback" in window) requestIdleCallback(run, { timeout: 6000 }); else setTimeout(run, 3000);
+})();
+
+/* Load pictures only when they come near the screen */
+(function lazyImages() {
+  const mark = () => document.querySelectorAll("img:not([data-lz])").forEach((im) => {
+    im.dataset.lz = "1";
+    if (im.closest(".hero, .site-header, .ph-box")) { im.decoding = "async"; return; }
+    if (!im.hasAttribute("loading")) im.loading = "lazy";
+    im.decoding = "async";
+  });
+  new MutationObserver(mark).observe(document.documentElement, { childList: true, subtree: true });
+  mark();
 })();
