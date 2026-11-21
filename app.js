@@ -1151,7 +1151,7 @@ function renderPiece(d, side = "front", opts = {}) {
 
   const plainBack = side === "back" && d.back === "plain";
   const fillRaw = plainBack ? "" : (d.shape === "game-ttt" ? tttLayer(d, id) : d.shape === "game-chess" ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + (d.shape === "domino-set" ? dominoLayer(d) : "") + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
-  const fill = (d.partial > 0 && d.partial < 1 && (customShape(d.shape) || {}).wood && fillRaw) ? `<clipPath id="${id}-part"><rect x="0" y="${T - 4}" width="300" height="${(B - T) * d.partial + 4}"/></clipPath><g clip-path="url(#${id}-part)">${fillRaw}</g><rect x="0" y="${(T + (B - T) * d.partial - 3).toFixed(1)}" width="300" height="3" fill="rgba(255,255,255,0.55)" pointer-events="none"/>` : fillRaw;
+  const fill = (d.partial > 0 && d.partial < 1 && (customShape(d.shape) || {}).wood && fillRaw) ? `<clipPath id="${id}-part">${d.partialSide === "left" ? `<rect x="0" y="0" width="${(300 * d.partial).toFixed(1)}" height="440"/>` : d.partialSide === "right" ? `<rect x="${(300 * (1 - d.partial)).toFixed(1)}" y="0" width="300" height="440"/>` : `<rect x="0" y="${T - 4}" width="300" height="${(B - T) * d.partial + 4}"/>`}</clipPath><g clip-path="url(#${id}-part)">${fillRaw}</g>${d.partialSide ? "" : `<rect x="0" y="${(T + (B - T) * d.partial - 3).toFixed(1)}" width="300" height="3" fill="rgba(255,255,255,0.55)" pointer-events="none"/>`}` : fillRaw;
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linejoin="round"`;
@@ -1349,11 +1349,11 @@ function stylesBar() {
 document.addEventListener("click", (e) => { const b = e.target.closest("[data-sv-apply]"); if (b) applyStyle(b.dataset.svApply); });
 
 /* ---------- Inspiration: five ready looks, drawn on whatever mold is chosen, from Anna's own colours and materials ---------- */
-function sprinkle(d, gid, n, seed) {
+function sprinkle(d, gid, n, seed, xa = 20, xb = 280) {
   const R = rng(hashText(seed + d.shape)), [T, B] = bounds(d.shape);
   let tries = 0;
   while (n > 0 && tries++ < n * 40) {
-    const x = 20 + R() * 260, y = T + R() * (B - T);
+    const x = xa + R() * (xb - xa), y = T + R() * (B - T);
     if (!insideShape(d.shape, x, y)) continue;
     d.crush.push([gid, Math.round(x), Math.round(y), Math.floor(R() * 360), Math.round(85 + R() * 40)]); n--;
   }
@@ -1474,15 +1474,15 @@ function presetDesign(p) {
 
 /* ---------- Every finished piece in the shop, rebuilt as a digital design ---------- */
 const GALLERY_DESIGNS = {
-  "g-key-w": { cat: "keychains", shape: "W", f(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); d.hardware = "ringchain"; } },
+  "g-key-w": { cat: "keychains", shape: "W", f(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); sprinkle(d, "cobalt", 110, "kw", 20, 150); sprinkle(d, "aqua", 40, "kwa", 20, 140); sprinkle(d, "cobalt", 12, "kw2", 150, 280); d.hardware = "ringchain"; } },
   "g-round-pendant": { cat: "keychains", shape: "circle", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.hardware = "ringchain"; } },
   "g-key-es": { cat: "keychains", shape: "E", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.hardware = "ringchain"; } },
-  "g-feather": { cat: "accessories", shape: "feather", f(d) { d.style = "clear"; d.picked = []; sprinkle(d, "goldleaf", 160, "gf"); sprinkle(d, "gold", 40, "gf2"); } },
+  "g-feather": { cat: "accessories", shape: "feather", f(d) { gradLook(d, ["#E6E0D8", "#F3EBDD", "#C89B2E"], "down"); sprinkle(d, "goldleaf", 25, "gf"); } },
   "g-chess-sand": { cat: "statues", shape: "game-chess", f(d) { d.style = "gradient"; d.chess = { a: { c1: "#8A5F3C", c2: "", foil: false }, b: { c1: "#7F9CC0", c2: "#9A9A92", foil: false } }; } },
   "g-gold-chess": { cat: "statues", shape: "game-chess", f(d) { d.style = "gradient"; d.chess = { a: { c1: "#E6E0D8", c2: "", foil: true }, b: { c1: "#14151A", c2: "", foil: true } }; } },
   "g-domino": { cat: "statues", shape: "domino-set", f(d) { inkLook(d, ["#1F6BC0", "#C89B2E"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); } },
   "g-ruffle-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#E6E0D8", "#F3EBDD", "#C89B2E"], "diagonal"); sprinkle(d, "goldleaf", 30, "rb"); } },
-  "g-lychee-bowl": { cat: "kitchen", shape: "bowl", f(d) { inkLook(d, ["#D9959C", "#C97080", "#E6E0D8"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); } },
+  "g-lychee-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#D9959C", "#C97080", "#D9959C"], "center"); } },
   "g-pinkboard": { cat: "cutting", shape: "board-rect", f(d) { d.cm = { w: 40, h: 25 }; gradLook(d, ["#D9742E", "#B04855", "#D9959C"], "down"); sprinkle(d, "gold", 60, "pb"); d.partial = 0.55; } },
   "g-coffee-art": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 30 }; inkLook(d, ["#8A5F3C", "#E6E0D8", "#B8693F"], [[0, .45, .3, 26], [1, .55, .55, 22], [2, .42, .78, 16]]); } },
   "g-beach-lounger": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 40 }; d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-shell-scallop"]); } },
@@ -1497,11 +1497,11 @@ const GALLERY_DESIGNS = {
   "g-plum": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 40, h: 50 }; inkLook(d, ["#8E3560", "#6A4B94", "#E6E0D8"], [[0, .45, .3, 26], [1, .55, .55, 22], [2, .42, .78, 16]]); } },
   "g-mosaic-bookmark": { cat: "accessories", shape: "bookmark", f(d) { inkLook(d, ["#6A4B94", "#1F6BC0", "#3A5F55"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); sprinkle(d, "clear", 40, "mb"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "greyblue" }); d.hardware = "ringchain"; } },
   "g-purple-pen": { cat: "accessories", shape: "pen", f(d) { inkLook(d, ["#6A4B94", "#9A9A92", "#E6E0D8"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); } },
-  "g-wood-ocean-stand": { cat: "kitchen", shape: "wood-coaster", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "none", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
+  "g-wood-ocean-stand": { cat: "kitchen", shape: "wood-coaster", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "none", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.partial = 0.55; d.partialSide = "left"; } },
   "g-night-round": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 30 }; inkLook(d, ["#14151A", "#4A5090", "#6A4B94"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); sprinkle(d, "gunmetal", 40, "nr"); } },
   "g-night-coaster": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 15, h: 15 }; inkLook(d, ["#6A4B94", "#4A5090", "#14151A"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); d.deco = "natural"; d.addins = AI(["tree-small"]); sprinkle(d, "clear", 30, "nc"); } },
   "g-birthday-canvas": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 80 }; inkLook(d, ["#6A4B94", "#7F9CC0", "#E6E0D8"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); d.deco = "natural"; d.addins = AI(["flower-pink", "flower-blue"]); sprinkle(d, "clear", 120, "bc"); sprinkle(d, "cobalt", 50, "bc2"); } },
-  "g-key-e": { cat: "keychains", shape: "E", f(d) { d.style = "clear"; d.picked = []; d.deco = "charms"; d.addins = AI(["charm-pistol", "charm-ak-mini"]); sprinkle(d, "goldleaf", 200, "ke"); sprinkle(d, "gold", 50, "ke2"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "gold" }); d.hardware = "ringchain"; } },
+  "g-key-e": { cat: "keychains", shape: "E", f(d) { d.style = "clear"; d.picked = []; d.deco = "charms"; d.addins = AI(["charm-pistol", "charm-ak", "charm-ak-mini", "charm-m4"]); sprinkle(d, "goldleaf", 200, "ke"); sprinkle(d, "gold", 50, "ke2"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "gold" }); d.hardware = "ringchain"; } },
   "g-key-a-star": { cat: "keychains", shape: "A", f(d) { inkLook(d, ["#B8693F", "#8A5F3C", "#D9959C"], [[0, .5, .35, 22], [1, .55, .7, 20], [2, .4, .55, 12]]); sprinkle(d, "copper", 40, "ka"); d.tassel = Object.assign(d.tassel, { type: "silk", photo: "orange" }); d.hardware = "ringchain"; } },
   "g-key-k": { cat: "keychains", shape: "K", f(d) { inkLook(d, ["#1F6BC0", "#7F9CC0", "#E6E0D8"], [[0, .45, .35, 20], [1, .55, .65, 16], [2, .4, .5, 12]]); d.hardware = "none"; } },
   "g-key-tail": { cat: "keychains", shape: "g-tail", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .5, .35, 20], [1, .55, .62, 18], [2, .45, .8, 14]]); d.hardware = "ringchain"; } },
@@ -1514,12 +1514,12 @@ const GALLERY_DESIGNS = {
   "g-coaster-sea": { cat: "kitchen", shape: "coaster-set", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
   "g-coaster-ink": { cat: "kitchen", shape: "coaster-set", f(d) { inkLook(d, ["#1F6BC0", "#6A4B94", "#E6E0D8"], [[0, .45, .35, 24], [1, .6, .6, 22], [2, .4, .8, 16]]); sprinkle(d, "goldleaf", 60, "ci"); } },
   "g-coaster-stone": { cat: "kitchen", shape: "coaster", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#8A5F3C"], "diagonal"); sprinkle(d, "copper", 60, "cs"); } },
-  "g-platter": { cat: "kitchen", shape: "tray-oval", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
-  "g-nuts-dish": { cat: "kitchen", shape: "tray-oval", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .4, .35, 26], [1, .6, .6, 24], [2, .45, .8, 18]]); } },
-  "g-fruit-bowl": { cat: "kitchen", shape: "bowl", f(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .4, .4, 26], [1, .6, .65, 24], [2, .5, .3, 16]]); sprinkle(d, "clear", 60, "fb"); } },
+  "g-platter": { cat: "kitchen", shape: "tray-round", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
+  "g-nuts-dish": { cat: "kitchen", shape: "tray-round", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .4, .35, 26], [1, .6, .6, 24], [2, .45, .8, 18]]); } },
+  "g-fruit-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#1F6BC0", "#7F9CC0", "#E6E0D8"], "center"); } },
   "g-tealight": { cat: "kitchen", shape: "coaster", f(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .5, .4, 24], [1, .55, .65, 20], [2, .4, .55, 12]]); } },
   "g-tail": { cat: "cutting", shape: "board-whale-tail", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.partial = 0.7; } },
-  "g-woodtray": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.partial = 0.6; } },
+  "g-woodtray": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.partial = 0.6; d.partialSide = "left"; } },
   "g-paddle": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); d.partial = 0.6; } },
   "g-tree": { cat: "cutting", shape: "board-rect", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); d.partial = 0.5; } },
   "g-copper": { cat: "cutting", shape: "board-rect", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); d.partial = 0.55; } },
