@@ -127,9 +127,9 @@ function renderHome() {
         <div class="gallery rec">${[["g-fruit-bowl", "Sea fruit bowl"], ["g-tail", "Mermaid tail board"], ["g-canvas", "Sea canvas"], ["g-round", "Sea pour"], ["g-coaster-sea", "Sea cup stands with starfish"], ["g-paddle", "Sea paddle board"], ["g-bookmark", "Sea bookmark with tassel"], ["g-platter", "Sea platter"], ["g-sea-shells", "Sea canvas with shells and starfish"]].map(([n, c]) => `<figure><img src="images/real/${n}.jpg" alt="${c}" decoding="async"><figcaption><strong>${c}</strong></figcaption>${buyBtns(n, c, "images/real/" + n + ".jpg", "Recommended sea designs")}</figure>`).join("")}</div>
         <div class="themes">${CONFIG.gallery.filter((t) => t.items.length).map((t) => `
           <h3 class="theme-h">${esc(t.theme)}</h3>
-          <div class="gallery">${t.theme === "Keychains" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" decoding="async"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption>${buyBtns(p.id, p.name, p.photo, "preset")}</figure>`).join("") : ""}${t.items.map((it) => it.video
+          <div class="gallery">${t.theme === "Keychains" ? presets.map((p) => `<figure class="ready"><a href="design.html?preset=${p.id}"><img src="${p.photo}" alt="${esc(p.name)}" decoding="async"></a><figcaption><strong>${esc(p.name)}</strong><span>${esc(tr(p, "blurb"))}</span></figcaption>${buyBtns(p.id, p.name, p.photo, "preset")}</figure>`).join("") : ""}${t.items.map((it, ix) => (it.sub && it.sub !== (t.items[ix - 1] || {}).sub ? `</div><h4 class="sub-h">${esc(it.sub)}</h4><div class="gallery">` : "") + (it.video
             ? `<figure><video src="${it.video}" poster="${it.poster || ""}" autoplay muted loop playsinline></video><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns((it.img || it.cap).replace(/\W+/g, "-"), it.cap, it.img || it.poster, t.theme)}</figure>`
-            : `<figure><img src="${it.img}" alt="${esc(it.cap)}" decoding="async"><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns(it.img.replace(/\W+/g, "-"), it.cap, it.img, t.theme)}</figure>`).join("")}</div>`).join("")}
+            : `<figure><img src="${it.img}" alt="${esc(it.cap)}" decoding="async"><figcaption><strong>${esc(it.cap)}</strong></figcaption>${buyBtns(it.img.replace(/\W+/g, "-"), it.cap, it.img, t.theme)}</figure>`)).join("")}</div>`).join("")}
         </div>
       </div>
     </section>
@@ -218,8 +218,37 @@ function renderHome() {
         <h2>${H("faqTitle")}</h2>
         ${[1, 2, 3, 4, 5].map((n) => `<details><summary>${H(`q${n}`)}</summary><p>${H(`a${n}`)}</p></details>`).join("")}
       </div>
+    </section>
+    <section class="section feedback" id="feedback">
+      <div class="wrap fb-wrap">
+        <h2>${FB("title")}</h2>
+        <p class="lead">${FB("sub")}</p>
+        <div class="fb-stars" id="fb-stars" role="radiogroup" aria-label="${FB("rate")}">${[1, 2, 3, 4, 5].map((n) => `<button type="button" class="fb-star" data-star="${n}" aria-label="${n}">★</button>`).join("")}</div>
+        <input type="text" id="fb-name" class="text-input" placeholder="${esc(FB("name"))}" autocomplete="off">
+        <textarea id="fb-text" rows="4" placeholder="${esc(FB("ph"))}"></textarea>
+        <button type="button" class="btn btn-ink" id="fb-send">${FB("send")}</button>
+        <p class="small-note" id="fb-note">${FB("note")}</p>
+      </div>
     </section>`;
 }
+const FBT = {
+  en: { title: "Tell us what you think", sub: "Your feedback helps Anna make the shop better. Write a comment, a wish or a idea.", rate: "Rating", name: "Your name (optional)", ph: "What do you like? What could be better?", send: "Send feedback to Anna", note: "Tapping send copies your message and opens Instagram, where you paste it into the chat.", empty: "Please write a few words first.", done: "Copied! Paste it in the Instagram chat. Thank you 💛" },
+  th: { title: "บอกเราว่าคุณคิดอย่างไร", sub: "ความเห็นของคุณช่วยให้แอนนาปรับปรุงร้านให้ดีขึ้น เขียนความเห็น ความต้องการ หรือไอเดียได้เลย", rate: "ให้คะแนน", name: "ชื่อของคุณ (ไม่บังคับ)", ph: "ชอบอะไร? อะไรควรดีขึ้น?", send: "ส่งความเห็นถึงแอนนา", note: "กดส่งแล้วข้อความจะถูกคัดลอกและเปิด Instagram ให้วางในแชท", empty: "กรุณาเขียนสักเล็กน้อยก่อน", done: "คัดลอกแล้ว วางในแชท Instagram ขอบคุณ 💛" },
+  ru: { title: "Расскажи, что думаешь", sub: "Твой отзыв помогает Анне улучшать магазин. Напиши комментарий, пожелание или идею.", rate: "Оценка", name: "Твоё имя (по желанию)", ph: "Что нравится? Что можно улучшить?", send: "Отправить отзыв Анне", note: "После нажатия сообщение копируется и открывается Instagram, вставь его в чат.", empty: "Сначала напиши пару слов.", done: "Скопировано! Вставь в чат Instagram. Спасибо 💛" },
+};
+const FB = (k) => (FBT[ui.lang] || FBT.en)[k];
+let fbStars = 0;
+document.addEventListener("click", (e) => {
+  const st = e.target.closest(".fb-star");
+  if (st) { fbStars = Number(st.dataset.star); document.querySelectorAll(".fb-star").forEach((b) => b.classList.toggle("on", Number(b.dataset.star) <= fbStars)); return; }
+  if (e.target.closest("#fb-send")) {
+    const text = (document.getElementById("fb-text").value || "").trim(), name = (document.getElementById("fb-name").value || "").trim();
+    const note = document.getElementById("fb-note");
+    if (!text) { note.textContent = FB("empty"); return; }
+    const msg = `Feedback for Resincraftcode 💛${fbStars ? "\nRating: " + "★".repeat(fbStars) + "☆".repeat(5 - fbStars) : ""}${name ? "\nFrom: " + name : ""}\n\n${text}`;
+    copyText(msg).catch(() => {}); note.textContent = FB("done"); window.open(igLink(), "_blank", "noopener");
+  }
+});
 
 /* ---------------- Send your idea ---------------- */
 const idea = { photo: "", photoName: "", shape: "letter", letter: "", which: "tag", size: "m", hardware: "ringchain", tassel: "yes", describe: "", colours: "", date: "", name: "" };
@@ -362,6 +391,8 @@ onLangChange(() => { renderHome(); renderIdea(); });
 /* ---------------- Shop photos: slide through angles, full screen with zoom ----------------
    To add more angles of a product, upload them next to the first photo with -2, -3 ... in the name,
    e.g. g-tail.jpg, g-tail-2.jpg, g-tail-3.jpg (jpg, jpeg, png or webp). They appear as a slider by themselves. */
+const thumbOf = (u) => u;
+const fullOf = (u) => u.replace(/^images\/real\/([^\/]+\.jpg)$/, "images/real/full/$1");
 (function () {
   const EXT = ["jpg", "jpeg", "png", "webp"], MAX = 8, cache = {};
   const probe = (url) => cache[url] || (cache[url] = new Promise((res) => { const im = new Image(); im.onload = () => res(true); im.onerror = () => res(false); im.src = url; }));
@@ -379,7 +410,7 @@ onLangChange(() => { renderHome(); renderIdea(); });
     const first = fig.querySelector(":scope > img"); if (!first) return;
     const alt = first.alt || "";
     const view = document.createElement("div"); view.className = "ph-view";
-    view.innerHTML = `<div class="ph-track">${imgs.map((u) => `<img src="${u}" alt="${alt}" decoding="async" loading="lazy">`).join("")}</div>` +
+    view.innerHTML = `<div class="ph-track">${imgs.map((u) => `<img src="${thumbOf(u)}" alt="${alt}" decoding="async" loading="lazy">`).join("")}</div>` +
       (imgs.length > 1 ? `<button type="button" class="ph-arrow prev" aria-label="Previous photo">‹</button><button type="button" class="ph-arrow next" aria-label="Next photo">›</button><div class="ph-dots">${imgs.map((_, i) => `<i class="${i ? "" : "on"}"></i>`).join("")}</div>` : "") +
       `<span class="ph-zoomhint" aria-hidden="true">⌕</span>`;
     first.replaceWith(view);
@@ -389,7 +420,7 @@ onLangChange(() => { renderHome(); renderIdea(); });
     view._go = go; view._k = () => k; view._imgs = imgs;
     view.addEventListener("click", (e) => {
       if (e.target.closest(".ph-arrow")) { go(k + (e.target.closest(".next") ? 1 : -1)); e.stopPropagation(); return; }
-      openBox(imgs, k, alt);
+      openBox(imgs.map(fullOf), k, alt);
     });
   }
   async function enhance() {
@@ -399,7 +430,7 @@ onLangChange(() => { renderHome(); renderIdea(); });
       const img = fig.querySelector(":scope > img"); if (!img) continue;
       const src = img.getAttribute("src");
       build(fig, [src]);                                   // instantly clickable
-      anglesOf(src).then((imgs) => { if (imgs.length > 1) { const old = fig.querySelector(".ph-view"); const tmp = document.createElement("img"); tmp.src = src; tmp.alt = img.alt; old.replaceWith(tmp); build(fig, imgs); } });
+      anglesOf(src).then((imgs) => { if (imgs.length > 1) { const old = fig.querySelector(".ph-view"); const tmp = document.createElement("img"); tmp.src = thumbOf(src); tmp.alt = img.alt; old.replaceWith(tmp); build(fig, imgs); } });
     }
   }
   /* full screen viewer */

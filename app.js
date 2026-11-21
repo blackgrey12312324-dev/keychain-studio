@@ -231,9 +231,11 @@ function summaryLines(d, lang = ui.lang) {
   L.push([S("shape"), shapeName(d.shape, lang) + (isLetter(d.shape) || isNumber(d.shape) ? ` (${lab("font", d.font || "block", lang)})` : "")]);
   if (isGame(d.shape) && d.chess) {
     const nm = (h) => (h ? colorName(h, lang) : "transparent");
-    for (const [k, lbl] of [["a", "Light squares"], ["b", "Dark squares"]]) { const c = d.chess[k]; L.push([lbl, [nm(c.c1), c.c2 ? nm(c.c2) : ""].filter(Boolean).join(" + ") + (c.foil ? ", gold foil" : "")]); }
+    const tt = d.shape === "game-ttt";
+    for (const [k, lbl] of (tt ? [["a", "Board colour"], ["b", "Lines, X and O colour"]] : [["a", "Light squares"], ["b", "Dark squares"]])) { const c = d.chess[k]; L.push([lbl, [nm(c.c1), !tt && c.c2 ? nm(c.c2) : ""].filter(Boolean).join(" + ") + (c.foil ? ", gold foil" : "")]); }
   }
   if (CUP_SHAPES.includes(d.shape) && (d.qty || 1) > 1) L.push([lang === "en" ? "Quantity" : t("ui.qtyH", null, lang), `${d.qty} identical`]);
+  if (d.shape === "game-ttt" || d.shape === "game-chess") { if (d.crush && d.crush.length) L.push([S("glitter") || "Glitter", "yes"]); return L; }
   if ((d.shape === "board-rect" || d.shape === "canvas-rect") && d.cm) L.push([lang === "en" ? "Size" : t("ui.cmTitle", null, lang), `${d.cm.w} × ${d.cm.h} cm`]);
   const det = styleDetails(d, lang);
   L.push([S("style"), lab("style", d.style, lang) + (det ? " (" + det + ")" : "")]);
@@ -675,8 +677,8 @@ function tttLayer(d, id) {
   const g = (customShape("game-ttt") || {}).grid; if (!g) return "";
   const ch = d.chess || {}, A = ch.a || {}, B = ch.b || {};
   const w = (g.x1 - g.x0) / 3, h = (g.y1 - g.y0) / 3;
-  const colA = A.c1 && A.c2 ? `url(#${id}-tta)` : A.c1 || A.c2, colB = B.c1 || B.c2 || "#14151A";
-  let o = `<defs>${A.c1 && A.c2 ? `<linearGradient id="${id}-tta" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${A.c1}"/><stop offset="1" stop-color="${A.c2}"/></linearGradient>` : ""}</defs>`;
+  const colA = A.c1, colB = B.c1 || B.c2 || "#14151A";
+  let o = "";
   if (colA) o += `<rect x="${g.x0}" y="${g.y0}" width="${g.x1 - g.x0}" height="${g.y1 - g.y0}" fill="${colA}" opacity="0.9"/>`;
   // the # dividers (raised ridges in the mold)
   for (let i = 1; i < 3; i++) o += `<rect x="${(g.x0 + w * i - 3.5).toFixed(1)}" y="${g.y0}" width="7" height="${g.y1 - g.y0}" rx="3" fill="${colB}" opacity="0.9"/><rect x="${g.x0}" y="${(g.y0 + h * i - 3.5).toFixed(1)}" width="${g.x1 - g.x0}" height="7" rx="3" fill="${colB}" opacity="0.9"/>`;
@@ -727,13 +729,13 @@ function chessPanel() {
     const c = ch[k];
     return `<div class="field chess-sec"><span class="field-label">${title}</span>
       <p class="small-note">${U("chessC1")}</p>${sw(k, "c1", c.c1, false)}
-      <p class="small-note">${U("chessC2")}</p>${sw(k, "c2", c.c2, true)}
+      ${ttt ? "" : `<p class="small-note">${U("chessC2")}</p>${sw(k, "c2", c.c2, true)}`}
       <div class="chips"><button type="button" class="chip ${c.foil ? "on" : ""}" data-chess="${k}.foil" data-v="${c.foil ? "" : "1"}" aria-pressed="${!!c.foil}">${U("chessFoil")}</button></div></div>`;
   };
   const tone = (c) => c.c1 || c.c2 || "rgba(190,205,210,0.7)";
   const glyphs = ["♚", "♛", "♝", "♞", "♜", "♟"], names = ["King", "Queen", "Bishop", "Knight", "Rook", "Pawn"];
   const row = (c) => `<div class="chess-pieces">${glyphs.map((g, i) => `<span title="${names[i]}" style="color:${tone(c)}">${g}</span>`).join("")}</div>`;
-  return `<h2>${U("chessTitle")}</h2><p class="hint">${U("chessNote")}</p>
+  return `<h2>${ttt ? U("tttTitle") : U("chessTitle")}</h2><p class="hint">${ttt ? U("tttNote") : U("chessNote")}</p>
     ${sec("a", ttt ? U("tttBoard") : U("chessLight"))}${sec("b", ttt ? U("tttMarks") : U("chessDark"))}
     ${ttt ? "" : `<div class="field"><span class="field-label">${U("chessPieces")}</span>${row(ch.a)}${row(ch.b)}<p class="small-note">${U("chessPiecesNote")}</p></div>`}`;
 }
@@ -1541,9 +1543,84 @@ function readyView() {
 
 // the style is already chosen when a finished piece is opened, so go straight on to editing it
 function afterStyle(d) { if (isGame(d.shape)) return 4; return d.style === "clear" ? INSIDE_STEP : d.style === "ocean" ? 5 : 4; }
+
+/* ---------- Design helper: the customer describes what they want, we make 5 options ---------- */
+const HELP_COLORS = { red: "#B04855", crimson: "#B04855", pink: "#D9959C", rose: "#C97080", blush: "#D9959C", magenta: "#8E3560", purple: "#6A4B94", lilac: "#9C86C4", violet: "#6A4B94", blue: "#1F6BC0", navy: "#4A5090", "light blue": "#7F9CC0", turquoise: "#4F8A9C", teal: "#4F8A9C", green: "#4C8A7C", mint: "#7FB59A", emerald: "#4C8A7C", yellow: "#C89B2E", gold: "#C89B2E", orange: "#D9742E", copper: "#B8693F", brown: "#8A5F3C", black: "#14151A", grey: "#9A9A92", gray: "#9A9A92", silver: "#9A9A92", white: "#E6E0D8", cream: "#E6E0D8", peach: "#C9A99A" };
+const HELP_GLITTER = { red: "red", pink: "pink", rose: "palerose", purple: "purple", blue: "cobalt", navy: "navy", turquoise: "aqua", teal: "aqua", green: "green", gold: "gold", yellow: "lightgold", orange: "copper", copper: "copper", black: "black", white: "clear", cream: "champagne", silver: "clear", grey: "gunmetal", gray: "gunmetal" };
+const HELP_SHAPES = [[/domino/, "domino-set", "Domino set"], [/chess/, "game-chess", "Chess board"], [/tic.?tac|noughts/, "game-ttt", "Tic-tac-toe"], [/bookmark/, "bookmark", "Bookmark"], [/pen\b/, "pen", "Pen"], [/comb|hair/, "comb", "Hair comb"], [/cup|coaster/, "coaster", "Cup stand"], [/bowl/, "bowl", "Seafood bowl"], [/soap/, "soap", "Soap dish"], [/canvas|painting/, "canvas-rect", "Canvas"], [/board|tray/, "board-rect", "Wooden board"], [/heart/, "heart", "Heart keychain"], [/star\b/, "star", "Star keychain"], [/circle|round/, "circle", "Round keychain"]];
+function helperParse(text) {
+  const t = " " + text.toLowerCase().replace(/[^a-z\s]/g, " ") + " ";
+  let shape = "tag", label = "Keychain";
+  const lm = text.match(/\bletter\s+([a-zA-Z])\b/i) || text.match(/\binitial\s+([a-zA-Z])\b/i);
+  if (lm) { shape = lm[1].toUpperCase(); label = "Letter " + shape; }
+  else for (const [re, id, nm] of HELP_SHAPES) if (re.test(t)) { shape = id; label = nm; break; }
+  const found = [];
+  Object.keys(HELP_COLORS).forEach((k) => { const i = t.indexOf(" " + k + " "); const i2 = t.indexOf(" " + k); if (i2 >= 0 && (i >= 0 || t.indexOf(" " + k + "s") >= 0)) found.push([i2, k]); });
+  found.sort((a, b) => a[0] - b[0]);
+  const names = []; found.forEach(([, k]) => { if (!names.includes(k) && !(k === "blue" && names.includes("light blue"))) names.push(k); });
+  const cols = names.map((k) => HELP_COLORS[k]);
+  const uniq = [...new Set(cols)];
+  const glitterWord = /glitter|sparkle|shimmer|shiny/.test(t), little = /little|bit|some|light|subtle/.test(t);
+  return { shape, label, names, cols: uniq, glitter: glitterWord, glitterAmt: glitterWord ? (little ? 40 : 110) : 0, hearts: /heart|love/.test(t), butterfly: /butterfl/.test(t), flower: /flower|floral|bloom|rose/.test(t), stars: /\bstar|stars/.test(t), gold: /gold/.test(t), sea: /sea|ocean|beach|shell|starfish/.test(t), crown: /crown|princess|queen/.test(t) };
+}
+function helperBuild(spec, v) {
+  const d = defaultDesign();
+  d.shape = spec.shape; d.hardware = "none"; d.tassel.type = "none"; d.crush = []; d.addins = {}; d.deco = ""; d.picked = [];
+  if (hasHardware(d.shape) && !isGame(d.shape)) d.hardware = "ringchain";
+  const base = spec.cols.length ? spec.cols.slice() : ["#D9959C", "#C97080", "#E6E0D8"];
+  const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (base.length < 3) base.push(pad[base.length - 1] || "#E6E0D8");
+  const cols = v % 2 ? [base[1], base[2], base[0]] : base.slice(0, 3);
+  const gl = (spec.cols[0] && HELP_GLITTER[spec.names[0]]) || "gold";
+  const amt = (spec.glitterAmt || 0) * (v === 2 ? 1.6 : v === 4 ? 0.6 : 1);
+  const spots = [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]];
+  const noClearHere = noClear(spec.shape) || isGame(spec.shape) && false;
+  const styles = ["gradient", "ink", "gradient", spec.sea ? "ocean" : "clear", "ink"];
+  let style = styles[v];
+  if (style === "clear" && noClearHere) style = "ink";
+  if (isGame(spec.shape) && style === "ocean") style = "gradient";
+  if (style === "ocean") { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); }
+  else if (style === "gradient") gradLook(d, cols, ["down", "diagonal", "center"][v % 3]);
+  else if (style === "ink") inkLook(d, cols, spots);
+  else { d.style = "clear"; d.picked = []; }
+  if (style === "clear") { sprinkle(d, spec.gold ? "goldleaf" : (HELP_GLITTER[spec.names[0]] || "clear"), 80 + (amt || 60), "hp" + v); }
+  if (amt && style !== "ocean") { sprinkle(d, gl, Math.round(amt), "hg" + v); if (v === 2) sprinkle(d, "champagne", 40, "hg2" + v); }
+  if (spec.hearts && style !== "ocean") sprinkle(d, "hearts", v === 4 ? 12 : 22, "hh" + v);
+  if (spec.stars && style !== "ocean") sprinkle(d, "stars", 18, "hs" + v);
+  if (spec.gold && style !== "ocean") sprinkle(d, "goldleaf", 40 + v * 10, "hl" + v);
+  // 3D pieces only where the design allows them
+  const want = [];
+  if (spec.hearts) want.push(["sm-heart-ruby", "sm-heart-blue"][v % 2 && spec.names.includes("blue") ? 1 : 0]);
+  if (spec.butterfly) want.push(spec.names.includes("pink") ? "sm-butterfly-pink" : "sm-butterfly-teal");
+  if (spec.flower) want.push(spec.names.includes("pink") || spec.names.includes("rose") ? "flower-pink" : "flower-cream");
+  if (spec.crown) want.push("sm-crown-gold");
+  if (style !== "gradient" && style !== "ocean" && want.length && (v === 1 || v === 3 || v === 4)) {
+    d.deco = want.some((x) => x.startsWith("flower")) ? "natural" : "charms";
+    const ids = want.filter((x) => (d.deco === "natural" ? x.startsWith("flower") : !x.startsWith("flower")));
+    ids.slice(0, v === 4 ? 1 : 2).forEach((id) => { const ad = CONFIG.addins.find((x) => x.id === id); if (ad && fits(ad, d)) d.addins[id] = { amount: "few", place: "anna", color: ad.color }; });
+  }
+  if (isGame(spec.shape) && spec.shape !== "domino-set") {
+    d.chess = { a: { c1: base[0], c2: "", foil: !!spec.gold }, b: { c1: base[1], c2: "", foil: !!spec.gold } };
+    if (v % 2) d.chess = { a: { c1: "", c2: base[0], foil: !!spec.gold }, b: { c1: base[1], c2: base[2], foil: !!spec.gold } };
+    d.style = "gradient";
+  }
+  normaliseStyle(d); applyPicked(d); resetItems(d); layoutItems(d);
+  return d;
+}
+const HELP_NAMES = ["Smooth blend", "Swirled ink", "Extra sparkle", "Clear and airy", "Soft ink touch"];
+function helperView() {
+  const opts = ui.helperOpts || [];
+  const T = (en, th, ru) => ({ th, ru }[ui.lang] || en);
+  return `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>
+    <h2>${T("Describe your design", "บอกแบบที่อยากได้", "Опиши свой дизайн")}</h2>
+    <p class="hint">${T("Tell me who it is for, what you want, the colours, glitter, hearts or flowers. I will make 5 options and you pick one.", "บอกว่าทำให้ใคร อยากได้อะไร สี กากเพชร หัวใจ หรือดอกไม้ แล้วเราจะทำ 5 แบบให้เลือก", "Расскажи, для кого, что хочешь, цвета, блёстки, сердечки или цветы. Я сделаю 5 вариантов, и ты выберешь.")}</p>
+    <div class="field"><textarea id="helper-text" rows="3" placeholder="${esc(T("e.g. A present for my mom: a domino set, red and pink with a little glitter and some hearts", "เช่น ของขวัญให้แม่: โดมิโน สีแดงและชมพู มีกากเพชรเล็กน้อยและหัวใจ", "например: подарок маме, домино, красное и розовое, немного блёсток и сердечки"))}">${esc(ui.helperText || "")}</textarea>
+      <button type="button" class="btn btn-ink" style="margin-top:10px" data-action="helpergo">${T("Make 5 options", "สร้าง 5 แบบ", "Сделать 5 вариантов")}</button></div>
+    ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${esc(ui.helperSpec.label)}</b>${ui.helperSpec.names.length ? ", " + esc(ui.helperSpec.names.join(", ")) : ""}${ui.helperSpec.glitter ? ", glitter" : ""}${ui.helperSpec.hearts ? ", hearts" : ""}${ui.helperSpec.butterfly ? ", butterflies" : ""}${ui.helperSpec.flower ? ", flowers" : ""}</p>
+    <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art"><span class="rl-svg" style="display:block;aspect-ratio:3/4">${renderPiece(d)}</span></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${HELP_NAMES[i]}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}</div>` : ""}`;
+}
 const STEP_VIEWS = [
   // 0 Ready-made
-  () => (!ui.cat && !ui.pickReady) ? `<div class="start-bar"><div><b>${U("choiceH")}</b><span>${U("choiceP")}</span></div><div class="start-btns"><button type="button" class="btn start-btn" data-action="pickready">${U("choiceReady")}</button><button type="button" class="btn start-btn on" data-action="designown">${U("choiceOwn")}</button></div></div>` + STEP_VIEWS[1]() : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + readyView(),
+  () => ui.helper ? helperView() : (!ui.cat && !ui.pickReady) ? `<div class="start-bar"><div><b>${U("choiceH")}</b><span>${U("choiceP")}</span></div><div class="start-btns"><button type="button" class="btn start-btn" data-action="pickready">${U("choiceReady")}</button><button type="button" class="btn start-btn on" data-action="designown">${U("choiceOwn")}</button><button type="button" class="btn start-btn" data-action="helper">${U("helperBtn")}</button></div></div>` + STEP_VIEWS[1]() : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + readyView(),
 
   // 1 Mold (category first)
   () => {
@@ -1849,7 +1926,7 @@ const RANK = ["sea", "metalsea", "seaanimals", "small", "charms", "flowers", "dr
   () => {
     const pr = priceOf(design);
     return `
-    <h2>${U("s9h")}</h2>
+    <h2>${catOf(design.shape) === "keychains" ? U("s9h") : U("yourDesign")}</h2>
     <p class="hint">${U("s9p")}</p>
     <div class="rev-thumbs">${reviewThumbs(design)}</div>
     <p>${U("designCode")}: <span class="code">${designCode(design)}</span></p>
@@ -2237,10 +2314,21 @@ els.panel.addEventListener("click", (e) => {
     resetItems(design);
     ui.zoom = 1; ui.pan = [0, 0];
     changed();
+  } else if (action === "helper") {
+    ui.helper = true; ui.pickReady = false; renderPanel(); window.scrollTo({ top: 0 }); return;
+  } else if (action === "helpergo") {
+    const txt = ($("helper-text") || {}).value || ""; ui.helperText = txt;
+    if (!txt.trim()) { toast(U("helperEmpty")); return; }
+    ui.helperSpec = helperParse(txt); ui.helperOpts = [0, 1, 2, 3, 4].map((v) => helperBuild(ui.helperSpec, v));
+    renderPanel(); return;
+  } else if (action === "helperpick") {
+    const d = ui.helperOpts[Number(el.dataset.i)]; if (!d) return;
+    design = copy(d); ui.helper = false; ui.cat = catOf(design.shape); ui.chosen = true; ui.visited = new Set([0, 1, 2, 3]);
+    go(el.dataset.go === "review" ? LAST : afterStyle(design)); swing(); return;
   } else if (action === "pickready") {
     ui.pickReady = true; renderPanel(); window.scrollTo({ top: 0 }); return;
   } else if (action === "choiceback") {
-    ui.pickReady = false; renderPanel(); window.scrollTo({ top: 0 }); return;
+    ui.pickReady = false; ui.helper = false; renderPanel(); window.scrollTo({ top: 0 }); return;
   } else if (action === "designown") {
     const g = document.querySelector(".cards.cats"); if (g) g.scrollIntoView({ behavior: "smooth", block: "start" }); return;
   } else if (action === "scratch") {

@@ -1497,3 +1497,10 @@ body[data-page="home"] .way, body[data-page="home"] .btn-line { backdrop-filter:
 body[data-page="home"] main > section:not(.hero) { content-visibility: auto; contain-intrinsic-size: 1px 900px; }
 img { image-rendering: auto; }
 @media (prefers-reduced-motion: no-preference) { .hero .wave { animation-duration: 40s !important; } }
+
+.sub-h { font: 600 .85rem Jost, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: #19708A; margin: 22px 0 8px; }
+.fb-wrap { max-width: 640px; text-align: center; display: grid; gap: 12px; }
+.fb-wrap textarea, .fb-wrap input { width: 100%; font: inherit; padding: 12px 14px; border-radius: 16px; border: 1px solid #C9D6D8; background: rgba(255,255,255,.85); }
+.fb-stars { display: flex; justify-content: center; gap: 6px; }
+.fb-star { font-size: 2rem; line-height: 1; border: 0; background: none; color: #C9D6D8; cursor: pointer; transition: transform .15s; }
+.fb-star.on { color: #E0A93B; } .fb-star:hover { transform: scale(1.15); }
