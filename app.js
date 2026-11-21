@@ -1580,7 +1580,7 @@ const HELP_AUD = [
   ["partner", /\b(boyfriend|girlfriend|wife|husband|partner|love|anniversary|valentine)\b/],
   ["friend", /\b(friend|bestie|sister|brother)\b/], ["work", /\b(boss|colleague|coworker|teacher|office|client)\b/]];
 const HELP_LIKES = { frog: /frog/, cat: /\bcat|kitten/, bear: /\bbear/, guns: /\bgun|pistol|rifle|army|military|shoot/, money: /money|rich|dollar|cash|boss/, sea: /sea|ocean|beach|shell|starfish|wave|mermaid/, flower: /flower|floral|bloom|garden/, butterfly: /butterfl/, hearts: /heart/, crown: /crown|princess|queen|royal/, stars: /\bstar/, game: /game|play|chess|domino|tic|puzzle/ };
-const HELP_AUDCOL = { kid: ["pink", "light blue", "yellow"], teen: ["purple", "black", "turquoise"], senior: ["rose", "cream", "gold"], mom: ["rose", "cream", "gold"], dad: ["navy", "grey", "brown"], partner: ["red", "pink", "gold"], friend: ["lilac", "turquoise", "pink"], work: ["navy", "silver", "white"] };
+const HELP_AUDCOL = { boy: ["blue", "light blue", "navy"], girl: ["pink", "lilac", "rose"], kid: ["pink", "light blue", "yellow"], teen: ["purple", "black", "turquoise"], senior: ["rose", "cream", "gold"], mom: ["rose", "cream", "gold"], dad: ["navy", "grey", "brown"], partner: ["red", "pink", "gold"], friend: ["lilac", "turquoise", "pink"], work: ["navy", "silver", "white"] };
 const _helperParse0 = helperParse;
 helperParse = function (text) {
   const sp = _helperParse0(text), low = text.toLowerCase();
@@ -1588,8 +1588,9 @@ helperParse = function (text) {
   sp.likes = Object.keys(HELP_LIKES).filter((k) => HELP_LIKES[k].test(low));
   sp.hearts = /heart/.test(low); sp.gift = /gift|present|birthday|anniversary|surprise|souvenir|memory|memories|photo/.test(low);
   sp.named = sp.shape !== "tag" || /keychain|key ?ring|charm/.test(low);
+  sp.gender = /\b(boy|son|nephew|brother|boyfriend|husband|dad|father|grandpa|he|his)\b/.test(low) ? "boy" : /\b(girl|daughter|niece|sister|girlfriend|wife|mom|mum|mother|grandma|she|her)\b/.test(low) ? "girl" : "";
   sp.autoCol = !sp.cols.length;
-  if (sp.autoCol) { const pick = sp.likes.includes("frog") ? ["green", "mint", "cream"] : sp.likes.includes("sea") ? ["blue", "turquoise", "white"] : sp.likes.includes("guns") ? ["black", "grey", "gold"] : sp.likes.includes("money") ? ["green", "gold", "black"] : HELP_AUDCOL[sp.aud] || ["pink", "blue", "gold"]; sp.names = pick; sp.cols = pick.map((k) => HELP_COLORS[k]); }
+  if (sp.autoCol) { const pick = sp.likes.includes("frog") ? ["green", "mint", "cream"] : sp.likes.includes("sea") ? ["blue", "turquoise", "white"] : sp.likes.includes("guns") ? ["black", "grey", "gold"] : sp.likes.includes("money") ? ["green", "gold", "black"] : (sp.gender && ["kid", "teen", "friend", "partner", ""].includes(sp.aud) && HELP_AUDCOL[sp.gender]) || HELP_AUDCOL[sp.aud] || ["pink", "blue", "gold"]; sp.names = pick; sp.cols = pick.map((k) => HELP_COLORS[k]); }
   if (!sp.glitter) { sp.glitter = true; sp.glitterAmt = sp.aud === "kid" || sp.aud === "teen" ? 90 : 60; }
   if (sp.likes.includes("hearts")) sp.hearts = true; if (sp.likes.includes("butterfly")) sp.butterfly = true; if (sp.likes.includes("flower")) sp.flower = true; if (sp.likes.includes("crown")) sp.crown = true; if (sp.likes.includes("stars")) sp.stars = true; if (sp.likes.includes("sea")) sp.sea = true;
   return sp;
@@ -1663,6 +1664,37 @@ function helperBuild(spec, opt) {
   }
   normaliseStyle(d); applyPicked(d); resetItems(d); layoutItems(d);
   return d;
+}
+
+// Helper v3: pick from Anna's own ready-made designs (they look right), matched to colour, person and interest
+const HELP_CATS = { kid: ["keychains", "accessories", "statues", "paint", "kitchen"], teen: ["keychains", "statues", "accessories", "paint", "cutting"], senior: ["accessories", "kitchen", "paint", "keychains", "cutting"], mom: ["accessories", "kitchen", "paint", "keychains", "cutting"], dad: ["statues", "cutting", "paint", "keychains", "kitchen"], partner: ["paint", "keychains", "accessories", "statues", "kitchen"], friend: ["keychains", "accessories", "statues", "paint", "kitchen"], work: ["accessories", "kitchen", "cutting", "paint", "keychains"], "": ["keychains", "statues", "paint", "accessories", "cutting"] };
+function hexRgb(h) { const n = parseInt(h.replace("#", ""), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
+function helperDesignCols(d) { return d.style === "ocean" ? ["#1F6BC0", "#4F8A9C"] : (d.picked || []).filter((c) => /^#/.test(c)); }
+function helperScore(spec, d) {
+  const mine = helperDesignCols(d), want = spec.cols.map(hexRgb);
+  let sc = 0;
+  if (mine.length && want.length) { const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]); const m = mine.map(hexRgb); sc -= want.reduce((t, w) => t + Math.min(...m.map((x) => dist(x, w))), 0) / want.length; } else sc -= 200;
+  if (spec.likes.includes("sea") && d.style === "ocean") sc += 160;
+  if (spec.likes.includes("game") && isGame(d.shape)) sc += 160;
+  if (!spec.likes.includes("sea") && d.style === "ocean" && !spec.autoCol) sc -= 60;
+  return sc;
+}
+function helperPicks(spec) {
+  const all = Object.keys(GALLERY_DESIGNS).map((k) => { const g = galleryDesign(k); return g && { k, d: g.d, cat: g.cat, sc: helperScore(spec, g.d) + ((hashText(k + spec.names.join()) % 40) - 20) }; }).filter(Boolean);
+  const order = (HELP_CATS[spec.aud] || HELP_CATS[""]).slice();
+  const named = spec.named && spec.shape !== "tag" ? catOf(spec.shape) : "";
+  const res = [], used = new Set();
+  const take = (cat, n) => all.filter((x) => x.cat === cat && !used.has(x.k)).sort((a, b) => b.sc - a.sc).slice(0, n).forEach((x) => { used.add(x.k); res.push(x); });
+  if (named) { all.filter((x) => x.d.shape === spec.shape).sort((a, b) => b.sc - a.sc).slice(0, 2).forEach((x) => { used.add(x.k); res.push(x); }); if (!res.length) take(named, 1); }
+  order.forEach((c) => { if (res.length < 5 && c !== named) take(c, 1); });
+  while (res.length < 5) { const r = all.filter((x) => !used.has(x.k)).sort((a, b) => b.sc - a.sc)[0]; if (!r) break; used.add(r.k); res.push(r); }
+  return res.slice(0, 5);
+}
+function helperTitle2(p) {
+  const d = p.d, c = CONFIG.shapes.find((x) => x.id === d.shape) || {};
+  const nm = isLetter(d.shape) ? "Letter " + d.shape + " keychain" : HELP_SHAPE_NAME[d.shape] || c.name || "Piece";
+  const lbl = { cutting: "wooden board", paint: "canvas", statues: "game set", kitchen: "for the table", accessories: "accessory", keychains: "keychain" }[p.cat] || "";
+  return nm + (lbl && !nm.toLowerCase().includes(lbl) ? " · " + lbl : "");
 }
 function helperTitle(spec, d, opt) {
   const nm = isLetter(d.shape) ? "Letter " + d.shape + " keychain" : HELP_SHAPE_NAME[d.shape] || (CONFIG.shapes.find((x) => x.id === d.shape) || {}).name || "Piece";
@@ -2404,7 +2436,7 @@ els.panel.addEventListener("click", (e) => {
     if (ui.rec) ui.rec.stop();
     const txt = ($("helper-text") || {}).value || ""; ui.helperText = txt;
     if (!txt.trim()) { toast(U("helperEmpty")); return; }
-    ui.helperSpec = helperParse(txt); const plan = helperPlan(ui.helperSpec); ui.helperOpts = plan.map((o) => helperBuild(ui.helperSpec, o)); ui.helperTitles = ui.helperOpts.map((d, i) => helperTitle(ui.helperSpec, d, plan[i]));
+    ui.helperSpec = helperParse(txt); const picks = helperPicks(ui.helperSpec); ui.helperOpts = picks.map((p) => p.d); ui.helperTitles = picks.map((p) => helperTitle2(p));
     renderPanel(); return;
   } else if (action === "helperpick") {
     const d = ui.helperOpts[Number(el.dataset.i)]; if (!d) return;
