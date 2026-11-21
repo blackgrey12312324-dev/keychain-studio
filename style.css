@@ -1504,3 +1504,7 @@ img { image-rendering: auto; }
 .fb-stars { display: flex; justify-content: center; gap: 6px; }
 .fb-star { font-size: 2rem; line-height: 1; border: 0; background: none; color: #C9D6D8; cursor: pointer; transition: transform .15s; }
 .fb-star.on { color: #E0A93B; } .fb-star:hover { transform: scale(1.15); }
+
+.helper-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+.mic-btn.rec { background: #FCE3E3 !important; border-color: #D9534F !important; color: #A32A27 !important; animation: micpulse 1.2s infinite; }
+@keyframes micpulse { 50% { box-shadow: 0 0 0 8px rgba(217,83,79,.15); } }

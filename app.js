@@ -31,6 +31,7 @@ function defaultDesign() {
     shape: "A",
     cm: { w: 30, h: 40 },
     qty: 1,
+    partial: 0,
     chess: { a: { c1: "", c2: "#E6E0D8", foil: true }, b: { c1: "#14151A", c2: "", foil: true } },
     second: "",
     style: "gradient",
@@ -1149,7 +1150,8 @@ function renderPiece(d, side = "front", opts = {}) {
   </defs>`;
 
   const plainBack = side === "back" && d.back === "plain";
-  const fill = plainBack ? "" : (d.shape === "game-ttt" ? tttLayer(d, id) : d.shape === "game-chess" ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + (d.shape === "domino-set" ? dominoLayer(d) : "") + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
+  const fillRaw = plainBack ? "" : (d.shape === "game-ttt" ? tttLayer(d, id) : d.shape === "game-chess" ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + (d.shape === "domino-set" ? dominoLayer(d) : "") + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
+  const fill = (d.partial > 0 && d.partial < 1 && (customShape(d.shape) || {}).wood && fillRaw) ? `<clipPath id="${id}-part"><rect x="0" y="${T - 4}" width="300" height="${(B - T) * d.partial + 4}"/></clipPath><g clip-path="url(#${id}-part)">${fillRaw}</g><rect x="0" y="${(T + (B - T) * d.partial - 3).toFixed(1)}" width="300" height="3" fill="rgba(255,255,255,0.55)" pointer-events="none"/>` : fillRaw;
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linejoin="round"`;
@@ -1481,7 +1483,7 @@ const GALLERY_DESIGNS = {
   "g-domino": { cat: "statues", shape: "domino-set", f(d) { inkLook(d, ["#1F6BC0", "#C89B2E"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); } },
   "g-ruffle-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#E6E0D8", "#F3EBDD", "#C89B2E"], "diagonal"); sprinkle(d, "goldleaf", 30, "rb"); } },
   "g-lychee-bowl": { cat: "kitchen", shape: "bowl", f(d) { inkLook(d, ["#D9959C", "#C97080", "#E6E0D8"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); } },
-  "g-pinkboard": { cat: "cutting", shape: "board-rect", f(d) { d.cm = { w: 40, h: 25 }; gradLook(d, ["#D9742E", "#B04855", "#D9959C"], "down"); sprinkle(d, "gold", 60, "pb"); } },
+  "g-pinkboard": { cat: "cutting", shape: "board-rect", f(d) { d.cm = { w: 40, h: 25 }; gradLook(d, ["#D9742E", "#B04855", "#D9959C"], "down"); sprinkle(d, "gold", 60, "pb"); d.partial = 0.55; } },
   "g-coffee-art": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 30 }; inkLook(d, ["#8A5F3C", "#E6E0D8", "#B8693F"], [[0, .45, .3, 26], [1, .55, .55, 22], [2, .42, .78, 16]]); } },
   "g-beach-lounger": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 40 }; d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-shell-scallop"]); } },
   "g-feather-canvas": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 40, h: 50 }; gradLook(d, ["#3A5F55", "#4C8A7C", "#C89B2E"], "diagonal"); sprinkle(d, "goldleaf", 40, "fc"); } },
@@ -1516,11 +1518,11 @@ const GALLERY_DESIGNS = {
   "g-nuts-dish": { cat: "kitchen", shape: "tray-oval", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#E6E0D8"], [[0, .4, .35, 26], [1, .6, .6, 24], [2, .45, .8, 18]]); } },
   "g-fruit-bowl": { cat: "kitchen", shape: "bowl", f(d) { inkLook(d, ["#4F8A9C", "#7F9CC0", "#E6E0D8"], [[0, .4, .4, 26], [1, .6, .65, 24], [2, .5, .3, 16]]); sprinkle(d, "clear", 60, "fb"); } },
   "g-tealight": { cat: "kitchen", shape: "coaster", f(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .5, .4, 24], [1, .55, .65, 20], [2, .4, .55, 12]]); } },
-  "g-tail": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); } },
-  "g-woodtray": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); } },
-  "g-paddle": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); } },
-  "g-tree": { cat: "cutting", shape: "board-rect", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); } },
-  "g-copper": { cat: "cutting", shape: "board-rect", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); } },
+  "g-tail": { cat: "cutting", shape: "board-whale-tail", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.partial = 0.7; } },
+  "g-woodtray": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.partial = 0.6; } },
+  "g-paddle": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); d.partial = 0.6; } },
+  "g-tree": { cat: "cutting", shape: "board-rect", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); d.partial = 0.5; } },
+  "g-copper": { cat: "cutting", shape: "board-rect", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); d.partial = 0.55; } },
 };
 function galleryDesign(key) {
   const g = GALLERY_DESIGNS[key]; if (!g) return null;
@@ -1621,7 +1623,7 @@ function helperView() {
     <h2>${T("Describe your design", "บอกแบบที่อยากได้", "Опиши свой дизайн")}</h2>
     <p class="hint">${T("Tell me who it is for, what you want, the colours, glitter, hearts or flowers. I will make 5 options and you pick one.", "บอกว่าทำให้ใคร อยากได้อะไร สี กากเพชร หัวใจ หรือดอกไม้ แล้วเราจะทำ 5 แบบให้เลือก", "Расскажи, для кого, что хочешь, цвета, блёстки, сердечки или цветы. Я сделаю 5 вариантов, и ты выберешь.")}</p>
     <div class="field"><textarea id="helper-text" rows="3" placeholder="${esc(T("e.g. A present for my mom: a domino set, red and pink with a little glitter and some hearts", "เช่น ของขวัญให้แม่: โดมิโน สีแดงและชมพู มีกากเพชรเล็กน้อยและหัวใจ", "например: подарок маме, домино, красное и розовое, немного блёсток и сердечки"))}">${esc(ui.helperText || "")}</textarea>
-      <button type="button" class="btn btn-ink" style="margin-top:10px" data-action="helpergo">${T("Make 5 options", "สร้าง 5 แบบ", "Сделать 5 вариантов")}</button></div>
+      <div class="helper-row"><button type="button" class="btn btn-ink" data-action="helpergo">${T("Make 5 options", "สร้าง 5 แบบ", "Сделать 5 вариантов")}</button><button type="button" class="btn btn-line mic-btn ${ui.listening ? "rec" : ""}" data-action="helpermic" aria-pressed="${!!ui.listening}">🎤 ${ui.listening ? T("Listening… tap to stop", "กำลังฟัง… แตะเพื่อหยุด", "Слушаю… нажми, чтобы остановить") : T("Speak instead", "พูดแทนการพิมพ์", "Сказать голосом")}</button></div><p class="small-note" id="mic-note"></p></div>
     ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${esc(ui.helperSpec.label)}</b>${ui.helperSpec.names.length ? ", " + esc(ui.helperSpec.names.join(", ")) : ""}${ui.helperSpec.glitter ? ", glitter" : ""}${ui.helperSpec.hearts ? ", hearts" : ""}${ui.helperSpec.butterfly ? ", butterflies" : ""}${ui.helperSpec.flower ? ", flowers" : ""}</p>
     <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art"><span class="rl-svg" style="display:block;aspect-ratio:3/4">${renderPiece(d)}</span></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${HELP_NAMES[i]}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}</div>` : ""}`;
 }
@@ -2323,7 +2325,22 @@ els.panel.addEventListener("click", (e) => {
     changed();
   } else if (action === "helper") {
     ui.helper = true; ui.pickReady = false; renderPanel(); window.scrollTo({ top: 0 }); return;
+  } else if (action === "helpermic") {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const note = $("mic-note");
+    if (!SR) { if (note) note.textContent = U("micNo"); return; }
+    if (ui.rec) { ui.rec.stop(); return; }
+    const box = $("helper-text"), base = box.value ? box.value.trim() + " " : "";
+    const rec = new SR(); ui.rec = rec;
+    rec.lang = { th: "th-TH", ru: "ru-RU" }[ui.lang] || "en-US"; rec.interimResults = true; rec.continuous = true;
+    rec.onresult = (ev) => { let txt = ""; for (let i = 0; i < ev.results.length; i++) txt += ev.results[i][0].transcript; ui.helperText = base + txt; const bx = $("helper-text"); if (bx) bx.value = ui.helperText; };
+    rec.onerror = (ev) => { const n = $("mic-note"); if (n) n.textContent = ev.error === "not-allowed" ? U("micDenied") : U("micNo"); };
+    rec.onend = () => { ui.rec = null; ui.listening = false; const keep = ($("helper-text") || {}).value; ui.helperText = keep || ui.helperText; if (ui.helper) { const y = window.scrollY; renderPanel(); window.scrollTo(0, y); } };
+    ui.listening = true; try { rec.start(); } catch (err) { ui.listening = false; ui.rec = null; }
+    renderPanel(); const b2 = $("helper-text"); if (b2) b2.value = base;
+    return;
   } else if (action === "helpergo") {
+    if (ui.rec) ui.rec.stop();
     const txt = ($("helper-text") || {}).value || ""; ui.helperText = txt;
     if (!txt.trim()) { toast(U("helperEmpty")); return; }
     ui.helperSpec = helperParse(txt); ui.helperOpts = [0, 1, 2, 3, 4].map((v) => helperBuild(ui.helperSpec, v));
