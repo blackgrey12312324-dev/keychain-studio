@@ -1557,7 +1557,7 @@ function afterStyle(d) { if (isGame(d.shape)) return 4; return d.style === "clea
 const HELP_COLORS = { red: "#B04855", crimson: "#B04855", pink: "#D9959C", rose: "#C97080", blush: "#D9959C", magenta: "#8E3560", purple: "#6A4B94", lilac: "#9C86C4", violet: "#6A4B94", blue: "#1F6BC0", navy: "#4A5090", "light blue": "#7F9CC0", turquoise: "#4F8A9C", teal: "#4F8A9C", green: "#4C8A7C", mint: "#7FB59A", emerald: "#4C8A7C", yellow: "#C89B2E", gold: "#C89B2E", orange: "#D9742E", copper: "#B8693F", brown: "#8A5F3C", black: "#14151A", grey: "#9A9A92", gray: "#9A9A92", silver: "#9A9A92", white: "#E6E0D8", cream: "#E6E0D8", peach: "#C9A99A" };
 const HELP_GLITTER = { red: "red", pink: "pink", rose: "palerose", purple: "purple", blue: "cobalt", navy: "navy", turquoise: "aqua", teal: "aqua", green: "green", gold: "gold", yellow: "lightgold", orange: "copper", copper: "copper", black: "black", white: "clear", cream: "champagne", silver: "clear", grey: "gunmetal", gray: "gunmetal" };
 const HELP_SHAPES = [[/domino/, "domino-set", "Domino set"], [/chess/, "game-chess", "Chess board"], [/tic.?tac|noughts/, "game-ttt", "Tic-tac-toe"], [/bookmark/, "bookmark", "Bookmark"], [/pen\b/, "pen", "Pen"], [/comb|hair/, "comb", "Hair comb"], [/cup|coaster/, "coaster", "Cup stand"], [/bowl/, "bowl", "Seafood bowl"], [/soap/, "soap", "Soap dish"], [/canvas|painting/, "canvas-rect", "Canvas"], [/board|tray/, "board-rect", "Wooden board"], [/heart/, "heart", "Heart keychain"], [/star\b/, "star", "Star keychain"], [/circle|round/, "circle", "Round keychain"]];
-function helperParse(text) {
+var helperParse = function (text) {
   const t = " " + text.toLowerCase().replace(/[^a-z\s]/g, " ") + " ";
   let shape = "tag", label = "Keychain";
   const lm = text.match(/\bletter\s+([a-zA-Z])\b/i) || text.match(/\binitial\s+([a-zA-Z])\b/i);
@@ -1572,60 +1572,116 @@ function helperParse(text) {
   const glitterWord = /glitter|sparkle|shimmer|shiny/.test(t), little = /little|bit|some|light|subtle/.test(t);
   return { shape, label, names, cols: uniq, glitter: glitterWord, glitterAmt: glitterWord ? (little ? 40 : 110) : 0, hearts: /heart|love/.test(t), butterfly: /butterfl/.test(t), flower: /flower|floral|bloom|rose/.test(t), stars: /\bstar|stars/.test(t), gold: /gold/.test(t), sea: /sea|ocean|beach|shell|starfish/.test(t), crown: /crown|princess|queen/.test(t) };
 }
-function helperBuild(spec, v) {
+const HELP_AUD = [
+  ["kid", /\b(kid|child|son|daughter|boy|girl|toddler|baby|niece|nephew|little)\b|\b([3-9]|1[0-2])\s*(y|yo|year)/],
+  ["teen", /\b(teen|teenager|1[3-9]\s*(y|yo|year)|high school|student)\b/],
+  ["senior", /\b(grandma|grandmother|grandpa|grandfather|granny|elderly|senior|6\d|7\d|8\d)\b/],
+  ["mom", /\b(mom|mum|mother|mama)\b/], ["dad", /\b(dad|father|papa)\b/],
+  ["partner", /\b(boyfriend|girlfriend|wife|husband|partner|love|anniversary|valentine)\b/],
+  ["friend", /\b(friend|bestie|sister|brother)\b/], ["work", /\b(boss|colleague|coworker|teacher|office|client)\b/]];
+const HELP_LIKES = { frog: /frog/, cat: /\bcat|kitten/, bear: /\bbear/, guns: /\bgun|pistol|rifle|army|military|shoot/, money: /money|rich|dollar|cash|boss/, sea: /sea|ocean|beach|shell|starfish|wave|mermaid/, flower: /flower|floral|bloom|garden/, butterfly: /butterfl/, hearts: /heart/, crown: /crown|princess|queen|royal/, stars: /\bstar/, game: /game|play|chess|domino|tic|puzzle/ };
+const HELP_AUDCOL = { kid: ["pink", "light blue", "yellow"], teen: ["purple", "black", "turquoise"], senior: ["rose", "cream", "gold"], mom: ["rose", "cream", "gold"], dad: ["navy", "grey", "brown"], partner: ["red", "pink", "gold"], friend: ["lilac", "turquoise", "pink"], work: ["navy", "silver", "white"] };
+const _helperParse0 = helperParse;
+helperParse = function (text) {
+  const sp = _helperParse0(text), low = text.toLowerCase();
+  sp.aud = (HELP_AUD.find(([, re]) => re.test(low)) || [""])[0];
+  sp.likes = Object.keys(HELP_LIKES).filter((k) => HELP_LIKES[k].test(low));
+  sp.hearts = /heart/.test(low); sp.gift = /gift|present|birthday|anniversary|surprise|souvenir|memory|memories|photo/.test(low);
+  sp.named = sp.shape !== "tag" || /keychain|key ?ring|charm/.test(low);
+  sp.autoCol = !sp.cols.length;
+  if (sp.autoCol) { const pick = sp.likes.includes("frog") ? ["green", "mint", "cream"] : sp.likes.includes("sea") ? ["blue", "turquoise", "white"] : sp.likes.includes("guns") ? ["black", "grey", "gold"] : sp.likes.includes("money") ? ["green", "gold", "black"] : HELP_AUDCOL[sp.aud] || ["pink", "blue", "gold"]; sp.names = pick; sp.cols = pick.map((k) => HELP_COLORS[k]); }
+  if (!sp.glitter) { sp.glitter = true; sp.glitterAmt = sp.aud === "kid" || sp.aud === "teen" ? 90 : 60; }
+  if (sp.likes.includes("hearts")) sp.hearts = true; if (sp.likes.includes("butterfly")) sp.butterfly = true; if (sp.likes.includes("flower")) sp.flower = true; if (sp.likes.includes("crown")) sp.crown = true; if (sp.likes.includes("stars")) sp.stars = true; if (sp.likes.includes("sea")) sp.sea = true;
+  return sp;
+};
+// charms that suit the person; the first ones that physically fit are used
+function helperCharms(spec, v) {
+  const L = spec.likes, a = [];
+  if (L.includes("frog")) a.push("frog");
+  if (L.includes("guns")) a.push("charm-pistol", "charm-ak-mini", "charm-m4");
+  if (L.includes("money")) a.push("charm-moneybag-mini", "charm-dollar", "charm-coin");
+  if (spec.hearts) a.push("sm-heart-ruby", "sm-heart-blue");
+  if (spec.butterfly) a.push("sm-butterfly-pink", "sm-butterfly-teal");
+  if (spec.crown) a.push("sm-crown-gold");
+  if (spec.flower) a.push("flower-pink", "flower-cream");
+  const def = { kid: ["frog", "sm-butterfly-pink", "sm-heart-ruby"], teen: ["sm-butterfly-teal", "sm-heart-blue", "charm-coin"], senior: ["flower-cream", "sm-heart-ruby"], mom: ["flower-pink", "sm-heart-ruby", "sm-butterfly-pink"], dad: ["charm-coin", "sm-heart-blue"], partner: ["sm-heart-ruby", "sm-heart-ruby"], friend: ["sm-butterfly-teal", "sm-heart-blue"], work: ["charm-coin", "sm-crown-gold"] }[spec.aud] || ["sm-heart-ruby", "sm-butterfly-pink", "flower-pink"];
+  const all = [...new Set([...a, ...def])];
+  return all.slice(v % 2, v % 2 + 4).concat(all);
+}
+// the 5 products offered, by who it is for
+function helperPlan(spec) {
+  const sh = spec.shape, L = spec.likes;
+  const keep = spec.named && sh !== "tag" ? sh : null;
+  const by = { kid: ["tag", "comb", "pen", "game-ttt", "bookmark"], teen: ["heart", "domino-set", "pen", "comb", "game-chess"], senior: ["bookmark", "coaster", "soap", "domino-set", "comb"], mom: ["bookmark", "coaster", "comb", "soap", "tag"], dad: ["game-chess", "domino-set", "pen", "coaster", "tag"], partner: ["heart", "bookmark", "game-chess", "comb", "tag"], friend: ["tag", "pen", "comb", "game-ttt", "bookmark"], work: ["pen", "coaster", "bookmark", "tag", "domino-set"], "": ["tag", "bookmark", "domino-set", "pen", "comb"] }[spec.aud].slice();
+  if (L.includes("game") && !by.includes("domino-set")) by[2] = "domino-set";
+  if (L.includes("sea")) by[1] = "soap";
+  let shapes = by;
+  if (keep) shapes = [keep, keep, keep, by.find((x) => x !== keep) || "tag", by.filter((x) => x !== keep)[1] || "heart"];
+  const styles = keep ? ["ink", "clear", "ink", "ink", "clear"] : ["ink", "ink", "clear", "ink", "ink"];
+  return shapes.map((shape, i) => ({ shape, style: spec.sea && !isGame(shape) && i % 2 ? "ocean" : styles[i], i }));
+}
+const HELP_SHAPE_NAME = { tag: "Keychain", heart: "Heart keychain", comb: "Hair comb", pen: "Pen", bookmark: "Bookmark", coaster: "Cup stand", soap: "Soap dish", "domino-set": "Domino set", "game-chess": "Chess set", "game-ttt": "Tic-tac-toe", circle: "Round keychain", star: "Star keychain" };
+function helperBuild(spec, opt) {
+  const v = opt.i, shape = opt.shape;
   const d = defaultDesign();
-  d.shape = spec.shape; d.hardware = "none"; d.tassel.type = "none"; d.crush = []; d.addins = {}; d.deco = ""; d.picked = [];
-  if (hasHardware(d.shape) && !isGame(d.shape)) d.hardware = "ringchain";
-  const base = spec.cols.length ? spec.cols.slice() : ["#D9959C", "#C97080", "#E6E0D8"];
-  const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (base.length < 3) base.push(pad[base.length - 1] || "#E6E0D8");
-  const cols = v % 2 ? [base[1], base[2], base[0]] : base.slice(0, 3);
-  const gl = (spec.cols[0] && HELP_GLITTER[spec.names[0]]) || "gold";
-  const amt = (spec.glitterAmt || 0) * (v === 2 ? 1.6 : v === 4 ? 0.6 : 1);
+  d.shape = shape; d.hardware = "none"; d.tassel.type = "none"; d.crush = []; d.addins = {}; d.deco = ""; d.picked = [];
+  if (hasHardware(shape) && !isGame(shape)) d.hardware = "ringchain";
+  const base = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (base.length < 3) base.push(pad[base.length - 1] || "#E6E0D8");
+  const rot = v % 3, cols = [base[rot], base[(rot + 1) % 3], base[(rot + 2) % 3]];
+  const gl = HELP_GLITTER[spec.names[v % spec.names.length]] || HELP_GLITTER[spec.names[0]] || "gold";
+  const amt = spec.glitterAmt * (v === 2 ? 1.5 : v === 4 ? 0.7 : 1);
   const spots = [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]];
-  const noClearHere = noClear(spec.shape) || isGame(spec.shape) && false;
-  const styles = ["gradient", "ink", "gradient", spec.sea ? "ocean" : "clear", "ink"];
-  let style = styles[v];
-  if (style === "clear" && noClearHere) style = "ink";
-  if (isGame(spec.shape) && style === "ocean") style = "gradient";
+  let style = opt.style;
+  if (style === "clear" && noClear(shape)) style = "ink";
+  if (isGame(shape) && style === "ocean") style = "gradient";
   if (style === "ocean") { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); }
   else if (style === "gradient") gradLook(d, cols, ["down", "diagonal", "center"][v % 3]);
   else if (style === "ink") inkLook(d, cols, spots);
   else { d.style = "clear"; d.picked = []; }
-  if (style === "clear") { sprinkle(d, spec.gold ? "goldleaf" : (HELP_GLITTER[spec.names[0]] || "clear"), 80 + (amt || 60), "hp" + v); }
-  if (amt && style !== "ocean") { sprinkle(d, gl, Math.round(amt), "hg" + v); if (v === 2) sprinkle(d, "champagne", 40, "hg2" + v); }
-  if (spec.hearts && style !== "ocean") sprinkle(d, "hearts", v === 4 ? 12 : 22, "hh" + v);
-  if (spec.stars && style !== "ocean") sprinkle(d, "stars", 18, "hs" + v);
-  if (spec.gold && style !== "ocean") sprinkle(d, "goldleaf", 40 + v * 10, "hl" + v);
-  // 3D pieces only where the design allows them
-  const want = [];
-  if (spec.hearts) want.push(["sm-heart-ruby", "sm-heart-blue"][v % 2 && spec.names.includes("blue") ? 1 : 0]);
-  if (spec.butterfly) want.push(spec.names.includes("pink") ? "sm-butterfly-pink" : "sm-butterfly-teal");
-  if (spec.flower) want.push(spec.names.includes("pink") || spec.names.includes("rose") ? "flower-pink" : "flower-cream");
-  if (spec.crown) want.push("sm-crown-gold");
-  if (style !== "gradient" && style !== "ocean" && want.length && (v === 1 || v === 3 || v === 4)) {
-    d.deco = want.some((x) => x.startsWith("flower")) ? "natural" : "charms";
-    const ids = want.filter((x) => (d.deco === "natural" ? x.startsWith("flower") : !x.startsWith("flower")));
-    ids.slice(0, v === 4 ? 1 : 2).forEach((id) => { const ad = CONFIG.addins.find((x) => x.id === id); if (ad && fits(ad, d)) d.addins[id] = { amount: "few", place: "anna", color: ad.color }; });
+  if (style === "clear") sprinkle(d, spec.gold ? "goldleaf" : gl, 80 + amt, "hp" + v);
+  if (style !== "ocean") {
+    sprinkle(d, gl, Math.round(amt), "hg" + v);
+    if (v % 2) sprinkle(d, "champagne", 30, "hg2" + v); else sprinkle(d, "gold", 24, "hg3" + v);
+    if (spec.hearts) sprinkle(d, "hearts", 16, "hh" + v);
+    if (spec.stars) sprinkle(d, "stars", 16, "hs" + v);
+    if (spec.gold) sprinkle(d, "goldleaf", 40 + v * 10, "hl" + v);
   }
-  if (isGame(spec.shape) && spec.shape !== "domino-set") {
-    d.chess = { a: { c1: base[0], c2: "", foil: !!spec.gold }, b: { c1: base[1], c2: "", foil: !!spec.gold } };
-    if (v % 2) d.chess = { a: { c1: "", c2: base[0], foil: !!spec.gold }, b: { c1: base[1], c2: base[2], foil: !!spec.gold } };
+  // charms: every option gets some where they physically fit (not on blended gradients, games or cup stands)
+  if (style === "ink" || style === "clear") {
+    const pool = helperCharms(spec, v), natural = pool.filter((x) => /^flower/.test(x)), chm = pool.filter((x) => !/^flower/.test(x));
+    for (const mode of (v % 2 && natural.length ? ["natural", "charms"] : ["charms", "natural"])) {
+      d.deco = mode; d.addins = {}; const ids = mode === "natural" ? natural : chm; let n = 0; const max = moldRank(shape) <= 0 ? 1 : v === 4 ? 2 : 3;
+      ids.forEach((id) => { const ad = CONFIG.addins.find((x) => x.id === id); if (n < max && ad && !d.addins[id] && fits(ad, d)) { d.addins[id] = { amount: "few", place: "anna", color: ad.color }; n++; } });
+      if (n) break; d.deco = "";
+    }
+  }
+  if (isGame(shape) && shape !== "domino-set") {
+    d.chess = { a: { c1: base[0], c2: "", foil: true }, b: { c1: base[1], c2: "", foil: true } };
+    if (v % 2) d.chess = { a: { c1: "", c2: base[0], foil: true }, b: { c1: base[1], c2: base[2], foil: true } };
+    if (shape === "game-ttt") d.chess = { a: { c1: base[0], c2: "", foil: false }, b: { c1: base[1], c2: "", foil: false } };
     d.style = "gradient";
   }
   normaliseStyle(d); applyPicked(d); resetItems(d); layoutItems(d);
   return d;
 }
-const HELP_NAMES = ["Smooth blend", "Swirled ink", "Extra sparkle", "Clear and airy", "Soft ink touch"];
+function helperTitle(spec, d, opt) {
+  const nm = isLetter(d.shape) ? "Letter " + d.shape + " keychain" : HELP_SHAPE_NAME[d.shape] || (CONFIG.shapes.find((x) => x.id === d.shape) || {}).name || "Piece";
+  const ch = Object.keys(d.addins).map((id) => (CONFIG.addins.find((x) => x.id === id) || {}).name).filter(Boolean);
+  const style = { ink: "swirled ink", gradient: "smooth blend", clear: "clear with glitter", ocean: "sea style" }[d.style] || "";
+  return nm + " · " + style + (ch.length ? " + " + ch.slice(0, 2).join(", ").toLowerCase() : " + glitter");
+}
 function helperView() {
   const opts = ui.helperOpts || [];
   const T = (en, th, ru) => ({ th, ru }[ui.lang] || en);
+  const sp = ui.helperSpec || {};
+  const audN = { kid: "a child", teen: "a teen", senior: "an older person", mom: "mom", dad: "dad", partner: "a partner", friend: "a friend", work: "a colleague" }[sp.aud];
   return `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>
     <h2>${T("Describe your design", "บอกแบบที่อยากได้", "Опиши свой дизайн")}</h2>
-    <p class="hint">${T("Tell me who it is for, what you want, the colours, glitter, hearts or flowers. I will make 5 options and you pick one.", "บอกว่าทำให้ใคร อยากได้อะไร สี กากเพชร หัวใจ หรือดอกไม้ แล้วเราจะทำ 5 แบบให้เลือก", "Расскажи, для кого, что хочешь, цвета, блёстки, сердечки или цветы. Я сделаю 5 вариантов, и ты выберешь.")}</p>
-    <div class="field"><textarea id="helper-text" rows="3" placeholder="${esc(T("e.g. A present for my mom: a domino set, red and pink with a little glitter and some hearts", "เช่น ของขวัญให้แม่: โดมิโน สีแดงและชมพู มีกากเพชรเล็กน้อยและหัวใจ", "например: подарок маме, домино, красное и розовое, немного блёсток и сердечки"))}">${esc(ui.helperText || "")}</textarea>
-      <div class="helper-row"><button type="button" class="btn btn-ink" data-action="helpergo">${T("Make 5 options", "สร้าง 5 แบบ", "Сделать 5 вариантов")}</button><button type="button" class="btn btn-line mic-btn ${ui.listening ? "rec" : ""}" data-action="helpermic" aria-pressed="${!!ui.listening}">🎤 ${ui.listening ? T("Listening… tap to stop", "กำลังฟัง… แตะเพื่อหยุด", "Слушаю… нажми, чтобы остановить") : T("Speak instead", "พูดแทนการพิมพ์", "Сказать голосом")}</button></div><p class="small-note" id="mic-note"></p></div>
-    ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${esc(ui.helperSpec.label)}</b>${ui.helperSpec.names.length ? ", " + esc(ui.helperSpec.names.join(", ")) : ""}${ui.helperSpec.glitter ? ", glitter" : ""}${ui.helperSpec.hearts ? ", hearts" : ""}${ui.helperSpec.butterfly ? ", butterflies" : ""}${ui.helperSpec.flower ? ", flowers" : ""}</p>
-    <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art"><span class="rl-svg" style="display:block;aspect-ratio:3/4">${renderPiece(d)}</span></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${HELP_NAMES[i]}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}</div>` : ""}`;
+    <p class="hint">${T("Tell me who it is for (age too), what they like, colours, a pet or a hobby. I will suggest 5 different pieces with charms and glitter, and you pick one.", "บอกว่าทำให้ใคร (อายุด้วย) เขาชอบอะไร สี สัตว์เลี้ยง หรืองานอดิเรก เราจะแนะนำ 5 ชิ้นที่ต่างกัน มีชาร์มและกากเพชร", "Расскажи, для кого (и возраст), что нравится, цвета, питомец или хобби. Я предложу 5 разных изделий с шармами и блёстками.")}</p>
+    <div class="field"><textarea id="helper-text" rows="3" placeholder="${esc(T("e.g. A present for my 8 year old niece, she loves frogs and green", "เช่น ของขวัญหลานสาวอายุ 8 ขวบ ชอบกบและสีเขียว", "например: подарок племяннице 8 лет, любит лягушек и зелёный"))}">${esc(ui.helperText || "")}</textarea>
+      <div class="helper-row"><button type="button" class="btn btn-ink" data-action="helpergo">${T("Suggest 5 options", "แนะนำ 5 แบบ", "Предложить 5 вариантов")}</button><button type="button" class="btn btn-line mic-btn ${ui.listening ? "rec" : ""}" data-action="helpermic" aria-pressed="${!!ui.listening}">🎤 ${ui.listening ? T("Listening… tap to stop", "กำลังฟัง… แตะเพื่อหยุด", "Слушаю… нажми, чтобы остановить") : T("Speak instead", "พูดแทนการพิมพ์", "Сказать голосом")}</button></div><p class="small-note" id="mic-note"></p></div>
+    ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${audN ? T("a gift for ", "ของขวัญสำหรับ ", "подарок для ") + esc(audN) : T("your idea", "ไอเดียของคุณ", "твоя идея")}</b>${sp.likes.length ? ", " + esc(sp.likes.join(", ")) : ""}${sp.names.length ? ", " + esc(sp.names.join(", ")) : ""}</p>
+    <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art"><span class="rl-svg" style="display:block;aspect-ratio:3/4">${renderPiece(d)}</span></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${esc(ui.helperTitles[i])}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}${sp.gift ? `<a class="card" href="collage.html"><div class="card-art"><span class="rl-svg" style="display:grid;place-items:center;aspect-ratio:3/4;font-size:54px">🖼️</span></div><span class="card-name">${T("Or: upload your photos and we make a personal canvas", "หรือ: อัปโหลดรูปแล้วเราทำแคนวาสส่วนตัวให้", "Или: загрузи фото, и мы сделаем личный холст")}</span><div class="card-actions"><span class="btn btn-ink small">${T("Create my canvas", "สร้างแคนวาส", "Создать холст")}</span></div></a>` : ""}</div>` : ""}`;
 }
 const STEP_VIEWS = [
   // 0 Ready-made
@@ -2343,7 +2399,7 @@ els.panel.addEventListener("click", (e) => {
     if (ui.rec) ui.rec.stop();
     const txt = ($("helper-text") || {}).value || ""; ui.helperText = txt;
     if (!txt.trim()) { toast(U("helperEmpty")); return; }
-    ui.helperSpec = helperParse(txt); ui.helperOpts = [0, 1, 2, 3, 4].map((v) => helperBuild(ui.helperSpec, v));
+    ui.helperSpec = helperParse(txt); const plan = helperPlan(ui.helperSpec); ui.helperOpts = plan.map((o) => helperBuild(ui.helperSpec, o)); ui.helperTitles = ui.helperOpts.map((d, i) => helperTitle(ui.helperSpec, d, plan[i]));
     renderPanel(); return;
   } else if (action === "helperpick") {
     const d = ui.helperOpts[Number(el.dataset.i)]; if (!d) return;
