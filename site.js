@@ -48,7 +48,7 @@ function startSlides() {
 new MutationObserver(() => startSlides()).observe(document.documentElement, { childList: true, subtree: true });
 
 /* ---------------- Shop buy buttons ---------------- */
-const DIGITAL = ["g-key-e","g-key-a-star","g-key-k","g-key-tail","g-pen-blue","g-pen-ink","g-pen","g-hairpin","g-bookmark","g-paint1","g-coaster-sea","g-coaster-ink","g-coaster-stone","g-platter","g-nuts-dish","g-fruit-bowl","g-tealight","g-tail","g-woodtray","g-paddle","g-tree","g-copper"];
+const DIGITAL = ["g-beach-lounger", "g-birthday-canvas", "g-bookmark", "g-canvas", "g-chess-sand", "g-coaster-ink", "g-coaster-sea", "g-coaster-stone", "g-coffee-art", "g-copper", "g-domino", "g-feather", "g-feather-canvas", "g-fruit-bowl", "g-gold-chess", "g-hairpin", "g-key-a-star", "g-key-e", "g-key-es", "g-key-k", "g-key-tail", "g-key-w", "g-lychee-bowl", "g-mosaic-bookmark", "g-night-coaster", "g-night-round", "g-nuts-dish", "g-paddle", "g-paint1", "g-paint3", "g-paint4", "g-pen", "g-pen-blue", "g-pen-ink", "g-pinkboard", "g-platter", "g-plum", "g-purple-pen", "g-purple-plate", "g-round", "g-round-pendant", "g-ruffle-bowl", "g-sea-shells", "g-sea-wide", "g-tail", "g-tealight", "g-tree", "g-wood-ocean-stand", "g-woodtray"];
 function buyBtns(id, name, img, section) {
   const key = (img || "").split("/").pop().replace(/\.\w+$/, "");
   const dig = DIGITAL.includes(key) && section !== "preset" ? `<a class="dig-link" href="design.html?gallery=${key}">${t("shop.digital", null)}</a>` : "";
