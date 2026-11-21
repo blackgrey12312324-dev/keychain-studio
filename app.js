@@ -1679,7 +1679,7 @@ function helperView() {
     <h2>${T("Describe your design", "บอกแบบที่อยากได้", "Опиши свой дизайн")}</h2>
     <p class="hint">${T("Tell me who it is for (age too), what they like, colours, a pet or a hobby. I will suggest 5 different pieces with charms and glitter, and you pick one.", "บอกว่าทำให้ใคร (อายุด้วย) เขาชอบอะไร สี สัตว์เลี้ยง หรืองานอดิเรก เราจะแนะนำ 5 ชิ้นที่ต่างกัน มีชาร์มและกากเพชร", "Расскажи, для кого (и возраст), что нравится, цвета, питомец или хобби. Я предложу 5 разных изделий с шармами и блёстками.")}</p>
     <div class="field"><textarea id="helper-text" rows="3" placeholder="${esc(T("e.g. A present for my 8 year old niece, she loves frogs and green", "เช่น ของขวัญหลานสาวอายุ 8 ขวบ ชอบกบและสีเขียว", "например: подарок племяннице 8 лет, любит лягушек и зелёный"))}">${esc(ui.helperText || "")}</textarea>
-      <div class="helper-row"><button type="button" class="btn btn-ink" data-action="helpergo">${T("Suggest 5 options", "แนะนำ 5 แบบ", "Предложить 5 вариантов")}</button><button type="button" class="btn btn-line mic-btn ${ui.listening ? "rec" : ""}" data-action="helpermic" aria-pressed="${!!ui.listening}">🎤 ${ui.listening ? T("Listening… tap to stop", "กำลังฟัง… แตะเพื่อหยุด", "Слушаю… нажми, чтобы остановить") : T("Speak instead", "พูดแทนการพิมพ์", "Сказать голосом")}</button></div><p class="small-note" id="mic-note"></p></div>
+      <div class="helper-row"><button type="button" class="btn btn-ink" data-action="helpergo">${T("Suggest 5 options", "แนะนำ 5 แบบ", "Предложить 5 вариантов")}</button><button type="button" class="btn btn-line mic-btn ${ui.listening ? "rec" : ""}" data-action="helpermic" aria-pressed="${!!ui.listening}">🎤 ${ui.listening ? T("Listening… tap to stop", "กำลังฟัง… แตะเพื่อหยุด", "Слушаю… нажми, чтобы остановить") : T("Speak instead", "พูดแทนการพิมพ์", "Сказать голосом")}</button></div><p class="small-note" id="mic-note">${ui.micMsg || ""}</p></div>
     ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${audN ? T("a gift for ", "ของขวัญสำหรับ ", "подарок для ") + esc(audN) : T("your idea", "ไอเดียของคุณ", "твоя идея")}</b>${sp.likes.length ? ", " + esc(sp.likes.join(", ")) : ""}${sp.names.length ? ", " + esc(sp.names.join(", ")) : ""}</p>
     <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art"><span class="rl-svg" style="display:block;aspect-ratio:3/4">${renderPiece(d)}</span></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${esc(ui.helperTitles[i])}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}${sp.gift ? `<a class="card" href="collage.html"><div class="card-art"><span class="rl-svg" style="display:grid;place-items:center;aspect-ratio:3/4;font-size:54px">🖼️</span></div><span class="card-name">${T("Or: upload your photos and we make a personal canvas", "หรือ: อัปโหลดรูปแล้วเราทำแคนวาสส่วนตัวให้", "Или: загрузи фото, и мы сделаем личный холст")}</span><div class="card-actions"><span class="btn btn-ink small">${T("Create my canvas", "สร้างแคนวาส", "Создать холст")}</span></div></a>` : ""}</div>` : ""}`;
 }
@@ -2384,15 +2384,20 @@ els.panel.addEventListener("click", (e) => {
   } else if (action === "helpermic") {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     const note = $("mic-note");
-    if (!SR) { if (note) note.textContent = U("micNo"); return; }
+    if (!SR) { if (note) ui.micMsg = note.innerHTML = U("micNo") + (window.self !== window.top ? ` <a href="${location.href}" target="_blank" rel="noopener"><b>${({ th: "เปิดในแท็บใหม่", ru: "Открыть в отдельной вкладке" }[ui.lang]) || "Open in its own tab"}</b></a>` : ""); return; }
     if (ui.rec) { ui.rec.stop(); return; }
     const box = $("helper-text"), base = box.value ? box.value.trim() + " " : "";
     const rec = new SR(); ui.rec = rec;
     rec.lang = { th: "th-TH", ru: "ru-RU" }[ui.lang] || "en-US"; rec.interimResults = true; rec.continuous = true;
     rec.onresult = (ev) => { let txt = ""; for (let i = 0; i < ev.results.length; i++) txt += ev.results[i][0].transcript; ui.helperText = base + txt; const bx = $("helper-text"); if (bx) bx.value = ui.helperText; };
-    rec.onerror = (ev) => { const n = $("mic-note"); if (n) n.textContent = ev.error === "not-allowed" ? U("micDenied") : U("micNo"); };
+    rec.onerror = (ev) => { const n = { set innerHTML(h) { ui.micMsg = h; const x = $("mic-note"); if (x) x.innerHTML = h; }, set textContent(t) { ui.micMsg = esc(t); const x = $("mic-note"); if (x) x.innerHTML = esc(t); } }; const T = (en, th, ru) => ({ th, ru }[ui.lang] || en), e = ev.error, framed = window.self !== window.top;
+      const open = framed ? ` <a href="${location.href}" target="_blank" rel="noopener"><b>${T("Open in its own tab", "เปิดในแท็บใหม่", "Открыть в отдельной вкладке")}</b></a>` : "";
+      if (e === "not-allowed" || e === "service-not-allowed") n.innerHTML = (framed ? T("The microphone is blocked inside this preview.", "ไมโครโฟนถูกบล็อกในหน้าตัวอย่างนี้", "Микрофон заблокирован в этом предпросмотре.") : U("micDenied")) + open;
+      else if (e === "no-speech") n.textContent = T("I did not hear anything. Tap again and speak.", "ไม่ได้ยินเสียง ลองแตะอีกครั้งแล้วพูด", "Ничего не слышно. Нажми ещё раз и говори.");
+      else if (e === "audio-capture") n.textContent = T("No microphone found on this device.", "ไม่พบไมโครโฟน", "Микрофон не найден.");
+      else if (e !== "aborted") n.innerHTML = U("micNo") + " (" + esc(e || "?") + ")" + open; };
     rec.onend = () => { ui.rec = null; ui.listening = false; const keep = ($("helper-text") || {}).value; ui.helperText = keep || ui.helperText; if (ui.helper) { const y = window.scrollY; renderPanel(); window.scrollTo(0, y); } };
-    ui.listening = true; try { rec.start(); } catch (err) { ui.listening = false; ui.rec = null; }
+    ui.micMsg = ""; ui.listening = true; try { rec.start(); } catch (err) { ui.listening = false; ui.rec = null; ui.micMsg = esc(String(err.message || err)); }
     renderPanel(); const b2 = $("helper-text"); if (b2) b2.value = base;
     return;
   } else if (action === "helpergo") {
