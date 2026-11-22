@@ -1508,3 +1508,18 @@ img { image-rendering: auto; }
 .helper-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
 .mic-btn.rec { background: #FCE3E3 !important; border-color: #D9534F !important; color: #A32A27 !important; animation: micpulse 1.2s infinite; }
 @keyframes micpulse { 50% { box-shadow: 0 0 0 8px rgba(217,83,79,.15); } }
+
+/* start: three big choices, the helper stands out */
+.start-hero { margin: 0 0 22px; text-align: center; }
+.start-hero h2 { font: 600 1.7rem "Cormorant Garamond", serif; color: #0E3F57; margin: 0 0 14px; }
+.start-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.start-card { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 20px 14px 18px; border-radius: 22px; border: 1.5px solid rgba(14,63,87,.25); background: #fff; color: #0E3F57; cursor: pointer; font: inherit; box-shadow: 0 6px 18px rgba(14,63,87,.08); transition: transform .15s, box-shadow .15s; }
+.start-card:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(14,63,87,.16); }
+.start-card i { font-style: normal; font-size: 2rem; }
+.start-card b { font: 600 1.25rem "Cormorant Garamond", serif; }
+.start-card span { font-size: .86rem; opacity: .8; line-height: 1.35; }
+.start-card em { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: #E8934A; color: #fff; font: 700 .72rem Jost, sans-serif; font-style: normal; letter-spacing: .06em; text-transform: uppercase; padding: 4px 12px; border-radius: 999px; }
+.start-card.star { background: linear-gradient(135deg, #0E3F57, #19708A); color: #fff; border-color: transparent; box-shadow: 0 10px 28px rgba(14,63,87,.38); transform: scale(1.04); }
+.start-card.star:hover { transform: scale(1.06) translateY(-3px); }
+.start-card.star span { opacity: .92; }
+@media (max-width: 700px) { .start-cards { grid-template-columns: 1fr; } .start-card { flex-direction: row; text-align: left; flex-wrap: wrap; justify-content: flex-start; gap: 4px 12px; } .start-card span { flex-basis: 100%; } .start-card.star { transform: none; } }

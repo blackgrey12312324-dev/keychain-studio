@@ -1750,7 +1750,11 @@ function helperView() {
 }
 const STEP_VIEWS = [
   // 0 Ready-made
-  () => ui.helper ? helperView() : (!ui.cat && !ui.pickReady) ? `<div class="start-bar"><div><b>${U("choiceH")}</b><span>${U("choiceP")}</span></div><div class="start-btns"><button type="button" class="btn start-btn" data-action="pickready">${U("choiceReady")}</button><button type="button" class="btn start-btn on" data-action="designown">${U("choiceOwn")}</button><button type="button" class="btn start-btn" data-action="helper">${U("helperBtn")}</button></div></div>` + STEP_VIEWS[1]() : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + readyView(),
+  () => ui.helper ? helperView() : (!ui.cat && !ui.pickReady) ? `<div class="start-hero"><h2>${U("choiceH")}</h2><div class="start-cards">
+      <button type="button" class="start-card" data-action="pickready"><i>🖼️</i><b>${U("choiceReady")}</b><span>${({ th: "ดูผลงานจริงของเราและสั่งได้เลย", ru: "Готовые работы, которые можно заказать" }[ui.lang]) || "Browse our finished pieces and order one"}</span></button>
+      <button type="button" class="start-card star" data-action="helper"><em>${({ th: "แนะนำ", ru: "Советуем" }[ui.lang]) || "Smart tip"}</em><i>✨</i><b>${U("helperBtn")}</b><span>${({ th: "บอกว่าให้ใคร ชอบอะไร เราเลือกแบบให้ 5 แบบ", ru: "Расскажи, для кого, и я предложу 5 вариантов" }[ui.lang]) || "Tell us who it is for and get 5 ideas"}</span></button>
+      <button type="button" class="start-card" data-action="designown"><i>🎨</i><b>${U("choiceOwn")}</b><span>${({ th: "เลือกแม่พิมพ์ สี กากเพชร ทำเองทุกขั้นตอน", ru: "Выбери форму, цвета и блёстки сам" }[ui.lang]) || "Pick the mould, colours and glitter yourself, scroll down"}</span></button>
+    </div></div>` + STEP_VIEWS[1]() : (ui.pickReady && !ui.cat ? `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>` : "") + readyView(),
 
   // 1 Mold (category first)
   () => {
