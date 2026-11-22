@@ -740,10 +740,27 @@ function chessPanel() {
     ${sec("a", ttt ? U("tttBoard") : U("chessLight"))}${sec("b", ttt ? U("tttMarks") : U("chessDark"))}
     ${ttt ? "" : `<div class="field"><span class="field-label">${U("chessPieces")}</span>${row(ch.a)}${row(ch.b)}<p class="small-note">${U("chessPiecesNote")}</p></div>`}`;
 }
+// Abstract resin art for canvases: flowing colour with swirls, white lacing and a fine metallic vein, instead of soft blobs
+function abstractLayer(d, id, R, T, B) {
+  const c = d.colors, h = B - T, W = 300, seed = (hashText(d.shape + c.join("")) % 90) + 3;
+  const lite = (hex) => { const n = parseInt(hex.slice(1), 16), m = (v) => Math.round(v + (255 - v) * 0.55).toString(16).padStart(2, "0"); return "#" + m(n >> 16) + m((n >> 8) & 255) + m(n & 255); };
+  let s = `<defs><linearGradient id="${id}-ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset=".5" stop-color="${c[1]}"/><stop offset="1" stop-color="${c[2]}"/></linearGradient>
+    <filter id="${id}-ab" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="${id}-am" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.013" numOctaves="2" seed="${seed}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="46"/></filter></defs>
+    <rect x="0" y="${T - 20}" width="300" height="${h + 40}" fill="${c[1]}"/><g filter="url(#${id}-am)"><rect x="-60" y="${T - 80}" width="420" height="${h + 160}" fill="url(#${id}-ag)"/>`;
+  [0, 1, 2, 1, 0, 2].forEach((i, k) => { s += `<ellipse cx="${(R() * W).toFixed(0)}" cy="${(T + R() * h).toFixed(0)}" rx="${(60 + R() * 90).toFixed(0)}" ry="${(18 + R() * 34).toFixed(0)}" fill="${c[i]}" opacity=".85" transform="rotate(${(R() * 160 - 80).toFixed(0)} 150 ${(T + h / 2).toFixed(0)})" filter="url(#${id}-ab)"/>`; });
+  s += `<ellipse cx="${(80 + R() * 140).toFixed(0)}" cy="${(T + h * (0.3 + R() * 0.4)).toFixed(0)}" rx="90" ry="14" fill="${lite(c[1])}" opacity=".7" transform="rotate(${(R() * 50 - 25).toFixed(0)} 150 ${(T + h / 2).toFixed(0)})" filter="url(#${id}-ab)"/>`;
+  const vein = (col, w, o) => `<path d="M${(-20 + R() * 40).toFixed(0)} ${(T + R() * h).toFixed(0)} C ${(80 + R() * 40).toFixed(0)} ${(T + R() * h).toFixed(0)}, ${(160 + R() * 40).toFixed(0)} ${(T + R() * h).toFixed(0)}, ${(320 + R() * 20).toFixed(0)} ${(T + R() * h).toFixed(0)}" fill="none" stroke="${col}" stroke-width="${w}" opacity="${o}" stroke-linecap="round"/>`;
+  s += vein("#F4EEE2", 2.2, .75) + vein("#F4EEE2", 1.2, .6) + vein("#D8B04C", 1.4, .85) + vein(lite(c[2]), 3, .5);
+  s += `</g>`;
+  for (let i = 0; i < 9; i++) { const x = 20 + R() * 260, y = T + R() * h, r = 2 + R() * 5; s += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r.toFixed(1)}" fill="${lite(c[i % 3])}" opacity=".35"/><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(r * 0.45).toFixed(1)}" fill="#fff" opacity=".4"/>`; }
+  return s;
+}
 function styleLayer(d, id, R, T, B) {
   const c = d.colors;
   const h = B - T;
   if (d.style === "clear") return "";
+  if (d.style === "ink" && d.shape === "canvas-rect") return abstractLayer(d, id, R, T, B);
 
   if (d.style === "gradient") {
     const g = d.gradient;
@@ -1484,7 +1501,7 @@ const GALLERY_DESIGNS = {
   "g-feather": { cat: "accessories", shape: "feather", f(d) { gradLook(d, ["#E6E0D8", "#F3EBDD", "#C89B2E"], "down"); sprinkle(d, "goldleaf", 25, "gf"); } },
   "g-chess-sand": { cat: "statues", shape: "game-chess", f(d) { d.style = "gradient"; d.chess = { a: { c1: "#8A5F3C", c2: "", foil: false }, b: { c1: "#7F9CC0", c2: "#9A9A92", foil: false } }; } },
   "g-gold-chess": { cat: "statues", shape: "game-chess", f(d) { d.style = "gradient"; d.chess = { a: { c1: "#E6E0D8", c2: "", foil: true }, b: { c1: "#14151A", c2: "", foil: true } }; } },
-  "g-domino": { cat: "statues", shape: "domino-set", f(d) { inkLook(d, ["#1F6BC0", "#C89B2E"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); } },
+  "g-domino": { cat: "statues", shape: "domino-set", f(d) { gradLook(d, ["#1F6BC0", "#7F9CC0", "#C89B2E"], "diagonal"); } },
   "g-ruffle-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#E6E0D8", "#F3EBDD", "#C89B2E"], "diagonal"); sprinkle(d, "goldleaf", 30, "rb"); } },
   "g-lychee-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#D9959C", "#C97080", "#D9959C"], "center"); } },
   "g-pinkboard": { cat: "cutting", shape: "board-rect", f(d) { d.cm = { w: 40, h: 25 }; gradLook(d, ["#D9742E", "#B04855", "#D9959C"], "down"); sprinkle(d, "gold", 60, "pb"); d.partial = 0.55; d.partialAngle = 14; } },
@@ -1681,6 +1698,7 @@ function helperScore(spec, d, k) {
   if (mine.length && want.length) { const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]); const m = mine.map(hexRgb); sc -= want.reduce((t, w) => t + Math.min(...m.map((x) => dist(x, w))), 0) / want.length; } else sc -= 200;
   if (spec.dark && mine.length) { const lum = mine.map(hexRgb).reduce((t, c) => t + (c[0] + c[1] + c[2]) / 3, 0) / mine.length; sc -= lum * 1.2; }
   if (spec.likes.includes("coffee") && /coffee/.test(k)) sc += 600;
+  if ((d.shape === "board-rect" || d.shape === "board-whale-tail" || d.shape === "canvas-rect") && d.style === "ocean") sc += spec.dark ? 40 : 110;
   if (spec.likes.includes("sea") && d.style === "ocean") sc += 160;
   if (spec.likes.includes("sea") && d.shape === "canvas-rect" && d.style === "ocean") sc += 120;
   const grownMan = spec.gender === "boy" && ["senior", "dad", "work", "partner", ""].includes(spec.aud);
@@ -1869,7 +1887,7 @@ const STEP_VIEWS = [
     <h2>${U("s2h")}</h2>
     <p class="hint">${U("s2p")}</p>
     ${inspirationHtml()}
-    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => !(noClear(design.shape) && st === "clear")).map((st) => {
+    <div class="cards">${Object.keys(I18N.en.labels.style).filter((st) => design.shape === "domino-set" ? st === "gradient" : !(noClear(design.shape) && st === "clear")).map((st) => {
       const d = merge(copy(design), { style: st, picked: design.picked.length ? design.picked : DEFAULT_COLORS.slice(), ink: Object.assign({}, design.ink, { legacy: true }) });
       applyPicked(d);
       return `<button type="button" class="card ${design.style === st ? "on" : ""}" aria-pressed="${design.style === st}" data-set="style" data-value="${st}">
@@ -2235,6 +2253,7 @@ function render() {
 function swing() { /* no flicker: the piece no longer bounces when it changes */ }
 // Each style keeps only its own settings, so nothing from the previous style stays on the piece.
 function normaliseStyle(d) {
+  if (d.shape === "domino-set" && d.style !== "gradient") { d.style = "gradient"; d.gradient = d.gradient || { direction: "diagonal", glitter: "none" }; if (!d.picked || !d.picked.length) d.picked = ["#1F6BC0", "#7F9CC0", "#E6E0D8"]; d.inkDrops = []; }
   if (d.ocean && d.ocean.sand === "none") d.ocean.sand = "low";
   if (d.ink) { d.ink.shimmer = "none"; d.ink.cells = false; d.ink.background = "clear"; }
   if (d.style === "ink") { d.ink.cells = false; d.ink.background = "clear"; }
@@ -2484,7 +2503,7 @@ els.panel.addEventListener("click", (e) => {
     ui.helperSpec = helperParse(txt); const picks = helperPicks(ui.helperSpec); const sp0 = ui.helperSpec, plan = helperPlan(sp0);
     // 3 of Anna's pieces recoloured to the request, plus 2 new pieces made for it
     const thin = (sh) => (CONFIG.shapes.find((x) => x.id === sh) || {}).size === "thin";
-    const made = [plan[0], plan.find((o) => o.shape !== plan[0].shape && !isGame(o.shape)) || plan[1]].map((o, n) => ({ k: "", d: helperBuild(sp0, Object.assign({}, o, { style: thin(o.shape) ? "gradient" : "ink", i: n * 2 })), cat: catOf(o.shape) }));
+    const made = [plan[0], plan.find((o) => o.shape !== plan[0].shape && !isGame(o.shape)) || plan[1]].map((o, n) => ({ k: "", d: helperBuild(sp0, Object.assign({}, o, { style: thin(o.shape) || o.shape === "domino-set" ? "gradient" : "ink", i: n * 2 })), cat: catOf(o.shape) }));
     const mixed = [made[0], picks[0], picks[1], made[1], picks[2]];
     picks.length = 0; mixed.forEach((m) => picks.push(m));
     ui.helperRecol = picks.map((p) => !!p.k && !(sp0.autoCol && !sp0.gender && !sp0.dark)); ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p) => (p.k ? helperCharmUp(sp0, helperRecolor(sp0, p.d)) : p.d)); ui.helperTitles = picks.map((p) => helperTitle2(p));
