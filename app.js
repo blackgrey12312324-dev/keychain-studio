@@ -1746,7 +1746,21 @@ function helperPicks(spec) {
   return out;
 }
 // grown-ups get dried flowers, children get small colourful charms, only where the piece can hold them
-function helperCharmUp(spec, src) {
+const THEME_CHARMS = { frog: ["frog"], guns: ["charm-pistol", "charm-ak-mini", "charm-m4"], money: ["charm-moneybag-mini", "charm-dollar", "charm-coin"], butterfly: ["sm-butterfly-pink", "sm-butterfly-teal"], hearts: ["sm-heart-ruby", "sm-heart-blue"], crown: ["sm-crown-gold"], sea: ["sea-starfish", "sea-shell-scallop"] };
+function helperThemeUp(spec, d, idx) {
+  const th = spec.likes.filter((k) => THEME_CHARMS[k] && k !== "sea");
+  if (!th.length || isGame(d.shape) || d.shape === "canvas-rect" || (CONFIG.shapes.find((x) => x.id === d.shape) || {}).wood) return null;
+  const e = copy(d); if (e.style === "ocean") return null;
+  const cols = (e.picked && e.picked.length ? e.picked : helperPalette(spec, idx)).slice(0, 3);
+  inkLook(e, cols, [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); e.dip = false; e.addins = {}; e.deco = "charms";
+  const ids = th.flatMap((k) => THEME_CHARMS[k]); let n = 0; const names = [];
+  ids.forEach((id) => { const ad = CONFIG.addins.find((x) => x.id === id); if (n < 3 && ad && fits(ad, e)) { e.addins[id] = { amount: "few", place: "anna", color: ad.color }; n++; names.push(ad.name); } });
+  if (!n) return null;
+  if (HELP_FOIL[idx % 5] !== "none") sprinkle(e, "goldleaf", 14, "th" + idx);
+  resetItems(e); layoutItems(e); e._theme = names; return e;
+}
+function helperCharmUp(spec, src, idx = 0) {
+  const t = helperThemeUp(spec, src, idx); if (t && idx % 2 === 0) return t;
   const d = copy(src);
   if ((d.style !== "ink" && d.style !== "clear") || Object.keys(d.addins || {}).length || isGame(d.shape) || catOf(d.shape) === "cutting") return d;
   const kid = spec.aud === "kid" || (spec.aud === "teen" && !spec.dark);
@@ -1764,7 +1778,18 @@ function helperCharmUp(spec, src) {
 const FAM = { sage: ["#4C8A7C", "#E6E0D8", "#C89B2E"], blush: ["#D9959C", "#E6E0D8", "#C9A99A"], lav: ["#9C86C4", "#E6E0D8", "#7F9CC0"], sun: ["#C89B2E", "#E6E0D8", "#D9742E"], teal: ["#4F8A9C", "#C9A99A", "#E6E0D8"], sky: ["#7F9CC0", "#E6E0D8", "#1F6BC0"], navy: ["#1B2A6B", "#7F9CC0", "#E6E0D8"], ruby: ["#B04855", "#E6E0D8", "#C89B2E"], night: ["#14151A", "#4A5090", "#9A9A92"], coral: ["#D9742E", "#D9959C", "#E6E0D8"], plum: ["#8E3560", "#D9959C", "#E6E0D8"], mint: ["#7FB59A", "#E6E0D8", "#4F8A9C"], sand: ["#C9A99A", "#E6E0D8", "#8A5F3C"], grey: ["#9A9A92", "#E6E0D8", "#14151A"] };
 function helperPalette(spec, i) {
   const L = spec.likes, ex = !spec.autoCol;
-  if (ex) { const c = spec.cols[0]; const rest = spec.cols.slice(1); const parts = [[c, "#E6E0D8", rest[0] || "#C89B2E"], [rest[0] || "#E6E0D8", c, "#E6E0D8"], [c, rest[1] || "#C9A99A", "#14151A"], [c, "#F3EBDD", "#C89B2E"], [rest[0] || "#E6E0D8", rest[1] || c, c]]; return parts[i % 5]; }
+  if (ex) {
+    const mix = (hex, k) => { const n = parseInt(hex.slice(1), 16), f = (v) => Math.round(k >= 0 ? v + (255 - v) * k : v * (1 + k)).toString(16).padStart(2, "0"); return "#" + f(n >> 16) + f((n >> 8) & 255) + f(n & 255); };
+    const c = spec.cols[0], r1 = spec.cols[1], r2 = spec.cols[2];
+    const parts = [
+      [c, "#E6E0D8", r1 || "#C89B2E"],            // colour with cream and gold
+      [mix(c, 0.55), c, mix(c, -0.35)],            // all shades of the same colour
+      [c, r1 || "#14151A", r2 || "#E6E0D8"],       // colour with the other colours asked for, or black
+      [mix(c, 0.35), "#F3EBDD", mix(c, -0.2)],     // soft pastel version
+      [mix(c, -0.35), c, "#C9A99A"]                // deep version with a warm touch
+    ];
+    return parts[i % 5];
+  }
   let set;
   if (spec.dark) set = ["night", "navy", "grey", "plum", "sand"];
   else if (L.includes("nature") || L.includes("flower")) set = ["sage", "blush", "lav", "sun", "teal"];
@@ -1788,6 +1813,7 @@ function helperRecolor(spec, src, i = 0) {
     const nat = (spec.likes.includes("nature") || spec.likes.includes("flower")) && i % 2 === 1 && dipOK && !cc.size !== "thin";
     const foil = HELP_FOIL[i % 5];
     if (nat && cc.size !== "thin") { d.style = "clear"; d.picked = []; d.colors = DEFAULT_COLORS.slice(); d.dip = false; sprinkle(d, "goldleaf", 26, "rn" + src.shape); }
+    else if (dipOK && !spec.autoCol && i % 2 === 1 && cc.size !== "thin") { inkLook(d, spec.cols.slice(0, 3), [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); d.dip = false; if (foil !== "none") sprinkle(d, "goldleaf", 14, "ri" + src.shape); }
     else if (dipOK) { d.dip = true; d.gradient.direction = "down"; if (foil !== "none") sprinkle(d, spec.dark && foil === "goldleaf" ? "clear" : foil, 24, "rf" + src.shape, 30, 270, 0.26, 0.55); }
     else if (spec.glitterAsked && foil !== "none") sprinkle(d, HELP_GLITTER[spec.names[0]] || "gold", 26, "rc" + src.shape); }
   if (isGame(d.shape) && d.shape !== "domino-set" && d.chess) { const b = spec.cols.slice(); while (b.length < 3) b.push("#E6E0D8"); d.chess = { a: { c1: b[0], c2: "", foil: true }, b: { c1: b[1], c2: b[2], foil: true } }; }
@@ -2558,7 +2584,7 @@ els.panel.addEventListener("click", (e) => {
     const made = [plan[0], plan.find((o) => o.shape !== plan[0].shape && !isGame(o.shape)) || plan[1]].map((o, n) => ({ k: "", d: helperBuild(Object.assign({}, sp0, { cols: helperPalette(sp0, n === 0 ? 0 : 3), glitterAsked: n === 0 }), Object.assign({}, o, { style: thin(o.shape) || o.shape === "domino-set" ? "gradient" : "ink", i: n * 2 })), cat: catOf(o.shape) }));
     const mixed = [made[0], picks[0], picks[1], made[1], picks[2]];
     picks.length = 0; mixed.forEach((m) => picks.push(m));
-    ui.helperRecol = picks.map((p) => !!p.k && !(sp0.autoCol && !sp0.gender && !sp0.dark)); ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p, idx) => helperCharmUp(sp0, helperRecolor(sp0, p.d, idx))); ui.helperTitles = picks.map((p) => helperTitle2(p));
+    ui.helperRecol = picks.map((p) => !!p.k && !(sp0.autoCol && !sp0.gender && !sp0.dark)); ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p, idx) => helperCharmUp(sp0, helperRecolor(sp0, p.d, idx), idx)); ui.helperTitles = picks.map((p, k) => helperTitle2(p) + (ui.helperOpts[k]._theme ? " · " + ui.helperOpts[k]._theme.slice(0, 2).join(", ").toLowerCase() + " (" + (({ th: "ตามธีม", ru: "по теме" })[ui.lang] || "theme pick") + ")" : ""));
     renderPanel(); return;
   } else if (action === "helperpick") {
     const d = ui.helperOpts[Number(el.dataset.i)]; if (!d) return;
