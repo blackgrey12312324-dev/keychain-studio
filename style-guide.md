@@ -36,3 +36,10 @@ Learned from reference photos Anna sent. These pictures are NOT part of the shop
 - **Framed beach:** dark sea, turquoise waves with lace foam, white sand, small rocks, a tiny boat, green moss.
 - **Galaxy tiles:** black base, teal or blue/purple nebula, tiny white stars.
 - **Marble coffee platter:** taupe and cream swirl with beans and a gold spoon.
+
+## Fourth batch (coasters, trays, kitchen)
+- **Round coasters:** half solid pearl colour (pink or royal blue), half clear glass, with gold flakes concentrated along the line where the colour dissolves into the clear. A matching holder in the same colours.
+- **Oval tray:** white pearl at the rim fading into ocean blue with fine cell veins, a few gold leaf pieces on the line between white and blue.
+- **Coasters with fruit:** dried orange slices, berries and gold leaf in clear or amber or black resin, with a thin gold rim and a wavy edge.
+- **Boards:** teal/navy/gold fluid on bamboo with a ragged resin edge and matching round coasters; wooden tools and bowls with blue sea only on a part.
+- **Rule:** the colour/clear split with gold flakes on the dividing line is the strongest pattern across coasters, trays, keychains and dominoes.
