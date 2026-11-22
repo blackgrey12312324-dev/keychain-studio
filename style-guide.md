@@ -43,3 +43,8 @@ Learned from reference photos Anna sent. These pictures are NOT part of the shop
 - **Coasters with fruit:** dried orange slices, berries and gold leaf in clear or amber or black resin, with a thin gold rim and a wavy edge.
 - **Boards:** teal/navy/gold fluid on bamboo with a ragged resin edge and matching round coasters; wooden tools and bowls with blue sea only on a part.
 - **Rule:** the colour/clear split with gold flakes on the dividing line is the strongest pattern across coasters, trays, keychains and dominoes.
+
+## Fifth batch (coasters)
+- **Black and white coasters:** a glossy black half and a clean white half, joined by a flowing band of grey marble with gold leaf lines. Very few colours.
+- **Pressed-flower coasters:** clear round discs with baby's breath or forget-me-not sprigs (pink, blue, purple) arranged as a branch, with a few gold flakes near the edge. Pairs well with coffee.
+- **Rule:** one clean split (colour / clear, or black / white) with gold on the dividing line looks more expensive than busy full-surface patterns.
