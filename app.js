@@ -1750,10 +1750,11 @@ function helperCharmUp(spec, src) {
   const d = copy(src);
   if ((d.style !== "ink" && d.style !== "clear") || Object.keys(d.addins || {}).length || isGame(d.shape) || catOf(d.shape) === "cutting") return d;
   const kid = spec.aud === "kid" || (spec.aud === "teen" && !spec.dark);
-  const tries = spec.likes.includes("nature") || spec.flower ? [["natural", ["flower-yellow", "flower-cream", "dried-wheat", "flower-pink"].filter((x) => spec.names.includes("yellow") || !/yellow/.test(x))]] : kid ? [["charms", ["frog", "sm-butterfly-pink", "sm-heart-ruby", "sm-butterfly-teal"]]] : [["natural", spec.dark ? ["dried-lavender", "dried-wheat"] : ["dried-pink", "dried-wheat", "dried-lavender"]]];
+  const tries = spec.likes.includes("nature") || spec.flower ? [["natural", (spec.names.includes("yellow") ? ["flower-yellow", "flower-cream", "flower-pink"] : ["flower-pink", "flower-cream", "flower-blue", "flower-purple"]).slice(helperCharmUp.n++ % 2)]] : kid ? [["charms", ["frog", "sm-butterfly-pink", "sm-heart-ruby", "sm-butterfly-teal"]]] : [["natural", spec.dark ? ["dried-lavender", "dried-wheat"] : ["dried-pink", "dried-wheat", "dried-lavender"]]];
   for (const [mode, ids] of tries) {
     const keep = d.deco; d.deco = mode; let n = 0;
-    ids.forEach((id) => { const ad = CONFIG.addins.find((x) => x.id === id); if (n < 2 && ad && fits(ad, d)) { d.addins[id] = { amount: "few", place: "anna", color: ad.color }; n++; } });
+    if (mode === "natural") d.cluster = true;
+    ids.forEach((id) => { const ad = CONFIG.addins.find((x) => x.id === id); if (n < (mode === "natural" ? 3 : 2) && ad && fits(ad, d)) { d.addins[id] = { amount: "few", place: "anna", color: ad.color }; n++; } });
     if (n) { resetItems(d); layoutItems(d); return d; } d.deco = keep;
   }
   return d;
@@ -1787,6 +1788,7 @@ function helperRecolor(spec, src, i = 0) {
   if (isGame(d.shape) && d.shape !== "domino-set" && d.chess) { const b = spec.cols.slice(); while (b.length < 3) b.push("#E6E0D8"); d.chess = { a: { c1: b[0], c2: "", foil: true }, b: { c1: b[1], c2: b[2], foil: true } }; }
   return d;
 }
+helperCharmUp.n = 0;
 function helperTitle2(p) {
   const d = p.d, c = CONFIG.shapes.find((x) => x.id === d.shape) || {};
   const nm = isLetter(d.shape) ? "Letter " + d.shape + " keychain" : ({ "canvas-rect": ((ui.helperSpec && ui.helperSpec.names[0]) ? ui.helperSpec.names[0][0].toUpperCase() + ui.helperSpec.names[0].slice(1) + " abstract canvas" : "Abstract canvas"), "board-rect": "Wooden cutting board", "board-whale-tail": "Wooden cutting board" })[d.shape] || HELP_SHAPE_NAME[d.shape] || c.name || "Piece";
