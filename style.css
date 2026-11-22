@@ -1535,3 +1535,8 @@ body[data-page="design"] .cards.presets, .cards:has(.rl-pair) { grid-template-co
 .rl-pair img { aspect-ratio: 4 / 5; border-radius: 14px; box-shadow: 0 4px 14px rgba(14,63,87,.14); }
 .rl-pair .rl-svg { aspect-ratio: 4 / 5; background: radial-gradient(circle at 50% 40%, #fff, #EEE9E0); border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(14,63,87,.08); }
 .rl-pair figcaption { color: #5C7480; font-weight: 500; letter-spacing: .08em; }
+
+.photo-card { position: relative; text-decoration: none; color: inherit; }
+.photo-card.first { grid-column: 1 / -1; border: 2px solid #E8934A; box-shadow: 0 10px 28px rgba(232,147,74,.28); }
+.photo-card .photo-badge { position: absolute; top: -12px; left: 16px; background: #E8934A; color: #fff; font: 700 .72rem Jost, sans-serif; letter-spacing: .06em; text-transform: uppercase; padding: 4px 12px; border-radius: 999px; }
+.cards.first-row { grid-template-columns: 1fr; margin-bottom: 18px; }
