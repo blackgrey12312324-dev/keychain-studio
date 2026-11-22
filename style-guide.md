@@ -20,3 +20,12 @@ Learned from reference photos Anna sent. These pictures are NOT part of the shop
 4. Dark pieces take gold or silver, pastel pieces take gold.
 5. Charms or flowers sit in the clear area, never on top of a solid colour.
 6. Wooden pieces keep a visible wood part, with a soft flowing resin edge.
+
+## More references (second batch)
+- **Dominoes:** gold domed pips and a thin gold divider; pearl-white, cream marble or deep blue bodies; two-tone blue and pearl-white with gold flakes where the two colours meet; black with gold pips.
+- **Tic-tac-toe:** white pearl board with scattered gold flakes, solid white X, clear O rings full of gold leaf. Blue and clear version with gold.
+- **Chess:** blue and clear squares with gold flakes and tiny moon or star charms, clear gold-flaked pieces against blue pieces; black and clear with red or rose flakes.
+- **Combs and clips:** clear glass with white daisies, small green leaves and gold flakes; or red, purple and yellow dried flowers with gold flakes.
+- **Hearts:** clear with white chips and a few gold flakes. **Letters:** cream marble swirl on top, clear below with chunky gold leaf.
+- **Bookmarks and feathers:** clear to ocean blue with baby's breath; pink pearl feather with gold flakes at the top; pale blue crackle pens with gold flakes.
+- **Galaxy tile:** black with a teal nebula and tiny white star specks.

@@ -696,8 +696,9 @@ function dominoLayer(d) {
   const vals = [[6, 4], [3, 5], [2, 1], [5, 0]];
   let o = "";
   tiles.forEach(([x, y, k]) => {
-    o += `<rect x="${x + 8}" y="${y + 58}" width="82" height="3.5" rx="1.7" fill="rgba(20,30,40,.55)"/>`;
-    [0, 1].forEach((half) => (P[vals[k][half]] || []).forEach(([px, py]) => { o += `<circle cx="${(x + 10 + px * 78).toFixed(1)}" cy="${(y + 6 + half * 56 + py * 52).toFixed(1)}" r="5.4" fill="rgba(255,255,255,.92)" stroke="rgba(20,30,40,.35)" stroke-width="1"/>`; }));
+    o += `<rect x="${x + 8}" y="${y + 58.5}" width="82" height="2.6" rx="1.3" fill="#D8B04C"/><rect x="${x + 8}" y="${y + 58.5}" width="82" height="1" rx=".5" fill="#F3DC8A" opacity=".8"/>`;
+    for (let f = 0; f < 4; f++) { const fx = x + 18 + ((f * 37 + k * 11) % 62), fy = y + 50 + ((f * 13 + k * 7) % 22); o += `<rect x="${fx}" y="${fy}" width="${3 + (f % 3)}" height="${2.4 + (f % 2)}" fill="#E3BC52" opacity=".9" transform="rotate(${f * 40 + k * 15} ${fx} ${fy})"/>`; }
+    [0, 1].forEach((half) => (P[vals[k][half]] || []).forEach(([px, py]) => { o += `<circle cx="${(x + 10 + px * 78).toFixed(1)}" cy="${(y + 6 + half * 56 + py * 52).toFixed(1)}" r="5.2" fill="#D8B04C" stroke="rgba(90,60,10,.45)" stroke-width="1"/><circle cx="${(x + 8.8 + px * 78).toFixed(1)}" cy="${(y + 4.6 + half * 56 + py * 52).toFixed(1)}" r="1.8" fill="#FFF3C4" opacity=".85"/>`; }));
   });
   return `<g pointer-events="none">${o}</g>`;
 }
