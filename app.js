@@ -1190,7 +1190,7 @@ function renderPiece(d, side = "front", opts = {}) {
       <g transform="translate(0 3.2)" opacity="0.5">${shapeMarkup(d.shape, `fill="rgba(70,120,140,0.55)" pointer-events="none" filter="url(#${id}-bev)"`)}</g>
       ${glow ? `<g filter="url(#${id}-glow)" opacity="0.65">${shapeMarkup(d.shape, `fill="${d.addins.glow.color}"`)}</g>` : ""}
       <g clip-path="url(#${id}-clip)" class="resin">
-        ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(176,214,226,0.55)"/>`}
+        ${(customShape(d.shape) || {}).wood ? `<rect x="0" y="100" width="300" height="340" fill="url(#${id}-wood)"/>` : `<rect x="0" y="100" width="300" height="330" fill="rgba(242,247,248,0.62)"/>`}
         ${plainBack ? "" : penRefill(d)}${fill}
         ${CONFIG.showTexture ? gridLines(d.shape) + textureLayer(d.shape) : ""}
         ${(customShape(d.shape) || {}).texImg ? `<image href="images/textures/bm-${customShape(d.shape).texImg}.jpg" x="124" y="${customShape(d.shape).t}" width="52" height="${customShape(d.shape).b - customShape(d.shape).t}" preserveAspectRatio="xMidYMid slice" style="mix-blend-mode:hard-light" opacity="0.6" pointer-events="none"/>` : ""}
