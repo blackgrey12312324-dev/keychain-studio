@@ -1526,3 +1526,6 @@ img { image-rendering: auto; }
 
 .rl-pair.solo { display: flex; justify-content: center; }
 .rl-pair.solo figure { max-width: 70%; }
+.cards.presets .card-art.rl-pair { padding-bottom: 40px !important; }
+.cards.presets .rl-pair figcaption { font-size: .66rem; line-height: 1.2; }
+.cards.presets .card-name { display: block; margin-top: 10px; }

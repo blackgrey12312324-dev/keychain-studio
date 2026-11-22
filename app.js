@@ -1577,14 +1577,15 @@ var helperParse = function (text) {
   return { shape, label, names, cols: uniq, glitter: glitterWord, glitterAmt: glitterWord ? (little ? 40 : 110) : 0, hearts: /heart|love/.test(t), butterfly: /butterfl/.test(t), flower: /flower|floral|bloom|rose/.test(t), stars: /\bstar|stars/.test(t), gold: /gold/.test(t), sea: /sea|ocean|beach|shell|starfish/.test(t), crown: /crown|princess|queen/.test(t) };
 }
 const HELP_AUD = [
+  ["adult", /\b(\d{2})[\s-]*(y|yo|year)|\b(i am|i\x27m|for me|myself|woman|lady|adult)\b/],
   ["kid", /\b(kid|child|son|daughter|boy|girl|toddler|baby|niece|nephew|little)\b|\b([3-9]|1[0-2])\s*(y|yo|year)/],
   ["teen", /\b(teen|teenager|1[3-9]\s*(y|yo|year)|high school|student)\b/],
   ["senior", /\b(grandma|grandmother|grandpa|grandfather|granddad|grandad|granny|elderly|senior|6\d|7\d|8\d)\b/],
   ["mom", /\b(mom|mum|mother|mama)\b/], ["dad", /\b(dad|father|papa)\b/],
   ["partner", /\b(boyfriend|girlfriend|wife|husband|partner|love|anniversary|valentine)\b/],
   ["friend", /\b(friend|bestie|sister|brother)\b/], ["work", /\b(boss|colleague|coworker|teacher|office|client)\b/]];
-const HELP_LIKES = { frog: /frog/, cat: /\bcat|kitten/, bear: /\bbear/, guns: /\bgun|pistol|rifle|army|military|shoot/, money: /money|rich|dollar|cash|boss/, sea: /sea|ocean|beach|shell|starfish|wave|mermaid/, flower: /flower|floral|bloom|garden/, butterfly: /butterfl/, hearts: /heart/, crown: /crown|princess|queen|royal/, stars: /\bstar/, game: /game|play|chess|domino|tic|puzzle/, coffee: /coffee|latte|cafe|cappuccino|espresso|barista/ };
-const HELP_AUDCOL = { boy: ["blue", "light blue", "navy"], girl: ["pink", "lilac", "rose"], kid: ["pink", "light blue", "yellow"], teen: ["purple", "black", "turquoise"], senior: ["rose", "cream", "gold"], mom: ["rose", "cream", "gold"], dad: ["navy", "grey", "brown"], partner: ["red", "pink", "gold"], friend: ["lilac", "turquoise", "pink"], work: ["navy", "silver", "white"] };
+const HELP_LIKES = { frog: /frog/, cat: /\bcat|kitten/, bear: /\bbear/, guns: /\bgun|pistol|rifle|army|military|shoot/, money: /money|rich|dollar|cash|boss/, sea: /sea|ocean|beach|shell|starfish|wave|mermaid/, flower: /flower|floral|bloom|garden/, butterfly: /butterfl/, hearts: /heart/, crown: /crown|princess|queen|royal/, stars: /\bstar/, game: /game|play|chess|domino|tic|puzzle/, nature: /nature|garden|forest|leaf|leaves|plant|botanic|meadow|wild ?flower|outdoor/, coffee: /coffee|latte|cafe|cappuccino|espresso|barista/ };
+const HELP_AUDCOL = { adult: ["rose", "cream", "gold"], boy: ["blue", "light blue", "navy"], girl: ["pink", "lilac", "rose"], kid: ["pink", "light blue", "yellow"], teen: ["purple", "black", "turquoise"], senior: ["rose", "cream", "gold"], mom: ["rose", "cream", "gold"], dad: ["navy", "grey", "brown"], partner: ["red", "pink", "gold"], friend: ["lilac", "turquoise", "pink"], work: ["navy", "silver", "white"] };
 const _helperParse0 = helperParse;
 helperParse = function (text) {
   const sp = _helperParse0(text), low = text.toLowerCase();
@@ -1592,12 +1593,14 @@ helperParse = function (text) {
   sp.likes = Object.keys(HELP_LIKES).filter((k) => HELP_LIKES[k].test(low));
   sp.hearts = /heart/.test(low); sp.gift = /gift|present|birthday|anniversary|surprise|souvenir|memory|memories|photo/.test(low);
   sp.named = sp.shape !== "tag" || /keychain|key ?ring|charm/.test(low);
-  sp.gender = /\b(boy|son|nephew|brother|boyfriend|husband|dad|father|grandpa|grandfather|granddad|grandad|uncle|he|his)\b/.test(low) ? "boy" : /\b(girl|daughter|niece|sister|girlfriend|wife|mom|mum|mother|grandma|grandmother|granny|aunt|she|her)\b/.test(low) ? "girl" : "";
+  sp.gender = /\b(boy|son|nephew|brother|boyfriend|husband|dad|father|grandpa|grandfather|granddad|grandad|uncle|he|his)\b/.test(low) ? "boy" : /\b(girl|daughter|niece|sister|girlfriend|wife|mom|mum|mother|grandma|grandmother|granny|aunt|woman|lady|female|she|her)\b/.test(low) ? "girl" : "";
   sp.dark = /\b(dark|black|moody|deep|night|elegant|classy)\b/.test(low);
+  sp.glitterAsked = sp.glitter;
   sp.autoCol = !sp.cols.length;
   if (sp.autoCol) { const pick = sp.dark ? ["black", "navy", "grey"] : sp.likes.includes("frog") ? ["green", "mint", "cream"] : sp.likes.includes("sea") ? ["blue", "turquoise", "white"] : sp.likes.includes("guns") ? ["black", "grey", "gold"] : sp.likes.includes("money") ? ["green", "gold", "black"] : (sp.gender && ["kid", "teen", "friend", "partner", ""].includes(sp.aud) && HELP_AUDCOL[sp.gender]) || HELP_AUDCOL[sp.aud] || ["pink", "blue", "gold"]; sp.names = pick; sp.cols = pick.map((k) => HELP_COLORS[k]); }
   if (!sp.glitter) { sp.glitter = true; sp.glitterAmt = sp.aud === "kid" || sp.aud === "teen" ? 90 : 60; }
-  if (sp.likes.includes("hearts")) sp.hearts = true; if (sp.likes.includes("butterfly")) sp.butterfly = true; if (sp.likes.includes("flower")) sp.flower = true; if (sp.likes.includes("crown")) sp.crown = true; if (sp.likes.includes("stars")) sp.stars = true; if (sp.likes.includes("sea")) sp.sea = true;
+  if (sp.likes.includes("hearts")) sp.hearts = true; if (sp.likes.includes("butterfly")) sp.butterfly = true; if (sp.likes.includes("flower") || sp.likes.includes("nature")) sp.flower = true;
+  if (sp.likes.includes("nature") && !sp.autoCol && sp.cols.length < 3) { const g = ["#4C8A7C", "#E6E0D8"]; g.forEach((c) => { if (!sp.cols.includes(c)) sp.cols.push(c); }); sp.names = sp.names.concat(["green", "cream"]); } if (sp.likes.includes("crown")) sp.crown = true; if (sp.likes.includes("stars")) sp.stars = true; if (sp.likes.includes("sea")) sp.sea = true;
   return sp;
 };
 // charms that suit the person; the first ones that physically fit are used
@@ -1609,7 +1612,7 @@ function helperCharms(spec, v) {
   if (spec.hearts) a.push("sm-heart-ruby", "sm-heart-blue");
   if (spec.butterfly) a.push("sm-butterfly-pink", "sm-butterfly-teal");
   if (spec.crown) a.push("sm-crown-gold");
-  if (spec.flower) a.push("flower-pink", "flower-cream");
+  if (spec.flower) a.push(spec.names.includes("yellow") ? "flower-yellow" : "flower-pink", "flower-cream");
   const def = { kid: ["frog", "sm-butterfly-pink", "sm-heart-ruby"], teen: ["sm-butterfly-teal", "sm-heart-blue", "charm-coin"], senior: ["flower-cream", "sm-heart-ruby"], mom: ["flower-pink", "sm-heart-ruby", "sm-butterfly-pink"], dad: ["charm-coin", "sm-heart-blue"], partner: ["sm-heart-ruby", "sm-heart-ruby"], friend: ["sm-butterfly-teal", "sm-heart-blue"], work: ["charm-coin", "sm-crown-gold"] }[spec.aud] || ["sm-heart-ruby", "sm-butterfly-pink", "flower-pink"];
   const all = [...new Set([...a, ...def])];
   return all.slice(v % 2, v % 2 + 4).concat(all);
@@ -1618,7 +1621,7 @@ function helperCharms(spec, v) {
 function helperPlan(spec) {
   const sh = spec.shape, L = spec.likes;
   const keep = spec.named && sh !== "tag" ? sh : null;
-  const by = { kid: ["tag", "comb", "pen", "game-ttt", "bookmark"], teen: ["heart", "domino-set", "pen", "comb", "game-chess"], senior: ["bookmark", "coaster", "soap", "domino-set", "comb"], mom: ["bookmark", "coaster", "comb", "soap", "tag"], dad: ["game-chess", "domino-set", "pen", "coaster", "tag"], partner: ["heart", "bookmark", "game-chess", "comb", "tag"], friend: ["tag", "pen", "comb", "game-ttt", "bookmark"], work: ["pen", "coaster", "bookmark", "tag", "domino-set"], "": ["tag", "bookmark", "domino-set", "pen", "comb"] }[spec.aud].slice();
+  const by = { kid: ["tag", "comb", "pen", "game-ttt", "bookmark"], teen: ["heart", "domino-set", "pen", "comb", "game-chess"], senior: ["bookmark", "coaster", "soap", "domino-set", "comb"], mom: ["bookmark", "coaster", "comb", "soap", "tag"], dad: ["game-chess", "domino-set", "pen", "coaster", "tag"], partner: ["heart", "bookmark", "game-chess", "comb", "tag"], friend: ["tag", "pen", "comb", "game-ttt", "bookmark"], work: ["pen", "coaster", "bookmark", "tag", "domino-set"], adult: ["tag", "hairpin", "bookmark", "heart", "coaster"], "": ["tag", "bookmark", "domino-set", "pen", "comb"] }[spec.aud].slice();
   if (L.includes("game") && !by.includes("domino-set")) by[2] = "domino-set";
   if (L.includes("sea")) by[1] = "soap";
   let shapes = by;
@@ -1635,7 +1638,7 @@ function helperBuild(spec, opt) {
   const base = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (base.length < 3) base.push(pad[base.length - 1] || "#E6E0D8");
   const rot = v % 3, cols = [base[rot], base[(rot + 1) % 3], base[(rot + 2) % 3]];
   const gl = HELP_GLITTER[spec.names[v % spec.names.length]] || HELP_GLITTER[spec.names[0]] || "gold";
-  const amt = Math.min(spec.glitterAmt, 70) * 0.7;
+  const amt = spec.glitterAsked ? Math.min(spec.glitterAmt, 60) * 0.6 : 0;
   const spots = [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]];
   let style = opt.style;
   if (style === "clear" && noClear(shape)) style = "ink";
@@ -1644,17 +1647,15 @@ function helperBuild(spec, opt) {
   else if (style === "gradient") gradLook(d, cols, ["down", "diagonal", "center"][v % 3]);
   else if (style === "ink") inkLook(d, cols, spots);
   else { d.style = "clear"; d.picked = []; }
-  if (style === "clear") sprinkle(d, spec.gold ? "goldleaf" : gl, 80 + amt, "hp" + v);
+  if (style === "clear") sprinkle(d, gl, 30 + amt, "hp" + v);
   if (style !== "ocean") {
-    sprinkle(d, gl, Math.round(amt), "hg" + v);
-        if (spec.hearts) sprinkle(d, "hearts", 16, "hh" + v);
-    if (spec.stars) sprinkle(d, "stars", 16, "hs" + v);
-    if (spec.gold) sprinkle(d, "goldleaf", 40 + v * 10, "hl" + v);
+    if (amt) sprinkle(d, gl, Math.round(amt), "hg" + v);
+        if (spec.gold && !spec.nature) sprinkle(d, "goldleaf", 20, "hl" + v);
   }
   // charms: every option gets some where they physically fit (not on blended gradients, games or cup stands)
   if (style === "ink" || style === "clear") {
     const pool = helperCharms(spec, v), natural = pool.filter((x) => /^flower/.test(x)), chm = pool.filter((x) => !/^flower/.test(x));
-    for (const mode of (v % 2 && natural.length ? ["natural", "charms"] : ["charms", "natural"])) {
+    for (const mode of ((v % 2 || spec.likes.includes("nature")) && natural.length ? ["natural", "charms"] : ["charms", "natural"])) {
       d.deco = mode; d.addins = {}; const ids = mode === "natural" ? natural : chm; let n = 0; const max = moldRank(shape) <= 0 ? 1 : v === 4 ? 2 : 3;
       ids.forEach((id) => { const ad = CONFIG.addins.find((x) => x.id === id); if (n < max && ad && !d.addins[id] && fits(ad, d)) { d.addins[id] = { amount: "few", place: "anna", color: ad.color }; n++; } });
       if (n) break; d.deco = "";
@@ -1671,7 +1672,7 @@ function helperBuild(spec, opt) {
 }
 
 // Helper v3: pick from Anna's own ready-made designs (they look right), matched to colour, person and interest
-const HELP_CATS = { seniorM: ["cutting", "statues", "kitchen", "paint", "accessories"], dadA: ["cutting", "statues", "paint", "kitchen", "keychains"], kid: ["keychains", "accessories", "statues", "paint", "kitchen"], teen: ["keychains", "statues", "accessories", "paint", "cutting"], senior: ["paint", "kitchen", "cutting", "accessories", "keychains"], mom: ["paint", "kitchen", "cutting", "accessories", "keychains"], dad: ["cutting", "statues", "paint", "kitchen", "keychains"], partner: ["paint", "keychains", "cutting", "accessories", "statues"], friend: ["keychains", "accessories", "statues", "paint", "kitchen"], work: ["cutting", "paint", "kitchen", "accessories", "keychains"], "": ["keychains", "statues", "paint", "accessories", "cutting"] };
+const HELP_CATS = { adult: ["paint", "accessories", "keychains", "kitchen", "cutting"], seniorM: ["cutting", "statues", "kitchen", "paint", "accessories"], dadA: ["cutting", "statues", "paint", "kitchen", "keychains"], kid: ["keychains", "accessories", "statues", "paint", "kitchen"], teen: ["keychains", "statues", "accessories", "paint", "cutting"], senior: ["paint", "kitchen", "cutting", "accessories", "keychains"], mom: ["paint", "kitchen", "cutting", "accessories", "keychains"], dad: ["cutting", "statues", "paint", "kitchen", "keychains"], partner: ["paint", "keychains", "cutting", "accessories", "statues"], friend: ["keychains", "accessories", "statues", "paint", "kitchen"], work: ["cutting", "paint", "kitchen", "accessories", "keychains"], "": ["keychains", "statues", "paint", "accessories", "cutting"] };
 function hexRgb(h) { const n = parseInt(h.replace("#", ""), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
 function helperDesignCols(d) { return d.style === "ocean" ? ["#1F6BC0", "#4F8A9C"] : (d.picked || []).filter((c) => /^#/.test(c)); }
 function helperScore(spec, d, k) {
@@ -1711,7 +1712,7 @@ function helperCharmUp(spec, src) {
   const d = copy(src);
   if ((d.style !== "ink" && d.style !== "clear") || Object.keys(d.addins || {}).length || isGame(d.shape) || catOf(d.shape) === "cutting") return d;
   const kid = spec.aud === "kid" || (spec.aud === "teen" && !spec.dark);
-  const tries = kid ? [["charms", ["frog", "sm-butterfly-pink", "sm-heart-ruby", "sm-butterfly-teal"]]] : [["natural", spec.dark ? ["dried-lavender", "dried-wheat"] : ["dried-pink", "dried-wheat", "dried-lavender"]]];
+  const tries = spec.likes.includes("nature") || spec.flower ? [["natural", ["flower-yellow", "flower-cream", "dried-wheat", "flower-pink"].filter((x) => spec.names.includes("yellow") || !/yellow/.test(x))]] : kid ? [["charms", ["frog", "sm-butterfly-pink", "sm-heart-ruby", "sm-butterfly-teal"]]] : [["natural", spec.dark ? ["dried-lavender", "dried-wheat"] : ["dried-pink", "dried-wheat", "dried-lavender"]]];
   for (const [mode, ids] of tries) {
     const keep = d.deco; d.deco = mode; let n = 0;
     ids.forEach((id) => { const ad = CONFIG.addins.find((x) => x.id === id); if (n < 2 && ad && fits(ad, d)) { d.addins[id] = { amount: "few", place: "anna", color: ad.color }; n++; } });
@@ -1723,13 +1724,13 @@ function helperCharmUp(spec, src) {
 function helperRecolor(spec, src) {
   const d = copy(src);
   if (spec.autoCol && !spec.gender && !spec.dark) return d;
-  if ((d.style === "ink" || d.style === "gradient") && d.picked && d.picked.length) { const b = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (b.length < 3) b.push(pad[b.length - 1]); d.picked = b.slice(0, 3); d.style = "gradient"; d.gradient = { direction: ["diagonal", "down", "center"][hashText(src.shape + spec.names.join()) % 3], glitter: "none" }; applyPicked(d); }
+  if ((d.style === "ink" || d.style === "gradient") && d.picked && d.picked.length) { const b = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (b.length < 3) b.push(pad[b.length - 1]); d.picked = b.slice(0, 3); d.style = "gradient"; d.gradient = { direction: ["diagonal", "down", "center"][hashText(src.shape + spec.names.join()) % 3], glitter: "none" }; applyPicked(d); d.crush = []; if (spec.glitterAsked) sprinkle(d, HELP_GLITTER[spec.names[0]] || "gold", 26, "rc" + src.shape); }
   if (isGame(d.shape) && d.shape !== "domino-set" && d.chess) { const b = spec.cols.slice(); while (b.length < 3) b.push("#E6E0D8"); d.chess = { a: { c1: b[0], c2: "", foil: true }, b: { c1: b[1], c2: b[2], foil: true } }; }
   return d;
 }
 function helperTitle2(p) {
   const d = p.d, c = CONFIG.shapes.find((x) => x.id === d.shape) || {};
-  const nm = isLetter(d.shape) ? "Letter " + d.shape + " keychain" : ({ "canvas-rect": "Canvas", "board-rect": "Wooden cutting board", "board-whale-tail": "Wooden cutting board" })[d.shape] || HELP_SHAPE_NAME[d.shape] || c.name || "Piece";
+  const nm = isLetter(d.shape) ? "Letter " + d.shape + " keychain" : ({ "canvas-rect": ((ui.helperSpec && ui.helperSpec.names[0]) ? ui.helperSpec.names[0][0].toUpperCase() + ui.helperSpec.names[0].slice(1) + " abstract canvas" : "Abstract canvas"), "board-rect": "Wooden cutting board", "board-whale-tail": "Wooden cutting board" })[d.shape] || HELP_SHAPE_NAME[d.shape] || c.name || "Piece";
   const sea = d.shape === "canvas-rect" && d.style === "ocean" ? "Sea canvas" : "";
   if (sea) return sea;
   if (d.shape === "canvas-rect" && /coffee/.test(p.k)) return "Coffee art canvas";
@@ -1746,14 +1747,14 @@ function helperView() {
   const opts = ui.helperOpts || [];
   const T = (en, th, ru) => ({ th, ru }[ui.lang] || en);
   const sp = ui.helperSpec || {};
-  const audN = { kid: "a child", teen: "a teen", senior: "an older person", mom: "mom", dad: "dad", partner: "a partner", friend: "a friend", work: "a colleague" }[sp.aud];
+  const audN = { adult: "you", kid: "a child", teen: "a teen", senior: "an older person", mom: "mom", dad: "dad", partner: "a partner", friend: "a friend", work: "a colleague" }[sp.aud];
   return `<button type="button" class="btn btn-line small" data-action="choiceback">${U("catBack")}</button>
     <h2>${T("Describe your design", "บอกแบบที่อยากได้", "Опиши свой дизайн")}</h2>
     <p class="hint">${T("Tell me who it is for (age too), what they like, colours, a pet or a hobby. I will suggest 5 different pieces with charms and glitter, and you pick one.", "บอกว่าทำให้ใคร (อายุด้วย) เขาชอบอะไร สี สัตว์เลี้ยง หรืองานอดิเรก เราจะแนะนำ 5 ชิ้นที่ต่างกัน มีชาร์มและกากเพชร", "Расскажи, для кого (и возраст), что нравится, цвета, питомец или хобби. Я предложу 5 разных изделий с шармами и блёстками.")}</p>
     <div class="field"><textarea id="helper-text" rows="3" placeholder="${esc(T("e.g. A present for my 8 year old niece, she loves frogs and green", "เช่น ของขวัญหลานสาวอายุ 8 ขวบ ชอบกบและสีเขียว", "например: подарок племяннице 8 лет, любит лягушек и зелёный"))}">${esc(ui.helperText || "")}</textarea>
       <div class="helper-row"><button type="button" class="btn btn-ink" data-action="helpergo">${T("Suggest 5 options", "แนะนำ 5 แบบ", "Предложить 5 вариантов")}</button><button type="button" class="btn btn-line mic-btn ${ui.listening ? "rec" : ""}" data-action="helpermic" aria-pressed="${!!ui.listening}">🎤 ${ui.listening ? T("Listening… tap to stop", "กำลังฟัง… แตะเพื่อหยุด", "Слушаю… нажми, чтобы остановить") : T("Speak instead", "พูดแทนการพิมพ์", "Сказать голосом")}</button></div><p class="small-note" id="mic-note">${ui.micMsg || ""}</p></div>
-    ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${audN ? T("a gift for ", "ของขวัญสำหรับ ", "подарок для ") + esc(audN) : T("your idea", "ไอเดียของคุณ", "твоя идея")}</b>${sp.likes.length ? " · " + T("likes", "ชอบ", "любит") + " " + esc(sp.likes.join(", ")) : ""} · ${T("colours", "สี", "цвета")}: ${esc(sp.names.join(", "))}${sp.dark ? " (" + T("dark", "เข้ม", "тёмные") + ")" : ""} · ${T("suggested", "แนะนำ", "предлагаю")}: ${esc([...new Set(ui.helperTitles.map((x) => x.split(" · ")[0].toLowerCase()))].join(", "))}</p>
-    <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art rl-pair"><figure><img src="images/real/${ui.helperKeys[i]}.jpg" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.display='none';this.closest('.rl-pair').classList.add('solo')"><figcaption>${T("Made by Anna", "ผลงานจริง", "Работа Анны")}</figcaption></figure><figure><span class="rl-svg">${renderPiece(d)}</span><figcaption>${T("Design", "ดีไซน์", "Дизайн")}</figcaption></figure></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${esc(ui.helperTitles[i])}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}${true ? `<a class="card" href="collage.html"><div class="card-art"><span class="rl-svg" style="display:grid;place-items:center;aspect-ratio:3/4;font-size:54px">🖼️</span></div><span class="card-name">${T("Recommended: upload your photos and we make a personal canvas", "แนะนำ: อัปโหลดรูปแล้วเราทำแคนวาสส่วนตัวให้", "Рекомендуем: загрузи фото, и мы сделаем личный холст")}</span><div class="card-actions"><span class="btn btn-ink small">${T("Create my canvas", "สร้างแคนวาส", "Создать холст")}</span></div></a>` : ""}</div>` : ""}`;
+    ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${audN ? (sp.aud === "adult" ? T("made for you", "ทำให้คุณ", "для тебя") : T("a gift for ", "ของขวัญสำหรับ ", "подарок для ") + esc(audN)) : T("your idea", "ไอเดียของคุณ", "твоя идея")}</b>${sp.likes.length ? " · " + T("likes", "ชอบ", "любит") + " " + esc(sp.likes.join(", ")) : ""} · ${T("colours", "สี", "цвета")}: ${esc(sp.names.join(", "))}${sp.dark ? " (" + T("dark", "เข้ม", "тёмные") + ")" : ""} · ${T("suggested", "แนะนำ", "предлагаю")}: ${esc([...new Set(ui.helperTitles.map((x) => x.split(" · ")[0].toLowerCase()))].join(", "))}</p>
+    <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art rl-pair"><figure><img src="images/real/${ui.helperKeys[i]}.jpg" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.display='none';this.closest('.rl-pair').classList.add('solo')"><figcaption>${(ui.helperRecol[i] ? T("Anna's, other colours", "ผลงานจริง สีต่างกัน", "Работа Анны, др. цвета") : T("Made by Anna", "ผลงานจริง", "Работа Анны"))}</figcaption></figure><figure><span class="rl-svg">${renderPiece(d)}</span><figcaption>${T("In your colours", "สีที่คุณเลือก", "В твоих цветах")}</figcaption></figure></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${esc(ui.helperTitles[i])}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}${true ? `<a class="card" href="collage.html"><div class="card-art"><span class="rl-svg" style="display:grid;place-items:center;aspect-ratio:3/4;font-size:54px">🖼️</span></div><span class="card-name">${T("Recommended: upload your photos and we make a personal canvas", "แนะนำ: อัปโหลดรูปแล้วเราทำแคนวาสส่วนตัวให้", "Рекомендуем: загрузи фото, и мы сделаем личный холст")}</span><div class="card-actions"><span class="btn btn-ink small">${T("Create my canvas", "สร้างแคนวาส", "Создать холст")}</span></div></a>` : ""}</div>` : ""}`;
 }
 const STEP_VIEWS = [
   // 0 Ready-made
@@ -2486,7 +2487,7 @@ els.panel.addEventListener("click", (e) => {
     const made = [plan[0], plan.find((o) => o.shape !== plan[0].shape && !isGame(o.shape)) || plan[1]].map((o, n) => ({ k: "", d: helperBuild(sp0, Object.assign({}, o, { style: thin(o.shape) ? "gradient" : "ink", i: n * 2 })), cat: catOf(o.shape) }));
     const mixed = [made[0], picks[0], picks[1], made[1], picks[2]];
     picks.length = 0; mixed.forEach((m) => picks.push(m));
-    ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p) => (p.k ? helperCharmUp(sp0, helperRecolor(sp0, p.d)) : p.d)); ui.helperTitles = picks.map((p) => helperTitle2(p));
+    ui.helperRecol = picks.map((p) => !!p.k && !(sp0.autoCol && !sp0.gender && !sp0.dark)); ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p) => (p.k ? helperCharmUp(sp0, helperRecolor(sp0, p.d)) : p.d)); ui.helperTitles = picks.map((p) => helperTitle2(p));
     renderPanel(); return;
   } else if (action === "helperpick") {
     const d = ui.helperOpts[Number(el.dataset.i)]; if (!d) return;
