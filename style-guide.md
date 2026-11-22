@@ -29,3 +29,10 @@ Learned from reference photos Anna sent. These pictures are NOT part of the shop
 - **Hearts:** clear with white chips and a few gold flakes. **Letters:** cream marble swirl on top, clear below with chunky gold leaf.
 - **Bookmarks and feathers:** clear to ocean blue with baby's breath; pink pearl feather with gold flakes at the top; pale blue crackle pens with gold flakes.
 - **Galaxy tile:** black with a teal nebula and tiny white star specks.
+
+## Third batch
+- **Sunset sea canvases:** pink / orange / magenta sky blending into a white foam wave over pale sand, optionally two tiny turtles or dark rocks. Not only blue.
+- **Boards:** black + white + gold marble with cells on bamboo; navy to turquoise wave with white foam on walnut, the wave edge diagonal and wavy. A gold line runs along the foam edge. Coasters in the same palette. Surfboard shapes also work.
+- **Framed beach:** dark sea, turquoise waves with lace foam, white sand, small rocks, a tiny boat, green moss.
+- **Galaxy tiles:** black base, teal or blue/purple nebula, tiny white stars.
+- **Marble coffee platter:** taupe and cream swirl with beans and a gold spoon.

@@ -1179,11 +1179,18 @@ function renderPiece(d, side = "front", opts = {}) {
 
   const plainBack = side === "back" && d.back === "plain";
   const fillRaw = plainBack ? "" : (d.shape === "game-ttt" ? tttLayer(d, id) : d.shape === "game-chess" ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + (d.shape === "domino-set" ? dominoLayer(d) : "") + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
-  const partClip = () => { const p = d.partial, a = Math.tan(((d.partialAngle || 0) * Math.PI) / 180), mid = T + (B - T) * p;
-    if (d.partialSide === "left") return `<polygon points="0,-200 ${(300 * p + a * 420).toFixed(1)},-200 ${(300 * p - a * 420).toFixed(1)},640 0,640"/>`;
-    if (d.partialSide === "right") return `<polygon points="300,-200 ${(300 * (1 - p) + a * 420).toFixed(1)},-200 ${(300 * (1 - p) - a * 420).toFixed(1)},640 300,640"/>`;
-    return `<polygon points="-200,-200 500,-200 500,${(mid + a * 350).toFixed(1)} -200,${(mid - a * 350).toFixed(1)}"/>`; };
-  const fill = (d.partial > 0 && d.partial < 1 && (customShape(d.shape) || {}).wood && fillRaw) ? `<clipPath id="${id}-part">${partClip()}</clipPath><g clip-path="url(#${id}-part)">${fillRaw}</g>` : fillRaw;
+  // resin edge on a board: a soft wave (never ruler-straight) with a white foam line and a fine gold line, like the reference boards
+  const edgePts = () => { const p = d.partial, a = Math.tan(((d.partialAngle || 0) * Math.PI) / 180), mid = T + (B - T) * p, pts = [];
+    for (let k = 0; k <= 48; k++) { const t = k / 48, w = Math.sin(t * Math.PI * 3.2 + 0.6) * 9 + Math.sin(t * Math.PI * 7.1) * 3;
+      if (d.partialSide === "left") pts.push([300 * p + a * (t - 0.5) * 420 + w, -20 + t * 480]);
+      else if (d.partialSide === "right") pts.push([300 * (1 - p) + a * (t - 0.5) * 420 + w, -20 + t * 480]);
+      else pts.push([-20 + t * 340, mid + a * (t - 0.5) * 340 + w]); }
+    return pts; };
+  const partClip = () => { const e = edgePts(), P = (q) => q.map(([x, y]) => x.toFixed(1) + "," + y.toFixed(1)).join(" ");
+    return d.partialSide === "left" ? `<polygon points="-20,-20 ${P(e)} -20,460"/>` : d.partialSide === "right" ? `<polygon points="320,-20 ${P(e)} 320,460"/>` : `<polygon points="-20,-20 ${P(e)} 320,-20"/>`; };
+  const foam = () => { const e = edgePts().map(([x, y]) => x.toFixed(1) + "," + y.toFixed(1)).join(" "); const g = d.partialSide ? "translate(3 0)" : "translate(0 3)";
+    return `<g pointer-events="none" clip-path="url(#${id}-clip)"><polyline points="${e}" fill="none" stroke="#D8B04C" stroke-width="1.6" opacity=".9" transform="${g}"/><polyline points="${e}" fill="none" stroke="#FFFFFF" stroke-width="5" opacity=".85" stroke-linejoin="round" stroke-linecap="round" transform="translate(${d.partialSide ? -1 : 0} ${d.partialSide ? 0 : -1})" filter="url(#${id}-soft2)"/></g>`; };
+  const fill = (d.partial > 0 && d.partial < 1 && (customShape(d.shape) || {}).wood && fillRaw) ? `<clipPath id="${id}-part">${partClip()}</clipPath><g clip-path="url(#${id}-part)">${fillRaw}</g>${foam()}` : fillRaw;
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linejoin="round"`;
