@@ -742,18 +742,26 @@ function chessPanel() {
 }
 // Abstract resin art for canvases: flowing colour with swirls, white lacing and a fine metallic vein, instead of soft blobs
 function abstractLayer(d, id, R, T, B) {
-  const c = d.colors, h = B - T, W = 300, seed = (hashText(d.shape + c.join("")) % 90) + 3;
-  const lite = (hex) => { const n = parseInt(hex.slice(1), 16), m = (v) => Math.round(v + (255 - v) * 0.55).toString(16).padStart(2, "0"); return "#" + m(n >> 16) + m((n >> 8) & 255) + m(n & 255); };
-  let s = `<defs><linearGradient id="${id}-ag" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset=".5" stop-color="${c[1]}"/><stop offset="1" stop-color="${c[2]}"/></linearGradient>
-    <filter id="${id}-ab" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
-    <filter id="${id}-am" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.007 0.013" numOctaves="2" seed="${seed}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="46"/></filter></defs>
-    <rect x="0" y="${T - 20}" width="300" height="${h + 40}" fill="${c[1]}"/><g filter="url(#${id}-am)"><rect x="-60" y="${T - 80}" width="420" height="${h + 160}" fill="url(#${id}-ag)"/>`;
-  [0, 1, 2, 1, 0, 2].forEach((i, k) => { s += `<ellipse cx="${(R() * W).toFixed(0)}" cy="${(T + R() * h).toFixed(0)}" rx="${(60 + R() * 90).toFixed(0)}" ry="${(18 + R() * 34).toFixed(0)}" fill="${c[i]}" opacity=".85" transform="rotate(${(R() * 160 - 80).toFixed(0)} 150 ${(T + h / 2).toFixed(0)})" filter="url(#${id}-ab)"/>`; });
-  s += `<ellipse cx="${(80 + R() * 140).toFixed(0)}" cy="${(T + h * (0.3 + R() * 0.4)).toFixed(0)}" rx="90" ry="14" fill="${lite(c[1])}" opacity=".7" transform="rotate(${(R() * 50 - 25).toFixed(0)} 150 ${(T + h / 2).toFixed(0)})" filter="url(#${id}-ab)"/>`;
-  const vein = (col, w, o) => `<path d="M${(-20 + R() * 40).toFixed(0)} ${(T + R() * h).toFixed(0)} C ${(80 + R() * 40).toFixed(0)} ${(T + R() * h).toFixed(0)}, ${(160 + R() * 40).toFixed(0)} ${(T + R() * h).toFixed(0)}, ${(320 + R() * 20).toFixed(0)} ${(T + R() * h).toFixed(0)}" fill="none" stroke="${col}" stroke-width="${w}" opacity="${o}" stroke-linecap="round"/>`;
-  s += vein("#F4EEE2", 2.2, .75) + vein("#F4EEE2", 1.2, .6) + vein("#D8B04C", 1.4, .85) + vein(lite(c[2]), 3, .5);
+  const c = d.colors, h = B - T, seed = (hashText(d.shape + c.join("")) % 90) + 3;
+  const lite = (hex, k = 0.55) => { const n = parseInt(hex.slice(1), 16), m = (v) => Math.round(v + (255 - v) * k).toString(16).padStart(2, "0"); return "#" + m(n >> 16) + m((n >> 8) & 255) + m(n & 255); };
+  const y0 = T + h * 0.1;
+  // one flowing S-curve, drawn as colour band with a white edge line and a gold line running alongside it
+  const wave = (dy, amp) => `M-40 ${(y0 + dy + h * 0.15).toFixed(0)} C 60 ${(y0 + dy - amp).toFixed(0)}, 130 ${(y0 + dy + h * 0.5 + amp).toFixed(0)}, 210 ${(y0 + dy + h * 0.3).toFixed(0)} S 300 ${(y0 + dy + h * 0.1 - amp).toFixed(0)}, 350 ${(y0 + dy + h * 0.45).toFixed(0)}`;
+  let s = `<defs><linearGradient id="${id}-ag" x1="0" y1="0" x2="0.4" y2="1"><stop offset="0" stop-color="${lite(c[2], 0.65)}"/><stop offset=".45" stop-color="${lite(c[1], 0.35)}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient>
+    <filter id="${id}-ab" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="2.2"/></filter>
+    <filter id="${id}-am" x="-15%" y="-15%" width="130%" height="130%"><feTurbulence type="fractalNoise" baseFrequency="0.006 0.011" numOctaves="2" seed="${seed}" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="38"/></filter></defs>
+    <rect x="0" y="${T - 20}" width="300" height="${h + 40}" fill="url(#${id}-ag)"/><g filter="url(#${id}-am)">`;
+  const bands = [[0, 36, c[0], 0.95], [h * 0.32, 30, c[1], 0.9], [h * 0.6, 40, c[0], 0.92], [h * 0.82, 26, c[2], 0.85]];
+  bands.forEach(([dy, amp, col, op], k) => {
+    const p = wave(dy, amp + R() * 14);
+    s += `<path d="${p}" fill="none" stroke="${col}" stroke-width="${(34 + R() * 26).toFixed(0)}" opacity="${op}" stroke-linecap="round" filter="url(#${id}-ab)"/>`;
+    s += `<path d="${p}" fill="none" stroke="#FFFFFF" stroke-width="${(3 + R() * 3).toFixed(1)}" opacity=".8" transform="translate(0 ${(-18 - R() * 8).toFixed(0)})" filter="url(#${id}-ab)"/>`;
+    s += `<path d="${p}" fill="none" stroke="#D8B04C" stroke-width="${(1.3 + R()).toFixed(1)}" opacity=".9" transform="translate(0 ${(20 + R() * 8).toFixed(0)})"/>`;
+  });
   s += `</g>`;
-  for (let i = 0; i < 9; i++) { const x = 20 + R() * 260, y = T + R() * h, r = 2 + R() * 5; s += `<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${r.toFixed(1)}" fill="${lite(c[i % 3])}" opacity=".35"/><circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(r * 0.45).toFixed(1)}" fill="#fff" opacity=".4"/>`; }
+  // crushed glass crystals clustered in one corner, like the geode canvases
+  const cx = R() > 0.5 ? 240 : 60, cy = T + h * (R() > 0.5 ? 0.18 : 0.8);
+  for (let i = 0; i < 46; i++) { const a = R() * 6.28, r = Math.pow(R(), 0.8) * 42, x = cx + Math.cos(a) * r * 1.2, y = cy + Math.sin(a) * r, q = 1 + R() * 2.6; s += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${q.toFixed(1)}" height="${(q * 0.8).toFixed(1)}" fill="${R() > 0.55 ? "#E7C463" : "#FFFFFF"}" opacity="${(0.55 + R() * 0.4).toFixed(2)}" transform="rotate(${(R() * 90).toFixed(0)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`; }
   return s;
 }
 function styleLayer(d, id, R, T, B) {
@@ -765,7 +773,9 @@ function styleLayer(d, id, R, T, B) {
   if (d.style === "gradient") {
     const g = d.gradient;
     const dirs = { down: [0, 0, 0, 1], right: [0, 0, 1, 0], diagonal: [0, 0, 1, 1] };
-    const stops = [[0, 0], [0.2, 0], [0.4, 1], [0.6, 1], [0.8, 2], [1, 2]].map(([o, i]) => `<stop offset="${o}" stop-color="${c[i]}" stop-opacity="1"/>`).join("");
+    const stops = d.dip
+      ? [[0, 0, 0], [0.34, 0, 0], [0.5, 0, 0.7], [0.66, 0, 1], [1, 1, 1]].map(([o, i, a]) => `<stop offset="${o}" stop-color="${c[i]}" stop-opacity="${a}"/>`).join("")
+      : [[0, 0], [0.2, 0], [0.4, 1], [0.6, 1], [0.8, 2], [1, 2]].map(([o, i]) => `<stop offset="${o}" stop-color="${c[i]}" stop-opacity="1"/>`).join("");
     const grad = g.direction === "center"
       ? `<radialGradient id="${id}-g" cx="0.5" cy="0.55" r="0.6">${stops}</radialGradient>`
       : `<linearGradient id="${id}-g" x1="${dirs[g.direction][0]}" y1="${dirs[g.direction][1]}" x2="${dirs[g.direction][2]}" y2="${dirs[g.direction][3]}">${stops}</linearGradient>`;
@@ -1661,7 +1671,7 @@ function helperBuild(spec, opt) {
   if (style === "clear" && noClear(shape)) style = "ink";
   if (isGame(shape) && style === "ocean") style = "gradient";
   if (style === "ocean") { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-starfish"]); }
-  else if (style === "gradient") gradLook(d, cols, ["down", "diagonal", "center"][v % 3]);
+  else if (style === "gradient") { gradLook(d, cols, ["down", "diagonal", "center"][v % 3]); if (hasHardware(shape) && !isGame(shape) && shape !== "canvas-rect") { d.dip = true; d.gradient.direction = "down"; sprinkle(d, "goldleaf", 16, "df" + v, 40, 260); } }
   else if (style === "ink") inkLook(d, cols, spots);
   else { d.style = "clear"; d.picked = []; }
   if (style === "clear") sprinkle(d, gl, 30 + amt, "hp" + v);
@@ -1742,7 +1752,10 @@ function helperCharmUp(spec, src) {
 function helperRecolor(spec, src) {
   const d = copy(src);
   if (spec.autoCol && !spec.gender && !spec.dark) return d;
-  if ((d.style === "ink" || d.style === "gradient") && d.picked && d.picked.length) { const b = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (b.length < 3) b.push(pad[b.length - 1]); d.picked = b.slice(0, 3); d.style = "gradient"; d.gradient = { direction: ["diagonal", "down", "center"][hashText(src.shape + spec.names.join()) % 3], glitter: "none" }; applyPicked(d); d.crush = []; if (spec.glitterAsked) sprinkle(d, HELP_GLITTER[spec.names[0]] || "gold", 26, "rc" + src.shape); }
+  if ((d.style === "ink" || d.style === "gradient") && d.picked && d.picked.length) { const b = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (b.length < 3) b.push(pad[b.length - 1]); d.picked = b.slice(0, 3); d.style = "gradient"; d.gradient = { direction: ["diagonal", "down", "center"][hashText(src.shape + spec.names.join()) % 3], glitter: "none" }; applyPicked(d); d.crush = [];
+    // the look in the reference photos: solid pearl colour melting into clear glass, with a few gold or silver foil flakes
+    if (hasHardware(d.shape) && !isGame(d.shape) && d.shape !== "canvas-rect") { d.dip = true; d.gradient.direction = "down"; sprinkle(d, spec.dark ? "clear" : "goldleaf", 16, "rf" + src.shape, 40, 260); }
+    else if (spec.glitterAsked) sprinkle(d, HELP_GLITTER[spec.names[0]] || "gold", 26, "rc" + src.shape); }
   if (isGame(d.shape) && d.shape !== "domino-set" && d.chess) { const b = spec.cols.slice(); while (b.length < 3) b.push("#E6E0D8"); d.chess = { a: { c1: b[0], c2: "", foil: true }, b: { c1: b[1], c2: b[2], foil: true } }; }
   return d;
 }
