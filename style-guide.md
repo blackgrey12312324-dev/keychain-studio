@@ -48,3 +48,14 @@ Learned from reference photos Anna sent. These pictures are NOT part of the shop
 - **Black and white coasters:** a glossy black half and a clean white half, joined by a flowing band of grey marble with gold leaf lines. Very few colours.
 - **Pressed-flower coasters:** clear round discs with baby's breath or forget-me-not sprigs (pink, blue, purple) arranged as a branch, with a few gold flakes near the edge. Pairs well with coffee.
 - **Rule:** one clean split (colour / clear, or black / white) with gold on the dividing line looks more expensive than busy full-surface patterns.
+
+## Sixth batch (gifts, photo pieces, floral sets)
+- **Photo keepsakes:** a small printed photo (polaroid style, white border, short handwritten line) set inside clear resin with gold, rose-gold or silver foil and a few pink petals. Also a clear block frame with the photo in the middle, gold flecks above, dried red/orange/pink flowers along the bottom. And a wavy-edged pearl-white coaster frame with white daisies, baby's breath, gold leaf and a gold script name ("Bestie") under the photo, on a tiny easel.
+- **Gift sets:** matching bookmark + pen + letter keychain in one palette, packed together. Blue floral set: pale blue to clear with tiny blue flowers and gold specks, black butterflies, a name in script, a pale blue tassel and a gold charm tag. Gold set: gold leaf with white and blue forget-me-nots, a heart bead and butterfly charm.
+- **Initials:** rose petals plus gold leaf in clear resin; black fading to clear with chunky gold leaf and a small matching heart charm; cream and clear with gold.
+- **Dominoes:** pearl blush with fine gold domed pips and a gold divider.
+- **Date numbers in a frame:** resin numerals filled with dried flower petals.
+- **Marble coasters:** pastel marble in pink, plum, mint, navy, black and lilac with gold veins, plus flower coasters. One colour family per coaster, gold veins always.
+- **Keychain shapes:** heart, teardrop, rectangle, hexagon, round, star, and letters, with different fillings: galaxy, flowers, leaf, sunflower, ocean, night sky with moon and stars, butterfly, paw, lavender.
+- **Green-teal bookmark:** teal pearl fading into clear glass with gold flakes at the split.
+- **Rules:** a name in script or a small black butterfly makes a piece feel personal; one palette per gift set; gold foil, never mixed with several glitter colours.
