@@ -1716,6 +1716,8 @@ function helperScore(spec, d, k) {
   if (mine.length && want.length) { const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]); const m = mine.map(hexRgb); sc -= want.reduce((t, w) => t + Math.min(...m.map((x) => dist(x, w))), 0) / want.length; } else sc -= 200;
   if (spec.dark && mine.length) { const lum = mine.map(hexRgb).reduce((t, c) => t + (c[0] + c[1] + c[2]) / 3, 0) / mine.length; sc -= lum * 1.2; }
   if (spec.likes.includes("coffee") && /coffee/.test(k)) sc += 600;
+  if (!spec.likes.includes("coffee") && /coffee/.test(k)) sc -= 3000;
+  if (!spec.likes.includes("sea") && d.shape === "board-whale-tail") sc -= 3000;
   if ((d.shape === "board-rect" || d.shape === "board-whale-tail" || d.shape === "canvas-rect") && d.style === "ocean") sc += spec.dark ? 40 : 110;
   if (spec.likes.includes("sea") && d.style === "ocean") sc += 160;
   if (spec.likes.includes("sea") && d.shape === "canvas-rect" && d.style === "ocean") sc += 120;
@@ -1757,13 +1759,31 @@ function helperCharmUp(spec, src) {
   return d;
 }
 // recolour one of Anna's ink or gradient pieces to the colours asked for
-function helperRecolor(spec, src) {
+// five different colour families so the options do not all look the same; some get foil, some stay plain
+const FAM = { sage: ["#4C8A7C", "#E6E0D8", "#C89B2E"], blush: ["#D9959C", "#E6E0D8", "#C9A99A"], lav: ["#9C86C4", "#E6E0D8", "#7F9CC0"], sun: ["#C89B2E", "#E6E0D8", "#D9742E"], teal: ["#4F8A9C", "#C9A99A", "#E6E0D8"], sky: ["#7F9CC0", "#E6E0D8", "#1F6BC0"], navy: ["#1B2A6B", "#7F9CC0", "#E6E0D8"], ruby: ["#B04855", "#E6E0D8", "#C89B2E"], night: ["#14151A", "#4A5090", "#9A9A92"], coral: ["#D9742E", "#D9959C", "#E6E0D8"], plum: ["#8E3560", "#D9959C", "#E6E0D8"], mint: ["#7FB59A", "#E6E0D8", "#4F8A9C"], sand: ["#C9A99A", "#E6E0D8", "#8A5F3C"], grey: ["#9A9A92", "#E6E0D8", "#14151A"] };
+function helperPalette(spec, i) {
+  const L = spec.likes, ex = !spec.autoCol;
+  if (ex) { const c = spec.cols[0]; const rest = spec.cols.slice(1); const parts = [[c, "#E6E0D8", rest[0] || "#C89B2E"], [rest[0] || "#E6E0D8", c, "#E6E0D8"], [c, rest[1] || "#C9A99A", "#14151A"], [c, "#F3EBDD", "#C89B2E"], [rest[0] || "#E6E0D8", rest[1] || c, c]]; return parts[i % 5]; }
+  let set;
+  if (spec.dark) set = ["night", "navy", "grey", "plum", "sand"];
+  else if (L.includes("nature") || L.includes("flower")) set = ["sage", "blush", "lav", "sun", "teal"];
+  else if (L.includes("sea")) set = ["teal", "sky", "navy", "sand", "mint"];
+  else if (L.includes("frog")) set = ["mint", "sage", "sun", "teal", "sky"];
+  else if (L.includes("guns") || L.includes("money")) set = ["night", "grey", "navy", "sage", "sand"];
+  else if (spec.gender === "boy") set = ["sky", "navy", "teal", "grey", "mint"];
+  else if (spec.gender === "girl" || spec.aud === "mom" || spec.aud === "adult") set = ["blush", "lav", "coral", "sage", "ruby"];
+  else set = ["blush", "sky", "sage", "lav", "sun"];
+  return FAM[set[i % 5]];
+}
+const HELP_FOIL = ["goldleaf", "none", "clear", "goldleaf", "none"];
+function helperRecolor(spec, src, i = 0) {
   const d = copy(src);
-  if (spec.autoCol && !spec.gender && !spec.dark) return d;
-  if ((d.style === "ink" || d.style === "gradient") && d.picked && d.picked.length) { const b = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (b.length < 3) b.push(pad[b.length - 1]); d.picked = b.slice(0, 3); d.style = "gradient"; d.gradient = { direction: ["diagonal", "down", "center"][hashText(src.shape + spec.names.join()) % 3], glitter: "none" }; applyPicked(d); d.crush = [];
+  if (spec.autoCol && !spec.gender && !spec.dark && !spec.likes.length && spec.aud === "") return d;
+  const pal = helperPalette(spec, i); spec = Object.assign({}, spec, { cols: pal });
+  if ((d.style === "ink" || d.style === "gradient") && d.picked && d.picked.length) { const b = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (b.length < 3) b.push(pad[b.length - 1]); d.picked = b.slice(0, 3); if (d.shape !== "canvas-rect") d.style = "gradient"; d.gradient = { direction: ["diagonal", "down", "center"][hashText(src.shape + spec.names.join()) % 3], glitter: "none" }; applyPicked(d); d.crush = [];
     // the look in the reference photos: solid pearl colour melting into clear glass, with a few gold or silver foil flakes
-    if (hasHardware(d.shape) && !isGame(d.shape) && d.shape !== "canvas-rect") { d.dip = true; d.gradient.direction = "down"; sprinkle(d, spec.dark ? "clear" : "goldleaf", 16, "rf" + src.shape, 40, 260); }
-    else if (spec.glitterAsked) sprinkle(d, HELP_GLITTER[spec.names[0]] || "gold", 26, "rc" + src.shape); }
+    if (hasHardware(d.shape) && !isGame(d.shape) && d.shape !== "canvas-rect") { d.dip = true; d.gradient.direction = "down"; if (HELP_FOIL[i % 5] !== "none") sprinkle(d, spec.dark && HELP_FOIL[i % 5] === "goldleaf" ? "clear" : HELP_FOIL[i % 5], 16, "rf" + src.shape, 40, 260); }
+    else if (spec.glitterAsked && HELP_FOIL[i % 5] !== "none") sprinkle(d, HELP_GLITTER[spec.names[0]] || "gold", 26, "rc" + src.shape); }
   if (isGame(d.shape) && d.shape !== "domino-set" && d.chess) { const b = spec.cols.slice(); while (b.length < 3) b.push("#E6E0D8"); d.chess = { a: { c1: b[0], c2: "", foil: true }, b: { c1: b[1], c2: b[2], foil: true } }; }
   return d;
 }
@@ -2524,10 +2544,10 @@ els.panel.addEventListener("click", (e) => {
     ui.helperSpec = helperParse(txt); const picks = helperPicks(ui.helperSpec); const sp0 = ui.helperSpec, plan = helperPlan(sp0);
     // 3 of Anna's pieces recoloured to the request, plus 2 new pieces made for it
     const thin = (sh) => (CONFIG.shapes.find((x) => x.id === sh) || {}).size === "thin";
-    const made = [plan[0], plan.find((o) => o.shape !== plan[0].shape && !isGame(o.shape)) || plan[1]].map((o, n) => ({ k: "", d: helperBuild(sp0, Object.assign({}, o, { style: thin(o.shape) || o.shape === "domino-set" ? "gradient" : "ink", i: n * 2 })), cat: catOf(o.shape) }));
+    const made = [plan[0], plan.find((o) => o.shape !== plan[0].shape && !isGame(o.shape)) || plan[1]].map((o, n) => ({ k: "", d: helperBuild(Object.assign({}, sp0, { cols: helperPalette(sp0, n === 0 ? 0 : 3), glitterAsked: n === 0 }), Object.assign({}, o, { style: thin(o.shape) || o.shape === "domino-set" ? "gradient" : "ink", i: n * 2 })), cat: catOf(o.shape) }));
     const mixed = [made[0], picks[0], picks[1], made[1], picks[2]];
     picks.length = 0; mixed.forEach((m) => picks.push(m));
-    ui.helperRecol = picks.map((p) => !!p.k && !(sp0.autoCol && !sp0.gender && !sp0.dark)); ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p) => (p.k ? helperCharmUp(sp0, helperRecolor(sp0, p.d)) : p.d)); ui.helperTitles = picks.map((p) => helperTitle2(p));
+    ui.helperRecol = picks.map((p) => !!p.k && !(sp0.autoCol && !sp0.gender && !sp0.dark)); ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p, idx) => (p.k ? helperCharmUp(sp0, helperRecolor(sp0, p.d, idx)) : p.d)); ui.helperTitles = picks.map((p) => helperTitle2(p));
     renderPanel(); return;
   } else if (action === "helperpick") {
     const d = ui.helperOpts[Number(el.dataset.i)]; if (!d) return;
