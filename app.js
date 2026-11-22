@@ -1560,7 +1560,7 @@ function afterStyle(d) { if (isGame(d.shape)) return 4; return d.style === "clea
 /* ---------- Design helper: the customer describes what they want, we make 5 options ---------- */
 const HELP_COLORS = { red: "#B04855", crimson: "#B04855", pink: "#D9959C", rose: "#C97080", blush: "#D9959C", magenta: "#8E3560", purple: "#6A4B94", lilac: "#9C86C4", violet: "#6A4B94", blue: "#1F6BC0", navy: "#4A5090", "light blue": "#7F9CC0", turquoise: "#4F8A9C", teal: "#4F8A9C", green: "#4C8A7C", mint: "#7FB59A", emerald: "#4C8A7C", yellow: "#C89B2E", gold: "#C89B2E", orange: "#D9742E", copper: "#B8693F", brown: "#8A5F3C", black: "#14151A", grey: "#9A9A92", gray: "#9A9A92", silver: "#9A9A92", white: "#E6E0D8", cream: "#E6E0D8", peach: "#C9A99A" };
 const HELP_GLITTER = { red: "red", pink: "pink", rose: "palerose", purple: "purple", blue: "cobalt", navy: "navy", turquoise: "aqua", teal: "aqua", green: "green", gold: "gold", yellow: "lightgold", orange: "copper", copper: "copper", black: "black", white: "clear", cream: "champagne", silver: "clear", grey: "gunmetal", gray: "gunmetal" };
-const HELP_SHAPES = [[/domino/, "domino-set", "Domino set"], [/chess/, "game-chess", "Chess board"], [/tic.?tac|noughts/, "game-ttt", "Tic-tac-toe"], [/bookmark/, "bookmark", "Bookmark"], [/pen\b/, "pen", "Pen"], [/comb|hair/, "comb", "Hair comb"], [/cup|coaster/, "coaster", "Cup stand"], [/bowl/, "bowl", "Seafood bowl"], [/soap/, "soap", "Soap dish"], [/canvas|painting/, "canvas-rect", "Canvas"], [/board|tray/, "board-rect", "Wooden board"], [/heart/, "heart", "Heart keychain"], [/star\b/, "star", "Star keychain"], [/circle|round/, "circle", "Round keychain"]];
+const HELP_SHAPES = [[/domino/, "domino-set", "Domino set"], [/chess/, "game-chess", "Chess board"], [/tic.?tac|noughts/, "game-ttt", "Tic-tac-toe"], [/bookmark/, "bookmark", "Bookmark"], [/pen\b/, "pen", "Pen"], [/hair ?pin|hair ?clip|bun pin|\bpin\b|\bclip\b/, "hairpin", "Butterfly bun pin"], [/comb|hair/, "comb", "Hair comb"], [/cup|coaster/, "coaster", "Cup stand"], [/bowl/, "bowl", "Seafood bowl"], [/soap/, "soap", "Soap dish"], [/canvas|painting/, "canvas-rect", "Canvas"], [/board|tray/, "board-rect", "Wooden board"], [/heart/, "heart", "Heart keychain"], [/star\b/, "star", "Star keychain"], [/circle|round/, "circle", "Round keychain"]];
 var helperParse = function (text) {
   const t = " " + text.toLowerCase().replace(/[^a-z\s]/g, " ") + " ";
   let shape = "tag", label = "Keychain";
@@ -1635,7 +1635,7 @@ function helperBuild(spec, opt) {
   const base = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (base.length < 3) base.push(pad[base.length - 1] || "#E6E0D8");
   const rot = v % 3, cols = [base[rot], base[(rot + 1) % 3], base[(rot + 2) % 3]];
   const gl = HELP_GLITTER[spec.names[v % spec.names.length]] || HELP_GLITTER[spec.names[0]] || "gold";
-  const amt = spec.glitterAmt * (v === 2 ? 1.5 : v === 4 ? 0.7 : 1);
+  const amt = Math.min(spec.glitterAmt, 70) * 0.7;
   const spots = [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]];
   let style = opt.style;
   if (style === "clear" && noClear(shape)) style = "ink";
@@ -1647,8 +1647,7 @@ function helperBuild(spec, opt) {
   if (style === "clear") sprinkle(d, spec.gold ? "goldleaf" : gl, 80 + amt, "hp" + v);
   if (style !== "ocean") {
     sprinkle(d, gl, Math.round(amt), "hg" + v);
-    if (v % 2) sprinkle(d, "champagne", 30, "hg2" + v); else sprinkle(d, "gold", 24, "hg3" + v);
-    if (spec.hearts) sprinkle(d, "hearts", 16, "hh" + v);
+        if (spec.hearts) sprinkle(d, "hearts", 16, "hh" + v);
     if (spec.stars) sprinkle(d, "stars", 16, "hs" + v);
     if (spec.gold) sprinkle(d, "goldleaf", 40 + v * 10, "hl" + v);
   }
@@ -1720,6 +1719,14 @@ function helperCharmUp(spec, src) {
   }
   return d;
 }
+// recolour one of Anna's ink or gradient pieces to the colours asked for
+function helperRecolor(spec, src) {
+  const d = copy(src);
+  if (spec.autoCol && !spec.gender && !spec.dark) return d;
+  if ((d.style === "ink" || d.style === "gradient") && d.picked && d.picked.length) { const b = spec.cols.slice(); const pad = ["#E6E0D8", "#C9A99A", "#C89B2E"]; while (b.length < 3) b.push(pad[b.length - 1]); d.picked = b.slice(0, 3); d.style = "gradient"; d.gradient = { direction: ["diagonal", "down", "center"][hashText(src.shape + spec.names.join()) % 3], glitter: "none" }; applyPicked(d); }
+  if (isGame(d.shape) && d.shape !== "domino-set" && d.chess) { const b = spec.cols.slice(); while (b.length < 3) b.push("#E6E0D8"); d.chess = { a: { c1: b[0], c2: "", foil: true }, b: { c1: b[1], c2: b[2], foil: true } }; }
+  return d;
+}
 function helperTitle2(p) {
   const d = p.d, c = CONFIG.shapes.find((x) => x.id === d.shape) || {};
   const nm = isLetter(d.shape) ? "Letter " + d.shape + " keychain" : ({ "canvas-rect": "Canvas", "board-rect": "Wooden cutting board", "board-whale-tail": "Wooden cutting board" })[d.shape] || HELP_SHAPE_NAME[d.shape] || c.name || "Piece";
@@ -1746,7 +1753,7 @@ function helperView() {
     <div class="field"><textarea id="helper-text" rows="3" placeholder="${esc(T("e.g. A present for my 8 year old niece, she loves frogs and green", "เช่น ของขวัญหลานสาวอายุ 8 ขวบ ชอบกบและสีเขียว", "например: подарок племяннице 8 лет, любит лягушек и зелёный"))}">${esc(ui.helperText || "")}</textarea>
       <div class="helper-row"><button type="button" class="btn btn-ink" data-action="helpergo">${T("Suggest 5 options", "แนะนำ 5 แบบ", "Предложить 5 вариантов")}</button><button type="button" class="btn btn-line mic-btn ${ui.listening ? "rec" : ""}" data-action="helpermic" aria-pressed="${!!ui.listening}">🎤 ${ui.listening ? T("Listening… tap to stop", "กำลังฟัง… แตะเพื่อหยุด", "Слушаю… нажми, чтобы остановить") : T("Speak instead", "พูดแทนการพิมพ์", "Сказать голосом")}</button></div><p class="small-note" id="mic-note">${ui.micMsg || ""}</p></div>
     ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${audN ? T("a gift for ", "ของขวัญสำหรับ ", "подарок для ") + esc(audN) : T("your idea", "ไอเดียของคุณ", "твоя идея")}</b>${sp.likes.length ? " · " + T("likes", "ชอบ", "любит") + " " + esc(sp.likes.join(", ")) : ""} · ${T("colours", "สี", "цвета")}: ${esc(sp.names.join(", "))}${sp.dark ? " (" + T("dark", "เข้ม", "тёмные") + ")" : ""} · ${T("suggested", "แนะนำ", "предлагаю")}: ${esc([...new Set(ui.helperTitles.map((x) => x.split(" · ")[0].toLowerCase()))].join(", "))}</p>
-    <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art rl-pair"><figure><img src="images/real/${ui.helperKeys[i]}.jpg" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.display='none'"><figcaption>${T("Made by Anna", "ผลงานจริง", "Работа Анны")}</figcaption></figure><figure><span class="rl-svg">${renderPiece(d)}</span><figcaption>${T("Design", "ดีไซน์", "Дизайн")}</figcaption></figure></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${esc(ui.helperTitles[i])}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}${true ? `<a class="card" href="collage.html"><div class="card-art"><span class="rl-svg" style="display:grid;place-items:center;aspect-ratio:3/4;font-size:54px">🖼️</span></div><span class="card-name">${T("Recommended: upload your photos and we make a personal canvas", "แนะนำ: อัปโหลดรูปแล้วเราทำแคนวาสส่วนตัวให้", "Рекомендуем: загрузи фото, и мы сделаем личный холст")}</span><div class="card-actions"><span class="btn btn-ink small">${T("Create my canvas", "สร้างแคนวาส", "Создать холст")}</span></div></a>` : ""}</div>` : ""}`;
+    <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art rl-pair"><figure><img src="images/real/${ui.helperKeys[i]}.jpg" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.display='none';this.closest('.rl-pair').classList.add('solo')"><figcaption>${T("Made by Anna", "ผลงานจริง", "Работа Анны")}</figcaption></figure><figure><span class="rl-svg">${renderPiece(d)}</span><figcaption>${T("Design", "ดีไซน์", "Дизайн")}</figcaption></figure></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${esc(ui.helperTitles[i])}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}${true ? `<a class="card" href="collage.html"><div class="card-art"><span class="rl-svg" style="display:grid;place-items:center;aspect-ratio:3/4;font-size:54px">🖼️</span></div><span class="card-name">${T("Recommended: upload your photos and we make a personal canvas", "แนะนำ: อัปโหลดรูปแล้วเราทำแคนวาสส่วนตัวให้", "Рекомендуем: загрузи фото, и мы сделаем личный холст")}</span><div class="card-actions"><span class="btn btn-ink small">${T("Create my canvas", "สร้างแคนวาส", "Создать холст")}</span></div></a>` : ""}</div>` : ""}`;
 }
 const STEP_VIEWS = [
   // 0 Ready-made
@@ -2473,7 +2480,13 @@ els.panel.addEventListener("click", (e) => {
     if (ui.rec) ui.rec.stop();
     const txt = ($("helper-text") || {}).value || ""; ui.helperText = txt;
     if (!txt.trim()) { toast(U("helperEmpty")); return; }
-    ui.helperSpec = helperParse(txt); const picks = helperPicks(ui.helperSpec); ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p) => helperCharmUp(ui.helperSpec, p.d)); ui.helperTitles = picks.map((p) => helperTitle2(p));
+    ui.helperSpec = helperParse(txt); const picks = helperPicks(ui.helperSpec); const sp0 = ui.helperSpec, plan = helperPlan(sp0);
+    // 3 of Anna's pieces recoloured to the request, plus 2 new pieces made for it
+    const thin = (sh) => (CONFIG.shapes.find((x) => x.id === sh) || {}).size === "thin";
+    const made = [plan[0], plan.find((o) => o.shape !== plan[0].shape && !isGame(o.shape)) || plan[1]].map((o, n) => ({ k: "", d: helperBuild(sp0, Object.assign({}, o, { style: thin(o.shape) ? "gradient" : "ink", i: n * 2 })), cat: catOf(o.shape) }));
+    const mixed = [made[0], picks[0], picks[1], made[1], picks[2]];
+    picks.length = 0; mixed.forEach((m) => picks.push(m));
+    ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p) => (p.k ? helperCharmUp(sp0, helperRecolor(sp0, p.d)) : p.d)); ui.helperTitles = picks.map((p) => helperTitle2(p));
     renderPanel(); return;
   } else if (action === "helperpick") {
     const d = ui.helperOpts[Number(el.dataset.i)]; if (!d) return;

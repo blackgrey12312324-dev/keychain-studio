@@ -1523,3 +1523,6 @@ img { image-rendering: auto; }
 .start-card.star:hover { transform: scale(1.06) translateY(-3px); }
 .start-card.star span { opacity: .92; }
 @media (max-width: 700px) { .start-cards { grid-template-columns: 1fr; } .start-card { flex-direction: row; text-align: left; flex-wrap: wrap; justify-content: flex-start; gap: 4px 12px; } .start-card span { flex-basis: 100%; } .start-card.star { transform: none; } }
+
+.rl-pair.solo { display: flex; justify-content: center; }
+.rl-pair.solo figure { max-width: 70%; }
