@@ -1151,7 +1151,11 @@ function renderPiece(d, side = "front", opts = {}) {
 
   const plainBack = side === "back" && d.back === "plain";
   const fillRaw = plainBack ? "" : (d.shape === "game-ttt" ? tttLayer(d, id) : d.shape === "game-chess" ? chessLayer(d, id) : styleLayer(d, id, R, T, B)) + (d.shape === "domino-set" ? dominoLayer(d) : "") + scatterLayer(d, T, B) + glassLayer(d) + photoLayer(d) + lettersLayer(d, id) + paintLayer(d, id) + itemsLayer(d, id, interactive);
-  const fill = (d.partial > 0 && d.partial < 1 && (customShape(d.shape) || {}).wood && fillRaw) ? `<clipPath id="${id}-part">${d.partialSide === "left" ? `<rect x="0" y="0" width="${(300 * d.partial).toFixed(1)}" height="440"/>` : d.partialSide === "right" ? `<rect x="${(300 * (1 - d.partial)).toFixed(1)}" y="0" width="300" height="440"/>` : `<rect x="0" y="${T - 4}" width="300" height="${(B - T) * d.partial + 4}"/>`}</clipPath><g clip-path="url(#${id}-part)">${fillRaw}</g>${d.partialSide ? "" : `<rect x="0" y="${(T + (B - T) * d.partial - 3).toFixed(1)}" width="300" height="3" fill="rgba(255,255,255,0.55)" pointer-events="none"/>`}` : fillRaw;
+  const partClip = () => { const p = d.partial, a = Math.tan(((d.partialAngle || 0) * Math.PI) / 180), mid = T + (B - T) * p;
+    if (d.partialSide === "left") return `<polygon points="0,-200 ${(300 * p + a * 420).toFixed(1)},-200 ${(300 * p - a * 420).toFixed(1)},640 0,640"/>`;
+    if (d.partialSide === "right") return `<polygon points="300,-200 ${(300 * (1 - p) + a * 420).toFixed(1)},-200 ${(300 * (1 - p) - a * 420).toFixed(1)},640 300,640"/>`;
+    return `<polygon points="-200,-200 500,-200 500,${(mid + a * 350).toFixed(1)} -200,${(mid - a * 350).toFixed(1)}"/>`; };
+  const fill = (d.partial > 0 && d.partial < 1 && (customShape(d.shape) || {}).wood && fillRaw) ? `<clipPath id="${id}-part">${partClip()}</clipPath><g clip-path="url(#${id}-part)">${fillRaw}</g>` : fillRaw;
 
   // Hairline rim drawn INSIDE the mold outline (clipped), so the piece is exactly the mold's shape.
   const rim = `fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linejoin="round"`;
@@ -1483,7 +1487,7 @@ const GALLERY_DESIGNS = {
   "g-domino": { cat: "statues", shape: "domino-set", f(d) { inkLook(d, ["#1F6BC0", "#C89B2E"], [[0, .45, .3, 24], [1, .58, .52, 22], [2, .42, .76, 16]]); } },
   "g-ruffle-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#E6E0D8", "#F3EBDD", "#C89B2E"], "diagonal"); sprinkle(d, "goldleaf", 30, "rb"); } },
   "g-lychee-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#D9959C", "#C97080", "#D9959C"], "center"); } },
-  "g-pinkboard": { cat: "cutting", shape: "board-rect", f(d) { d.cm = { w: 40, h: 25 }; gradLook(d, ["#D9742E", "#B04855", "#D9959C"], "down"); sprinkle(d, "gold", 60, "pb"); d.partial = 0.55; } },
+  "g-pinkboard": { cat: "cutting", shape: "board-rect", f(d) { d.cm = { w: 40, h: 25 }; gradLook(d, ["#D9742E", "#B04855", "#D9959C"], "down"); sprinkle(d, "gold", 60, "pb"); d.partial = 0.55; d.partialAngle = 14; } },
   "g-coffee-art": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 30 }; inkLook(d, ["#8A5F3C", "#E6E0D8", "#B8693F"], [[0, .45, .3, 26], [1, .55, .55, 22], [2, .42, .78, 16]]); } },
   "g-beach-lounger": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 30, h: 40 }; d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.addins = AI(["sea-shell-scallop"]); } },
   "g-feather-canvas": { cat: "paint", shape: "canvas-rect", f(d) { d.cm = { w: 40, h: 50 }; gradLook(d, ["#3A5F55", "#4C8A7C", "#C89B2E"], "diagonal"); sprinkle(d, "goldleaf", 40, "fc"); } },
@@ -1519,10 +1523,10 @@ const GALLERY_DESIGNS = {
   "g-fruit-bowl": { cat: "kitchen", shape: "bowl", f(d) { gradLook(d, ["#1F6BC0", "#7F9CC0", "#E6E0D8"], "center"); } },
   "g-tealight": { cat: "kitchen", shape: "coaster", f(d) { inkLook(d, ["#4F8A9C", "#1F6BC0", "#E6E0D8"], [[0, .5, .4, 24], [1, .55, .65, 20], [2, .4, .55, 12]]); } },
   "g-tail": { cat: "cutting", shape: "board-whale-tail", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "big", dir: "flat" }); d.addins = AI(["sea-starfish"]); d.partial = 0.7; } },
-  "g-woodtray": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.partial = 0.6; d.partialSide = "left"; } },
-  "g-paddle": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); d.partial = 0.6; } },
-  "g-tree": { cat: "cutting", shape: "board-rect", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); d.partial = 0.5; } },
-  "g-copper": { cat: "cutting", shape: "board-rect", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); d.partial = 0.55; } },
+  "g-woodtray": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "low", size: "medium", dir: "flat" }); d.partial = 0.6; d.partialAngle = 12; d.partialSide = "left"; } },
+  "g-paddle": { cat: "cutting", shape: "board-rect", f(d) { d.style = "ocean"; d.ocean = Object.assign({}, d.ocean, { sand: "middle", size: "medium", dir: "left" }); d.addins = AI(["sea-shell-scallop"]); d.partial = 0.6; d.partialAngle = 10; } },
+  "g-tree": { cat: "cutting", shape: "board-rect", f(d) { inkLook(d, ["#1F6BC0", "#4F8A9C", "#C9A99A"], [[0, .45, .4, 26], [1, .6, .65, 22], [2, .4, .78, 14]]); d.partial = 0.5; d.partialAngle = 12; } },
+  "g-copper": { cat: "cutting", shape: "board-rect", f(d) { gradLook(d, ["#B8693F", "#C9A99A", "#C89B2E"], "diagonal"); sprinkle(d, "copper", 70, "gc"); d.partial = 0.55; d.partialAngle = -12; } },
 };
 function galleryDesign(key) {
   const g = GALLERY_DESIGNS[key]; if (!g) return null;
@@ -1575,11 +1579,11 @@ var helperParse = function (text) {
 const HELP_AUD = [
   ["kid", /\b(kid|child|son|daughter|boy|girl|toddler|baby|niece|nephew|little)\b|\b([3-9]|1[0-2])\s*(y|yo|year)/],
   ["teen", /\b(teen|teenager|1[3-9]\s*(y|yo|year)|high school|student)\b/],
-  ["senior", /\b(grandma|grandmother|grandpa|grandfather|granny|elderly|senior|6\d|7\d|8\d)\b/],
+  ["senior", /\b(grandma|grandmother|grandpa|grandfather|granddad|grandad|granny|elderly|senior|6\d|7\d|8\d)\b/],
   ["mom", /\b(mom|mum|mother|mama)\b/], ["dad", /\b(dad|father|papa)\b/],
   ["partner", /\b(boyfriend|girlfriend|wife|husband|partner|love|anniversary|valentine)\b/],
   ["friend", /\b(friend|bestie|sister|brother)\b/], ["work", /\b(boss|colleague|coworker|teacher|office|client)\b/]];
-const HELP_LIKES = { frog: /frog/, cat: /\bcat|kitten/, bear: /\bbear/, guns: /\bgun|pistol|rifle|army|military|shoot/, money: /money|rich|dollar|cash|boss/, sea: /sea|ocean|beach|shell|starfish|wave|mermaid/, flower: /flower|floral|bloom|garden/, butterfly: /butterfl/, hearts: /heart/, crown: /crown|princess|queen|royal/, stars: /\bstar/, game: /game|play|chess|domino|tic|puzzle/ };
+const HELP_LIKES = { frog: /frog/, cat: /\bcat|kitten/, bear: /\bbear/, guns: /\bgun|pistol|rifle|army|military|shoot/, money: /money|rich|dollar|cash|boss/, sea: /sea|ocean|beach|shell|starfish|wave|mermaid/, flower: /flower|floral|bloom|garden/, butterfly: /butterfl/, hearts: /heart/, crown: /crown|princess|queen|royal/, stars: /\bstar/, game: /game|play|chess|domino|tic|puzzle/, coffee: /coffee|latte|cafe|cappuccino|espresso|barista/ };
 const HELP_AUDCOL = { boy: ["blue", "light blue", "navy"], girl: ["pink", "lilac", "rose"], kid: ["pink", "light blue", "yellow"], teen: ["purple", "black", "turquoise"], senior: ["rose", "cream", "gold"], mom: ["rose", "cream", "gold"], dad: ["navy", "grey", "brown"], partner: ["red", "pink", "gold"], friend: ["lilac", "turquoise", "pink"], work: ["navy", "silver", "white"] };
 const _helperParse0 = helperParse;
 helperParse = function (text) {
@@ -1588,9 +1592,10 @@ helperParse = function (text) {
   sp.likes = Object.keys(HELP_LIKES).filter((k) => HELP_LIKES[k].test(low));
   sp.hearts = /heart/.test(low); sp.gift = /gift|present|birthday|anniversary|surprise|souvenir|memory|memories|photo/.test(low);
   sp.named = sp.shape !== "tag" || /keychain|key ?ring|charm/.test(low);
-  sp.gender = /\b(boy|son|nephew|brother|boyfriend|husband|dad|father|grandpa|he|his)\b/.test(low) ? "boy" : /\b(girl|daughter|niece|sister|girlfriend|wife|mom|mum|mother|grandma|she|her)\b/.test(low) ? "girl" : "";
+  sp.gender = /\b(boy|son|nephew|brother|boyfriend|husband|dad|father|grandpa|grandfather|granddad|grandad|uncle|he|his)\b/.test(low) ? "boy" : /\b(girl|daughter|niece|sister|girlfriend|wife|mom|mum|mother|grandma|grandmother|granny|aunt|she|her)\b/.test(low) ? "girl" : "";
+  sp.dark = /\b(dark|black|moody|deep|night|elegant|classy)\b/.test(low);
   sp.autoCol = !sp.cols.length;
-  if (sp.autoCol) { const pick = sp.likes.includes("frog") ? ["green", "mint", "cream"] : sp.likes.includes("sea") ? ["blue", "turquoise", "white"] : sp.likes.includes("guns") ? ["black", "grey", "gold"] : sp.likes.includes("money") ? ["green", "gold", "black"] : (sp.gender && ["kid", "teen", "friend", "partner", ""].includes(sp.aud) && HELP_AUDCOL[sp.gender]) || HELP_AUDCOL[sp.aud] || ["pink", "blue", "gold"]; sp.names = pick; sp.cols = pick.map((k) => HELP_COLORS[k]); }
+  if (sp.autoCol) { const pick = sp.dark ? ["black", "navy", "grey"] : sp.likes.includes("frog") ? ["green", "mint", "cream"] : sp.likes.includes("sea") ? ["blue", "turquoise", "white"] : sp.likes.includes("guns") ? ["black", "grey", "gold"] : sp.likes.includes("money") ? ["green", "gold", "black"] : (sp.gender && ["kid", "teen", "friend", "partner", ""].includes(sp.aud) && HELP_AUDCOL[sp.gender]) || HELP_AUDCOL[sp.aud] || ["pink", "blue", "gold"]; sp.names = pick; sp.cols = pick.map((k) => HELP_COLORS[k]); }
   if (!sp.glitter) { sp.glitter = true; sp.glitterAmt = sp.aud === "kid" || sp.aud === "teen" ? 90 : 60; }
   if (sp.likes.includes("hearts")) sp.hearts = true; if (sp.likes.includes("butterfly")) sp.butterfly = true; if (sp.likes.includes("flower")) sp.flower = true; if (sp.likes.includes("crown")) sp.crown = true; if (sp.likes.includes("stars")) sp.stars = true; if (sp.likes.includes("sea")) sp.sea = true;
   return sp;
@@ -1667,32 +1672,60 @@ function helperBuild(spec, opt) {
 }
 
 // Helper v3: pick from Anna's own ready-made designs (they look right), matched to colour, person and interest
-const HELP_CATS = { kid: ["keychains", "accessories", "statues", "paint", "kitchen"], teen: ["keychains", "statues", "accessories", "paint", "cutting"], senior: ["accessories", "kitchen", "paint", "keychains", "cutting"], mom: ["accessories", "kitchen", "paint", "keychains", "cutting"], dad: ["statues", "cutting", "paint", "keychains", "kitchen"], partner: ["paint", "keychains", "accessories", "statues", "kitchen"], friend: ["keychains", "accessories", "statues", "paint", "kitchen"], work: ["accessories", "kitchen", "cutting", "paint", "keychains"], "": ["keychains", "statues", "paint", "accessories", "cutting"] };
+const HELP_CATS = { seniorM: ["cutting", "statues", "kitchen", "paint", "accessories"], dadA: ["cutting", "statues", "paint", "kitchen", "keychains"], kid: ["keychains", "accessories", "statues", "paint", "kitchen"], teen: ["keychains", "statues", "accessories", "paint", "cutting"], senior: ["paint", "kitchen", "cutting", "accessories", "keychains"], mom: ["paint", "kitchen", "cutting", "accessories", "keychains"], dad: ["cutting", "statues", "paint", "kitchen", "keychains"], partner: ["paint", "keychains", "cutting", "accessories", "statues"], friend: ["keychains", "accessories", "statues", "paint", "kitchen"], work: ["cutting", "paint", "kitchen", "accessories", "keychains"], "": ["keychains", "statues", "paint", "accessories", "cutting"] };
 function hexRgb(h) { const n = parseInt(h.replace("#", ""), 16); return [n >> 16, (n >> 8) & 255, n & 255]; }
 function helperDesignCols(d) { return d.style === "ocean" ? ["#1F6BC0", "#4F8A9C"] : (d.picked || []).filter((c) => /^#/.test(c)); }
-function helperScore(spec, d) {
+function helperScore(spec, d, k) {
   const mine = helperDesignCols(d), want = spec.cols.map(hexRgb);
   let sc = 0;
   if (mine.length && want.length) { const dist = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]); const m = mine.map(hexRgb); sc -= want.reduce((t, w) => t + Math.min(...m.map((x) => dist(x, w))), 0) / want.length; } else sc -= 200;
+  if (spec.dark && mine.length) { const lum = mine.map(hexRgb).reduce((t, c) => t + (c[0] + c[1] + c[2]) / 3, 0) / mine.length; sc -= lum * 1.2; }
+  if (spec.likes.includes("coffee") && /coffee/.test(k)) sc += 600;
   if (spec.likes.includes("sea") && d.style === "ocean") sc += 160;
+  if (spec.likes.includes("sea") && d.shape === "canvas-rect" && d.style === "ocean") sc += 120;
+  const grownMan = spec.gender === "boy" && ["senior", "dad", "work", "partner", ""].includes(spec.aud);
+  if (grownMan && /^(hairpin|comb|heart)$/.test(d.shape)) sc -= 5000;
+  if (spec.gender === "girl" && ["mom", "senior", "partner", "friend", "teen", "kid"].includes(spec.aud) && /^(hairpin|comb)$/.test(d.shape)) sc += 90;
   if (spec.likes.includes("game") && isGame(d.shape)) sc += 160;
   if (!spec.likes.includes("sea") && d.style === "ocean" && !spec.autoCol) sc -= 60;
   return sc;
 }
 function helperPicks(spec) {
-  const all = Object.keys(GALLERY_DESIGNS).map((k) => { const g = galleryDesign(k); return g && { k, d: g.d, cat: g.cat, sc: helperScore(spec, g.d) + ((hashText(k + spec.names.join()) % 40) - 20) }; }).filter(Boolean);
-  const order = (HELP_CATS[spec.aud] || HELP_CATS[""]).slice();
+  const all = Object.keys(GALLERY_DESIGNS).map((k) => { const g = galleryDesign(k); return g && { k, d: g.d, cat: g.cat, sc: helperScore(spec, g.d, k) + ((hashText(k + spec.names.join()) % 40) - 20) }; }).filter(Boolean);
+  const order = (spec.aud === "senior" && spec.gender === "boy" ? HELP_CATS.seniorM : HELP_CATS[spec.aud] || HELP_CATS[""]).slice();
   const named = spec.named && spec.shape !== "tag" ? catOf(spec.shape) : "";
   const res = [], used = new Set();
   const take = (cat, n) => all.filter((x) => x.cat === cat && !used.has(x.k)).sort((a, b) => b.sc - a.sc).slice(0, n).forEach((x) => { used.add(x.k); res.push(x); });
   if (named) { all.filter((x) => x.d.shape === spec.shape).sort((a, b) => b.sc - a.sc).slice(0, 2).forEach((x) => { used.add(x.k); res.push(x); }); if (!res.length) take(named, 1); }
   order.forEach((c) => { if (res.length < 5 && c !== named) take(c, 1); });
   while (res.length < 5) { const r = all.filter((x) => !used.has(x.k)).sort((a, b) => b.sc - a.sc)[0]; if (!r) break; used.add(r.k); res.push(r); }
-  return res.slice(0, 5);
+  const out = res.slice(0, 5);
+  if (!out.some((x) => x.d.shape === "canvas-rect")) {
+    const cv = all.filter((x) => x.d.shape === "canvas-rect" && !used.has(x.k) && !/coffee/.test(x.k) === !spec.likes.includes("coffee") || x.d.shape === "canvas-rect" && !used.has(x.k)).sort((a, b) => b.sc - a.sc)[0];
+    if (cv) out[Math.min(3, out.length - 1)] = cv;
+  }
+  // grown men do not get hair accessories
+  return out;
+}
+// grown-ups get dried flowers, children get small colourful charms, only where the piece can hold them
+function helperCharmUp(spec, src) {
+  const d = copy(src);
+  if ((d.style !== "ink" && d.style !== "clear") || Object.keys(d.addins || {}).length || isGame(d.shape) || catOf(d.shape) === "cutting") return d;
+  const kid = spec.aud === "kid" || (spec.aud === "teen" && !spec.dark);
+  const tries = kid ? [["charms", ["frog", "sm-butterfly-pink", "sm-heart-ruby", "sm-butterfly-teal"]]] : [["natural", spec.dark ? ["dried-lavender", "dried-wheat"] : ["dried-pink", "dried-wheat", "dried-lavender"]]];
+  for (const [mode, ids] of tries) {
+    const keep = d.deco; d.deco = mode; let n = 0;
+    ids.forEach((id) => { const ad = CONFIG.addins.find((x) => x.id === id); if (n < 2 && ad && fits(ad, d)) { d.addins[id] = { amount: "few", place: "anna", color: ad.color }; n++; } });
+    if (n) { resetItems(d); layoutItems(d); return d; } d.deco = keep;
+  }
+  return d;
 }
 function helperTitle2(p) {
   const d = p.d, c = CONFIG.shapes.find((x) => x.id === d.shape) || {};
-  const nm = isLetter(d.shape) ? "Letter " + d.shape + " keychain" : HELP_SHAPE_NAME[d.shape] || c.name || "Piece";
+  const nm = isLetter(d.shape) ? "Letter " + d.shape + " keychain" : ({ "canvas-rect": "Canvas", "board-rect": "Wooden cutting board", "board-whale-tail": "Wooden cutting board" })[d.shape] || HELP_SHAPE_NAME[d.shape] || c.name || "Piece";
+  const sea = d.shape === "canvas-rect" && d.style === "ocean" ? "Sea canvas" : "";
+  if (sea) return sea;
+  if (d.shape === "canvas-rect" && /coffee/.test(p.k)) return "Coffee art canvas";
   const lbl = { cutting: "wooden board", paint: "canvas", statues: "game set", kitchen: "for the table", accessories: "accessory", keychains: "keychain" }[p.cat] || "";
   return nm + (lbl && !nm.toLowerCase().includes(lbl) ? " · " + lbl : "");
 }
@@ -1712,8 +1745,8 @@ function helperView() {
     <p class="hint">${T("Tell me who it is for (age too), what they like, colours, a pet or a hobby. I will suggest 5 different pieces with charms and glitter, and you pick one.", "บอกว่าทำให้ใคร (อายุด้วย) เขาชอบอะไร สี สัตว์เลี้ยง หรืองานอดิเรก เราจะแนะนำ 5 ชิ้นที่ต่างกัน มีชาร์มและกากเพชร", "Расскажи, для кого (и возраст), что нравится, цвета, питомец или хобби. Я предложу 5 разных изделий с шармами и блёстками.")}</p>
     <div class="field"><textarea id="helper-text" rows="3" placeholder="${esc(T("e.g. A present for my 8 year old niece, she loves frogs and green", "เช่น ของขวัญหลานสาวอายุ 8 ขวบ ชอบกบและสีเขียว", "например: подарок племяннице 8 лет, любит лягушек и зелёный"))}">${esc(ui.helperText || "")}</textarea>
       <div class="helper-row"><button type="button" class="btn btn-ink" data-action="helpergo">${T("Suggest 5 options", "แนะนำ 5 แบบ", "Предложить 5 вариантов")}</button><button type="button" class="btn btn-line mic-btn ${ui.listening ? "rec" : ""}" data-action="helpermic" aria-pressed="${!!ui.listening}">🎤 ${ui.listening ? T("Listening… tap to stop", "กำลังฟัง… แตะเพื่อหยุด", "Слушаю… нажми, чтобы остановить") : T("Speak instead", "พูดแทนการพิมพ์", "Сказать голосом")}</button></div><p class="small-note" id="mic-note">${ui.micMsg || ""}</p></div>
-    ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${audN ? T("a gift for ", "ของขวัญสำหรับ ", "подарок для ") + esc(audN) : T("your idea", "ไอเดียของคุณ", "твоя идея")}</b>${sp.likes.length ? ", " + esc(sp.likes.join(", ")) : ""}${sp.names.length ? ", " + esc(sp.names.join(", ")) : ""}</p>
-    <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art"><span class="rl-svg" style="display:block;aspect-ratio:3/4">${renderPiece(d)}</span></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${esc(ui.helperTitles[i])}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}${sp.gift ? `<a class="card" href="collage.html"><div class="card-art"><span class="rl-svg" style="display:grid;place-items:center;aspect-ratio:3/4;font-size:54px">🖼️</span></div><span class="card-name">${T("Or: upload your photos and we make a personal canvas", "หรือ: อัปโหลดรูปแล้วเราทำแคนวาสส่วนตัวให้", "Или: загрузи фото, и мы сделаем личный холст")}</span><div class="card-actions"><span class="btn btn-ink small">${T("Create my canvas", "สร้างแคนวาส", "Создать холст")}</span></div></a>` : ""}</div>` : ""}`;
+    ${opts.length ? `<p class="small-note">${T("Understood as", "เข้าใจว่า", "Понял как")}: <b>${audN ? T("a gift for ", "ของขวัญสำหรับ ", "подарок для ") + esc(audN) : T("your idea", "ไอเดียของคุณ", "твоя идея")}</b>${sp.likes.length ? " · " + T("likes", "ชอบ", "любит") + " " + esc(sp.likes.join(", ")) : ""} · ${T("colours", "สี", "цвета")}: ${esc(sp.names.join(", "))}${sp.dark ? " (" + T("dark", "เข้ม", "тёмные") + ")" : ""} · ${T("suggested", "แนะนำ", "предлагаю")}: ${esc([...new Set(ui.helperTitles.map((x) => x.split(" · ")[0].toLowerCase()))].join(", "))}</p>
+    <div class="cards presets">${opts.map((d, i) => `<div class="card"><div class="card-art rl-pair"><figure><img src="images/real/${ui.helperKeys[i]}.jpg" alt="" loading="lazy" decoding="async" onerror="this.parentNode.style.display='none'"><figcaption>${T("Made by Anna", "ผลงานจริง", "Работа Анны")}</figcaption></figure><figure><span class="rl-svg">${renderPiece(d)}</span><figcaption>${T("Design", "ดีไซน์", "Дизайн")}</figcaption></figure></div><span class="card-name">${T("Option", "แบบที่", "Вариант")} ${i + 1}: ${esc(ui.helperTitles[i])}</span><div class="card-actions"><button type="button" class="btn btn-ink small" data-action="helperpick" data-i="${i}" data-go="edit">${U("changeIt")}</button><button type="button" class="btn btn-line small" data-action="helperpick" data-i="${i}" data-go="review">${U("orderThis")}</button></div></div>`).join("")}${true ? `<a class="card" href="collage.html"><div class="card-art"><span class="rl-svg" style="display:grid;place-items:center;aspect-ratio:3/4;font-size:54px">🖼️</span></div><span class="card-name">${T("Recommended: upload your photos and we make a personal canvas", "แนะนำ: อัปโหลดรูปแล้วเราทำแคนวาสส่วนตัวให้", "Рекомендуем: загрузи фото, и мы сделаем личный холст")}</span><div class="card-actions"><span class="btn btn-ink small">${T("Create my canvas", "สร้างแคนวาส", "Создать холст")}</span></div></a>` : ""}</div>` : ""}`;
 }
 const STEP_VIEWS = [
   // 0 Ready-made
@@ -1788,7 +1821,7 @@ const STEP_VIEWS = [
       const rec = [[30, 20], [40, 25], [50, 30], [60, 40]].map(([w, h]) => `<button type="button" class="chip" data-cm-set="${w}x${h}">${w} × ${h}</button>`).join("");
       body = `<div class="field size-box">
           <span class="field-label">${U("cmTitle")}</span><div class="cm-row">${num("w", cm.w)}</div><div class="cm-row">${num("h", cm.h)}</div><div class="chips"><span class="small-note">${U("cmRecommended")}</span>${rec}</div><p class="small-note">${U("cmNote")}</p>
-        </div>${field(U("customShapeCard"), `<input type="file" accept="image/*" id="shape-photo">${ui.photo ? `<img class="ref-photo" src="${ui.photo}" alt="">` : ""}`, U("customShapeNote2"))}`;
+        </div>${(() => { const L = (en, th, ru) => ({ th, ru }[ui.lang] || en), cur = design.partial ? (design.partialSide || "top") + (design.partialAngle ? "-diag" : "") : "full"; const o = [["full", L("Resin on the whole board", "เรซิ่นทั้งแผ่น", "Смола на всей доске")], ["top", L("Top part only", "เฉพาะด้านบน", "Только верх")], ["left", L("Left part only", "เฉพาะด้านซ้าย", "Только слева")], ["right", L("Right part only", "เฉพาะด้านขวา", "Только справа")], ["top-diag", L("Top, diagonal edge", "ด้านบน ขอบเฉียง", "Верх, диагональ")], ["left-diag", L("Left, diagonal edge", "ด้านซ้าย ขอบเฉียง", "Слева, диагональ")]]; return `<div class="field"><span class="field-label">${L("Where is the resin?", "เรซิ่นอยู่ตรงไหน", "Где смола?")}</span><div class="chips">${o.map(([k, n]) => `<button type="button" class="chip ${cur === k ? "on" : ""}" data-cover="${k}">${n}</button>`).join("")}</div></div>`; })()}${field(U("customShapeCard"), `<input type="file" accept="image/*" id="shape-photo">${ui.photo ? `<img class="ref-photo" src="${ui.photo}" alt="">` : ""}`, U("customShapeNote2"))}`;
     } else if (ui.cat === "gift") {
       body = `<div class="big-cards">` + group(U("grpPhoto"), `<a class="card" href="collage.html"><span class="card-art has-photo"><img src="images/real/g-collage.jpg" alt=""></span><span class="card-name">${U("uploadPhotos")}</span></a>` + byIds(["frame-oval"]), "photo") + `</div><p class="small-note">${U("photoNote")}</p>`;
     } else {
@@ -2436,7 +2469,7 @@ els.panel.addEventListener("click", (e) => {
     if (ui.rec) ui.rec.stop();
     const txt = ($("helper-text") || {}).value || ""; ui.helperText = txt;
     if (!txt.trim()) { toast(U("helperEmpty")); return; }
-    ui.helperSpec = helperParse(txt); const picks = helperPicks(ui.helperSpec); ui.helperOpts = picks.map((p) => p.d); ui.helperTitles = picks.map((p) => helperTitle2(p));
+    ui.helperSpec = helperParse(txt); const picks = helperPicks(ui.helperSpec); ui.helperKeys = picks.map((p) => p.k); ui.helperOpts = picks.map((p) => helperCharmUp(ui.helperSpec, p.d)); ui.helperTitles = picks.map((p) => helperTitle2(p));
     renderPanel(); return;
   } else if (action === "helperpick") {
     const d = ui.helperOpts[Number(el.dataset.i)]; if (!d) return;
@@ -2935,6 +2968,14 @@ els.panel.addEventListener("input", (e) => {
   const sr = $("size-rect"); if (sr) { sr.style.aspectRatio = `${design.cm.w} / ${design.cm.h}`; sr.querySelector("b").textContent = `${design.cm.w} × ${design.cm.h} cm`; }
   renderPreview(); renderBarSummary();
   const box = $("order-text"); if (box) box.value = orderText();
+});
+els.panel.addEventListener("click", (e) => {
+  const b = e.target.closest("[data-cover]");
+  if (!b) return;
+  const k = b.dataset.cover;
+  if (k === "full") { design.partial = 0; design.partialSide = ""; design.partialAngle = 0; }
+  else { const [side, diag] = k.split("-"); design.partial = design.partial || 0.55; design.partialSide = side === "top" ? "" : side; design.partialAngle = diag ? 14 : 0; }
+  renderPanel(); renderPreview();
 });
 els.panel.addEventListener("click", (e) => {
   const b = e.target.closest("[data-cm-set]");
