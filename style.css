@@ -1564,3 +1564,19 @@ body[data-page="design"] .cards.presets, .cards:has(.rl-pair) { grid-template-co
 
 .start-strip { padding-top: 10px; padding-bottom: 6px; }
 .start-strip .start-card { text-decoration: none; }
+
+.helper-box { position: relative; }
+.helper-box textarea { width: 100%; padding-right: 58px; box-sizing: border-box; }
+.mic-ico { position: absolute; right: 10px; bottom: 10px; width: 40px; height: 40px; border-radius: 12px; border: 0; background: #E3EEF8; color: #2D5CA8; display: grid; place-items: center; cursor: pointer; transition: background .15s, transform .15s; }
+.mic-ico:hover { background: #D3E3F4; transform: scale(1.05); }
+.mic-ico.rec { background: #E04B4B; color: #fff; animation: micpulse 1.2s infinite; }
+@keyframes micpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(224,75,75,.5); } 50% { box-shadow: 0 0 0 8px rgba(224,75,75,0); } }
+
+.helper-chips { display: grid; gap: 10px; margin-bottom: 14px; }
+.hc-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.hc-title { font: 700 .74rem Jost, sans-serif; letter-spacing: .08em; text-transform: uppercase; color: #5C7480; min-width: 110px; }
+.hc-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 999px; border: 1.5px solid rgba(14,63,87,.22); background: #fff; color: #0E3F57; font: 500 .9rem Jost, sans-serif; cursor: pointer; transition: transform .12s, background .12s; }
+.hc-chip i { width: 12px; height: 12px; border-radius: 50%; display: inline-block; box-shadow: inset 0 0 0 1px rgba(0,0,0,.18); }
+.hc-chip:hover { transform: translateY(-1px); background: #F1F8F9; }
+.hc-chip.on { background: #0E3F57; color: #fff; border-color: #0E3F57; }
+@media (max-width: 560px) { .hc-title { min-width: 100%; } }
