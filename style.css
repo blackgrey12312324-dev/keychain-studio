@@ -1553,3 +1553,8 @@ body[data-page="design"] .cards.presets, .cards:has(.rl-pair) { grid-template-co
 .photo-card .pc-text i { font-style: normal; margin-top: 2px; }
 .cards.first-row { display: block; margin: 0; }
 @media (max-width: 560px) { .photo-card { flex-wrap: wrap; } .photo-card .pc-imgs img { width: 70px; height: 70px; } }
+
+.photo-card { background: linear-gradient(135deg, #FFF6EC, #FFE9D6 55%, #FFF); border: 2px solid #E8934A; }
+.photo-card .pc-text b { font-size: 1.3rem; }
+.photo-card .pc-text i { background: linear-gradient(135deg, #E8934A, #D9742E) !important; color: #fff !important; }
+.photo-card .pc-imgs img { box-shadow: 0 3px 10px rgba(14,63,87,.25); }

@@ -1775,7 +1775,7 @@ function helperCharmUp(spec, src, idx = 0) {
 }
 // recolour one of Anna's ink or gradient pieces to the colours asked for
 // five different colour families so the options do not all look the same; some get foil, some stay plain
-const FAM = { sage: ["#4C8A7C", "#E6E0D8", "#C89B2E"], blush: ["#D9959C", "#E6E0D8", "#C9A99A"], lav: ["#9C86C4", "#E6E0D8", "#7F9CC0"], sun: ["#C89B2E", "#E6E0D8", "#D9742E"], teal: ["#4F8A9C", "#C9A99A", "#E6E0D8"], sky: ["#7F9CC0", "#E6E0D8", "#1F6BC0"], navy: ["#1B2A6B", "#7F9CC0", "#E6E0D8"], ruby: ["#B04855", "#E6E0D8", "#C89B2E"], night: ["#14151A", "#4A5090", "#9A9A92"], coral: ["#D9742E", "#D9959C", "#E6E0D8"], plum: ["#8E3560", "#D9959C", "#E6E0D8"], mint: ["#7FB59A", "#E6E0D8", "#4F8A9C"], sand: ["#C9A99A", "#E6E0D8", "#8A5F3C"], grey: ["#9A9A92", "#E6E0D8", "#14151A"] };
+const FAM = { brown: ["#8A5F3C", "#E6E0D8", "#C89B2E"], gold: ["#C89B2E", "#F3EBDD", "#8A5F3C"], sage: ["#4C8A7C", "#E6E0D8", "#C89B2E"], blush: ["#D9959C", "#E6E0D8", "#C9A99A"], lav: ["#9C86C4", "#E6E0D8", "#7F9CC0"], sun: ["#C89B2E", "#E6E0D8", "#D9742E"], teal: ["#4F8A9C", "#C9A99A", "#E6E0D8"], sky: ["#7F9CC0", "#E6E0D8", "#1F6BC0"], navy: ["#1B2A6B", "#7F9CC0", "#E6E0D8"], ruby: ["#B04855", "#E6E0D8", "#C89B2E"], night: ["#14151A", "#4A5090", "#9A9A92"], coral: ["#D9742E", "#D9959C", "#E6E0D8"], plum: ["#8E3560", "#D9959C", "#E6E0D8"], mint: ["#7FB59A", "#E6E0D8", "#4F8A9C"], sand: ["#C9A99A", "#E6E0D8", "#8A5F3C"], grey: ["#9A9A92", "#E6E0D8", "#14151A"] };
 function helperPalette(spec, i) {
   const L = spec.likes, ex = !spec.autoCol;
   if (ex) {
@@ -1796,7 +1796,10 @@ function helperPalette(spec, i) {
   else if (L.includes("sea")) set = ["teal", "sky", "navy", "sand", "mint"];
   else if (L.includes("frog")) set = ["mint", "sage", "sun", "teal", "sky"];
   else if (L.includes("guns") || L.includes("money")) set = ["night", "grey", "navy", "sage", "sand"];
-  else if (spec.gender === "boy") set = ["sky", "navy", "teal", "grey", "mint"];
+  else if (spec.gender === "boy" && ["dad", "senior", "work", "partner", ""].includes(spec.aud)) set = ["night", "brown", "navy", "sage", "gold"];
+  else if (spec.gender === "boy") set = ["sky", "navy", "teal", "sage", "mint"];
+  else if (spec.aud === "dad" || spec.aud === "senior" || spec.aud === "work") set = ["night", "brown", "navy", "sage", "gold"];
+  else if (spec.aud === "kid") set = ["sky", "mint", "sun", "blush", "coral"];
   else if (spec.gender === "girl" || spec.aud === "mom" || spec.aud === "adult") set = ["blush", "lav", "coral", "sage", "ruby"];
   else set = ["blush", "sky", "sage", "lav", "sun"];
   return FAM[set[i % 5]];
@@ -1835,8 +1838,8 @@ function helperTitle(spec, d, opt) {
   const style = { ink: "swirled ink", gradient: "smooth blend", clear: "clear with glitter", ocean: "sea style" }[d.style] || "";
   return nm + " · " + style + (ch.length ? " + " + ch.slice(0, 2).join(", ").toLowerCase() : " + glitter");
 }
-function helperPhotoCard(T, sp) { const gift = !!sp.gift, bday = /birthday/i.test(ui.helperText || ""), occ = bday ? T("Happy Birthday photo canvas", "แคนวาสรูปวันเกิด", "Холст с фото ко дню рождения") : /anniversar|love|valentine/i.test(ui.helperText || "") ? T("Our story photo canvas", "แคนวาสรูปของเรา", "Холст с вашими фото") : T("Personal photo canvas", "แคนวาสรูปส่วนตัว", "Личный холст с фото");
-      const card = `<a class="photo-card ${gift ? "first" : ""}" href="collage.html">${gift ? `<span class="photo-badge">${T("Best for a gift", "แนะนำสำหรับของขวัญ", "Лучшее для подарка")}</span>` : ""}<span class="pc-imgs"><figure><img src="images/real/${bday ? "g-birthday-canvas" : "g-collage"}.jpg" alt="" loading="lazy" decoding="async"><figcaption>${T("Photo canvas", "แคนวาสรูป", "Холст с фото")}</figcaption></figure><figure><img src="images/real/g-saeed.jpg" alt="" loading="lazy" decoding="async"><figcaption>${T("Custom name", "ใส่ชื่อ", "Своё имя")}</figcaption></figure></span><span class="pc-text"><b>${occ}</b><span>${T("Upload your photos and we make it for you. Add a custom name or date, flowers, hearts, shapes, colours and glitter.", "อัปโหลดรูป เราทำให้ ใส่ชื่อหรือวันที่ ดอกไม้ หัวใจ รูปทรง สี และกากเพชร", "Загрузи фото, и мы сделаем. Добавь имя или дату, цветы, сердечки, формы, цвета и блёстки.")}</span><i class="btn btn-ink small">${T("Create my canvas", "สร้างแคนวาส", "Создать холст")}</i></span></a>`;
+function helperPhotoCard(T, sp) { const gift = !!sp.gift, bday = /birthday/i.test(ui.helperText || ""), occ = bday ? T("Personalized birthday gift", "ของขวัญวันเกิดทำเอง", "Именной подарок ко дню рождения") : /anniversar|love|valentine/i.test(ui.helperText || "") ? T("Our story mood board", "มูดบอร์ดเรื่องราวของเรา", "Мудборд нашей истории") : T("Personalized photo mood board", "มูดบอร์ดรูปส่วนตัว", "Персональный мудборд из фото");
+      const card = `<a class="photo-card ${gift ? "first" : ""}" href="collage.html">${gift ? `<span class="photo-badge">${T("★ Best gift idea", "★ ไอเดียของขวัญที่ดีที่สุด", "★ Лучшая идея подарка")}</span>` : ""}<span class="pc-imgs"><figure><img src="images/real/${bday ? "g-birthday-canvas" : "g-collage"}.jpg" alt="" loading="lazy" decoding="async"><figcaption>${T("Your photos", "รูปของคุณ", "Твои фото")}</figcaption></figure><figure><img src="images/real/g-saeed.jpg" alt="" loading="lazy" decoding="async"><figcaption>${T("Custom name", "ใส่ชื่อ", "Своё имя")}</figcaption></figure></span><span class="pc-text"><b>${occ}</b><span>${T("Turn your favourite photos into a keepsake in resin: add a name or date, flowers, hearts, gold and glitter. A gift they will keep forever.", "อัปโหลดรูป เราทำให้ ใส่ชื่อหรือวันที่ ดอกไม้ หัวใจ รูปทรง สี และกากเพชร", "Загрузи фото, и мы сделаем. Добавь имя или дату, цветы, сердечки, формы, цвета и блёстки.")}</span><i class="btn btn-ink small">${T("Create my mood board", "สร้างมูดบอร์ด", "Создать мудборд")}</i></span></a>`;
       return card;  }
 function helperView() {
   const opts = ui.helperOpts || [];
