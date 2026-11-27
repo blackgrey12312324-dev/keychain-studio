@@ -3044,6 +3044,8 @@ function loadFromLink() {
   const params = new URLSearchParams(location.search);
   const gk = params.get("gallery"), gd = gk && galleryDesign(gk);
   if (gd) { ui.example = true; design = gd.d; ui.cat = gd.cat; ui.step = afterStyle(design); ui.visited = new Set([0, 1, 2, 3, ui.step]); }
+  if (params.get("start") === "ready") { ui.pickReady = true; }
+  if (params.get("start") === "helper") { ui.helper = true; }
   if (params.get("cat")) { ui.cat = params.get("cat"); ui.step = 1; ui.visited = new Set([0, 1]); ui.jump = params.get("group") || ""; }
   if ((ui.cat === "cutting" || ui.cat === "paint") && catOf(design.shape) !== ui.cat) { design.shape = ui.cat === "paint" ? "canvas-rect" : "board-rect"; design.style = ui.cat === "paint" ? "gradient" : "clear"; design.addins = {}; design.crush = []; ui.chosen = true; }
   if (params.has("start")) { ui.step = 0; ui.visited = new Set([0]); ui.cat = ""; ui.pickReady = false; }

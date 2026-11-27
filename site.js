@@ -134,6 +134,16 @@ function renderHome() {
       </div>
     </section>
 
+    <section class="section start-strip" aria-label="Start">
+      <div class="wrap">
+        <div class="start-hero"><h2>${({ th: "อยากเริ่มยังไง", ru: "С чего начнём?" }[ui.lang]) || "How do you want to start?"}</h2><div class="start-cards">
+          <a class="start-card" href="design.html?start=ready"><i class="sc-ico"><svg viewBox="0 0 48 48" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="9" width="32" height="30" rx="5"/><path d="M8 30c7-6 11 3 18-2s9-4 14 1"/><circle cx="31" cy="19" r="3.2"/></svg></i><b>${({ th: "เลือกแบบสำเร็จรูป", ru: "Готовый дизайн" }[ui.lang]) || "Pick a ready-made design"}</b><span>${({ th: "ดูผลงานจริงของเราและสั่งได้เลย", ru: "Готовые работы, которые можно заказать" }[ui.lang]) || "Browse our finished pieces and order one"}</span></a>
+          <a class="start-card star" href="design.html?start=helper"><em>${({ th: "แนะนำ", ru: "Советуем" }[ui.lang]) || "Smart tip"}</em><i class="sc-ico"><svg viewBox="0 0 48 48" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 6l3.6 9.4L37 19l-9.4 3.6L24 32l-3.6-9.4L11 19l9.4-3.6z"/><path d="M37 30l1.6 4.4 4.4 1.6-4.4 1.6L37 42l-1.6-4.4L31 36l4.4-1.6z"/></svg></i><b>${({ th: "บอกแบบที่อยากได้", ru: "Опиши свой дизайн" }[ui.lang]) || "Describe it to me"}</b><span>${({ th: "บอกว่าให้ใคร ชอบอะไร เราเลือกแบบให้ 5 แบบ", ru: "Расскажи, для кого, и я предложу 5 вариантов" }[ui.lang]) || "Tell us who it is for and get 5 ideas"}</span></a>
+          <a class="start-card" href="design.html"><i class="sc-ico"><svg viewBox="0 0 48 48" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 6C13 6 6 14 6 23c0 8 6 12 11 12h3c2 0 3 1 3 3 0 3 2 4 4 4 9 0 15-8 15-17C42 14 34 6 24 6z"/><circle cx="16" cy="22" r="2.2"/><circle cx="23" cy="15" r="2.2"/><circle cx="32" cy="18" r="2.2"/></svg></i><b>${({ th: "ออกแบบเอง", ru: "Создать своё" }[ui.lang]) || "Design your own"}</b><span>${({ th: "เลือกแม่พิมพ์ สี กากเพชร ทำเองทุกขั้นตอน", ru: "Выбери форму, цвета и блёстки сам" }[ui.lang]) || "Pick the mould, colours and glitter yourself"}</span></a>
+        </div></div>
+      </div>
+    </section>
+
     <section class="section letters-band" aria-labelledby="letters-h">
       <div class="wrap">
         <div class="section-head">
