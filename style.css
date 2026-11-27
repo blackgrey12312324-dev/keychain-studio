@@ -1540,3 +1540,16 @@ body[data-page="design"] .cards.presets, .cards:has(.rl-pair) { grid-template-co
 .photo-card.first { grid-column: 1 / -1; border: 2px solid #E8934A; box-shadow: 0 10px 28px rgba(232,147,74,.28); }
 .photo-card .photo-badge { position: absolute; top: -12px; left: 16px; background: #E8934A; color: #fff; font: 700 .72rem Jost, sans-serif; letter-spacing: .06em; text-transform: uppercase; padding: 4px 12px; border-radius: 999px; }
 .cards.first-row { grid-template-columns: 1fr; margin-bottom: 18px; }
+
+/* compact horizontal photo-canvas suggestion */
+.photo-card, .photo-card.first { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 18px; background: #fff; border: 2px solid #E8934A; box-shadow: 0 6px 18px rgba(232,147,74,.2); position: relative; margin: 14px 0 18px; grid-column: auto; text-decoration: none; color: inherit; }
+.photo-card .pc-imgs { display: flex; gap: 8px; flex: none; }
+.photo-card .pc-imgs figure { margin: 0; text-align: center; }
+.photo-card .pc-imgs img { width: 86px; height: 86px; object-fit: cover; border-radius: 12px; display: block; }
+.photo-card .pc-imgs figcaption { font: 600 .62rem Jost, sans-serif; letter-spacing: .06em; text-transform: uppercase; color: #5C7480; margin-top: 3px; }
+.photo-card .pc-text { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; min-width: 0; }
+.photo-card .pc-text b { font: 600 1.15rem "Cormorant Garamond", serif; color: #0E3F57; }
+.photo-card .pc-text > span { font-size: .84rem; color: #4a6370; line-height: 1.3; }
+.photo-card .pc-text i { font-style: normal; margin-top: 2px; }
+.cards.first-row { display: block; margin: 0; }
+@media (max-width: 560px) { .photo-card { flex-wrap: wrap; } .photo-card .pc-imgs img { width: 70px; height: 70px; } }
