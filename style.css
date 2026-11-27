@@ -1558,3 +1558,6 @@ body[data-page="design"] .cards.presets, .cards:has(.rl-pair) { grid-template-co
 .photo-card .pc-text b { font-size: 1.3rem; }
 .photo-card .pc-text i { background: linear-gradient(135deg, #E8934A, #D9742E) !important; color: #fff !important; }
 .photo-card .pc-imgs img { box-shadow: 0 3px 10px rgba(14,63,87,.25); }
+
+.start-card .sc-ico { display: grid; place-items: center; width: 74px; height: 74px; border-radius: 50%; background: linear-gradient(135deg, #E3F2F3, #CFE6EA); color: #19708A; box-shadow: inset 0 0 0 1.5px rgba(25,112,138,.25), 0 6px 14px rgba(14,63,87,.12); }
+.start-card.star .sc-ico { background: rgba(255,255,255,.16); color: #fff; box-shadow: inset 0 0 0 1.5px rgba(255,255,255,.5); }
